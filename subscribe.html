@@ -90,9 +90,86 @@ footer{margin-top:30px;font-size:11.5px;color:var(--sub);border-top:1px solid va
   完成登记后我们会发放访问码（含到期时间）。访问码用于解锁实时情报与节点时间轴。
 </div>
 
+<div class="plans" style="grid-template-columns:1fr">
+  <div class="plan">
+    <div class="tag">会员验证</div>
+    <div class="name">输入登记的账号</div>
+    <div class="note" style="margin:8px 0">Telegram 用户名（如 @user）或 QQ 号。验证通过后解锁实时情报。</div>
+    <input id="verifyInput" type="text" placeholder="TG 用户名或 QQ 号"
+      style="border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;margin-bottom:10px">
+    <button id="verifyBtn" class="btn primary">验证会员</button>
+    <div id="verifyResult" class="note" style="margin-top:10px;display:none"></div>
+  </div>
+  <div class="plan">
+    <div class="tag">订阅登记</div>
+    <div class="name">提交你的联系方式</div>
+    <div class="note" style="margin:8px 0">提交 QQ 或 Telegram 账号，登记后发放访问码。</div>
+    <input id="leadName" type="text" placeholder="昵称（选填）"
+      style="border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;margin-bottom:10px">
+    <input id="leadContact" type="text" placeholder="QQ 号或 Telegram 用户名"
+      style="border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;margin-bottom:10px">
+    <input id="leadNote" type="text" placeholder="备注（选填）"
+      style="border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;margin-bottom:10px">
+    <button id="leadBtn" class="btn primary">提交登记</button>
+    <div id="leadResult" class="note" style="margin-top:10px;display:none"></div>
+  </div>
+</div>
+
 <div class="warn">本平台仅提供情报分析与统计，所有比赛信息以官方公布为准；弹幕内容为观众观点，不代表事实。</div>
 
 <footer>弹幕情报库 · Danmu Intel · 订阅页</footer>
 </div>
+<script>
+// 订阅 API（Vercel 部署，与马斯克工具同款 verify-member / lead）
+var API_BASE = "https://danmu-intel-api.vercel.app";
+
+function show(el, text, ok) {
+  el.style.display = "block";
+  el.textContent = text;
+  el.style.color = ok ? "#1e8e3e" : "#c92a2a";
+}
+
+document.getElementById("verifyBtn").addEventListener("click", async function () {
+  var id = document.getElementById("verifyInput").value.trim();
+  var out = document.getElementById("verifyResult");
+  if (!id) { show(out, "请输入 TG 用户名或 QQ 号", false); return; }
+  try {
+    var res = await fetch(API_BASE + "/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    });
+    var data = await res.json();
+    if (data.freePeriod) show(out, "当前为免费体验期，全部功能已开放", true);
+    else if (data.member) show(out, "验证通过 ✓" + (data.expires ? " · 有效期至 " + data.expires.slice(0, 10) : ""), true);
+    else show(out, "未找到该会员，请确认账号，或先完成订阅登记", false);
+  } catch (e) {
+    show(out, "验证服务暂不可用，请稍后再试", false);
+  }
+});
+
+document.getElementById("leadBtn").addEventListener("click", async function () {
+  var contact = document.getElementById("leadContact").value.trim();
+  var out = document.getElementById("leadResult");
+  if (!contact || contact.length < 2) { show(out, "请填写 QQ 号或 Telegram 用户名", false); return; }
+  try {
+    var res = await fetch(API_BASE + "/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: document.getElementById("leadName").value.trim(),
+        contact: contact,
+        note: document.getElementById("leadNote").value.trim(),
+        website: ""
+      })
+    });
+    var data = await res.json();
+    if (data.success) show(out, "已提交 ✓ 我们确认后会发放访问码", true);
+    else show(out, data.error || "提交失败，请稍后再试", false);
+  } catch (e) {
+    show(out, "提交服务暂不可用，请稍后再试", false);
+  }
+});
+</script>
 </body>
 </html>
