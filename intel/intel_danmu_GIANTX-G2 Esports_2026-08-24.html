@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹幕情报整场复盘 · GIANTX vs G2 Esports · 2026-08-24</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --ink:#1d1d1f;
+    --ink-2:#6e6e73;
+    --ink-3:#86868b;
+    --line:#e8e8ed;
+    --accent:#0a66c2;
+    --accent-soft:#e7f1fb;
+    --warn:#b45309;
+    --warn-soft:#fef3e2;
+    --danger:#c2410c;
+    --danger-soft:#fdeee3;
+    --ok:#1a7f37;
+    --ok-soft:#e6f4ea;
+    --radius:16px;
+    --shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.65;
+    padding:20px 16px 56px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px 20px;
+    margin-bottom:16px;
+  }
+  h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+  h2{font-size:17px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  h2 .no{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:24px;height:24px;padding:0 6px;border-radius:8px;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:13px;font-weight:700;
+  }
+  h3{font-size:15px;font-weight:700;margin:14px 0 8px}
+  p{font-size:14px;color:var(--ink)}
+  .muted{color:var(--ink-2);font-size:13px}
+  .tiny{color:var(--ink-3);font-size:12px}
+  .badge{
+    display:inline-block;padding:3px 10px;border-radius:999px;
+    font-size:12px;font-weight:600;white-space:nowrap;
+  }
+  .b-live{background:var(--ok-soft);color:var(--ok)}
+  .b-pend{background:var(--warn-soft);color:var(--warn)}
+  .b-gray{background:var(--danger-soft);color:var(--danger)}
+  .b-meta{background:var(--accent-soft);color:var(--accent)}
+  .b-plain{background:#f0f0f2;color:var(--ink-2)}
+  .head-meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .sub{color:var(--ink-2);font-size:14px;margin-top:6px}
+  .alert{
+    background:var(--danger-soft);border:1px solid #f3cdb5;border-radius:12px;
+    padding:12px 14px;margin-top:12px;font-size:13px;color:var(--ink);
+  }
+  .alert .t{color:var(--danger);font-weight:700;font-size:14px;margin-bottom:4px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--ink-2);font-weight:600;white-space:nowrap;font-size:12px}
+  tr:last-child td{border-bottom:none}
+  .num{font-variant-numeric:tabular-nums;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+  .stat{background:#fafafc;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .stat .v{font-size:18px;font-weight:700}
+  .stat .k{font-size:12px;color:var(--ink-2);margin-top:2px}
+  .peaks{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .peak{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:600}
+  .gray-box{
+    background:var(--danger-soft);border:1px solid #f3cdb5;border-radius:12px;
+    padding:14px 14px 10px;margin-top:10px;
+  }
+  .gray-box .t{color:var(--danger);font-weight:700;font-size:14px;margin-bottom:6px}
+  .tag{font-size:12px;color:var(--ink-2);background:#f0f0f2;border-radius:6px;padding:2px 7px;display:inline-block;margin:2px 4px 2px 0}
+  .quote{
+    background:#fafafc;border-left:3px solid var(--accent);border-radius:8px;
+    padding:8px 12px;margin:8px 0;font-size:13px;color:var(--ink);
+  }
+  .quote .src{display:block;color:var(--ink-3);font-size:12px;margin-top:4px}
+  .divider{height:1px;background:var(--line);margin:16px 0}
+  .note{font-size:13px;color:var(--ink-2);background:#fafafc;border-radius:10px;padding:10px 12px;margin-top:10px}
+  .long{
+    background:var(--ok-soft);border:1px solid #bfe3c8;border-radius:12px;
+    padding:12px 14px;margin-top:10px;font-size:13px;
+  }
+  .long .t{color:var(--ok);font-weight:700}
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .pill{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px}
+  .pill.long{background:var(--ok-soft);color:var(--ok)}
+  .pill.short{background:var(--danger-soft);color:var(--danger)}
+  .pill.mix{background:var(--warn-soft);color:var(--warn)}
+  footer{color:var(--ink-3);font-size:12px;text-align:center;margin-top:20px}
+  @media (max-width:560px){
+    h1{font-size:19px}
+    .card{padding:18px 15px}
+  }
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-size:13px">首页</a><a href="today.html" style="color:#6e6e73;font-size:13px">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-size:13px">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-size:13px">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <b style="color:#1d1d1f">历史情报库</b> › <b style="color:#1d1d1f">GIANTX-G2 Esports 2026-08-24</b></div>
+<div class="wrap">
+
+<!-- 0 头部 -->
+<div class="card">
+  <h1>弹幕情报整场复盘 · GIANTX（GX） vs G2 Esports（G2）</h1>
+  <div class="head-meta">
+    <span class="badge b-pend">结果：弹幕口径 · 待官方确认</span>
+    <span class="badge b-live">FINAL ｜ 系列复盘 ｜ SERIES-REVIEW</span>
+    <span class="badge b-meta">A 型整场复盘页（10 段 + 方向性情报）</span>
+    <span class="badge b-gray">采集中断 · 系列终局未覆盖</span>
+  </div>
+  <p class="sub">LEC（League of Legends 欧洲冠军联赛）· 2026-08-24 · 事件 slug：<span class="muted">lol-gx-g2-2026-08-24</span>（联盟代码 lec）。本页全部结论为弹幕口径，官方比分 / 阵容 / MVP 待回填。</p>
+  <div class="alert">
+    <div class="t">数据口径说明（必读）</div>
+    任务提示称"比赛已结束（弹幕多信号确认）"，但本工作区可核查的落盘弹幕<b>不包含任何系列终局信号</b>：全部数据源最后一条弹幕为 2026-08-24 18:02:53 UTC（采集进程随后停止），彼时 G2 第二局仍在进行中。因此本页无法给出"弹幕口径系列比分"，最终结果只能标注<b>待官方核对 / 待补采确认</b>，且不臆断胜负。
+  </div>
+  <div class="divider"></div>
+  <table>
+    <tr><th>对阵</th><td><b>GIANTX（GX）</b> vs <b>G2 Esports（G2）</b> · 系列赛（弹幕口径 BO3）</td></tr>
+    <tr><th>弹幕进度</th><td>G1：G2 胜（弹幕口径推断，GG 于 17:51:38 UTC）· G2 局：进行中（17:53 BP → 18:02:53 采集中断）· G3：未开赛</td></tr>
+    <tr><th>系列结果</th><td><b>无法从弹幕确认</b>（采集中断于 G2 局进行中）<span class="badge b-pend">待官方核对</span></td></tr>
+    <tr><th>数据窗口</th><td>切片：2026-08-24 16:45 – 18:01 UTC（原始落盘至 18:02:53 UTC）</td></tr>
+    <tr><th>数据量</th><td>切片 <span class="num">21,280</span> 条弹幕 · 活跃用户 <span class="num">5,554</span> · 密度均值 <span class="num">276.7</span> 条/分；另中文流原始落盘 Remember 1,615 / 硕硕 11,707 条（本场相关约 137 条，见数据完整性）</td></tr>
+    <tr><th>Polymarket</th><td>本地无价格快照；data/matches_today.json 该场 closed=false · 事件 slug：lol-gx-g2-2026-08-24（核对待办）</td></tr>
+  </table>
+</div>
+
+<!-- 数据完整性三栏 -->
+<div class="card">
+  <h2><span class="no">0+</span>数据完整性三栏（数据端完备性原则 · 2026-08-24）</h2>
+  <table>
+    <tr>
+      <th style="width:16%">实际数据源</th>
+      <td>本场窗口共 <b>8 路</b>（6 路进入自动切片 + 2 路中文流人工并入）：<br>
+        twitch_caedrel 14,387 · twitch_otplol 4,617 · twitch_lec 1,291 · twitch_kameto 575 · kick_gaules 382 · kick_eslcs 28（切片合计 21,280）；<br>
+        huya_remember（1,615，本场相关 22 条）· huya_shuoshuo（11,707，本场相关 115 条）——两路中文流为本场<b>实时主源</b>（G1 实战 17:12–17:51），但<b>未进入自动切片</b>，本页人工并入核对。
+      </td>
+    </tr>
+    <tr>
+      <th>预期数据源</th>
+      <td>LEC 默认采集集（DANMU_CAPTURE_RULES 第 17 节 / leagues.json）：twitch_caedrel · twitch_lec · huya 毛毛(149346) · huya Remember(528222) · huya 硕硕(323444)<br>
+        覆盖情况：caedrel ✓ · lec ✓ · Remember ✓ · 硕硕 ✓ · 毛毛 ✗（<b>离线未采</b>，session.json 显示 offline_waiting）</td>
+    </tr>
+    <tr>
+      <th>缺口</th>
+      <td>
+        <b>① 采集中断（最大缺口）</b>：全部数据源止于 18:02:53 UTC，G1 尾段（17:51 GG 后）、G2 局主体（17:53 后）、潜在 G3 未覆盖，无系列终局信号；<br>
+        <b>② 毛毛离线未采</b>（不在线，不算静默缺源，按规则标注）；<br>
+        <b>③ 自动切片未并入中文流</b>（本页已人工并入，但自动统计口径缺失）；<br>
+        <b>④ VOD 未回捞</b>（Twitch LEC 官方 / 虎牙回放可回捞 G1 尾段与 G2 局）。<br>
+        <b>结论：缺源 → 系列结果不交付完整结论，全部关键项标"待官方/待补采"。</b>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- 1 结果总览 -->
+<div class="card">
+  <h2><span class="no">1</span>结果总览</h2>
+  <div class="grid">
+    <div class="stat"><div class="v">G1 · G2 胜</div><div class="k">弹幕口径推断（GG 17:51:38）· 待官方核对</div></div>
+    <div class="stat"><div class="v">G2 局 · 进行中</div><div class="k">17:53 BP → 18:02:53 采集中断</div></div>
+    <div class="stat"><div class="v">系列结果 · 未知</div><div class="k">无终局信号 · 待官方核对 / 补采</div></div>
+    <div class="stat"><div class="v">灰信号 31 条</div><div class="k">本场窗口（17:09–18:02）中文流口径 · 指向 G2</div></div>
+  </div>
+  <p style="margin-top:12px">
+    弹幕口径最完整信息集中在 <b>G1</b>：G2 一血（17:17）、8 分钟 2k / 14 分钟 6k / 18 分钟 7k 经济领先、24 分钟风龙魂、Caps 阿卡丽多次送头仍 4v5 赢团、17:51:38 "GG"。
+    系列进度为 <b>G2 1:0 领先（推断）</b>，第二局 BP 于 17:53 开始、采集终止时仍在进行。
+    <span class="muted">注意：17:51 "GG" 为单条信号（硕硕流），G1 胜方由"G2 全程压制 + 4v5 仍赢 + 无任何 GX 胜方信号"推断，属弹幕口径，非官方。</span>
+  </p>
+  <div class="note">关键结论一律按"弹幕口径 · 待官方确认"处理；官方核对途径见第 10 节「结果来源」。</div>
+</div>
+
+<!-- 2 逐局复盘 -->
+<div class="card">
+  <h2><span class="no">2</span>逐局复盘</h2>
+
+  <h3>G1 · GIANTX vs G2（部分覆盖 17:10–17:52，实时源：虎牙 Remember / 硕硕）</h3>
+  <table>
+    <tr><th>BP / 阵容</th><td>GX：永恩（Yone）、赵信（打野 isma）、EZ / 寒冰等（部分归属待官方阵容回填）；G2：Caps 阿卡丽（观众 counter 论"永恩打不了阿卡丽"，17:21:58）<br>
+    弹幕另提及兰博/朗姆、卡尔玛、皇子等英雄，归属未完全确认 —— 按"部分阵容信息待官方回填"处理。</td></tr>
+    <tr><th>BP 后战绩情报</th><td>
+      <b>有提及：</b>「BB 的朗姆应该算是练出来了」（Remember 17:30:26）·「bb 都会朗姆了」（硕硕 17:32:42，×3 共振）——BB 熟练度正向锚；「永恩打不了阿卡丽」（17:21:58）——对位 counter 论。<br>
+      <b>归属说明：</b>上述为选手×英雄熟练度/对位类弹幕，非"X 胜 X 负"式战绩引述；本场 BP 窗口未捕获到带明确胜负数字的战绩弹幕（如"杰斯 10 连败"类），该子类为空。
+    </td></tr>
+    <tr><th>时间线</th><td>
+      17:17 G2 一血（"刚买完 G2 就马上一血"）· 17:20 中路单杀 + 压 30–40 刀 · 17:22 8 分钟 2k · 17:28 14 分钟 6k（"g2 只给倒一送温暖十四分钟六千"）· 17:31–33 GX 全线被压、18 分钟 7k · 17:34 24 分钟风龙魂 · 17:35–39 Caps 阿卡丽 4 死送头、G2 "随便 4 打 5" · 17:51:38 "GG"
+    </td></tr>
+    <tr><th>转折点 / 异常</th><td>GX 全程"乌龟"（"第一乌龟队"、"20 个头都没有 gx 会一直乌龟到结束"），无有效反扑；17:29–17:38 弹幕"翻了"刷屏多属观众玩梗/战斗情绪，非局势反转（"翻不了，就是送"）。Caps 个人多次送头是本局唯一"主动给机会"点，但未影响 G2 赢团。</td></tr>
+    <tr><th>预测验证</th><td>观众"G2 随便虐 / 赶紧 2-0"预测与 G1 过程一致（待官方比分回填后正式落验证）</td></tr>
+  </table>
+
+  <h3>G2 局 · GIANTX vs G2（仅 BP + 开局片段 17:53–18:02，采集中断）</h3>
+  <table>
+    <tr><th>BP / 阵容</th><td>G2：Caps 洛克（Locke，新英雄 AP 刺客——twitch "CAPS LOCKE LOL" 18:00:02 + 硕硕 "洛克专打发条" 17:55:34）、波比（"这手波比可以" 18:00:15）；GX：疑似发条（Orianna，被洛克 counter 提及）、卢锡安（"卢锡安不能开团吗" 18:00:44）、纳瑟斯（twitch "SUSAN LAST PICK" 17:58:47，玩梗）<br>
+    阵容评价：观众质疑 G2 "0 控阵容 / 没有开团没有控"（17:59:38–18:00:27）、"g2 comp is garbo late"（twitch 18:02:02）；GX 方有 "i like GX draft"、"Bot lane GX stronger than G2"（twitch 18:00–18:01）</td></tr>
+    <tr><th>BP 后战绩情报</th><td>
+      <b>有提及：</b>「caps played locke vs koi and got rolled」（twitch 18:01:48，单路）——Caps 洛克对 KOI 被碾的负向战绩引述；「她的波比一胜两负」（硕硕 18:01:06）——波比 1-2 战绩引述；「洛克专打发条」（17:55:34）·「洛克日常被翻盘」（17:55:37，剧本向玩梗）。<br>
+      <b>状态：</b>单源待验证（twitch 1 路 / 硕硕 1 路，未形成两路共振）。
+    </td></tr>
+    <tr><th>时间线</th><td>17:52:59 "bp 了" · 17:53:30 "开了"（进入局间/BP）· 17:58–18:02 BP 讨论（twitch 延迟流）· 18:00:11 "G2 没开团啊 好被动啊" · 18:02:05 "这把洛克没用" · <b>18:02:53 采集终止</b></td></tr>
+    <tr><th>异常</th><td>无灰信号外异常；观众预期 G2 速胜（"G2 速度暴打结束把困了" 18:02:30）</td></tr>
+  </table>
+
+  <h3>G3 · 未开赛</h3>
+  <p class="muted">采集终止前 G2 局仍在进行，G3 是否发生未知 → 样本不足，不推断。</p>
+</div>
+
+<!-- 3 队伍画像 -->
+<div class="card">
+  <h2><span class="no">3</span>队伍画像（弹幕口径）</h2>
+  <table>
+    <tr><th style="width:14%">G2 Esports</th><td>
+      <b>风格/定位：</b>LEC "土皇帝 / 大王"（"LEC 只有一个王那就是 G2" 17:35:04），"不演除开 KC 没人打得过"（17:33:43）；G1 呈现前期滚雪球 + 4v5 仍赢团的统治力。<br>
+      <b>核心：</b>BB（上单大爹，双路共振）、Hans Sama / 下路双人组（"没汉斯 g2 早没了" 17:22:27、"汉斯今天很来劲" 17:33:07）。<br>
+      <b>问题：</b>Caps 个人状态被密集吐槽（名人堂皮肤争议 + "送/挨揍/4 死"），"老帽跟老飞一样只能靠队友"（17:28:35）；灰信号重灾区（见第 5 节）。<br>
+      <b>信任等级（弹幕口径）：</b>高（不演时）——但"演不演"是本场最大悬念。
+    </td></tr>
+    <tr><th>GIANTX</th><td>
+      <b>风格/定位：</b>观众口径 "菜 / 乌龟队 / 人机"（"GX 好菜" 17:25:55、"第一乌龟队" 17:22:39、"人机一样" 17:28:07），"GX 这么菜还能 3-3 啊"（17:28:23）——战绩与表现反差被嘲讽。<br>
+      <b>问题：</b>G1 全期被压（经济 6k–7k 落后）、永恩位无作为（"永恩直接挂机/在 b"）、打野 isma 被集火（"这个 isma 才是真的垃圾" 17:23:52）。<br>
+      <b>盘面倾向：</b>弱侧（twitch "like 15% chance for GX to win" 18:00:55）。<br>
+      <b>信任等级（弹幕口径）：</b>低；但存在少量"相信 gx / gx 要赢了（永恩）"少数派。
+    </td></tr>
+  </table>
+  <div class="note">画像仅覆盖采集中断前；若系列最终 2-1 或 GX 爆冷，需按最终结果修订画像。</div>
+</div>
+
+<!-- 4 人员画像 -->
+<div class="card">
+  <h2><span class="no">4</span>人员画像（带量 · 弹幕口径）</h2>
+  <table>
+    <tr><th>选手</th><th>提及量</th><th>来源</th><th>评价（弹幕口径）</th></tr>
+    <tr><td>BB / BrokenBlade（G2 上单）</td><td class="num">~10+</td><td>中文流（未入自动统计）</td><td>"G2 核心大爹 BB"（17:32:30）·"BB 劣势的局就赢不了"（17:31:26）·"bb 进化了/BB 爽玩/BB 在秀"（17:36–39）·"BB 的朗姆练出来了"（17:30:26）——正向核心锚</td></tr>
+    <tr><td>Caps / 老帽（G2 中单）</td><td class="num">~15+</td><td>中文流</td><td>负面密集：名人堂皮肤争议刷屏、"送/挨揍/4 死"（"阿卡丽能死四次的是人吗" 17:39:08）、"最大的演员 caps"（17:35:39，灰信号向）；但 G2 仍赢团 → "不太需要老帽"（17:38:38）</td></tr>
+    <tr><td>Hans Sama / 汉斯（G2 ADC）</td><td class="num">~5</td><td>中文流</td><td>"没汉斯 g2 早没了"（17:22:27）·"汉斯今天很来劲"（17:33:07）·"hans 爽局"（17:31:09）——正向外援锚</td></tr>
+    <tr><td>Canna（GX 上单）</td><td class="num">4</td><td>自动切片</td><td>切片内多为法语互动（非比赛评价），本场表现评价样本不足</td></tr>
+    <tr><td>isma（GX 打野 · 赵信）</td><td class="num">~5</td><td>中文流</td><td>"这个 isma 才是真的垃圾"（17:23:52）·"isma 纯坑逼一个"（17:28:56）·"isma 咋不点闪现"（17:24:04）——负向</td></tr>
+    <tr><td>Skew / Skewmond（G2 打野）</td><td class="num">1</td><td>twitch</td><td>"Skew peut salir GX"（18:00:22）——样本不足</td></tr>
+  </table>
+  <p class="muted">说明：自动切片（twitch/kick）的玩家统计大量命中并发场 FNC/NAVI/T1/LCK 内容（如 Oscar 66、Faker 50、Zeus 11 等，与本场无关，不计入）；中文流提及量未进自动统计，为人工核对值。</p>
+</div>
+
+<!-- 5 灰信号汇总 -->
+<div class="card">
+  <h2><span class="no">5</span>灰信号汇总（观众质疑，非结论）</h2>
+  <div class="gray-box">
+    <div class="t">灰信号 · G2「演 / 吃 / 做局 / 剧本 / 送」质疑集群</div>
+    <p style="font-size:13px">
+      本场窗口（17:09–18:02 UTC）中文流严格命中 <b>31 条</b>（Remember 6 + 硕硕 25），另有赛前时段（15:06–16:49）<b>~15 条</b>前置叙事（围绕上周 "FNC 2-0 G2" 的"做局/吃"质疑）。自动切片（twitch 口径）灰信号计数为 0 —— 因中文流未入切片，属<b>统计口径缺口</b>，本页人工并入。
+    </p>
+    <table>
+      <tr><th>方向</th><td>集中于 G2（"G2 包吃的在联赛" 17:09:45 ·"g2 阵容越好 他越爱演" 17:12:03 ·"帽子就是打假赛出名的" 17:18:41 ·"这把 g2 包演戏" 18:00:48 ·"G2 狗最喜欢演了" 18:00:44）</td></tr>
+      <tr><th>预警等级</th><td><b>中</b>（两路中文流共振 + 时间分散持续；但多为"预期 G2 演"的博彩叙事，非局内实锤；无盘口即时重合证据）</td></tr>
+      <tr><th>市场含义</th><td>观众质疑集中在 G2 侧 → G2 大热价格存在"被做局/剧本"叙事干扰候选；反手参考需配合盘口/价格验证与风控，灰信号本身不作假赛结论</td></tr>
+      <tr><th>兑现状态</th><td>截至采集中断：G1 未见明显放水（"居然良心了这 g2 你们这剧本不好猜" 17:31:26 ·"g2 良心了" 17:32:01）→ <b>暂未兑现</b>；系列终局未知 → 兑现统计待回填</td></tr>
+    </table>
+    <p class="tiny" style="margin-top:8px">纪律声明：以上均为观众质疑与玩梗，非假赛证据；不据此作结论，仅作风险标注与盘口对照素材。</p>
+  </div>
+</div>
+
+<!-- 6 联赛规律与版本 -->
+<div class="card">
+  <h2><span class="no">6</span>联赛规律与版本（弹幕口径）</h2>
+  <ul style="font-size:14px;padding-left:20px;margin-top:6px">
+    <li>「早说了，LEC 领先多少经济都没有用」（17:29:42）——LEC 翻盘叙事在本场被 G2 打断（G1 未翻）</li>
+    <li>「弱队没资格玩拉扯阵容」（17:28:57）——GX 乌龟式拉扯被观众判死</li>
+    <li>「G2 不演除开 KC 没人打得过」（17:33:43）·「LEC 只有一个王那就是 G2」（17:35:04）——大热共识与唯一对手 KC</li>
+    <li>「G2 就是小 T1 不管怎么样都会给一把+号的」（17:32:19）——"G2 打满/让一把"规律候选（待本系列验证）</li>
+    <li>名人堂（HOL）皮肤话题大量刷屏（Caps 名人堂皮肤争议），与比赛进程穿插——本场情绪噪音源</li>
+  </ul>
+</div>
+
+<!-- 7 预测验证 -->
+<div class="card">
+  <h2><span class="no">7</span>预测验证（赛前/局中 vs 结果）</h2>
+  <table>
+    <tr><th>预测</th><th>时间</th><th>来源</th><th>状态</th></tr>
+    <tr><td>"quick G2 2-0 I'll go Bedro"</td><td>17:03:33</td><td>twitch_caedrel</td><td>G1 应验（G2 胜）· 系列待回填</td></tr>
+    <tr><td>"20 min fast game for g2"</td><td>16:53:15</td><td>twitch_caedrel</td><td>G1 约 40 分钟级，未应验（快速局预期落空）</td></tr>
+    <tr><td>"GX 2-0 G2" / "I was in the future and it's 2~1 GIANTX"</td><td>16:49:59 / 16:56:41</td><td>twitch_caedrel</td><td>少数派/玩梗，G1 未应验</td></tr>
+    <tr><td>"G2 就是小 T1……会给一把+号的"</td><td>17:32:19</td><td>硕硕</td><td>打满/让一把预测，系列待回填</td></tr>
+    <tr><td>"我说个笑话：GX2-1 让一追二，G2 的比赛剧本慢慢"</td><td>17:40:07</td><td>硕硕</td><td>剧本向玩梗，待回填</td></tr>
+    <tr><td>"like 15% chance for GX to win"</td><td>18:00:55</td><td>twitch_lec</td><td>群体概率口径，待回填</td></tr>
+  </table>
+  <p class="muted">所有"待回填"项以官方系列结果为准，回填后更新命中/未命中。</p>
+</div>
+
+<!-- 8 盘口讨论 -->
+<div class="card">
+  <h2><span class="no">8</span>盘口讨论（弹幕口径 · 非交易依据）</h2>
+  <ul style="font-size:14px;padding-left:20px;margin-top:6px">
+    <li>大小分/人头：大 27.5 / 26 / 大 23.5 / 24.5 / 25.5 等密集讨论，"26 精准 / 卡头"（17:39:31–17:40:22）——G1 总人头贴近 26 的口径</li>
+    <li>让分：-12.5 / -16（"开始演减号"、"演减号 lec 传统"，17:35:18–31）、"+8 / 加号"（17:31:30–51）——观众"加减号"博彩叙事</li>
+    <li>用户仓位痕迹："我刚买完 G2 这个逼就马上一血"（17:17:07）·"唉 没相信 g2 人麻了"（17:32:15）·"赚了 700 快"（17:34:53）</li>
+    <li>兑现状态：G1 各盘口兑现与否需官方最终比分+弹幕数字复核，本页不落结论</li>
+  </ul>
+  <div class="note">以上为观众自述博彩讨论，仅作情报痕迹记录；本项目交易决策必须走 config/risk_limits.json 与执行纪律，不跟随弹幕盘口。</div>
+</div>
+
+<!-- 9 情报含义与后续观察点 -->
+<div class="card">
+  <h2><span class="no">9</span>情报含义与后续观察点</h2>
+  <div class="pill-row">
+    <span class="pill long">LONG G2（弹幕口径）</span>
+    <span class="pill short">SHORT GX（弹幕口径）</span>
+    <span class="pill mix">灰信号风险提示</span>
+  </div>
+  <table style="margin-top:10px">
+    <tr><th>LONG G2</th><td>核心 BB + Hans Sama 状态在线，前期滚雪球模式清晰（一血/6k@14min/龙魂）；"不演"时观众共识无对手。条件：G2 不演/不送。</td></tr>
+    <tr><th>SHORT GX</th><td>乌龟队画像：前期一旦被压即丧失主动性（G1 全期无有效反扑）；永恩位/打野 isma 被集火。条件：GX 前期继续被压制。</td></tr>
+    <tr><th>后续观察点</th><td>① 官方回填系列结果（G2 是否 2-0、G1 比分/MVP）；② 灰信号兑现统计（G2 大热场"演"叙事 vs 实际结果）；③ "G2 小 T1 给一把+号"规律验证；④ GX 季后赛形势（若 GX 赢则 MKOI 出局叙事，17:20–17:45 多弹幕）</td></tr>
+  </table>
+</div>
+
+<!-- 10 结果来源 -->
+<div class="card">
+  <h2><span class="no">10</span>结果来源与待核对清单</h2>
+  <table>
+    <tr><th>本地可核来源</th><td>docs/data/intel/matches.json：<b>无此场记录</b>（50 场中无 lol-gx-g2）；data/matches_today.json：lol-gx-g2-2026-08-24 closed=false；无 Polymarket 价格快照；无官方比分/校验文件</td></tr>
+    <tr><th>弹幕可核信号</th><td>G1 GG 17:51:38（硕硕单路）· G2 局 18:02:53 仍在进行 —— <b>无系列终局信号</b></td></tr>
+    <tr><th>官方核对途径</th><td>① LEC 官方比分页 / 直播流结果；② Polymarket lol-gx-g2-2026-08-24 市场结算（event slug 已登记）；③ VOD 回捞（Twitch LEC 官方 + 虎牙回放）补 G1 尾段/G2 局；④ 交叉验证后再回填本页</td></tr>
+    <tr><th>待确认项</th><td>系列比分 · G1 比分/时长 · 双方阵容（英雄归属）· MVP · 灰信号兑现 · 全部预测回填</td></tr>
+  </table>
+</div>
+
+<!-- 方向性情报 -->
+<div class="card">
+  <h2><span class="no">11</span>方向性情报（锚点 × 群体共识 × 灰信号 · 2026-08-24 固化）</h2>
+
+  <h3>正锚点（看好 → 谁赢）</h3>
+  <table>
+    <tr><th>对象</th><th>锚点内容</th><th>依据</th><th>时间</th><th>共振</th><th>验证</th></tr>
+    <tr>
+      <td>G2 · BB 核心</td><td>"G2 核心大爹 BB" + G1 表现（4v5 赢团/秀操作）</td><td>弹幕核心叙事 + 本场实战</td><td>17:31–17:39</td><td>两路（Remember+硕硕）</td><td>G1 应验（G2 胜 G1）</td>
+    </tr>
+    <tr>
+      <td>G2 · 前期滚雪球</td><td>一血 17:17 → 8min 2k → 14min 6k → 18min 7k → 24min 风龙魂</td><td>本场实际进程（弹幕口径）</td><td>17:17–17:34</td><td>中文流单主源 + twitch 延迟流呼应</td><td>G1 应验</td>
+    </tr>
+    <tr>
+      <td>G2 · Hans Sama / 下路</td><td>"没汉斯 g2 早没了"、"汉斯今天很来劲"</td><td>弹幕评价</td><td>17:22–17:33</td><td>两路</td><td>待回填</td>
+    </tr>
+  </table>
+
+  <h3>负锚点（看衰 → 谁输）</h3>
+  <table>
+    <tr><th>对象</th><th>锚点内容</th><th>依据</th><th>时间</th><th>共振</th><th>验证</th></tr>
+    <tr>
+      <td>GX · 队伍整体</td><td>"GX 好菜 / 第一乌龟队 / 人机一样"</td><td>观众评价 + G1 全线被压</td><td>17:22–17:31</td><td>两路</td><td>G1 应验（GX 输 G1）</td>
+    </tr>
+    <tr>
+      <td>G2 · Caps 洛克（G2 局 BP）</td><td>"caps played locke vs koi and got rolled"（单路）</td><td>历史对局战绩引述</td><td>18:01:48</td><td>twitch 单路</td><td>待定（G2 局未打完）</td>
+    </tr>
+  </table>
+
+  <h3>群体共识（弹幕情绪）</h3>
+  <p style="font-size:14px">
+    <b>普遍看好 G2</b>（中文流本场相关约 137 条中 G2 正向评价 20+ 条；twitch 赛前预测类 ~10 条，其中 "like 15% chance for GX to win"）·
+    <b>普遍看衰 GX</b>（"菜/乌龟/人机"密集）·
+    <b>分歧点：</b>① G2 会不会演/送（灰信号叙事，多数预期"会演"，G1 实际"良心"未演）；② 比分 2-0 vs 2-1（"G2 就是小 T1 会给一把+号" vs "G2 2-0"）·
+    <b>样本量：</b>中文流本场相关 ~137 条 + twitch GX/G2 提及 519 条（含比分机器人噪音）；少数派 GX 派 ~6 条（"相信 gx"/"gx 要赢了"/"GX 2-0 G2"/"2~1 GIANTX" 玩梗）。
+  </p>
+
+  <h3>灰信号条件预测</h3>
+  <p style="font-size:14px">
+    若 G2「演/吃/做局」质疑兑现 → <b>指向 GX 爆冷赢</b>（弱侧被做局叙事拉高）。截至采集中断：G1 未见明显放水（"居然良心了这 g2"）→ 灰信号暂未兑现；系列终局未知，兑现统计待官方结果回填。
+    <span class="muted">纪律：单场表述均为条件式，不作假赛结论。</span>
+  </p>
+</div>
+
+<!-- 弹幕密度峰值 -->
+<div class="card">
+  <h2><span class="no">12</span>弹幕密度峰值</h2>
+  <h3>切片全局峰值（含并发场 NAVI-FNC 收尾）</h3>
+  <div class="peaks">
+    <span class="peak">17:45 · 921 条/分（NAVI-FNC 收尾/观众情绪为主）</span>
+    <span class="peak">17:46 · 706 条/分</span>
+    <span class="peak">16:49 · 614 条/分</span>
+  </div>
+  <h3>GX / G2 专属提及峰值（切片口径，条/分）</h3>
+  <div class="peaks">
+    <span class="peak">17:05 · 21 条（G2 登场预热）</span>
+    <span class="peak">17:53 · 19 条（G1 GG/局间 + twitch 延迟流切场）</span>
+    <span class="peak">17:37 · 17 条（Caps 送头/4v5 段）</span>
+    <span class="peak">17:26 · 15 条</span>
+    <span class="peak">17:32 · 14 条</span>
+  </div>
+  <h3>中文流本场专属</h3>
+  <p class="muted">G1 BP→GG 段（17:12–17:51）相关 ~100 条；G2 局 BP 段（17:53–18:02）相关 ~25 条。全局峰值归属并发场（NAVI-FNC），非本场主体，勿误读。</p>
+</div>
+
+<!-- 可验证情报痕迹 -->
+<div class="card">
+  <h2><span class="no">13</span>可验证情报痕迹（时间线 · 赛后回填用）</h2>
+  <table>
+    <tr><th>时间(UTC)</th><th>痕迹</th><th>来源</th><th>验证状态</th></tr>
+    <tr><td>17:16:49</td><td>G1 BP：GX 永恩（"gx 要赢了 gx 是永恩"）</td><td>硕硕</td><td>待官方阵容回填</td></tr>
+    <tr><td>17:17:07</td><td>G2 一血（"刚买完 G2 就马上一血"）</td><td>硕硕</td><td>待官方核对</td></tr>
+    <tr><td>17:21:58</td><td>"永恩打不了阿卡丽"（对位 counter 论）</td><td>硕硕</td><td>G1 初步应验（永恩被压 40 刀）</td></tr>
+    <tr><td>17:28:43</td><td>G2 14 分钟领先 6k</td><td>硕硕</td><td>待官方核对</td></tr>
+    <tr><td>17:34:48</td><td>G2 24 分钟风龙魂</td><td>硕硕</td><td>待官方核对</td></tr>
+    <tr><td>17:35–17:39</td><td>Caps 阿卡丽 4 死送头、G2 4v5 仍赢团</td><td>硕硕/Remember</td><td>G1 实际进程（待官方回填）</td></tr>
+    <tr><td>17:51:38</td><td>G1 "GG"（单路信号）→ G2 胜推断</td><td>硕硕</td><td>待官方确认</td></tr>
+    <tr><td>17:52:59–18:02</td><td>G2 局 BP：Caps 洛克 / 波比 / GX 发条(疑) / 0 控质疑</td><td>硕硕+twitch 延迟流</td><td>待官方阵容回填</td></tr>
+    <tr><td>18:01:48</td><td>"caps played locke vs koi and got rolled"（BP 后战绩负锚，单路）</td><td>twitch</td><td>待定（G2 局未打完）</td></tr>
+    <tr><td>18:02:53</td><td>全部数据源停止（采集进程终止）</td><td>—</td><td>缺口记录</td></tr>
+  </table>
+</div>
+
+<!-- 数据与溯源 -->
+<div class="card">
+  <h2><span class="no">14</span>数据与溯源</h2>
+  <table>
+    <tr><th>规则层</th><td>runtime/vps_intel/lol-gx-g2-2026-08-24_intel.json（21,280 条 · 活跃 5,554 · 窗口 16:45–18:01 UTC · density 276.7/分）</td></tr>
+    <tr><th>切片</th><td>data/intel_slices/lol-gx-g2-2026-08-24.jsonl（21,280 条，仅 twitch/kick 6 路）</td></tr>
+    <tr><th>中文流原始</th><td>docs/data/danmu/huya/2026-08-24_huya_remember.jsonl · 2026-08-24_huya_shuoshuo.jsonl（未入切片，人工并入）</td></tr>
+    <tr><th>会话</th><td>runtime/danmu_sessions/vps_2026-08-24/session.json（state=running，heartbeat 止于 18:02:07，采集进程随后无存活）</td></tr>
+    <tr><th>待确认项</th><td>系列比分 · G1 比分/时长 · 双方阵容 · MVP · 灰信号兑现 · 盘口兑现 · 全部预测回填</td></tr>
+  </table>
+</div>
+
+<!-- 长期沉淀点 -->
+<div class="card">
+  <h2><span class="no">15</span>本场长期沉淀点（供情报库沉淀）</h2>
+  <div class="long">
+    <div class="t">1. G2 大热场「演/吃/做局」灰信号基线（可跨场复用）</div>
+    本场与上周 "FNC 2-0 G2" 均触发同一叙事：观众默认 G2 大热场会演/送（"G2 包吃的在联赛"、"g2 阵容越好他越爱演"）。已形成 G2 专属灰信号画像，可入 gray_entities；后续统计"G2 被质疑场次 vs 实际结果兑现率"（本次 G1 未兑现，系列待回填）。
+  </div>
+  <div class="long">
+    <div class="t">2. 「G2 小 T1 会给一把+号」打满规律（待验证候选）</div>
+    观众长期规律性表述（"不管怎么样都会给一把+号的"），若本系列最终 2-1 兑现则 +1 样本；可入 leagues/lec 规律库，用历史 G2 系列比分验证。
+  </div>
+  <div class="long">
+    <div class="t">3. GX「乌龟队」画像：前期失主动即无翻盘能力（可跨场复用）</div>
+    G1 全期被压 6k–7k、永恩位无作为、打野 isma 被集火——GX 弱侧场次可复用该画像（与 08-23 GX 2-0 TH 的强势画像形成对照，需按对手强度分层）。
+  </div>
+</div>
+
+<footer>
+  弹幕情报整场复盘 · GIANTX vs G2 Esports · 2026-08-24（UTC）· 全部结论为弹幕口径，待官方核对<br>
+  生成时间：2026-08-24 18:04 UTC · 采集止于 18:02:53 UTC（采集中断，系列终局未覆盖）
+</footer>
+</div>
+</body>
+</html>
