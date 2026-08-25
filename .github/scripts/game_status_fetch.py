@@ -47,6 +47,46 @@ def tracked(t: str) -> bool:
     return False
 
 
+def detect_format(title: str, markets: list[dict]) -> tuple[int, dict, bool]:
+    """赛制识别 + Polymarket 内部多信号交叉校验（全部免费、无外部依赖）。
+
+    三个信号（均为预测市场字段）：
+      1. ou      Games Total O/U 市场最大值：0.5->BO1、2.5->BO3、4.5->BO5
+                 （机器生成，最稳，作冲突时优先信号）
+      2. title   标题 (BO\\d+) 标注（平台人工填写）
+      3. games   小局 Winner 市场最大局数：仅取可区分值 G4->BO5、G2->BO3、G1->BO1
+    结论：多数一致；不一致时以 O/U 为准并标记冲突，页面/流水线可据此显式标注。
+    """
+    ou_max = None
+    max_g = 0
+    for mk in markets:
+        q = mk.get("question", "") or ""
+        mm = re.search(r"Games Total: O/U ([\d.]+)", q)
+        if mm:
+            v = float(mm.group(1))
+            ou_max = v if ou_max is None or v > ou_max else ou_max
+        mm = re.search(r"(?:Game|Map)\s*(\d+)\s*Winner", q, re.I)
+        if mm:
+            max_g = max(max_g, int(mm.group(1)))
+    fmt_ou = {0.5: 1, 1.5: 3, 2.5: 3, 3.5: 5, 4.5: 5}.get(ou_max)
+    mm = re.search(r"BO\s*(\d+)", title or "", re.I)
+    fmt_title = int(mm.group(1)) if mm else None
+    fmt_games = {4: 5, 2: 3, 1: 1}.get(max_g)
+    sources = {"ou": fmt_ou, "title": fmt_title, "games": fmt_games}
+    cands = [v for v in (fmt_ou, fmt_title, fmt_games) if v and 1 <= v <= 5]
+    if not cands:
+        fmt, conflict = 5, True
+    else:
+        cnt: dict[int, int] = {}
+        for v in cands:
+            cnt[v] = cnt.get(v, 0) + 1
+        fmt, n = max(cnt.items(), key=lambda kv: (kv[1], -abs(kv[0] - 5)))
+        conflict = n < len(cands)
+        if conflict and fmt_ou:
+            fmt = fmt_ou
+    return fmt, sources, conflict
+
+
 def main() -> None:
     today = datetime.date.today().isoformat()
     horizon = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
@@ -91,6 +131,10 @@ def main() -> None:
                 if gst:
                     game_start = gst
                     break
+            # 赛制识别 + 内部交叉校验（2026-08-25 固化）：
+            # O/U 市场 / 标题 BO 标注 / 小局市场数量 三信号一致才定论；
+            # 冲突时以 O/U 为准并标记 conflict，页面显式提示"赛制待确认"。
+            fmt, fmt_sources, fmt_conflict = detect_format(meta["title"], evs[0].get("markets", []))
             gs: dict[int, dict] = {}
             winner = None
             for mk in evs[0].get("markets", []):
@@ -144,6 +188,9 @@ def main() -> None:
                     "start_time": start_dt.isoformat() if start_dt else game_start,
                     "end_time": end_dt.isoformat() if end_dt else "",
                     "closed": False,
+                    "format": fmt,
+                    "format_sources": fmt_sources,
+                    "format_conflict": fmt_conflict,
                 })
                 watch_events.append({
                     "title": meta["title"], "slug": slug,
