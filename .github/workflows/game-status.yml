@@ -1,0 +1,38 @@
+name: game-status
+
+# 云端小局状态 + 结算推送（2026-08-25 起，本机可完全关机）：
+# 每 5 分钟在 GitHub 美国节点抓 Polymarket 小局/系列状态，写入 intel/ 两个 JSON，
+# 提交到 data 分支；云服务器每次发布时拉取合并（无需任何 Secret）。
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch game status
+        run: python3 .github/scripts/game_status_fetch.py
+      - name: Commit and push
+        run: |
+          git config user.name "danmu-intel-bot"
+          git config user.email "bot@danmupulse.com"
+          git add intel/game_status.json intel/settlements.json
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "game status $(date -u +%Y-%m-%d-%H:%M)"
+            git push origin data
+          fi
