@@ -31,22 +31,6 @@ def norm_teams(title: str) -> list[str]:
     return [m.group(1).strip(), m.group(2).strip()] if m else []
 
 
-def tracked(t: str) -> bool:
-    """项目白名单联赛过滤（与 config/market_watchlist.json 口径一致）。"""
-    if "LoL" in t or "League of Legends" in t:
-        return any(
-            k in t for k in (
-                " LCK ", "LCK Challengers", " LPL ", " LCP ", " LEC ",
-                "KeSPA Cup", "Kespa Cup", "K杯",
-            )
-        )
-    if "Counter-Strike" in t:
-        return any(k in t for k in ("IEM", "BLAST", "Esports World Cup", "EWC"))
-    if "Dota" in t:
-        return any(k in t for k in ("The International", "ESL One"))
-    return False
-
-
 def main() -> None:
     today = datetime.date.today().isoformat()
     horizon = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
@@ -64,7 +48,7 @@ def main() -> None:
             break
         for e in evs:
             t = e.get("title") or ""
-            if not tracked(t):
+            if not any(k in t for k in ("LoL", "League of Legends", "Counter-Strike", "Dota")):
                 continue
             slug = e.get("slug") or ""
             # 用 slug 末尾的比赛日期，禁止用事件层 startDate（挂牌时间≠开赛时间，AGENTS 防错 2）
@@ -78,19 +62,11 @@ def main() -> None:
 
     games: dict[str, dict] = {}
     settlements: dict[str, dict] = {}
-    today_matches: list[dict] = []
-    watch_events: list[dict] = []
     for slug, meta in candidates.items():
         try:
             evs = get(f"https://gamma-api.polymarket.com/events?slug={slug}")
             if not evs:
                 continue
-            game_start = None
-            for mk in evs[0].get("markets", []):
-                gst = mk.get("gameStartTime") or mk.get("startDate") or mk.get("start_date")
-                if gst:
-                    game_start = gst
-                    break
             gs: dict[int, dict] = {}
             winner = None
             for mk in evs[0].get("markets", []):
@@ -132,25 +108,6 @@ def main() -> None:
                     "date": meta["date"],
                     "title": meta["title"],
                 }
-            if meta["date"] in (today, (datetime.date.today() + datetime.timedelta(days=1)).isoformat()):
-                try:
-                    start_dt = datetime.datetime.fromisoformat(str(game_start).replace("Z", "+00:00"))
-                    end_dt = start_dt + datetime.timedelta(hours=6)
-                except (ValueError, TypeError):
-                    start_dt, end_dt = None, None
-                league = "LoL" if "LoL" in meta["title"] else ("CS2" if "Counter-Strike" in meta["title"] else "Dota2")
-                today_matches.append({
-                    "id": slug, "league": league, "teams": meta["teams"],
-                    "start_time": start_dt.isoformat() if start_dt else game_start,
-                    "end_time": end_dt.isoformat() if end_dt else "",
-                    "closed": False,
-                })
-                watch_events.append({
-                    "title": meta["title"], "slug": slug,
-                    "start_time": start_dt.isoformat() if start_dt else game_start,
-                    "end_time": end_dt.isoformat() if end_dt else "",
-                    "time_status": "upcoming_within_window",
-                })
         except Exception:  # noqa: BLE001
             continue
         time.sleep(0.3)
@@ -164,19 +121,7 @@ def main() -> None:
         json.dumps({"generated_at": now, "settlements": settlements}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    (ROOT / "data").mkdir(parents=True, exist_ok=True)
-    (ROOT / "data" / "matches_today.json").write_text(
-        json.dumps({"date": today, "matches": today_matches}, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    (ROOT / "data" / "watchlist_events.json").write_text(
-        json.dumps({
-            "generated_at": now,
-            "events": watch_events,
-        }, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    print(f"games={len(games)} settlements={len(settlements)} today_matches={len(today_matches)}", flush=True)
+    print(f"games={len(games)} settlements={len(settlements)}", flush=True)
 
 
 if __name__ == "__main__":
