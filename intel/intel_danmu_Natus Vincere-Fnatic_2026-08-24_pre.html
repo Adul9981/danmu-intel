@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹幕情报赛前页 · Natus Vincere vs Fnatic · 2026-08-24</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --ink:#1d1d1f;
+    --ink-2:#6e6e73;
+    --ink-3:#86868b;
+    --line:#e8e8ed;
+    --accent:#0a66c2;
+    --accent-soft:#e7f1fb;
+    --warn:#b45309;
+    --warn-soft:#fef3e2;
+    --danger:#c2410c;
+    --danger-soft:#fdeee3;
+    --ok:#1a7f37;
+    --ok-soft:#e6f4ea;
+    --radius:16px;
+    --shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.65;
+    padding:20px 16px 56px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px 20px;
+    margin-bottom:16px;
+  }
+  h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+  h2{font-size:17px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  h2 .no{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:24px;height:24px;padding:0 6px;border-radius:8px;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:13px;font-weight:700;
+  }
+  h3{font-size:15px;font-weight:700;margin:14px 0 8px}
+  p{font-size:14px;color:var(--ink)}
+  .muted{color:var(--ink-2);font-size:13px}
+  .tiny{color:var(--ink-3);font-size:12px}
+  .badge{
+    display:inline-block;padding:3px 10px;border-radius:999px;
+    font-size:12px;font-weight:600;white-space:nowrap;
+  }
+  .b-live{background:var(--ok-soft);color:var(--ok)}
+  .b-pend{background:var(--warn-soft);color:var(--warn)}
+  .b-gray{background:var(--danger-soft);color:var(--danger)}
+  .b-meta{background:var(--accent-soft);color:var(--accent)}
+  .b-plain{background:#f0f0f2;color:var(--ink-2)}
+  .head-meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .sub{color:var(--ink-2);font-size:14px;margin-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--ink-2);font-weight:600;white-space:nowrap;font-size:12px}
+  tr:last-child td{border-bottom:none}
+  .num{font-variant-numeric:tabular-nums;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+  .stat{background:#fafafc;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .stat .v{font-size:18px;font-weight:700}
+  .stat .k{font-size:12px;color:var(--ink-2);margin-top:2px}
+  .peaks{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .peak{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:600}
+  .gray-box{
+    background:var(--danger-soft);border:1px solid #f3cdb5;border-radius:12px;
+    padding:14px 14px 10px;margin-top:10px;
+  }
+  .gray-box .t{color:var(--danger);font-weight:700;font-size:14px;margin-bottom:6px}
+  .warn-box{
+    background:var(--warn-soft);border:1px solid #f0d9a8;border-radius:12px;
+    padding:14px 14px 10px;margin-top:10px;
+  }
+  .warn-box .t{color:var(--warn);font-weight:700;font-size:14px;margin-bottom:6px}
+  .tag{font-size:12px;color:var(--ink-2);background:#f0f0f2;border-radius:6px;padding:2px 7px;display:inline-block;margin:2px 4px 2px 0}
+  .quote{
+    background:#fafafc;border-left:3px solid var(--accent);border-radius:8px;
+    padding:8px 12px;margin:8px 0;font-size:13px;color:var(--ink);
+  }
+  .quote .src{display:block;color:var(--ink-3);font-size:12px;margin-top:4px}
+  .divider{height:1px;background:var(--line);margin:16px 0}
+  .note{font-size:13px;color:var(--ink-2);background:#fafafc;border-radius:10px;padding:10px 12px;margin-top:10px}
+  .long{
+    background:var(--ok-soft);border:1px solid #bfe3c8;border-radius:12px;
+    padding:12px 14px;margin-top:10px;font-size:13px;
+  }
+  .long .t{color:var(--ok);font-weight:700}
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .pill{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px}
+  .pill.long{background:var(--ok-soft);color:var(--ok)}
+  .pill.short{background:var(--danger-soft);color:var(--danger)}
+  .integrity{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+  .integrity .col{background:#fafafc;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .integrity .col h4{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--ink)}
+  .integrity .col ul{margin-left:16px;font-size:13px;color:var(--ink-2)}
+  .integrity .col li{margin:3px 0}
+  footer{color:var(--ink-3);font-size:12px;text-align:center;margin-top:20px}
+  @media (max-width:560px){
+    h1{font-size:19px}
+    .card{padding:18px 15px}
+    th,td{padding:6px 8px}
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <b style="color:#1d1d1f">历史情报库</b> › <b style="color:#1d1d1f">Natus Vincere-Fnatic 2026-08-24 pre</b></div>
+<div class="wrap">
+
+<!-- 0 头部 -->
+<div class="card">
+  <h1>弹幕情报赛前页 · Natus Vincere（NAVI） vs Fnatic（FNC）</h1>
+  <div class="head-meta">
+    <span class="badge b-meta">赛前 · 未开赛</span>
+    <span class="badge b-plain">节点 S0 ｜ 赛前 ｜ PRE-MATCH</span>
+    <span class="badge b-pend">弹幕口径 · 待官方确认</span>
+  </div>
+  <p class="sub">LEC（League of Legends 欧洲冠军联赛）· 2026-08-24 · 事件 slug：<span class="muted">lol-navi-fnc-2026-08-24</span>（联盟代码 lec）。本页聚焦赛前共识 / 队伍状态 / 历史对阵 / 盘口讨论 / 预期，<b>不含比分类结论</b>；全部内容为弹幕口径。</p>
+  <div class="divider"></div>
+  <table>
+    <tr><th>对阵</th><td><b>Natus Vincere（NAVI）</b> vs <b>Fnatic（FNC）</b> · 系列赛（弹幕口径 BO3）</td></tr>
+    <tr><th>节点 / 进度</th><td>S0 ｜ 赛前 ｜ PRE-MATCH（用户给定口径：尚未开赛）</td></tr>
+    <tr><th>本页数据窗口</th><td>2026-08-24 14:49 – 15:10 UTC（赛前预热 + S0 选人阶段）</td></tr>
+    <tr><th>本场相关弹幕</th><td>297 条（4 路 LoL Twitch 流合计；全量 LoL 流同窗口 5,754 条）</td></tr>
+    <tr><th>来源分布</th><td>twitch_caedrel 231 条 · twitch_otplol 45 条 · twitch_lec 20 条 · twitch_kameto 1 条</td></tr>
+    <tr><th>灰信号</th><td>0 条（今日无灰信号）</td></tr>
+  </table>
+  <div class="warn-box">
+    <div class="t">⚠ 数据时点核查（重要）</div>
+    <p style="font-size:13px">本场切片 <span class="muted">data/intel_slices/lol-navi-fnc-2026-08-24_pre.jsonl</span> 实际延伸至次日 00:11，且后段已出现<b>多源比分锚点</b>：15:57「FNC 0-1 NAVI」、16:51 起「FNC 0-2 NAVI」（twitch_caedrel 比分机器人 / twitch_lec / twitch_otplol / twitch_kameto），与「未开赛」前提<b>冲突</b>。本页严格限定在 14:49–15:10 赛前窗口，不产出、不复述任何比分类结论；请先核对官方赛程与切片边界，再决定本节点口径与赛后回填。</p>
+  </div>
+</div>
+
+<!-- 1 结果总览 -->
+<div class="card">
+  <h2><span class="no">1</span>结果总览（弹幕口径 · 待官方确认）</h2>
+  <div class="grid">
+    <div class="stat"><div class="v">S0 · 赛前</div><div class="k">当前进度（未开赛口径）</div></div>
+    <div class="stat"><div class="v">无</div><div class="k">比分结论（本页不产出）</div></div>
+    <div class="stat"><div class="v">297 条</div><div class="k">赛前本场相关弹幕</div></div>
+    <div class="stat"><div class="v">21 分钟</div><div class="k">赛前分析窗口</div></div>
+  </div>
+  <p style="margin-top:12px"><b>当前阶段定位：</b>赛前预热 + S0 选人（pick/ban）。弹幕主线不是阵容强度拆解，而是<b>出线悬念</b>——FNC 若 2:0 几乎锁定前四 / 季后赛；NAVI 获胜则直接决定 KOI（MKOI）出局与否；两队状态与历史叙事交织（FNC「回暖 vs 冠军荒」、NAVI「绝活打野 vs 已到顶」）。</p>
+  <p style="margin-top:8px"><b>赛前方向快照（预测口径，非结果）：</b>看好 NAVI ≈ 23 条 ｜ 看好 FNC ≈ 20 条 ｜ 看衰 FNC ≈ 21 条 ｜ 看衰 NAVI ≈ 7 条 ｜ 中性 / 玩梗 ≈ 226 条。方向不分伯仲，FNC 负面情绪浓度更高。</p>
+  <div class="note">本页所有「胜负 / 比分 / 2-0」表述均为赛前预测或出线条件叙事，均需赛后以官方结果回填验证；无样本处写「样本不足」，不硬造。</div>
+</div>
+
+<!-- 2 逐局预期 -->
+<div class="card">
+  <h2><span class="no">2</span>逐局预期（弹幕口径预测，非比分）</h2>
+  <table>
+    <tr><th>局次</th><th>弹幕预期</th><th>时间 (UTC)</th><th>来源</th><th>状态</th></tr>
+    <tr>
+      <td>G1</td>
+      <td>「1-0 fnc」（15:03）vs「1-0 navi」（15:03）——首局预测分歧</td>
+      <td>15:03</td>
+      <td>twitch_lec / twitch_caedrel</td>
+      <td>待观察</td>
+    </tr>
+    <tr>
+      <td>G2</td>
+      <td>「FNC 2-0 is my guess」「FNC going 2-0 this series」（15:03）vs「o7 NAVI 2-0」「NAVI sweep」（14:54–14:56）</td>
+      <td>14:54–15:03</td>
+      <td>twitch_lec / twitch_caedrel</td>
+      <td>待观察</td>
+    </tr>
+    <tr>
+      <td>G3</td>
+      <td>「Both teams have been struggling, giving slight edge to Fnatic 2-1」（14:59）——唯一 2:1 型预测</td>
+      <td>14:59</td>
+      <td>twitch_lec</td>
+      <td>待观察</td>
+    </tr>
+  </table>
+  <div class="note">赛前节点无局内时间线；未发生内容一律「待观察 / 样本不足」。系列形态参考（长期库）：LEC 打满率 49.2%（G1/G2 赢家方向相反 ⟺ 打满，历史 65/65 全对）——仅供后续验证，本页不下结论。</div>
+</div>
+
+<!-- 3 队伍画像 -->
+<div class="card">
+  <h2><span class="no">3</span>队伍画像（赛前弹幕口径 + 长期库）</h2>
+  <h3>Fnatic（FNC）——「回暖叙事」与「冠军荒 / 会翻车」负叙事并存</h3>
+  <table>
+    <tr><th>维度</th><th>赛前弹幕画像</th></tr>
+    <tr><td>状态叙事</td><td>「fnc is in good form, navi are the gatekeepers」（15:10，caedrel）；「FNC might be back」（15:02）；「fnc were playing well but they do have 3 difficult teams too」（14:50）——赛前普遍认为 FNC 近期状态在线，本场是「守门员战」。</td></tr>
+    <tr><td>核心 / 对位</td><td>Upset（ADC）对位被看好：「Upset will gap SamD」（14:54）；Vladi（中单）赛前采访热议（14:59 采访段 +「VLADI 5000 LP」）；「vladi cosplaying zeka is good for fnc YEP」（15:10）。</td></tr>
+    <tr><td>问题 / 负锚</td><td>历史冠军荒叙事密集：「fnc never won lec.. only eulcs」「FNC didnt win post caps」「last time FNC won was with Rekkles」「IS FNATIC THE DK OF EU ?」；被预期会翻车：「Attendez le throw fnc」（14:55，otplol）、「how did u know that fnatic will dominate early game but giga throw at the end?」（15:04）；BP 受质疑：「La draft Fnatic est nulle non ?」（15:06）、「FNC 🤝 C9 not making worlds」（15:10）。</td></tr>
+    <tr><td>盘面倾向</td><td>出线含义绑定：FNC 2:0 → 近锁前四 / 季后赛（twitch_lec 15:10，多用户复述）——观众把本场视为 FNC 的「出线生死窗口」。</td></tr>
+    <tr><td>信任等级</td><td>中低（本场样本 235 条提及；看衰侧 21 条 &gt; 看好侧 20 条，情绪偏负面；历史负锚叙事占主导）</td></tr>
+  </table>
+  <h3>Natus Vincere（NAVI）——「绝活打野」正锚 vs「已到顶 / 无中下」负锚</h3>
+  <table>
+    <tr><th>维度</th><th>赛前弹幕画像</th></tr>
+    <tr><td>状态叙事</td><td>「Should be Navi win」（15:10，lec）；「hope this time Navi woke up. they really have to」（15:05，lec）——观众认为 NAVI 有实力但近期「需要醒来」；NAVI 被定性为「top 7 守门员」（caedrel 15:10）。</td></tr>
+    <tr><td>核心 / 对位</td><td>Rhilech（打野）绝活锚点：「it's a NAVI win rhilech is on his one-trick」（15:05，lec）＋「Rhilech counter Razork」（14:55，caedrel）；Soboro（上单）被吹：「SOBORO IS THE BEST TOP IN THE LEC AND IM TIRED OF PRETENDING HES NOT」（15:02）；Poby（中单）人气梗：「LORD POBY」「POBY MYGOAT」（15:03–15:10）。</td></tr>
+    <tr><td>问题 / 负锚</td><td>教练「已到顶」言论被引用：「Don't forget Navi Coach said they peaked and can't get any better」（15:03，lec）；结构质疑：「navi n'as pas de mid, ni de bot」（14:58）、「Navi ont 0 front surtout」（15:08，otplol）；throw 倾向：「Mais Navi ont une tendance à throw massivement aussi」（14:57）；观赏性差：「NAVI c'est ni fun ni impressionnant」（14:58）。</td></tr>
+    <tr><td>盘面倾向</td><td>出线含义绑定：NAVI 胜 → KOI / MKOI 出局（「Of navi wins koi out of playoffs」14:55；「Il faut supporter NAVI si on veut esperer que KOI soit OUT du TOP 6」15:06）；另有明年重建叙事（otplol 14:53：「reconstruction du projet Navi l'an prochain」）。</td></tr>
+    <tr><td>信任等级</td><td>中（本场样本 69 条提及；正锚集中在 Rhilech / Soboro，负锚集中在结构 / 上限；长期库 08-17 TH-Navi 曾出现「被看衰但实际领先」信息差先例）</td></tr>
+  </table>
+  <div class="note">长期库引用（docs/data/intel/leagues.json · lec）：TH vs Navi（2026-08-17）曾出现「观众嘴上看衰但比分领先」的信息差信号——NAVI 有「弹幕低估」先例；LEC 灰信号风险评级「中-高」，但本场赛前窗口无灰信号样本。</div>
+</div>
+
+<!-- 4 人员画像 -->
+<div class="card">
+  <h2><span class="no">4</span>人员画像（带提及量）</h2>
+  <table>
+    <tr><th>选手（弹幕口径归属）</th><th>赛前窗口提及量</th><th>评价 / 锚点</th></tr>
+    <tr><td>Vladi（FNC 中单）</td><td class="num">52</td><td>「VLADI 5000 LP」「Is Vladi gonna 5k lp all over navi?」（14:59–15:00）；赛前采访段刷屏；「vladi cosplaying zeka is good for fnc YEP」（15:10）——正锚候选（单源 caedrel 多用户）。</td></tr>
+    <tr><td>Locke（FNC 选角，选手 / 英雄待确认）</td><td class="num">37</td><td>BP 锁定瞬间刷屏「HOLY LOCKE」；「this locke pick is either going to be what wins this game or completely loses it for Fnatic」（15:06，lec）——BP 焦点 / 胜负手锚点，指向待核实。</td></tr>
+    <tr><td>Poby（NAVI 中单）</td><td class="num">15</td><td>「LORD POBY」「POBY MYGOAT」「MY GOST POBY」（15:00–15:10）——人气正锚；「POBY FELL OFF」质疑并存（14:51）。</td></tr>
+    <tr><td>Upset（FNC ADC）</td><td class="num">14</td><td>「Upset will gap SamD」（14:54）——下路对位预测正锚（单源 caedrel）。</td></tr>
+    <tr><td>SamD（NAVI ADC）</td><td class="num">5</td><td>对位被看衰侧（Upset gap 叙事）；赛前无独立正评价（样本不足）。</td></tr>
+    <tr><td>Rhilech（NAVI 打野）</td><td class="num">5</td><td>「it's a NAVI win rhilech is on his one-trick」（15:05，lec）；「Rhilech counter Razork」（14:55，caedrel）——熟练度 / 对位双正锚。</td></tr>
+    <tr><td>Soboro（NAVI 上单）</td><td class="num">5</td><td>「SOBORO IS THE BEST TOP IN THE LEC」（15:02）；「Is Soboro The best rookie this split?」（15:14，紧邻窗口边界）——新秀 / 上单正锚。</td></tr>
+    <tr><td>Razork（FNC 打野）</td><td class="num">3</td><td>对位受质疑（「Rhilech counter Razork」）；赛前无独立评价（样本不足）。</td></tr>
+    <tr><td>Canna（KC 上单，<b>非本场</b>）</td><td class="num">3</td><td>「Canna is playing nasus in soloQ」（15:07）——跨场噪声（KC 选手），不纳入本场画像。</td></tr>
+  </table>
+  <div class="note">提及量为赛前窗口（14:49–15:10）LoL 流内关键词计数；选手归属为弹幕口径（本页未做官方 roster 核对），Locke / 阵容归属列为待确认项。</div>
+</div>
+
+<!-- 5 灰信号 -->
+<div class="card">
+  <h2><span class="no">5</span>灰信号汇总</h2>
+  <div class="gray-box">
+    <div class="t">今日无灰信号</div>
+    <p style="font-size:13px">赛前窗口（14:49–15:10）与整场切片（pre_intel.json <span class="muted">gray_signals.count = 0</span>）均未检出假赛 / 剧本 / 卡盘类质疑。</p>
+  </div>
+  <p style="margin-top:10px;font-size:13px"><b>纪律声明：</b>灰信号只作聚合风险标注与盘口对照素材，<b>不作假赛结论</b>；本场暂无。赛前窗口出现的「throw」（「Attendez le throw fnc」14:55 /「Navi ont une tendance à throw」14:57）属<b>风格预期与负面叙事玩梗</b>，无假赛 / 剧本指向，不计入灰信号。</p>
+</div>
+
+<!-- 6 联赛规律与历史对阵 -->
+<div class="card">
+  <h2><span class="no">6</span>联赛规律与历史对阵（弹幕口径 + 长期库）</h2>
+  <table>
+    <tr><th>类别</th><th>内容</th><th>来源</th></tr>
+    <tr><td>系列形态规律</td><td>LEC 打满率 49.2%（G1/G2 赢家方向相反 ⟺ 打满，历史 65/65 全对）——本场系列形态的样本外参考，赛前不下结论</td><td>docs/data/intel/leagues.json（长期库）</td></tr>
+    <tr><td>历史对阵 / 画像</td><td>TH vs Navi（2026-08-17）：「观众嘴上看衰但比分领先」信息差信号——NAVI 有「被弹幕低估」先例</td><td>docs/data/intel/leagues.json（长期库）</td></tr>
+    <tr><td>FNC 近期战绩叙事</td><td>「seul KC n'a pas perdu de nexus face à FNC」（14:55，otplol）——近期 FNC 对多数队伍已推掉过基地（弹幕口径，待官方核）</td><td>twitch_otplol</td></tr>
+    <tr><td>FNC 历史冠军叙事</td><td>「fnc never won lec.. only eulcs」「last time FNC won was with Rekkles」「When Fnatic last won a title Canyon wasnt a pro player yet」——历史画像负锚（14:54–14:57）</td><td>twitch_caedrel</td></tr>
+    <tr><td>版本 / 风格</td><td>赛前窗口无本场特定版本弹幕（英雄 / 换线 / 资源节奏）——样本不足</td><td>—</td></tr>
+  </table>
+</div>
+
+<!-- 7 方向性情报 -->
+<div class="card">
+  <h2><span class="no">7</span>方向性情报（锚点 × 群体共识 × 灰信号）</h2>
+
+  <h3>7.1 正锚点（看好 → 谁赢）</h3>
+  <table>
+    <tr><th>对象</th><th>锚点内容</th><th>依据</th><th>时间 (UTC)</th><th>共振</th><th>赛后验证</th></tr>
+    <tr>
+      <td>NAVI · Rhilech（打野）</td>
+      <td>「it's a NAVI win rhilech is on his one-trick」</td>
+      <td>选手熟练度（绝活）</td>
+      <td>15:05:49</td>
+      <td>单源（twitch_lec）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>NAVI · Soboro（上单）</td>
+      <td>「SOBORO IS THE BEST TOP IN THE LEC」</td>
+      <td>新秀 / 状态吹捧</td>
+      <td>15:02</td>
+      <td>单源（twitch_caedrel）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>NAVI · Rhilech 对位</td>
+      <td>「Rhilech counter Razork」</td>
+      <td>打野对位克制判断</td>
+      <td>14:55</td>
+      <td>单源（twitch_caedrel）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>FNC · Vladi（中单）</td>
+      <td>「VLADI 5000 LP」「vladi cosplaying zeka is good for fnc YEP」</td>
+      <td>赛前采访 + 高分 / 风格评价</td>
+      <td>14:59–15:10</td>
+      <td>单源（twitch_caedrel 多用户）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>FNC · Upset（ADC）</td>
+      <td>「Upset will gap SamD」</td>
+      <td>下路对位预测</td>
+      <td>14:54</td>
+      <td>单源（twitch_caedrel）</td>
+      <td>待定</td>
+    </tr>
+  </table>
+  <div class="note">备注：本切片后段（局中）另出现「Rhilech zaahen / aatrox / qiyana 15-3（21-33 without），please just ban them」战绩弹幕（twitch_lec 16:08，单源）——与赛前绝活锚点呼应，属局中补充，未纳入本页赛前统计，赛后回填核验。</div>
+
+  <h3>7.2 负锚点（看衰 → 谁输）</h3>
+  <table>
+    <tr><th>对象</th><th>锚点内容</th><th>依据</th><th>时间 (UTC)</th><th>共振</th><th>赛后验证</th></tr>
+    <tr>
+      <td>FNC · 关键战心理</td>
+      <td>「fnc never won lec」「FNC didnt win post caps」「last time FNC won was with Rekkles」</td>
+      <td>历史冠军荒画像</td>
+      <td>14:54–14:57</td>
+      <td>twitch_caedrel 多用户（单路）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>FNC · 终结能力</td>
+      <td>「Attendez le throw fnc」「chokbar de FNC」「giga throw at the end?」</td>
+      <td>「领先会翻」叙事</td>
+      <td>14:55–15:04</td>
+      <td>双路（otplol + caedrel）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>FNC · BP / 选角</td>
+      <td>「La draft Fnatic est nulle non ?」「locke pick…completely loses it for Fnatic」</td>
+      <td>选角风险质疑</td>
+      <td>15:06</td>
+      <td>双路（otplol + lec）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>NAVI · 上限</td>
+      <td>「Navi Coach said they peaked and can't get any better」</td>
+      <td>教练言论（真实性待核实）</td>
+      <td>15:03</td>
+      <td>单源（twitch_lec）</td>
+      <td>待定</td>
+    </tr>
+    <tr>
+      <td>NAVI · 阵容结构</td>
+      <td>「navi n'as pas de mid, ni de bot」「Navi ont 0 front surtout」</td>
+      <td>中下 / 前排结构质疑</td>
+      <td>14:58–15:08</td>
+      <td>twitch_otplol 单路（2 条）</td>
+      <td>待定</td>
+    </tr>
+  </table>
+
+  <h3>7.3 群体共识（弹幕情绪）</h3>
+  <table>
+    <tr><th>维度</th><th>结论</th></tr>
+    <tr><td>样本量</td><td>297 条（赛前窗口本场相关）；方向可量化子集 71 条，中性 / 玩梗 226 条</td></tr>
+    <tr><td>看好分布</td><td>看好 NAVI ≈ 23（caedrel 16 / lec 3 / otplol 3）vs 看好 FNC ≈ 20（caedrel 13 / lec 6 / otplol 1 / kameto 1）——<b>不分伯仲，共识不足</b></td></tr>
+    <tr><td>看衰分布</td><td>看衰 FNC ≈ 21（历史无冠 + 会翻车叙事）&gt; 看衰 NAVI ≈ 7（已到顶 / 无中下）——FNC 负面情绪浓度明显更高</td></tr>
+    <tr><td>分歧点</td><td>「FNC 2:0 锁前四 / 季后赛」（lec 官方频道 15:10）vs「NAVI 胜 → KOI 出局」（caedrel / otplol）——本场胜负被直接绑定到两条出线叙事上</td></tr>
+    <tr><td>多路共振</td><td>看好 NAVI 分布在 3 路、看好 FNC 分布在 4 路——方向样本均 ≥ 2 路，属「多路分散、方向接近」；无单边强共识</td></tr>
+  </table>
+
+  <h3>7.4 灰信号条件预测</h3>
+  <div class="gray-box">
+    <div class="t">今日无灰信号</div>
+    <p style="font-size:13px">条件式说明（长期规则）：若本场后续出现假赛 / 剧本 / 卡盘类质疑集中指向某一侧，则该侧价格可能被情绪 / 叙事扭曲，反手机会须经盘口 / 价格验证 + 项目风控后执行；灰信号本身不作结论。本场赛前无样本。</p>
+  </div>
+  <div class="note"><b>关系判断（赛前框架）：</b>正锚（Rhilech 绝活 / Soboro / Vladi / Upset）＋ 群体共识（方向接近、无单边）＋ 灰信号（无）——当前为<b>低确定性赛前态</b>，方向性情报需等 S0 后 / 局中更新与赛后回填验证。</div>
+</div>
+
+<!-- 8 弹幕密度峰值 -->
+<div class="card">
+  <h2><span class="no">8</span>弹幕密度峰值（赛前窗口 · 本场相关）</h2>
+  <table>
+    <tr><th>时间 (UTC)</th><th>条数 / 分钟</th><th>触发内容</th></tr>
+    <tr><td class="num">14:56</td><td class="num">38（峰值）</td><td>Caedrel 队服 / 毒奶段 +「o7 FNC」与「NAVI 2-0」刷屏（FNC 粉丝团 vs NAVI 预测）</td></tr>
+    <tr><td class="num">14:50</td><td class="num">32</td><td>赛前开场：队伍横幅 / 本场预热弹幕爆发</td></tr>
+    <tr><td class="num">14:59</td><td class="num">26</td><td>Vladi 赛前采访段 +「FNC GPT」梗刷屏</td></tr>
+    <tr><td class="num">15:03</td><td class="num">12</td><td>BP 选人开始（Locke 锁定）+ 双方比分预测（1-0 fnc / 1-0 navi）</td></tr>
+  </table>
+  <div class="note">均值 ≈ 14.1 条 / 分（297 条 ÷ 21 分钟）；同窗口全量 LoL 流峰值 14:52 = 537 条 / 分（以跨场内容为主，非本场）。</div>
+</div>
+
+<!-- 9 可验证情报痕迹 -->
+<div class="card">
+  <h2><span class="no">9</span>可验证情报痕迹（赛前预测 / 预期，赛后回填）</h2>
+  <table>
+    <tr><th>时间 (UTC)</th><th>来源</th><th>弹幕痕迹</th><th>可验证点</th></tr>
+    <tr><td>14:54–14:57</td><td>twitch_caedrel</td><td>「NAVI sweep」「o7 NAVI 2-0」「NAVI WIN TODAY」</td><td>NAVI 系列胜 / 2:0 预测命中与否</td></tr>
+    <tr><td>15:00–15:03</td><td>twitch_lec</td><td>「Fnatic 2-0」「FNC 2-0 is my guess」「FNC going 2-0 this series」</td><td>FNC 系列胜 / 2:0 预测命中与否</td></tr>
+    <tr><td>14:59</td><td>twitch_lec</td><td>「Both teams have been struggling, giving slight edge to Fnatic 2-1」</td><td>FNC 2:1 预测命中与否</td></tr>
+    <tr><td>15:05</td><td>twitch_lec</td><td>「it's a NAVI win rhilech is on his one-trick」</td><td>Rhilech 绝活 → NAVI 胜锚点应验与否</td></tr>
+    <tr><td>15:10</td><td>twitch_lec</td><td>「FNC 2-0 they do nearly secure top 4 and pretty much guarantee playoffs」</td><td>出线含义（FNC 2:0 → 锁前四 / 季后赛）与官方排名对照</td></tr>
+    <tr><td>14:55 / 15:06</td><td>caedrel / otplol</td><td>「Of navi wins koi out of playoffs」「Il faut supporter NAVI … KOI soit OUT du TOP 6」</td><td>KOI / MKOI 出局条件（NAVI 胜）与官方排名对照</td></tr>
+    <tr><td>15:03</td><td>twitch_lec</td><td>「Navi Coach said they peaked and can't get any better」</td><td>教练言论真实性 + 应验与否（上限判断）</td></tr>
+    <tr><td>15:06</td><td>twitch_lec</td><td>「this locke pick is either going to be what wins this game or completely loses it for Fnatic」</td><td>Locke 选角的胜负作用（BP 锚点）</td></tr>
+  </table>
+  <div class="note">以上全部为赛前预测 / 预期口径，非结果；赛后按「应验 / 未应验 / 待定」统一回填，并计入预测命中率与锚点兑现统计。</div>
+</div>
+
+<!-- 10 数据完整性 -->
+<div class="card">
+  <h2><span class="no">10</span>数据完整性（实际 / 预期 / 缺口）</h2>
+  <div class="integrity">
+    <div class="col">
+      <h4>实际数据源（本页采用）</h4>
+      <ul>
+        <li>twitch_caedrel（本场相关 231 条）</li>
+        <li>twitch_otplol（45 条）</li>
+        <li>twitch_lec（20 条）</li>
+        <li>twitch_kameto（1 条）</li>
+        <li>切片内另含 kick_gaules / kick_eslcs / twitch_lck（跨场 / CS 内容，未用于本场分析）</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>预期数据源（LEC 默认采集集 · DANMU_CAPTURE_RULES 第 17 节）</h4>
+      <ul>
+        <li>Twitch：caedrel ✓ 已覆盖 · lec ✓ 已覆盖</li>
+        <li>虎牙：毛毛(149346) · Remember(528222) · 硕硕(323444)</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>缺口（缺源不交付完整结论）</h4>
+      <ul>
+        <li>虎牙 Remember / 硕硕：当日已采集（docs/data/danmu/huya/2026-08-24_huya_remember.jsonl、_huya_shuoshuo.jsonl）但<b>未并入本切片</b>，本页未逐条统计（赛后复盘页已引用其方向）——补并后需复核本页数字</li>
+        <li>虎牙毛毛 / 米勒：本场时段未开播（当日窗口分别止于 11:57 / 13:03）——离线未采</li>
+        <li>VOD 未回捞；kick_gaules / eslcs / twitch_lck 非本场预期源（未用）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><b>可信度标注：</b>Rhilech 绝活锚点 = 单源待验证（twitch_lec）；FNC「会翻车」负锚 = 双路共振（otplol + caedrel）；FNC「BP 风险」负锚 = 双路（otplol + lec）；群体共识方向 = 4 路分散多源（方向本身）；无单源关键结论被当作既定事实。</div>
+</div>
+
+<!-- 11 结果来源与溯源 -->
+<div class="card">
+  <h2><span class="no">11</span>结果来源与溯源</h2>
+  <table>
+    <tr><th>数据文件</th><th>说明</th></tr>
+    <tr><td>runtime/vps_intel/lol-navi-fnc-2026-08-24_pre_intel.json</td><td>规则层情报 JSON（meta：切片总量 101,230 条 / 活跃用户 16,361 / 全切片窗口 14:49–00:11 / 密度 180.3 条·分 / sample_status=ready；gray_signals.count=0）</td></tr>
+    <tr><td>data/intel_slices/lol-navi-fnc-2026-08-24_pre.jsonl</td><td>原始切片 101,230 行（7 个来源，含跨场 / CS 混入）</td></tr>
+    <tr><td>本页窗口子集</td><td>LoL 流 14:49–15:10：全量 5,754 条，本场相关 297 条（caedrel 231 / otplol 45 / lec 20 / kameto 1）</td></tr>
+  </table>
+  <div class="note"><b>结果口径：</b>本页无比分结论。「未开赛」为用户给定节点口径；切片后段（15:57 / 16:51）已含多源比分锚点，与其冲突，见头部「数据时点核查」。</div>
+  <div class="note"><b>待确认项：</b>官方赛程与系列比分 / 阵容 / MVP；Vladi 赛前采访与 NAVI 教练「peaked」言论的真实性；Locke 指向（选手或英雄）；虎牙两路并入后的数字复核；出线条件（FNC 前四 / KOI 出局）与官方排名对照。</div>
+</div>
+
+<!-- 12 本场长期沉淀点 -->
+<div class="card">
+  <h2><span class="no">12</span>本场长期沉淀点（跨场复用）</h2>
+  <div class="long">
+    <div class="t">LONG · 可跨场沉淀</div>
+    <ol style="margin-left:18px;margin-top:6px;font-size:13px">
+      <li><b>LEC「出线窗口战」赛前共识结构规律：</b>比分预测与出线含义强绑定（FNC 2:0 → 锁前四 / 季后赛；NAVI 胜 → KOI 出局）。后续关键出线战可直接套用「出线条件 × 方向共识」分层，且赛后可用官方排名验证叙事准确率。</li>
+      <li><b>FNC 关键战负锚画像（画像库沉淀）：</b>「历史冠军荒（last win with Rekkles / never won LEC）＋ 预期会翻车（throw / mental）」双叙事赛前反复出现，与「IS FNATIC THE DK OF EU」标签合并为长期负锚；跨场复用并统计兑现率。</li>
+      <li><b>教练言论类锚点：</b>NAVI 教练「peaked（已到顶）」言论被观众引用为负锚（lec 15:03）——教练 / 管理层言论可跨场跟踪（言论 → 兑现统计），同类含 Vladi 赛前采访气势（正锚候选）。</li>
+      <li><b>「赛前熟练度锚点 → 局中战绩弹幕」两级验证结构：</b>赛前 Rhilech 绝活锚点（15:05）与局中 15-3 战绩弹幕（16:08）呼应——可作为 BP 锚点模板沉淀（bp_signals.records 扩展：anchor_type / direction / consensus / verdict）。</li>
+    </ol>
+  </div>
+</div>
+
+<footer>弹幕情报库 · 赛前节点 S0 · 生成于 2026-08-25（UTC）· 弹幕只展示聚合结论与统计，不裸展示用户身份 · 全部结论为弹幕口径，官方结果待回填</footer>
+</div>
+</body>
+</html>
