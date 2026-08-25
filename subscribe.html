@@ -81,8 +81,8 @@ footer{margin-top:30px;font-size:11.5px;color:var(--sub);border-top:1px solid va
 </div>
 
 <div class="note">
-  <b>价格说明</b>：季度订阅 9 折，年度订阅 8 折；每满 20 名订阅用户价格上调 10-20%，
-  老用户永久锁定下单时价格。当前开放早鸟价 <b>$39 / 月</b>（限 10 名，用于验证定价）。
+  <b>价格说明</b>：前 20 名早鸟锁定 <b>$39 / 月</b>；每满 20 人上调 10-20%，100 人封顶；
+  老用户永久锁定下单时价格。季度 9 折、年度 8 折。
 </div>
 
 <div class="note" id="join">
@@ -103,6 +103,7 @@ footer{margin-top:30px;font-size:11.5px;color:var(--sub);border-top:1px solid va
   <div class="plan">
     <div class="tag">订阅登记</div>
     <div class="name">提交你的联系方式</div>
+    <div class="note" id="queueInfo" style="margin:8px 0;background:#e8f1fd;border:1px solid #d0e3fb">当前已登记 <b id="qTotal">—</b> 人 · 你提交后约排第 <b id="qPos">—</b> 位 · 每满 20 人阶梯涨价</div>
     <div class="note" style="margin:8px 0">提交 QQ 或 Telegram 账号，登记后发放访问码。</div>
     <input id="leadName" type="text" placeholder="昵称（选填）"
       style="border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;margin-bottom:10px">
@@ -122,6 +123,7 @@ footer{margin-top:30px;font-size:11.5px;color:var(--sub);border-top:1px solid va
 <script>
 // 订阅 API（Vercel 部署，与马斯克工具同款 verify-member / lead）
 var API_BASE = "https://danmu-intel-api.vercel.app";
+var CURRENT_TOTAL = 0;
 
 function show(el, text, ok) {
   el.style.display = "block";
@@ -164,7 +166,10 @@ document.getElementById("leadBtn").addEventListener("click", async function () {
       })
     });
     var data = await res.json();
-    if (data.success) show(out, "已提交 ✓ 我们确认后会发放访问码", true);
+    if (data.success) {
+      CURRENT_TOTAL = CURRENT_TOTAL + 1;
+      show(out, "已提交 ✓ 你已排队 #" + CURRENT_TOTAL + "，小助手会按序联系你（早鸟价锁定）", true);
+    }
     else show(out, data.error || "提交失败，请稍后再试", false);
   } catch (e) {
     show(out, "提交服务暂不可用，请稍后再试", false);
@@ -177,6 +182,9 @@ fetch("https://danmu-intel-api.vercel.app/api/stats").then(function (r) { return
   set("mTotal", d.members_total || 0);
   set("mActive", d.members_active || 0);
   set("mViews", d.today_views || 0);
+  CURRENT_TOTAL = d.members_total || 0;
+  set("qTotal", CURRENT_TOTAL);
+  set("qPos", CURRENT_TOTAL + 1);
 }).catch(function () {});
 </script>
 <script>fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname})}).catch(function(){})</script><script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script></body>
