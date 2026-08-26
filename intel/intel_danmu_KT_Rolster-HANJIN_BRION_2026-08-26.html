@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹幕情报 · KT Rolster vs HANJIN BRION · 系列复盘 · 2026-08-26</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --ink:#1d1d1f;
+    --sub:#6e6e73;
+    --line:#e3e3e8;
+    --accent:#0a66c2;
+    --accent-soft:#eaf2fb;
+    --warn:#b2500a;
+    --warn-soft:#fdf1e3;
+    --ok:#1a7f4e;
+    --ok-soft:#e7f4ec;
+    --bad:#b3261e;
+    --bad-soft:#fbeae9;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro SC","PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;
+    line-height:1.65;
+    padding:24px 16px 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:24px 22px;
+    margin:16px 0;
+    box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
+  }
+  .hero{
+    background:linear-gradient(160deg,#0b3d75,#0a66c2 70%,#2e86de);
+    color:#fff;
+    padding:28px 22px;
+  }
+  .hero .crumb{font-size:13px;opacity:.82;margin-bottom:8px;}
+  .hero h1{font-size:24px;font-weight:700;letter-spacing:.2px;}
+  .hero .sub{font-size:14px;opacity:.9;margin-top:6px;}
+  .badge{
+    display:inline-block;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.35);
+    color:#fff;
+    border-radius:999px;
+    padding:3px 12px;
+    font-size:12px;
+    margin:10px 6px 0 0;
+  }
+  .badge.amber{background:#fff;color:#0a66c2;border-color:#fff;font-weight:600;}
+  h2{
+    font-size:18px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  h2 .no{
+    flex:none;
+    width:28px;height:28px;
+    border-radius:9px;
+    background:var(--accent);
+    color:#fff;
+    font-size:14px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  h3{font-size:15px;font-weight:700;margin:16px 0 8px;}
+  p{font-size:14px;color:#333;margin:6px 0;}
+  .muted{color:var(--sub);font-size:13px;}
+  .small{font-size:12.5px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+  .stat{
+    background:#fafafc;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+  }
+  .stat .k{font-size:12px;color:var(--sub);}
+  .stat .v{font-size:17px;font-weight:700;margin-top:2px;}
+  .stat .v small{font-size:12px;font-weight:500;color:var(--sub);}
+  .tag{
+    display:inline-block;
+    border-radius:7px;
+    padding:1px 9px;
+    font-size:12px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-weight:600;
+    margin:2px 4px 2px 0;
+  }
+  .tag.gray{background:#f0f0f2;color:#555;}
+  .tag.warn{background:var(--warn-soft);color:var(--warn);}
+  .tag.ok{background:var(--ok-soft);color:var(--ok);}
+  .tag.bad{background:var(--bad-soft);color:var(--bad);}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;}
+  th{
+    text-align:left;
+    font-weight:600;
+    color:var(--sub);
+    font-size:12px;
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  td{padding:8px 10px;border-bottom:1px solid #f0f0f2;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  .quote{
+    background:#f7f8fa;
+    border-left:3px solid var(--accent);
+    border-radius:0 10px 10px 0;
+    padding:8px 12px;
+    font-size:13px;
+    color:#444;
+    margin:8px 0;
+  }
+  .quote b{color:var(--accent);font-weight:600;}
+  .banner{
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:13.5px;
+    margin:12px 0;
+  }
+  .banner.warn{background:var(--warn-soft);border:1px solid #f3d9bd;}
+  .banner.info{background:var(--accent-soft);border:1px solid #cfe1f5;}
+  .banner.ok{background:var(--ok-soft);border:1px solid #cde8d8;}
+  .banner.bad{background:var(--bad-soft);border:1px solid #f0cdcb;}
+  .timeline{border-left:2px solid var(--line);margin:12px 0 4px 6px;padding-left:18px;}
+  .tl{margin:10px 0;position:relative;}
+  .tl::before{
+    content:"";
+    position:absolute;left:-23px;top:6px;
+    width:10px;height:10px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .tl b{font-size:13px;}
+  .tl .t{font-size:12.5px;color:var(--sub);}
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:720px){.cols2{grid-template-columns:1fr;}}
+  .dep{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    margin:10px 0;
+    background:#fcfcfd;
+  }
+  .dep .h{font-weight:700;font-size:13.5px;margin-bottom:4px;}
+  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:26px;}
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">KT Rolster-HANJIN BRION 2026-08-26</b></div>
+<div class="wrap">
+  <!-- 0 头部 -->
+  <div class="card hero">
+    <div class="crumb">弹幕情报库 · 整场弹幕情报页</div>
+    <h1>KT Rolster vs HANJIN BRION</h1>
+    <div class="sub">LCK Play-In · 入围赛 · BO5 · 2026-08-26 · slug: lol-kt-bro2-2026-08-26</div>
+    <div>
+      <span class="badge">FINAL｜系列复盘</span>
+      <span class="badge">SERIES-REVIEW</span>
+      <span class="badge amber">弹幕口径 · 官方待确认</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="grid">
+      <div class="stat"><div class="k">弹幕总量（窗口内）</div><div class="v">19,170 <small>条</small></div></div>
+      <div class="stat"><div class="k">活跃用户</div><div class="v">4,505 <small>人</small></div></div>
+      <div class="stat"><div class="k">密度峰值</div><div class="v">537 <small>条/分 · 08:24 UTC</small></div></div>
+      <div class="stat"><div class="k">均值速率</div><div class="v">319.5 <small>条/分</small></div></div>
+      <div class="stat"><div class="k">数据窗口</div><div class="v">07:30–08:30 <small>UTC</small></div></div>
+      <div class="stat"><div class="k">比赛排期</div><div class="v">08:00–14:00 <small>UTC（事件层）</small></div></div>
+    </div>
+    <p class="muted small" style="margin-top:12px;">
+      Polymarket 事件 slug：<a href="https://polymarket.com/event/lol-kt-bro2-2026-08-26">lol-kt-bro2-2026-08-26</a>
+      （行情数据本报告未采集，待行情对接后回填）。
+    </p>
+    <div class="banner info">
+      <b>状态说明（必读）：</b>本页为「整场弹幕情报页」。数据窗口止于 2026-08-26 08:30 UTC——截至窗口末，
+      第 1 局仍在进行中（约开打 20 分钟，含一次技术暂停），<b>未观测到系列终局信号</b>，G2–G5 无弹幕样本。
+      会话外已按「弹幕多信号」声明系列结束、结果待官方核对；本页遵循防错纪律：<b>不推断比分、不硬造逐局</b>，
+      比分/胜负一律标注「弹幕口径 · 官方待确认」，待官方回填与 VOD 补采后升级为完整系列复盘。
+    </div>
+  </div>
+  <!-- 1 结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>结果总览</h2>
+    <div class="grid">
+      <div class="stat"><div class="k">系列比分</div><div class="v">待官方核对 <small>弹幕口径</small></div></div>
+      <div class="stat"><div class="k">G1 战况（窗口末）</div><div class="v">BRO 领先 <small>弹幕口径</small></div></div>
+      <div class="stat"><div class="k">系列时长</div><div class="v">未完成 <small>G1 约 20 分钟</small></div></div>
+      <div class="stat"><div class="k">MVP / 关键选手</div><div class="v">待官方 <small>弹幕指向见 §4</small></div></div>
+    </div>
+    <h3>弹幕口径速览</h3>
+    <div class="quote"><b>07:55–08:06（官方流）：</b>「QUICK 3-0 FOR THE BROOOOSSSS」「HAHAH KT will stomp 3-0 ez」——赛前 3-0 预测双方并存。</div>
+    <div class="quote"><b>08:24–08:26（官方流）：</b>「OKBRO LEADING NOW」「Okay bro win game 1」「joever for KT」——G1 中段 BRO 反超领先（弹幕口径）。</div>
+    <div class="quote"><b>08:20:50（官方流）：</b>「KT should be better team but BRO win draft turbo」——主流判断：KT 纸面更强，BRO 本场 BP 占优。</div>
+    <p class="muted small">本场关键叙事：KT 六连败 + 输即淘汰（弹幕口径）· BRO「OKBRO/BRO TAX」梗文化刷屏 · 反 KT「KTFRAUD/hatewatch」情绪。</p>
+  </div>
+  <!-- 2 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">2</span>逐局复盘</h2>
+    <h3>G1（窗口内唯一有样本的局 · 弹幕口径）</h3>
+    <p class="small muted">开赛约 08:10 UTC（虎牙 957 房「刚开吗」08:10:14）；08:11–08:14 技术暂停；截至 08:30 窗口末仍在局中。</p>
+    <h3>BP / 选角情报（弹幕提及，待官方阵容核对）</h3>
+    <table>
+      <tr><th>英雄（提及量）</th><th>归属（弹幕口径）</th><th>关键弹幕</th></tr>
+      <tr><td>克烈 Kled（157）</td><td>BRO 上单 Casting（「OKBRO COMMANDER CASTING ON KLED」「KLED BRO」）</td><td>「kled still not banned?」（08:05 官方流，观众意外未被 ban）</td></tr>
+      <tr><td>奥拉夫 Olaf（108）</td><td>KT 上单 PerfecT（「it Perfect Olaf not Doran Olaf」）</td><td>「Kled &gt;&gt;&gt;&gt; Olaf if lead」「Kled already lead so big」</td></tr>
+      <tr><td>女枪 MF（86）</td><td>KT 下路（「if kt didn't take mf …」）</td><td>虎牙 957 两路看衰：详见 §4/§7 负锚点</td></tr>
+      <tr><td>梦魇 Nocturne（85）</td><td>KT 打野位（「What is Cuzz even doing this game?」）</td><td>「Nocturne always useless」「Nocturne &lt;&lt;&lt;&lt;&lt;&lt;&lt; jarvan」</td></tr>
+      <tr><td>皇子 Jarvan（63）</td><td>BRO 打野 Gideon（「if gideon eq'd …」）</td><td>「皇子有什么用吗」（虎牙 08:21，质疑方待核）</td></tr>
+      <tr><td>冰鸟 Anivia（57）</td><td>归属待确认（KT/BRO 两说并存）</td><td>「anvia hard carry」（08:18 官方流）「冰鸟很舒服啊」（虎牙 08:31 窗口外）</td></tr>
+      <tr><td>瑞兹 Ryze（26）</td><td>KT 中单 BDD</td><td>「bdd is crazy on ryze」「Ryze with an early lead is scary」「瑞兹就是责任」</td></tr>
+      <tr><td>卢锡安 Lucian（13）</td><td>KT 下路 Teddy（「teddy lucian HOLY」）</td><td>与「KT 选女枪」两说并存，待官方选角核对</td></tr>
+    </table>
+    <p class="small muted">注：英雄提及含跨房/赛前讨论噪音；「卢锡安 vs 女枪」两说并存是本场弹幕口径的一个待核实点。</p>
+    <h3>BP 后战绩情报（2026-08-21 固化必查项）</h3>
+    <div class="quote"><b>08:14:05（官方流）：</b>「Teddy on of the Adcs wich have good winrate on Lucian」——Teddy·卢锡安胜率口碑正锚（若本局确为卢锡安）。</div>
+    <div class="quote"><b>08:17–08:20（官方流+虎牙）：</b>「bdd is crazy on ryze」「Ryze with an early lead is scary」「蒂蒂哥的瑞兹就是责任」——BDD·瑞兹正锚。</div>
+    <div class="quote"><b>08:27:31（官方流）：</b>「it Perfect Olaf not Doran Olaf still got chance guys」——历史参照：Doran 奥拉夫对克烈对位失利（弹幕口径），PerfecT·奥拉夫被谨慎看衰。</div>
+    <div class="quote"><b>08:19:33（虎牙 957）：</b>「女枪这个玩意胜率有百分之10吗」——女枪选角负锚（观众口径，非官方数据）。</div>
+    <p class="small muted">以上均为弹幕口径，无官方战绩核验；赛后回填「应验/未应验/部分」。</p>
+    <h3>时间线（含密度峰值与转折点）</h3>
+    <div class="timeline">
+      <div class="tl"><b>07:55–08:10 选人/开局</b><div class="t">BP 讨论与赛前情绪：07:59–08:01 峰值 480 条/分（「3-0 KT」「3-0 OKBRO」刷屏）；官方流「kled still not banned?」「Nocturne priority」。</div></div>
+      <div class="tl"><b>08:10 开赛</b><div class="t">虎牙 957「刚开吗」；「泰迪真不跟你闹」「有鸡窝只能说左边有希望」等开赛讨论。</div></div>
+      <div class="tl"><b>08:11–08:14 技术暂停（异常）</b><div class="t">「这LCK和LPL一样，天天暂停」「OK BRO PAUSE」「why no game」；暂停期触发灰信号玩梗（见 §5）；08:13 峰值 494 条/分。</div></div>
+      <div class="tl"><b>08:14–08:20 恢复 · KT 中单正锚</b><div class="t">BDD 瑞兹拿击杀/早期领先（「Ryze with an early lead is scary」「giga mid gap」08:17）；下路 2v2 团战（「if gideon eq'd would bot still die?」）。</div></div>
+      <div class="tl"><b>08:20–08:24 KT 资源决策被批</b><div class="t">「优势不控龙吗」「都不拿龙啊，我买的龙啊」（虎牙 08:21）；「这梦魇6级不抓辅助 野不控龙」「克烈皇子随便冲死女枪」。</div></div>
+      <div class="tl"><b>08:24–08:26 转折点（弹幕口径）</b><div class="t">窗口最高峰值 537 条/分（08:24）：OKBRO 刷屏 + 「fed kled gg」+「OKBRO LEADING NOW」（08:25:46）+「Okay bro win game 1」（08:26:12）+「joever for KT」——BRO 反超领先。</div></div>
+      <div class="tl"><b>08:26–08:30 BRO 优势扩大</b><div class="t">「Kled already lead so big」（08:27:05）「Anivia shutdown btw」（08:26:47）「Kled can just dive MF」（08:28:18）「Nocturne &lt;&lt;&lt;&lt;&lt;&lt;&lt; jarvan」（08:30:00）——G1 朝 BRO 倾斜，未终结。</div></div>
+    </div>
+    <div class="banner warn">G1 预测验证（窗口内）：赛前「KT G1 强」锚点（game 1 andies）尚未兑现且面临反向风险；「BRO 3-0」方向获 G1 中段部分支持（弹幕口径）。最终验证待 G1/系列终局回填。</div>
+    <div class="banner bad">
+      <b>G2–G5：样本不足（数据缺口）</b>——采集窗口未覆盖后续局次；若系列已在窗口外结束，逐局情报待
+      Twitch VOD 回捞 + 官方比分回填后补齐，本页不硬造逐局内容。
+    </div>
+  </div>
+  <!-- 3 队伍画像 -->
+  <div class="card">
+    <h2><span class="no">3</span>队伍画像（长期库 + 本场）</h2>
+    <div class="cols2">
+      <div>
+        <h3>KT Rolster <span class="tag gray">trust: 中</span></h3>
+        <p class="small"><b>长期库（docs/data/intel/teams.json）：</b>五连败掉入围赛线；「连续两局领先被翻 = 充电宝」叙事（08-21 T1-KT）；BDD 状态波动（G1 封神/G2-G3 被批模式）；ADC 鸡窝（Jiwoo）争议；灰信号档案 18 条、重点标记（08-21「明送/鳄鱼收钱」弱兑现）。</p>
+        <p class="small"><b>本场弹幕：</b>「KT loss 6 games in a row」（官方流 08:00:23，六连败口径）；「kt 本质菜逼，一把都赢不了」（虎牙 08:21）；「感觉KT没那么简单 泰迪真不跟你闹」（虎牙 08:10）——舆论分歧；「is kt out if they lose?」×4 + 虎牙「这是谁输谁淘汰吗」→ 输即淘汰的赛制压力叙事。</p>
+      </div>
+      <div>
+        <h3>HANJIN BRION <span class="tag gray">trust: 低-中</span></h3>
+        <p class="small"><b>长期库（teams.json）：</b>「终结能力差、后期阵容价值高但无法终结」；08-18 GGA 瑞兹灰信号高浓度（91c→0.5c 崩盘窗口）；用户 G2 抄底 +30 / G3 全仓 -220 教训；打野 Deny 曾被批。</p>
+        <p class="small"><b>本场弹幕：</b>OKBRO/BRO TAX/BROLIEVER 梗文化强势刷屏（官方流 08:00-08:01 峰值）；「KT should be better team but BRO win draft turbo」（官方流 08:20:50）→ BP 占优共识；「Bro will win and defeats DK」（08:01，晋级线玩梗）；G1 中段领先（弹幕口径）。</p>
+      </div>
+    </div>
+    <h3>人员画像（带提及量 · 窗口内 19,170 条）</h3>
+    <table>
+      <tr><th>选手</th><th>提及量</th><th>评价（弹幕口径）</th><th>来源</th></tr>
+      <tr><td>BDD（KT 中单）</td><td>91</td><td>正锚：「MYDICTATOR BDD」「bdd is crazy on ryze」「BigDIckDaddy carries these KT 3-1」</td><td>Caedrel 房 + 官方流 + 虎牙</td></tr>
+      <tr><td>Teddy（KT ADC）</td><td>70</td><td>「KT Teddy」刷屏；「泰迪真不跟你闹」（虎牙）；「teddy will int and Jiwoo carry」（08:00 玩梗看衰）</td><td>Caedrel 房 + 虎牙</td></tr>
+      <tr><td>鸡窝 / Jiwoo（KT ADC 争议）</td><td>40 / 36</td><td>负面延续：「上鸡窝那bro有机会啊」「鸡窝问题很大」「又是鸡窝」</td><td>虎牙 957 + Caedrel 房</td></tr>
+      <tr><td>Cuzz（KT 打野）</td><td>18</td><td>本局被批：「What is Cuzz even doing this game?」「if cuzz isnt in form today kt gonna lose」</td><td>官方流 + Caedrel 房</td></tr>
+      <tr><td>PerfecT（KT 上单）</td><td>5（严格大小写）</td><td>奥拉夫对位克烈受压：「it Perfect Olaf not Doran Olaf still got chance」</td><td>官方流 + Caedrel 房</td></tr>
+      <tr><td>Gideon（BRO 打野，弹幕口径）</td><td>14</td><td>正锚：「GIDEON &gt; CUZZ」「GIDEONLINE」「Nocturne &lt;&lt;&lt;&lt;&lt;&lt;&lt; jarvan」</td><td>Caedrel 房 + 官方流</td></tr>
+      <tr><td>Casting（BRO 上单，弹幕口径）</td><td>见克烈语境</td><td>克烈使用者、本局正锚：「OKBRO COMMANDER CASTING ON KLED」「Casting Lord Morgan's reincarnation」</td><td>官方流</td></tr>
+      <tr><td>Namgung（BRO，弹幕口径）</td><td>8</td><td>「namgung &gt; keria OKBRO」「NIGHTMARE NAMGUNG」——身份/英雄待核</td><td>Caedrel 房</td></tr>
+      <tr><td>Keria</td><td>44</td><td><b>归属存疑不归入本场结论</b>：players.json 标注 T1；窗口内提及多在开赛前与「namgung &gt; keria」对比语境</td><td>Caedrel 房</td></tr>
+      <tr><td>Morgan（BRO 旧将）</td><td>2</td><td>「where is LORD MORGAN」「Casting Lord Morgan's reincarnation」——上单传承梗</td><td>Caedrel 房</td></tr>
+      <tr><td>Peter（KT 旧将）</td><td>1</td><td>「DD &amp; Peter seemed like they were better」（去年阵容对比）</td><td>Caedrel 房</td></tr>
+    </table>
+    <p class="small muted">英雄维度（含多路+噪音）：克烈 157 / 奥拉夫 108 / 女枪 86 / 梦魇 85 / 皇子 63 / 冰鸟 57 / 瑞兹 26 / 卢锡安 13。</p>
+  </div>
+  <!-- 4 灰信号 -->
+  <div class="card">
+    <h2><span class="no">4</span>灰信号汇总（观众质疑 · 非结论）</h2>
+    <table>
+      <tr><th>编号</th><th>时间</th><th>质疑内容（原样）</th><th>来源</th><th>预警等级</th><th>市场含义</th></tr>
+      <tr>
+        <td>G1-1</td>
+        <td>08:11–08:13（技术暂停期）</td>
+        <td>虎牙 957：「这才是假赛去，暂停讨论剧本」「打钱了」「英雄联盟没热度只能靠打假赛了」；Caedrel 房：「rigged」×2</td>
+        <td>虎牙 + Twitch（中英两路）</td>
+        <td><span class="tag warn">低</span></td>
+        <td>触发源为技术暂停，玩梗性质；无盘口重合证据，价格失真概率低</td>
+      </tr>
+      <tr>
+        <td>G1-2</td>
+        <td>08:21–08:29</td>
+        <td>虎牙：「优势不控龙吗」「都不拿龙啊，我买的龙啊」「放龙就是不想赢」；官方流：「Nocturne always useless」</td>
+        <td>虎牙 + Twitch</td>
+        <td><span class="tag warn">低</span></td>
+        <td>资源决策批评（放龙模式）→ 若 KT 持续放龙且输 G1，指向 KT 输方向；属风险标注，不作结论</td>
+      </tr>
+    </table>
+    <div class="banner warn"><b>纪律声明：</b>以上为「观众质疑，非结论」，只作风险标注与兑现统计；灰信号不构成假赛证据。
+      若上升为实质质疑（反常操作 + 盘口异动 + 两路持续共振），须先做盘口/价格验证再作反手参考（S1–S4 风控内执行）。
+      本场暂无高预警灰信号；KT 长期灰信号档案（18 条 / 重点标记）继续维持观察。</div>
+    <h3>已剔除误报（数据质量说明）</h3>
+    <p class="small muted">
+      规则层 JSON（runtime/vps_intel/lol-kt-bro2-2026-08-26_intel.json）中 190 条「灰信号」实为 Kick 直播间
+      Gaupoints/CSBOY 广告刷屏误报；虎牙米勒房 08:25–08:27 的「LPL 假赛」泛谈与本场无关；07:47–07:48 Caedrel 房
+      「scripted」×5 为赛前玩梗（非本场事件）。本报告已基于原始弹幕手工重扫并剔除。
+    </p>
+  </div>
+  <!-- 5 弹幕密度峰值 -->
+  <div class="card">
+    <h2><span class="no">5</span>弹幕密度峰值</h2>
+    <table>
+      <tr><th>分钟（UTC）</th><th>条数</th><th>峰值内容（代表性样本）</th><th>与本场相关性</th></tr>
+      <tr><td>08:24</td><td>537</td><td>OKBRO 刷屏；「LOCKIN big time teddy casting」「fed kled gg」</td><td><span class="tag ok">高（BRO 反超转折）</span></td></tr>
+      <tr><td>07:35</td><td>527</td><td>Caedrel 房「MYMAP/MAX VERSTAPPEN」+ Gaules 广告</td><td><span class="tag gray">低（赛前娱乐+广告）</span></td></tr>
+      <tr><td>08:13</td><td>494</td><td>暂停期：Caedrel「this league is becoming so unwatchable with the pauses」+ 虎牙灰信号玩梗 + Gaules 广告</td><td><span class="tag warn">中（暂停+灰信号）</span></td></tr>
+      <tr><td>08:00</td><td>480</td><td>赛前 3-0 刷屏（「3-0 KT EZ Clap」「3-0 OKBRO」）</td><td><span class="tag warn">中（BP 前情绪）</span></td></tr>
+      <tr><td>07:51</td><td>473</td><td>Gaules 广告 + Caedrel 房闲聊</td><td><span class="tag gray">低</span></td></tr>
+      <tr><td>08:12</td><td>452</td><td>暂停期「why no game」+ 广告</td><td><span class="tag warn">中</span></td></tr>
+      <tr><td>08:25</td><td>446</td><td>「OKBRO LEADING NOW」「2v3 OKBRO likes those odds」「BROAMER」</td><td><span class="tag ok">高（G1 领先确认）</span></td></tr>
+    </table>
+    <p class="small muted">说明：峰值含 kick_gaules（CS 流广告/闲聊）噪音，本表已标注相关性；本场有效事件峰值集中在 08:11–08:13（暂停）与 08:24–08:26（BRO 反超）。</p>
+  </div>
+  <!-- 6 可验证情报痕迹 -->
+  <div class="card">
+    <h2><span class="no">6</span>可验证情报痕迹</h2>
+    <table>
+      <tr><th>痕迹</th><th>时间/来源</th><th>验证状态</th><th>回填方式</th></tr>
+      <tr><td>赛前 3-0 预测分裂（KT 15 条 / BRO 12 条，单侧口径）</td><td>07:43–08:06</td><td><span class="tag">待回填</span></td><td>官方系列比分</td></tr>
+      <tr><td>「KT G1 强」（game 1 andies）赛前锚点</td><td>06:52 赛前窗口</td><td><span class="tag">待回填</span>（窗口内 G1 中段 BRO 领先，面临反向风险）</td><td>G1 官方结果</td></tr>
+      <tr><td>BDD 瑞兹正锚（早期领先 scary）</td><td>08:17–08:20 两路</td><td><span class="tag">部分兑现</span>（KT 中单位领先被提及）</td><td>G1 官方对局数据</td></tr>
+      <tr><td>KT 女枪选角负锚（两路看衰）</td><td>08:07–08:29</td><td><span class="tag">部分兑现</span>（女枪被克烈冲、BRO 领先）</td><td>G1 官方结果 + VOD</td></tr>
+      <tr><td>克烈对位压制奥拉夫（Kled &gt; Olaf if lead）</td><td>08:20–08:27 两路</td><td><span class="tag">部分兑现</span>（克烈成型领先）</td><td>G1 对位数据 + VOD</td></tr>
+      <tr><td>KT 放龙/资源端异常（放龙=不想赢）</td><td>08:21–08:29 虎牙</td><td><span class="tag">待回填</span></td><td>G1 龙魂/经济曲线</td></tr>
+      <tr><td>「输就淘汰」赛制压力</td><td>07:42–08:21 多路 ×5</td><td><span class="tag">待官方确认</span></td><td>LCK 官方赛制</td></tr>
+      <tr><td>Teddy 卢锡安胜率口碑正锚</td><td>08:14 官方流</td><td><span class="tag">待回填</span></td><td>官方战绩 + 本局选角核对</td></tr>
+    </table>
+  </div>
+  <!-- 7 方向性情报 -->
+  <div class="card">
+    <h2><span class="no">7</span>方向性情报（锚点 × 群体共识 × 灰信号）</h2>
+    <h3>▲ 正锚点（看好 → 谁赢）</h3>
+    <table>
+      <tr><th>对象</th><th>锚点内容</th><th>依据</th><th>时间</th><th>共振</th><th>验证</th></tr>
+      <tr><td>KT·BDD（中单瑞兹）</td><td>看好 KT G1</td><td>「bdd is crazy on ryze」「Ryze with an early lead is scary」（官方流）；「蒂蒂哥的瑞兹就是责任」（虎牙）</td><td>08:17–08:20</td><td><span class="tag ok">两路</span></td><td>部分兑现（窗口内 KT 中单位领先）</td></tr>
+      <tr><td>KT·Teddy（卢锡安）</td><td>看好 KT 下路</td><td>「Teddy on of the Adcs wich have good winrate on Lucian」「TEDDY THE BEST ADC IN LOL」</td><td>07:55 / 08:14</td><td><span class="tag">单源</span></td><td>待回填（选角两说并存）</td></tr>
+      <tr><td>BRO·上单克烈（Casting）</td><td>看好 BRO G1</td><td>「KLED BRO」「fed kled gg」「Kled already lead so big」「OKBRO COMMANDER CASTING ON KLED」（官方流）；「克烈皇子随便冲死女枪」（虎牙）</td><td>08:06–08:27</td><td><span class="tag ok">两路</span></td><td>部分兑现（BRO 领先）</td></tr>
+    </table>
+    <h3>▼ 负锚点（看衰 → 谁输）</h3>
+    <table>
+      <tr><th>对象</th><th>锚点内容</th><th>依据</th><th>时间</th><th>共振</th><th>验证</th></tr>
+      <tr><td>KT·女枪选角</td><td>看衰 KT G1 下路</td><td>虎牙：「女枪不是搞笑吗/篮子英雄/自动少一只/胜率有百分之10吗/混子英雄」（5 条）；Caedrel 房：「if kt didn't take mf and instead took senna this game would be free」</td><td>08:07–08:29</td><td><span class="tag ok">两路</span></td><td>部分兑现（女枪被克烈冲）</td></tr>
+      <tr><td>KT·Cuzz 梦魇</td><td>看衰 KT G1 打野节奏</td><td>「What is Cuzz even doing this game?」「Nocturne always useless」（官方流）；「这梦魇6级不抓辅助 野不控龙」（虎牙）</td><td>08:21–08:30</td><td><span class="tag ok">两路</span></td><td>部分兑现（BRO 领先）</td></tr>
+      <tr><td>KT·PerfecT 奥拉夫</td><td>看衰 KT G1 上路对位</td><td>「Kled &gt;&gt;&gt;&gt; Olaf if lead」「it Perfect Olaf not Doran Olaf still got chance」（Doran 奥拉夫历史负参照）</td><td>08:20–08:27</td><td><span class="tag ok">两路</span></td><td>部分兑现（克烈成型领先）</td></tr>
+      <tr><td>KT·赛制压力</td><td>淘汰边缘放大情绪</td><td>「is kt out if they lose?」×4；虎牙「这是谁输谁淘汰吗」；「KT loss 6 games in a row」</td><td>07:42–08:21</td><td><span class="tag ok">多路</span></td><td>赛制事实待官方确认</td></tr>
+    </table>
+    <h3>群体共识（弹幕情绪 · 可量化）</h3>
+    <table>
+      <tr><th>维度</th><th>数据</th><th>判定</th></tr>
+      <tr><td>英文弹幕方向（Caedrel 房为主）</td><td>BRO 方向 90 条 vs KT 方向 46 条；3-0 单侧预测 KT 15 / BRO 12</td><td>BRO 情绪更强，但含大量反 KT 玩梗（KTFRAUD/hatewatch）与 OKBRO 梗文化 → <span class="tag">有偏样本</span></td></tr>
+      <tr><td>中文虎牙</td><td>看好 KT：「kt今天不用看，必赢，bro纯菜」「感觉KT没那么简单 泰迪真不跟你闹」；看衰 KT：「上鸡窝那bro有机会」「kt本质菜逼，一把都赢不了」「bro那么菜吗」</td><td><span class="tag">共识不足</span>（6 条正负并存）</td></tr>
+      <tr><td>主流判断</td><td>「KT should be better team but BRO win draft turbo」（官方流 08:20:50）</td><td>KT 纸面强 + BRO 本场 BP 优 = <span class="tag warn">分歧信号</span></td></tr>
+      <tr><td>样本量</td><td>方向弹幕 136 条 + 虎牙预测 7 条（窗口内）</td><td>可量化但含梗，结论需打折</td></tr>
+    </table>
+    <div class="banner info">判断：锚点方向与群体共识<b>部分背离</b>（BDD 正锚支持 KT，但弹幕整体情绪偏 BRO/反 KT）→ 标注「分歧信号」，价值高于单向共识；G1 中段 BRO 领先为弹幕口径，最终以官方结果回填。</div>
+    <h3>灰信号条件预测（若兑现指向哪边）</h3>
+    <table>
+      <tr><th>对象</th><th>质疑内容</th><th>预警</th><th>条件方向</th><th>兑现</th></tr>
+      <tr><td>无具体对象（G1-1）</td><td>暂停期「假赛/剧本/rigged/打钱了」玩梗</td><td><span class="tag warn">低</span></td><td>若兑现（反常操作+盘口异动+持续质疑）→ 指向被质疑方，当前指向不明</td><td>未兑现（无实质证据）</td></tr>
+      <tr><td>KT（G1-2）</td><td>放龙/资源端异常「放龙就是不想赢」</td><td><span class="tag warn">低</span></td><td>若兑现（KT 持续放龙且输 G1）→ 指向 KT 输 G1（资源端异常）</td><td>待回填</td></tr>
+    </table>
+    <p class="small muted">纪律：灰信号只作风险标注与兑现统计，不作假赛结论；反手动作必须盘口/价格验证 + 项目风控（S1–S4）内执行。</p>
+  </div>
+  <!-- 8 盘口讨论 -->
+  <div class="card">
+    <h2><span class="no">8</span>盘口讨论</h2>
+    <table>
+      <tr><th>类型</th><th>内容（原样）</th><th>时间/来源</th><th>兑现</th></tr>
+      <tr><td>BRO 独赢（观众下注）</td><td>「我上了bro三把独赢」「腿哥我买了bro500能中吗」「house on BRO」「I put 15k on KT am I screwed」</td><td>08:10–08:25（虎牙 ×2、Caedrel 房、官方流）</td><td>待回填</td></tr>
+      <tr><td>总人头 O/U 讨论</td><td>「这场能不能28个人头？」「KT一落后人头就开始单带」</td><td>08:13 / 08:29（虎牙）</td><td>待回填</td></tr>
+      <tr><td>模糊数字盘</td><td>「4-5 BRO FAVORED OKBRO」（含义不明：战绩 4-5 或盘口 4-5，标注待确认）</td><td>07:56（Caedrel 房）</td><td>待确认</td></tr>
+      <tr><td>局内赔率梗</td><td>「2v3 OKBRO likes those odds」</td><td>08:25（官方流）</td><td>—</td></tr>
+    </table>
+    <p class="small muted">盘口样本小（6 条），数字盘仅「28 人头」一个具体数；Polymarket 行情价格未采集（网络受限），待行情对接后回填价格轨迹。</p>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p class="small">版本：<b>patch 26.16</b>（官方流 !patch 机器人 07:30:49 确认）。</p>
+    <p class="small">赛制：LCK Play-In 入围赛 BO5；弹幕口径「输就淘汰」（多路 ×5），KT 处于六连败 + 淘汰边缘（「KT loss 6 games in a row」）。</p>
+    <p class="small">弹幕文化基线：Caedrel 房 OKBRO/BRO TAX/BROLIEVER 梗 + 反 KT「KTFRAUD/hatewatch」→ 本场英文情绪样本天然有偏，量化结论需打折。</p>
+    <p class="small">历史规律库引用：KT「连续两局领先被翻 = 充电宝」（08-21）；BRO「终结能力差、后期阵容价值高无法终结」（08-21 起）→ 若 BRO G1 领先，警惕其终结能力（本场待验证）；LCK 灰信号风险「低-中」（leagues.json）。</p>
+  </div>
+  <!-- 10 情报含义与后续观察点 -->
+  <div class="card">
+    <h2><span class="no">10</span>情报含义与后续观察点</h2>
+    <h3>LONG（长期沉淀候选）</h3>
+    <p class="small">① 对位规律：克烈对位压制奥拉夫（Kled &gt; Olaf if lead），Doran 奥拉夫负参照 → 可入 bp_entities；② KT 资源端负面模式（不控龙/放龙）+ 女枪类「版本弱势选角被两路看衰」→ 决策画像；③ BDD·瑞兹正锚（early lead scary）→ 选手×英雄锚点；④ BRO 梗文化/反 KT 情绪 → 情绪噪音基线模型。</p>
+    <h3>SHORT（本系列后续观察）</h3>
+    <p class="small">① 若 KT 输 G1，淘汰压力下情绪盘可能失真（Polymarket 侧观察点）；② BRO「终结能力差」历史标签 vs 本场 BP/对位优势 → G2-G4 是否出现「优势被翻」；③ 3-0 共识分裂 → 留意让分局/打满盘；④ 灰信号 G1-2（KT 放龙）兑现与否回填。</p>
+    <div class="banner warn">操作边界：以上为情报风险标注，非交易指令；灰信号不作假赛结论；一切动作需行情/盘口验证 + 项目风控（S1–S4）。</div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <table>
+      <tr><th>数据</th><th>路径</th><th>条数 / 窗口</th></tr>
+      <tr><td>主切片（Twitch/Kick）</td><td>data/intel_slices/lol-kt-bro2-2026-08-26.jsonl</td><td>17,365 条 · 07:30–08:30 UTC</td></tr>
+      <tr><td>赛前切片</td><td>data/intel_slices/lol-kt-bro2-2026-08-26_pre.jsonl</td><td>1,030 条 · 06:00–06:43 UTC</td></tr>
+      <tr><td>虎牙弹幕（手工合并）</td><td>docs/data/danmu/huya/2026-08-26_huya_{we957,shuoshuo,mile,remember}.jsonl</td><td>1,805 条（窗口内）</td></tr>
+      <tr><td>规则层情报</td><td>runtime/vps_intel/lol-kt-bro2-2026-08-26_intel.json</td><td>17,365 条（含词表缺口，见下）</td></tr>
+      <tr><td>既有节点页</td><td>reports/intel_danmu_KT Rolster-HANJIN BRION_2026-08-26_g1_bp.html（+ g1_mid）</td><td>G1 BP / G1 局中</td></tr>
+      <tr><td>长期画像库</td><td>docs/data/intel/teams.json / players.json / leagues.json</td><td>KT / BRO / LCK 档案</td></tr>
+    </table>
+    <h3>结果来源</h3>
+    <p class="small">① 会话外声明：用户侧「弹幕多信号确认系列结束，结果待官方核对」（本页登记为待核对项）；② 本窗口弹幕观测：截至 08:30 UTC 第 1 局进行中、无终局信号；③ 官方核对：<b>待 LCK 官方比分/战报回填</b>。三项不一致时以官方为准。</p>
+    <h3>已发现工具问题（需固化修复）</h3>
+    <p class="small muted">① 队伍词表缺 BRO/OKBRO/Brion → 规则层 JSON teams 只有 KT 329 条、BRO 0 条；实际弹幕 BRO+OKBRO 提及 1,169 条。② 灰信号规则将 Kick 广告刷屏误报为灰信号（190 条）。③ 切片文件不含虎牙消息，跨源聚合需手工合并。→ 建议修词表 + 灰信号黑名单 + 切片聚合，补回归测试（防错规则 12b）。</p>
+    <h3>待确认项清单</h3>
+    <p class="small muted">系列比分与结果；双方官方阵容（Keria/Casting/Namgung/Gideon 身份与归属；Teddy 选角女枪 vs 卢锡安两说）；冰鸟归属；「4-5 BRO FAVORED」含义；G2–G5 弹幕样本（VOD 回捞）。</p>
+  </div>
+  <!-- 12 数据完整性三栏 -->
+  <div class="card">
+    <h2><span class="no">12</span>数据完整性（实际 / 预期 / 缺口）</h2>
+    <div class="cols2">
+      <div>
+        <h3>实际数据源（本场用到的直播间）</h3>
+        <table>
+          <tr><th>来源</th><th>条数</th><th>覆盖</th></tr>
+          <tr><td>twitch_caedrel（英文二路）</td><td>14,176</td><td>07:30 起</td></tr>
+          <tr><td>twitch_lck（英文官方流）</td><td>1,930</td><td>07:30 起</td></tr>
+          <tr><td>huya_we957（虎牙 957）</td><td>967</td><td>07:30 起</td></tr>
+          <tr><td>twitch_otplol（法语二路）</td><td>616</td><td>07:30 起</td></tr>
+          <tr><td>huya_shuoshuo（硕硕）</td><td>428</td><td>08:15 起</td></tr>
+          <tr><td>kick_gaules / kick_eslcs（CS 流）</td><td>347 / 51</td><td>与本场无关，噪音</td></tr>
+          <tr><td>twitch_kameto（法语）</td><td>245</td><td>07:30 起</td></tr>
+          <tr><td>huya_mile（米勒）</td><td>228</td><td>08:17 起</td></tr>
+          <tr><td>huya_remember（Remember）</td><td>182</td><td>08:17 起</td></tr>
+        </table>
+        <p class="small muted">合计 19,170 条（07:30–08:30 UTC，切片 + 虎牙手工合并）。</p>
+      </div>
+      <div>
+        <h3>预期数据源（LCK 默认采集集）</h3>
+        <p class="small">按 knowledge/DANMU_CAPTURE_RULES.md 第 17 节（LCK）与 17bis 优先级（虎牙 &gt; SOOP &gt; Twitch &gt; Kick）：</p>
+        <p class="small">· 虎牙：957(890001)、毛毛(149346)、米勒(149361)、Remember(528222)、硕硕(323444)</p>
+        <p class="small">· SOOP：官方韩流（应接入，本场未接入）</p>
+        <p class="small">· Twitch：lck 官方 / caedrel 等（补充源，已采）</p>
+        <p class="small">· Kick：CS2 赛事用，LoL 本场不属于默认集（已采但为噪音）</p>
+        <h3>缺口（缺源不交付完整结论）</h3>
+        <p class="small">① <b>毛毛离线未采</b>（页签为 LEC G2 vs GX，非本场）；② <b>SOOP 未接入</b>，无韩文源交叉；③ 硕硕/米勒/Remember 08:15–08:17 后才接入，开局阶段仅 957 + Twitch；④ 切片不含虎牙（本次分析已手工合并）；⑤ <b>G2+ 完全未覆盖</b>（08:30 止 G1 进行中）；⑥ 若系列已结束：比分/终局待官方核对，后续局次待 VOD 回捞（Twitch VOD 可回捞）。</p>
+        <div class="banner warn"><b>结论交付边界：</b>比分/胜负等关键结论不交付；本页仅交付窗口内可验证情报（BP 锚点、方向信号、灰信号、密度、完整性与缺口），G1 后续与 G2+ 均标「待回填/样本不足」。</div>
+      </div>
+    </div>
+  </div>
+  <!-- 13 本场长期沉淀点 -->
+  <div class="card">
+    <h2><span class="no">13</span>本场长期沉淀点</h2>
+    <div class="dep">
+      <div class="h">① 对位规律：克烈对位压制奥拉夫（LONG · bp_entities）</div>
+      <p class="small">「Kled &gt;&gt;&gt;&gt; Olaf if lead」「Kled already lead so big」「it Perfect Olaf not Doran Olaf still got chance」——两路（官方流+虎牙）出现，可跨场复用于上单对位评估与 BP 判读。</p>
+    </div>
+    <div class="dep">
+      <div class="h">② KT 资源端负面模式：不控龙/放龙（LONG · 队伍决策画像）</div>
+      <p class="small">虎牙 957/硕硕「优势不控龙吗」「都不拿龙啊，我买的龙啊」「放龙就是不想赢」——与 KT 历史「领先被翻/充电宝」叙事同源，可作后续 KT 比赛资源端观察基线。</p>
+    </div>
+    <div class="dep">
+      <div class="h">③ 选手×英雄锚点：BDD·瑞兹（LONG · bp_signals）</div>
+      <p class="small">「bdd is crazy on ryze」「Ryze with an early lead is scary」「瑞兹就是责任」两路共振——与 BDD 历史「炸弹人 G1 正锚/工具人必输」画像可合并为「BDD 主C英雄正锚」。</p>
+    </div>
+    <div class="dep">
+      <div class="h">④ 情绪噪音基线：OKBRO/BRO TAX + KTFRAUD/hatewatch（TRANSIENT → 噪音模型）</div>
+      <p class="small">英文弹幕对 KT 的看衰大量来自梗文化与反 KT 情绪而非基本面，量化共识时必须折扣——跨场可复用于 LCK 情绪信号去噪。</p>
+    </div>
+    <div class="dep">
+      <div class="h">⑤ 工具防错留痕（固化项）</div>
+      <p class="small">BRO/OKBRO 词表缺口 + 灰信号广告误报 + 切片不含虎牙 → 修词表、加黑名单、补回归测试；教训同 2026-08-18「KC/GX/Canna 词表漏抓」类，一次错误原则下须固化。</p>
+    </div>
+  </div>
+  <div class="foot">
+    弹幕情报库 · intel-report 技能生成 · 数据窗口 2026-08-26 07:30–08:30 UTC · 生成时间 2026-08-26 08:40 UTC<br>
+    结果一律「弹幕口径 · 官方待确认」；灰信号为「观众质疑，非结论」；样本不足处已显式标注，不硬造。
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
