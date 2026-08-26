@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弹幕情报 · KT vs BRO · G2 局中</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SF Pro Text", "Helvetica Neue", sans-serif;
+            line-height: 1.5;
+            color: #1d1d1f;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        .speed {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9fb 100%);
+            border-left: 4px solid #0071e3;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 16px;
+        }
+        .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0071e3;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .match-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 32px;
+            background: #f0f4fa;
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            align-items: baseline;
+        }
+        .match-meta .vs {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .match-meta .badge {
+            background: #0071e3;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .match-meta .note {
+            color: #6e6e73;
+            font-size: 0.85rem;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        .key-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 0.98rem;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .key-list li:last-child {
+            border-bottom: none;
+        }
+        .key-list .arrow {
+            color: #0071e3;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .decision-line {
+            background: #e8f0fe;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 16px;
+            font-weight: 500;
+            font-size: 0.98rem;
+            border-left: 4px solid #0071e3;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .signal-card {
+            background: #fafafc;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #e8e8ed;
+        }
+        .signal-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .signal-card .tag {
+            font-size: 0.7rem;
+            background: #e8e8ed;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .signal-card ul li {
+            font-size: 0.9rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .signal-card ul li:last-child {
+            border-bottom: none;
+        }
+        .small-note {
+            font-size: 0.8rem;
+            color: #6e6e73;
+            margin-top: 8px;
+        }
+        details {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: #6e6e73;
+            background: #f5f5f7;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+        details summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #0071e3;
+        }
+        .cluster-block {
+            background: #f0f4fa;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .cluster-block h4 {
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .cluster-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #d8dfe9;
+            font-size: 0.92rem;
+        }
+        .cluster-item:last-child {
+            border-bottom: none;
+        }
+        .cluster-item .count {
+            background: #0071e3;
+            color: white;
+            border-radius: 20px;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+        }
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 12px 8px;
+            background: #f0f4fa;
+            font-weight: 600;
+            border-bottom: 2px solid #d8dfe9;
+        }
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e8e8ed;
+            vertical-align: top;
+        }
+        .highlight {
+            color: #0071e3;
+            font-weight: 600;
+        }
+        .footnote {
+            font-size: 0.8rem;
+            color: #86868b;
+            margin-top: 8px;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">KT Rolster-HANJIN BRION 2026-08-26 g2 mid</b></div>
+<div class="container">
+    <!-- 0 核心情报速览 -->
+    <div class="card speed">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="match-meta">
+            <span class="vs">KT Rolster vs HANJIN BRION</span>
+            <span class="badge">BO5 · 第2局</span>
+            <span class="note">局中·非终局，结果待定</span>
+            <span class="note">弹幕口径·官方待回填</span>
+        </div>
+        <ul class="key-list">
+            <li><span class="arrow">→</span> Jiwoo五杀引爆弹幕（15条看好），BRO中野被喷“差距大”（20条看衰）<span class="arrow">→</span> KT下路状态火热，BRO中野成突破口，多源确认（详§1）</li>
+            <li><span class="arrow">→</span> KT提及208条（正7/负10），弹幕共识“打弱队手拿把掐”<span class="arrow">→</span> 实力压制预期强，但负向情绪仍存，弹幕口径·待官方（详§5）</li>
+            <li><span class="arrow">→</span> 灰信号“买了五杀”“Caps skin not selling”等质疑<span class="arrow">→</span> 观众对局内操作与商业表现存疑，单源待验证（详§2）</li>
+            <li><span class="arrow">→</span> 弹幕峰值09:32达841条（BROOOOOOO HOLY）<span class="arrow">→</span> 关键团战时刻，情绪集中爆发，多源确认（详§7）</li>
+        </ul>
+        <div class="decision-line">
+            <strong>决策落点：</strong> 短期看KT下路压制力，但需警惕BRO中野反扑；弹幕情绪偏多KT，但灰信号提示“五杀”有运气成分，建议谨慎追高。
+        </div>
+    </div>
+    <!-- 1 结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览/状态核验</h2>
+        <p>比赛进行中（第2小局），赛制BO5。弹幕窗口 08:48–09:34，共14,583条，4,227人，314.6条/分，样本状态ready。当前比分未定，弹幕口径显示KT优势明显，但官方未回填。</p>
+        <p class="small-note">队伍提及：KT 208（正7/负10）｜WE 133｜IG 31｜T1 30｜BLG 8｜TES 5｜GX 5｜Navi/NAVI 3｜GEN 3｜TH 2｜HLE 2｜DNS 2｜WBG 2｜EDG 2｜G2 1｜Spirit 1｜FURIA 1｜KC 1</p>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（观众质疑·非结论）</h2>
+        <ul>
+            <li>“买了五杀” – 质疑五杀含金量，可能为操作或运气（单源待验证）</li>
+            <li>“aint no way bdd is making jiwoo look good” – 认为BDD衬托Jiwoo，非绝对实力（单源）</li>
+            <li>“Caps skin not selling LO” – 商业角度调侃，非比赛直接相关（单源）</li>
+            <li>“米神故意找一个大家上不了号的时间狗叫” – 对选手行为质疑（单源）</li>
+            <li>“@blackhooollow intankable” – 疑似反讽，指向坦克英雄（单源）</li>
+        </ul>
+        <p class="small-note">以上信号均为观众主观质疑，不构成事实判断。</p>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <p>样本不足：弹幕数据未提供明确BP信息。仅见“冰鸟走位差”（BRO中单）与“edg都上单兰博大招更夸张”（EDG类比）。无法确认具体选人。</p>
+        <p class="small-note">建议关注后续弹幕对BRO冰鸟（Anivia）的讨论。</p>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p>弹幕中无直接盘口数据，但存在预测：“3-1 KT mark my words”（KT胜）、“3:0 BLG LOL”（BLG类比）。KT提及208条中正向7条，负向10条，市场情绪偏多但分歧存在。</p>
+        <p class="small-note">样本不足，无具体赔率讨论。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div class="signal-card">
+                <h4>🔴 正锚</h4>
+                <ul>
+                    <li>Jiwoo五杀（15条看好）</li>
+                    <li>KT“轻松取胜”5条</li>
+                    <li>“3-1 KT”预测3条</li>
+                </ul>
+            </div>
+            <div class="signal-card">
+                <h4>🔵 负锚</h4>
+                <ul>
+                    <li>BRO中野差距（8条）</li>
+                    <li>冰鸟走位差（5条）</li>
+                    <li>KT负向提及10条（“打强队不行”）</li>
+                </ul>
+            </div>
+        </div>
+        <div class="signal-card" style="margin-top:16px;">
+            <h4>⚪ 共识</h4>
+            <p>KT实力压制（弹幕多源），BRO中野为突破口。</p>
+        </div>
+        <div class="signal-card" style="margin-top:16px;">
+            <h4>⚫ 灰信号条件预测</h4>
+            <p>若BRO中野调整，KT可能失去压制力；五杀若为运气，后续可能哑火。</p>
+        </div>
+    </div>
+    <!-- 群体意见与归因 -->
+    <div class="cluster-block">
+        <h4>群体意见与归因</h4>
+        <div class="cluster-item">
+            <span><strong>Jiwoo（KT AD）</strong> – 看好 15条</span>
+            <span class="count">主因：五杀表现（10次）</span>
+        </div>
+        <div class="cluster-item">
+            <span><strong>BRO（对手）</strong> – 看衰 20条</span>
+            <span class="count">主因：中野差距（8次）</span>
+        </div>
+        <div class="cluster-item">
+            <span><strong>KT（队伍）</strong> – 看好 8条</span>
+            <span class="count">主因：实力压制（5次）</span>
+        </div>
+        <p style="margin-top:12px; font-size:0.9rem;"><strong>归因：</strong> 08:48–08:49期间，Jiwoo五杀引发“HOLY JIWOO”刷屏，BRO中野被集中批评（“bro中野太夸张了”）。</p>
+        <p style="margin-top:8px; font-size:0.9rem;"><strong>分歧点：</strong> 部分弹幕认为KT“打强队不行”，对KT的压制力存疑。</p>
+        <p style="margin-top:8px; font-size:0.9rem;"><strong>一句话结论：</strong> 弹幕主流看好KT，但BRO中野的负面评价是主要归因，若BRO调整，风向可能变化。</p>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <p><strong>LONG（看多KT）：</strong> Jiwoo状态火热，BRO中野低迷，KT胜率预期高。弹幕提及KT 208条，正向情绪为主。</p>
+        <p><strong>SHORT（看空KT）：</strong> 负向提及10条，且灰信号质疑五杀含金量；BRO若调整中野，KT可能失去优势。</p>
+        <p><strong>决策：</strong> 谨慎偏多，关注BRO中野是否轮换或战术调整。</p>
+    </div>
+    <!-- 7 本局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>本局复盘（证据层）</h2>
+        <p>08:48–08:49：Jiwoo五杀，弹幕“HOLY JIWOO”“鸡窝牛笔”出现，BRO中野被喷（“bro中野太夸张了”）。09:32弹幕峰值841条（“BROOOOOOO HOLY”），推测为关键团战或击杀。</p>
+        <p>灰
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
