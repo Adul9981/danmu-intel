@@ -96,9 +96,10 @@ def main() -> None:
     # 只保留今天/明天开赛的候选（2026-08-25 固化，同市场扫描器口径）
     for off in range(0, 8):
         evs = get(
-            # 含已关闭事件（结算回填需要）；游戏状态由窗口+流水线自行过滤
+            # 2026-08-27：去掉 archived=false（会排除已结束归档的今天场次，
+            # 导致今日页缺已结束比赛）；拉全部后按日期窗口筛今天/近 3 天
             "https://gamma-api.polymarket.com/events?tag_id=64"
-            "&archived=false&limit=100&offset=%d&order=startDate&ascending=false" % (off * 100)
+            "&limit=100&offset=%d&order=startDate&ascending=false" % (off * 100)
         )
         if not evs:
             break
