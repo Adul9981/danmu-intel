@@ -71,7 +71,7 @@ BLAST Open Porto · FUT vs Legacy · G1 BP 后/开局情报 · 2026-08-27
 
 ## 10预测验证回填（沉淀层）
 
-观众普遍看好 FUT → 待 G1 结果回填。
+观众普遍看好 FUT → G1 **Legacy 13-10 胜（未兑现）**（Liquipedia 官方比分，弹幕口径被打脸）。
 
 ## 11数据与溯源
 
