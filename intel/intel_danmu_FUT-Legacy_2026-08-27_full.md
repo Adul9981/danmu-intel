@@ -14,15 +14,15 @@ CS2 · BLAST Open Porto Group B · BO3 · Legacy 2-0 FUT
     锚点**Legacy 2-0 横扫（季军暴打亚军）**：G1 Ancient 13-10（官方）+ G2 Dust II 再胜（弹幕 + Polymarket 97c/94.5c）——**说明 FUT 输掉自己选图 + 被迫打历史 BAN 的沙二，选图层处于结构劣势** → 详 §3/§5/§7
     风险**灰信号 15+ 条（观众质疑·非结论）**：贯穿两图——仅作风险标注、**不上升结论**，需警惕盘口异动 → 详 §2
     共识**狙击手质量 = 系列核心变量**：try（顶级大狙）vs cmtry（"敌我狙击手差距太大"）——**意味着无狙体系在沙二/遗迹被完克，Legacy 晋级后对 Falcons 心理优势值得关注** → 详 §5/§6
-    盘口**Polymarket 方向确认**：胜者盘 Legacy 97.25c、Under 2.5 94.5c——**说明终局方向高度确认（结算待 closed）** → 详 §4
+    盘口**Polymarket 方向确认**：胜者盘已结算 Legacy（99.95c）、Under 2.5 99.5c——**2-0 官方确认** → 详 §4
 
-  **结果仲裁说明：**00:16 CST 三路弹幕同时 gg/结束 + Polymarket 高度确认 **Legacy 2-0**；Liquipedia 逐图比分滞后（图二官方比分待回填后复核）。
+  **结果仲裁说明：**00:16 CST 三路弹幕同时 gg/结束 + Polymarket 高度确认 **Legacy 2-0**；Liquipedia 逐图比分滞后；Polymarket 已结算确认 2-0（图二 13-11）。
 
 ## 1系列总览（官方源）
 
 | 对阵 | FUT（EWC 亚军）vs Legacy（菊花，EWC 季军）· BLAST Premier Open Porto 2026 小组赛 B 组 · BO3 · 胜者组八强（UB QF3） |
 | --- | --- |
-| 系列结果 | **Legacy 2-0 FUT**：G1 Ancient **13-10**（官方）· G2 Dust II **Legacy 胜**（弹幕 + Polymarket，官方比分待回填） |
+| 系列结果 | **Legacy 2-0 FUT**：G1 Ancient **13-10** · G2 Dust II **13-11**（Polymarket 结算 99.95c 确认） |
 | 官方时间 | 22:30 CST 开赛 · G1 结束 23:22:04 · G2 结束约 00:16 CST · hltv 2396929 · BLAST fcc5ce44 |
 | 晋级含义 | Legacy 晋级胜者组半决赛（路径聚焦 Falcons）；FUT 掉败者组 |
 | 今日同组赛果 | 17:00 IC 2-0 Vitality（爆冷）· 20:00 MOUZ 2-0 9z · 22:30 Legacy 2-0 FUT · 01:00 Falcons vs LVG |
@@ -40,14 +40,14 @@ CS2 · BLAST Open Porto Group B · BO3 · Legacy 2-0 FUT
 | 地图 | 结果 | 关键情报 |
 | --- | --- | --- |
 | G1 Ancient（FUT 选） | Legacy 13-10（官方） | FUT 人数优势局连输（5打3 等）；try 26-9/+17 官方数据；"遗迹是fut强图"正锚未兑现 |
-| G2 Dust II（Legacy 选） | Legacy 胜（弹幕约 13-11，官方待回填） | 沙二狙击图：try 延续（鸟狙五杀/ACE）；FUT 大狙崩盘 + 没战术（历史 BAN 沙二背景） |
+| G2 Dust II（Legacy 选） | Legacy 13-11（Polymarket 结算确认） | 沙二狙击图：try 延续（鸟狙五杀/ACE）；FUT 大狙崩盘 + 没战术（历史 BAN 沙二背景） |
 | G3 Cache | 未打 | 2-0 结束，未触发 |
 
 选图层结论：FUT 输掉自己选图 + 被迫打历史 BAN 的沙二——两图均在 Legacy 节奏内。
 
 ## 4盘口与市场讨论
 
-- **Polymarket 三市场一致：**胜者盘 Legacy 97.25c、Under 2.5 94.5c、Map2 Legacy 94.6c——终局方向高度确认（结算待 closed）。
+- **Polymarket 结算确认：**Map1/Map2 Legacy 99.95c、Under 2.5 99.5c、图二总回合 24（13-11）——2-0 官方结算。
 
 - **大额单线索：**chaincatcher 报道 $132,997.1（21:35，~59%），方向未标注；结合终局，若该单在 Legacy 则命中。
 
@@ -115,7 +115,7 @@ CS2 · BLAST Open Porto Group B · BO3 · Legacy 2-0 FUT
 
 **数据源**：虎牙三路同会话：CSBOY 官方 123321 / CSBOY-Mo 321123 / BLAST 官方 blast；采集会话 cs2_blast_2026-08-27。
 
-**结果仲裁**：弹幕三路 gg 共振（00:16）+ Polymarket 胜者盘 97.25c / Under 2.5 94.5c；官方逐图比分待回填复核。
+**结果仲裁**：弹幕三路 gg 共振（00:16）+ Polymarket 胜者盘 97.25c / Under 2.5 94.5c；官方逐图比分已由 Polymarket 结算确认复核。
 
 生成时间：2026-08-28 00:20 CST · 情报原则：核心=本场弹幕，事实层=官方源仲裁，推测显式标注。
 弹幕情报 · 观众质疑非结论 · 比分以官方源为准 · Polymarket 电竞情报项目

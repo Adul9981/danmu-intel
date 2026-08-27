@@ -11,12 +11,12 @@ CS2 · BLAST Open Porto Group B · BO3 · 图二 Dust II（沙二）· Legacy 2-
     try 系列 MVP（图一 26-9/+17）
     灰信号 15+ 条 · 两房共振
 
-    锚点**Legacy 2-0 横扫（季军暴打亚军）**：图一 Ancient 13-10（官方）、图二 Dust II 再胜（弹幕多源 + Polymarket 97.25c/94.5c）——**说明 Legacy 系列全面优势，狙击手质量（try vs cmtry）是胜负手（多源确认）** → 详 §3/§5/§8
+    锚点**Legacy 2-0 横扫（季军暴打亚军）**：图一 Ancient 13-10（官方）、图二 Dust II **13-11**（Polymarket 结算 99.95c）——**说明 Legacy 系列全面优势，狙击手质量（try vs cmtry）是胜负手（多源确认）** → 详 §3/§5/§8
     风险**灰信号 15+ 条（观众质疑·非结论）**：图一 12 条 + 图二"吃菠菜/吃菜/剧本"3 条 + 单条"像挂"质疑——仅作风险标注、**不上升结论**，若盘口异动需警惕 → 详 §2
     共识**观众共识：Legacy 全面压制**"菊花是真的猛 除了绿龙其他队真干不过他"——**意味着后续对阵 Falcons 时"三擒猎鹰" H2H 心理优势值得关注** → 详 §5/§6
-    盘口**Polymarket 方向确认**：胜者盘 Legacy 97.25c、Under 2.5 94.5c——**说明终局方向高度确认（结算待 closed）**；大额单 $132,997 方向待核 → 详 §4
+    盘口**Polymarket 方向确认**：胜者盘已结算 Legacy（99.95c）、Under 2.5 99.5c——**2-0 官方确认**；大额单 $132,997 方向待核 → 详 §4
 
-  **结果仲裁说明：**本场于 00:16 CST 三路弹幕同时 gg/结束（CSBOY 官方 + Mo + BLAST），Polymarket 盘口 Legacy 97.25c / Under 2.5 94.5c 高度确认 **Legacy 2-0**；Liquipedia 逐图比分滞后（仍显 0-1），官方逐图比分（Dust II）待回填后更新。
+  **结果仲裁说明：**本场于 00:16 CST 三路弹幕同时 gg/结束（CSBOY 官方 + Mo + BLAST），Polymarket **已结算**：Map2 Legacy 99.95c、Under 2.5 99.5c、图二总回合 24（13-11）——**Legacy 2-0 官方确认**；Liquipedia 逐图比分滞后。
 
 ## 1比赛信息与状态（官方源）
 
@@ -24,7 +24,7 @@ CS2 · BLAST Open Porto Group B · BO3 · 图二 Dust II（沙二）· Legacy 2-
 | --- | --- |
 | 官方时间 | 2026-08-27 22:30 CST 开赛 · hltv match 2396929 · BLAST match fcc5ce44 · 图二约 00:16 CST 结束 |
 | 官方地图 | 图一 **Ancient**（Legacy 13-10 官方）· 图二 **Dust II**（Legacy 胜）· 图三 Cache（未打） |
-| 系列状态 | **Legacy 2 - 0 FUT**（Legacy 晋级；FUT 掉败者组）· 官方逐图比分待回填 |
+| 系列状态 | **Legacy 2 - 0 FUT**（Legacy 晋级；FUT 掉败者组）· 官方逐图比分已由 Polymarket 结算确认 |
 | 今日同组赛果 | 17:00 IC 2-0 Vitality（爆冷）· 20:00 MOUZ 2-0 9z · 22:30 Legacy 2-0 FUT · 01:00 Falcons vs LVG |
 | 弹幕规模 | 全场（22:35 起）6,000+ 条：CSBOY 官方为主 + Mo + BLAST 官方；try/狙击手对比簇 200+ 条 |
 | 完整性 | 三路齐采图一比分 = BLAST 官方页（23:32 抓取）；图二比分 = 弹幕口径 + Polymarket（官方待回填） |
@@ -76,7 +76,7 @@ BP 战绩情报：FUT 历史主动 ban 沙二（弹幕口径"fut bo5搬沙二有
 
 ## 6情报含义与决策落点
 
-- **系列结论：**Legacy **2-0** FUT（Legacy 晋级胜者组半决赛；FUT 掉败者组）。弹幕口径 + Polymarket 高度确认，官方逐图比分待回填。
+- **系列结论：**Legacy **2-0** FUT（Legacy 晋级胜者组半决赛；FUT 掉败者组）。弹幕口径 + Polymarket 高度确认，官方逐图比分已由 Polymarket 结算确认。
 
 - **核心胜负手：**狙击手质量（try vs cmtry）——沙二/遗迹均为大狙关键图；FUT 无狙体系（"本质无狙队"）两图被完克。
 
@@ -131,7 +131,7 @@ BP 战绩情报：FUT 历史主动 ban 沙二（弹幕口径"fut bo5搬沙二有
 
 **密度峰值**：23:12/23:15（图一 try 击杀秀 + FUT 翻车）；00:09-00:16（图二末段 FUT 追分 vs Legacy 收下）。
 
-**结果仲裁**：弹幕三路 gg 共振（00:16）+ Polymarket 胜者盘 97.25c / Under 2.5 94.5c；官方逐图比分待回填后复核。
+**结果仲裁**：弹幕三路 gg 共振（00:16）+ Polymarket 结算（Map1/2 99.95c、Under 2.5 99.5c、图二 13-11）。
 
 生成时间：2026-08-28 00:20 CST · 情报原则：核心=本场弹幕，事实层=官方源仲裁，推测显式标注。
 弹幕情报 · 观众质疑非结论 · 比分以官方源为准 · Polymarket 电竞情报项目
