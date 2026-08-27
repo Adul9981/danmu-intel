@@ -94,28 +94,27 @@ def main() -> None:
     candidates: dict[str, dict] = {}
     # 用 Esports 标签（tag_id=64）精准拉电竞事件（避免被加密货币小时盘刷屏），
     # 只保留今天/明天开赛的候选（2026-08-25 固化，同市场扫描器口径）
-    for off in range(0, 8):
-        evs = get(
-            # 2026-08-27：去掉 archived=false（会排除已结束归档的今天场次，
-            # 导致今日页缺已结束比赛）；拉全部后按日期窗口筛今天/近 3 天
-            "https://gamma-api.polymarket.com/events?tag_id=64"
-            "&limit=100&offset=%d&order=startDate&ascending=false" % (off * 100)
-        )
-        if not evs:
-            break
-        for e in evs:
-            t = e.get("title") or ""
-            if not tracked(t):
-                continue
-            slug = e.get("slug") or ""
-            # 用 slug 末尾的比赛日期，禁止用事件层 startDate（挂牌时间≠开赛时间，AGENTS 防错 2）
-            mm = re.search(r"-(\d{4}-\d{2}-\d{2})$", slug or "")
-            sd = mm.group(1) if mm else ""
-            # 窗口：近 3 天（供结算回填）+ 今明两天（供流水线小局节点）
-            if sd and backfill_from <= sd <= horizon:
-                candidates[slug] = {"title": t, "date": sd, "teams": norm_teams(t)}
-        if not evs:
-            break
+    for arch in ("false", "true"):
+        # 2026-08-27：archived=false（进行中/未开始）+ archived=true（已结束归档）
+        # 两批都要，否则已结束的今天场次会从今日页消失（教训：08-27 CS2 缺场次）
+        for off in range(0, 8):
+            evs = get(
+                "https://gamma-api.polymarket.com/events?tag_id=64"
+                "&archived=%s&limit=100&offset=%d&order=startDate&ascending=false" % (arch, off * 100)
+            )
+            if not evs:
+                break
+            for e in evs:
+                tt = e.get("title") or ""
+                if not tracked(tt):
+                    continue
+                slug = e.get("slug") or ""
+                mm = re.search(r"-(\d{4}-\d{2}-\d{2})$", slug or "")
+                sd = mm.group(1) if mm else ""
+                if sd and backfill_from <= sd <= horizon:
+                    candidates[slug] = {"title": tt, "date": sd, "teams": norm_teams(tt)}
+            if not evs:
+                break
 
     games: dict[str, dict] = {}
     settlements: dict[str, dict] = {}
