@@ -29,7 +29,7 @@ CS2 · BLAST Open Porto Group B · BO3 · 图二 Dust II（沙二）· Legacy 2-
 | 弹幕规模 | 全场（22:35 起）6,000+ 条：CSBOY 官方为主 + Mo + BLAST 官方；try/狙击手对比簇 200+ 条 |
 | 完整性 | 三路齐采图一比分 = BLAST 官方页（23:32 抓取）；图二比分 = 弹幕口径 + Polymarket（官方待回填） |
 
-图一 = BLAST 官方页（23:32 抓取）；图二 = 弹幕多源 + Polymarket 价格（94.5-97c）；Liquipedia 滞后待回填。
+图一 = BLAST 官方页（23:32 抓取）；图二 = Polymarket 结算确认（Legacy 13-11，99.95c）；Liquipedia 滞后已由结算仲裁替代。
 
 ## 2灰信号汇总（风险 · 观众质疑非结论）
 
