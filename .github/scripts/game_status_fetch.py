@@ -100,7 +100,7 @@ def main() -> None:
         for off in range(0, 8):
             evs = get(
                 "https://gamma-api.polymarket.com/events?tag_id=64"
-                "&archived=%s&limit=100&offset=%d&order=startDate&ascending=false" % (arch, off * 100)
+                "&archived=%s&startDateMin=%s&startDateMax=%s&limit=100&offset=%d&order=startDate&ascending=false" % (arch, backfill_from, horizon, off * 100)
             )
             if not evs:
                 break
