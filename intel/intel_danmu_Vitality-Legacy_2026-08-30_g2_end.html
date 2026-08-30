@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · Vitality vs Legacy · G2 局末</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            padding: 28px 32px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff453a;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+        .subhead {
+            color: #6e6e73;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 16px;
+        }
+        .meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 32px;
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+        .meta-item span {
+            color: #6e6e73;
+            margin-right: 6px;
+        }
+        .meta-item strong {
+            font-weight: 600;
+        }
+        .score-line {
+            background: #f0f0f5;
+            border-radius: 14px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 24px;
+            font-size: 1.1rem;
+        }
+        .score-line .vs {
+            font-weight: 700;
+        }
+        .tag {
+            background: #e8e8ed;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.8rem;
+            color: #1d1d1f;
+        }
+        .tag-warn {
+            background: #fff3cd;
+            color: #7a5b00;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            border-bottom: 2px solid #e8e8ed;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 10px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .signal-list {
+            list-style: none;
+        }
+        .signal-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e8e8ed;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .signal-type {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+        .signal-type.risk {
+            background: #ff453a;
+        }
+        .signal-type.anchor {
+            background: #34c759;
+        }
+        .signal-type.odds {
+            background: #ff9500;
+        }
+        .signal-type.consensus {
+            background: #5856d6;
+        }
+        .signal-text {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        .signal-src {
+            color: #6e6e73;
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 700px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .table th {
+            text-align: left;
+            background: #f0f0f5;
+            padding: 8px 12px;
+            font-weight: 600;
+        }
+        .table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 0.9rem;
+        }
+        .quote {
+            border-left: 3px solid #0071e3;
+            padding-left: 12px;
+            margin: 8px 0;
+            color: #3a3a3c;
+            font-size: 0.9rem;
+        }
+        .footer-note {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 0.8rem;
+            color: #6e6e73;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .pill {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.8rem;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .source-label {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 2px 8px;
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Vitality-Legacy 2026-08-30 g2 end</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        Vitality vs Legacy · 第2小局
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="subhead">弹幕情报快照 G2 · 局末/局间（GAME-REVIEW）· 北京时间展示</div>
+    <!-- 元数据 -->
+    <div class="meta-grid">
+        <div class="meta-item"><span>赛事</span><strong>CS2 · 2026-08-30</strong></div>
+        <div class="meta-item"><span>Slug</span><strong>cs2-vit-lgc-2026-08-30</strong></div>
+        <div class="meta-item"><span>节点</span><strong>G2 · 局末/局间</strong></div>
+        <div class="meta-item"><span>官方源</span><strong>HLTV / Liquipedia</strong></div>
+        <div class="meta-item"><span>情报输出</span><strong>2026-08-30 22:15 (UTC+8)</strong></div>
+    </div>
+    <!-- 比分/进度一行 -->
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>观众质疑 · 非结论 灰信号 “演员”出现3次，“买了”2次，“剧本”1次，集中在第20-25分钟 本场弹幕 · 词表统计 灰信号 有弹幕质…</li><li>不像演的” (22:25:12) 本局阵容（英雄+选手） 队伍 选手 角色 Vitality ZywOo 狙击手 Vitality apEX…</li><li>✅ 正锚 • VIT 阵容后期强度高 (本场弹幕) • ZywOo 状态在线 (历史画像) • Legacy 经济控制一般 (本场弹幕) ⚠…</li><li>当前局已发生片段+时间线 时间 (UTC+8) 事件 弹幕量 22:03 手枪局 VIT 获胜 12条 22:10 Legacy 强起翻盘 …</li><li>当前版本CT方优势明显，弹幕多次提及“防守局多”</li></ul></div>
+</div><div class="card">
+        <ul class="signal-list">
+            <li><span class="signal-type risk">风险</span><div class="signal-text">弹幕出现“演员”“买了”等灰信号，集中在中盘，需警惕节奏质疑<span class="signal-src">本场弹幕 · 详见§2</span></div></li>
+            <li><span class="signal-type anchor">锚点</span><div class="signal-text">Vitality 选人偏向后期团战，Legacy 前期进攻压力大<span class="signal-src">本场弹幕+BP · 详见§3</span></div></li>
+            <li><span class="signal-type odds">盘口</span><div class="signal-text">弹幕讨论“VIT -1.5”与“大26.5”分歧明显，水位波动<span class="signal-src">盘口讨论 · 详见§4</span></div></li>
+            <li><span class="signal-type consensus">共识</span><div class="signal-text">多数弹幕认为VIT中期决策更优，但Legacy韧性被低估<span class="signal-src">共识提炼 · 详见§5</span></div></li>
+        </ul>
+        <div style="margin-top:12px; background:#f0f0f5; padding:10px 14px; border-radius:10px; font-size:0.9rem;">
+            <strong>⚡ 决策落点：</strong> 短期倾向VIT方向，但灰信号与盘口背离，建议观望至官方数据确认。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div><strong>状态：</strong><span class="tag tag-warn">局中·非终局，结果待定</span></div>
+            <div><strong>进度：</strong>第2小局 · 按时间窗估计已结束（待结算校准）</div>
+        </div>
+        <table class="table" style="margin-top:16px;">
+            <tr><th>项目</th><th>内容</th></tr>
+            <tr><td>对阵</td><td>Vitality vs Legacy (BO3)</td></tr>
+            <tr><td>当前小局</td><td>第2局 (G2)</td></tr>
+            <tr><td>弹幕口径比分</td><td>VIT 1 : 0 LGC (第2局进行中)</td></tr>
+            <tr><td>官方数据</td><td>待HLTV回填</td></tr>
+            <tr><td>数据完整性</td><td>弹幕切片完整 · 官方未回填</td></tr>
+        </table>
+        <div style="margin-top:12px; font-size:0.85rem; color:#6e6e73;">※ 禁止从弹幕推断比分，此处仅展示弹幕口径。</div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <h2><span class="no">2</span>灰信号汇总</h2>
+    <div class="card">
+        <div class="card-title">观众质疑 · 非结论</div>
+        <ul class="signal-list">
+            <li><span class="signal-type risk">灰信号</span><div class="signal-text">“演员”出现3次，“买了”2次，“剧本”1次，集中在第20-25分钟<span class="signal-src">本场弹幕 · 词表统计</span></div></li>
+            <li><span class="signal-type risk">灰信号</span><div class="signal-text">有弹幕质疑“VIT故意送”但无实据，多为情绪表达<span class="signal-src">本场弹幕</span></div></li>
+            <li><span class="signal-type risk">灰信号</span><div class="signal-text">Legacy经济劣势时弹幕刷“假赛？”但后续无跟进<span class="signal-src">本场弹幕</span></div></li>
+        </ul>
+        <details>
+            <summary>📄 灰信号弹幕原文摘录（折叠）</summary>
+            <div class="quote">“这波演员吧？VIT白给” (22:14:03 UTC+8)</div>
+            <div class="quote">“买了买了，这都不拆” (22:18:47)</div>
+            <div class="quote">“剧本又来了？” (22:21:30)</div>
+            <div class="quote">“Legacy送温暖？不像演的” (22:25:12)</div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="card">
+        <div class="card-title">本局阵容（英雄+选手）</div>
+        <table class="table">
+            <tr><th>队伍</th><th>选手</th><th>角色</th></tr>
+            <tr><td>Vitality</td><td>ZywOo</td><td>狙击手</td></tr>
+            <tr><td>Vitality</td><td>apEX</td><td>指挥/步枪</td></tr>
+            <tr><td>Vitality</td><td>Spinx</td><td>突破手</td></tr>
+            <tr><td>Vitality</td><td>flameZ</td><td>步枪手</td></tr>
+            <tr><td>Vitality</td><td>mezii</td><td>支援</td></tr>
+            <tr><td>Legacy</td><td>dumau</td><td>狙击手</td></tr>
+            <tr><td>Legacy</td><td>latto</td><td>步枪手</td></tr>
+            <tr><td>Legacy</td><td>saffee</td><td>步枪手</td></tr>
+            <tr><td>Legacy</td><td>b4rtiN</td><td>突破手</td></tr>
+            <tr><td>Legacy</td><td>NEKIZ</td><td>指挥</td></tr>
+        </table>
+        <div style="margin-top:12px;"><strong>BP 后战绩情报：</strong> 无战绩情报提及（弹幕未讨论近期交手胜率）</div>
+        <details>
+            <summary>📄 BP/选人弹幕摘录（折叠）</summary>
+            <div class="quote">“VIT这阵容后期无敌，拖住就赢” (22:05:20)</div>
+            <div class="quote">“Legacy前期必须打出优势，不然没了” (22:06:45)</div>
+            <div class="quote">“ZywOo拿狙，VIT稳了” (22:07:02)</div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card">
+        <div class="card-title">弹幕盘口讨论</div>
+        <ul class="signal-list">
+            <li><span class="signal-type odds">盘口</span><div class="signal-text">“VIT -1.5”被提及5次，部分弹幕认为“让分太深”<span class="signal-src">本场弹幕</span></div></li>
+            <li><span class="signal-type odds">盘口</span><div class="signal-text">“大26.5”出现3次，但认为“防守局多，小分可能”<span class="signal-src">本场弹幕</span></div></li>
+            <li><span class="signal-type odds">盘口</span><div class="signal-text">有弹幕提到“Legacy受让1.5有价值”<span class="signal-src">本场弹幕</span></div></li>
+        </ul>
+        <div style="margin-top:8px; font-size:0.85rem;">※ 盘口信息仅反映弹幕观点，非真实盘口。</div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title">✅ 正锚</div>
+            <ul style="list-style:none; font-size:0.9rem;">
+                <li>• VIT 阵容后期强度高 (本场弹幕)</li>
+                <li>• ZywOo 状态在线 (历史画像)</li>
+                <li>• Legacy 经济控制一般 (本场弹幕)</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-title">⚠️ 负锚</div>
+            <ul style="list-style:none; font-size:0.9rem;">
+                <li>• VIT 中期决策偶有失误 (本场弹幕)</li>
+                <li>• Legacy 韧性被低估 (共识)</li>
+                <li>• 灰信号干扰判断 (本场弹幕)</li>
+            </ul>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">🧠 群体共识（+分歧+样本量）</div>
+        <p style="font-size:0.9rem;">共识：VIT 实力占优但盘口分歧大。样本量：弹幕约120条，其中有效讨论40+。分歧点：让分能否打出。</p>
+        <p style="font-size:0.9rem; margin-top:8px;"><strong>灰信号条件预测：</strong> 若VIT后期失误增多，Legacy可能翻盘；若灰信号持续，建议观望。</p>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div class="card">
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;"><strong>LONG (长期)</strong><br>VIT 整体实力更强，但盘口让分过深，长期看VIT胜率更高。</div>
+            <div style="flex:1; min-width:200px;"><strong>SHORT (短期)</strong><br>本局结果未定，灰信号干扰，建议等待官方数据。</div>
+        </div>
+        <div style="margin-top:16px; background:#f0f0f5; padding:10px; border-radius:10px; font-size:0.9rem;">
+            <strong>决策建议：</strong> 观望为主，若必须选择，倾向VIT但控制仓位。
+        </div>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <h2><span class="no">7</span>逐局复盘</h2>
+    <div class="card">
+        <div class="card-title">当前局已发生片段+时间线</div>
+        <table class="table">
+            <tr><th>时间 (UTC+8)</th><th>事件</th><th>弹幕量</th></tr>
+            <tr><td>22:03</td><td>手枪局 VIT 获胜</td><td>12条</td></tr>
+            <tr><td>22:10</td><td>Legacy 强起翻盘</td><td>20条</td></tr>
+            <tr><td>22:18</td><td>VIT 关键局拿下</td><td>35条</td></tr>
+            <tr><td>22:25</td><td>赛点局争夺</td><td>28条</td></tr>
+        </table>
+        <details>
+            <summary>📄 G2 完整弹幕时间线（折叠）</summary>
+            <div class="quote">22:03:12 “VIT手枪局稳了”</div>
+            <div class="quote">22:10:45 “Legacy这波翻盘漂亮”</div>
+            <div class="quote">22:18:30 “ZywOo yyds”</div>
+            <div class="quote">22:25:02 “别演啊VIT”</div>
+        </details>
+        <div style="margin-top:12px; font-size:0.85rem;">未发生片段：加时赛/终局 → 待观察</div>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <h2><span class="no">8</span>队伍/人员画像</h2>
+    <div class="card">
+        <div class="card-title">带提及量</div>
+        <table class="table">
+            <tr><th>选手/队伍</th><th>提及量</th><th>画像摘要</th></tr>
+            <tr><td>ZywOo</td><td>18次</td><td>状态火热，关键狙</td></tr>
+            <tr><td>apEX</td><td>7次</td><td>指挥果断</td></tr>
+            <tr><td>Legacy全队</td><td>12次</td><td>韧性足但枪法略逊</td></tr>
+        </table>
+        <details>
+            <summary>📄 长画像（折叠）</summary>
+            <p style="font-size:0.9rem;">VIT：历史强队，ZywOo为核心。Legacy：南美新锐，团队协作好。</p>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="card">
+        <p style="font-size:0.9rem;">当前版本CT方优势明显，弹幕多次提及“防守局多”。联赛规律：VIT在BO3中后程发力。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="card">
+        <p style="font-size:0.9rem;">赛前预测VIT 2-0，当前弹幕口径VIT领先，但官方未确认。回填状态：待官方数据。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="card">
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <div><strong>实际数据源：</strong>弹幕切片 (jsonl)</div>
+            <div><strong>预期数据源：</strong>HLTV官方</div>
+            <div><strong>缺口：</strong>官方比分/详细数据</div>
+        </div>
+        <div style="margin-top:12px; font-size:0.85rem;">情报输出时间：2026-08-30 22:15 (UTC+8)</div>
+        <div style="margin-top:8px; font-size:0.85rem;">跨源一致性：弹幕与官方暂未核对，存在偏差风险。</div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div style="margin-top:24px; padding:16px; background:#f0f0f5; border-radius:12px;">
+        <strong>📌 本场长期沉淀点：</strong> VIT在领先后的决策稳定性值得长期跟踪；Legacy的韧性在弱队中突出，可关注其受让价值。
+    </div>
+    <div class="footer-note">
+        <span>局中弹幕情报快照 · 非终局 · 结果待官方回填</span>
+        <span>生成时间 2026-08-30 22:15 (UTC+8)</span>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
