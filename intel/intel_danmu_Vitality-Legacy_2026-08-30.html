@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>整场弹幕情报 · Vitality vs Legacy · 2026-08-30</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card: #ffffff;
+            --accent: #0a84ff;
+            --text: #1d1d1f;
+            --secondary: #86868b;
+            --border: #d2d2d7;
+            --risk: #ff453a;
+            --anchor: #0a84ff;
+            --consensus: #34c759;
+            --grey: #8e8e93;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.3rem;
+        }
+        .subhead {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 650;
+            margin-top: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            font-size: 1rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .score-line {
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+        }
+        .badge {
+            background: #e8f0fe;
+            color: var(--accent);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.4rem;
+            text-transform: uppercase;
+        }
+        .tag-risk { background: #ffe5e3; color: var(--risk); }
+        .tag-anchor { background: #e0efff; color: var(--anchor); }
+        .tag-consensus { background: #e3f7e9; color: var(--consensus); }
+        .tag-grey { background: #f0f0f0; color: var(--grey); }
+        .tag-odds { background: #fff3d6; color: #b37400; }
+        .tag-result { background: #e8e8ed; color: #1d1d1f; }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .intel-item {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .intel-item:last-child { border-bottom: none; }
+        .source-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-top: 0.2rem;
+        }
+        .quote {
+            background: #f9f9fb;
+            border-left: 3px solid var(--accent);
+            padding: 0.6rem 1rem;
+            margin: 0.8rem 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--accent);
+            padding: 0.3rem 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+        th { background: #f5f5f7; font-weight: 600; }
+        .timeline {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #f5f5f7;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        .footer-note {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-top: 2rem;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Vitality-Legacy 2026-08-30</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <div style="margin-bottom: 1.5rem;">
+        <h1>🎮 Vitality vs Legacy · 整场弹幕情报</h1>
+        <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>VIT 2:1 获胜 共识度 70%（样本 43 条弹幕）</li><li>赛前预测（弹幕）： 多数看好 VIT 2:1，实际结果符合</li><li>验证： VIT 2:1 获胜，弹幕共识正确</li><li>Vitality 2 : 1 Legacy 弹幕口径 · 官方待回填 风险 Legacy 图三遗迹防守方多次前压被秒，观众质疑“送人头”（→…</li><li>观众质疑“故意送”，但无实据</li></ul></div>
+</div><div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="score-line">
+            <span>Vitality <strong>2</strong> : <strong>1</strong> Legacy</span>
+            <span class="badge">弹幕口径 · 官方待回填</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 1rem 0;">
+            <span class="tag tag-risk">风险</span><span>Legacy 图三遗迹防守方多次前压被秒，观众质疑“送人头”（→详§2）</span>
+            <span class="tag tag-anchor">锚点</span><span>Vitality 图二核子危机进攻方默认控图节奏极佳，成转折点（→详§5）</span>
+            <span class="tag tag-odds">盘口</span><span>赛前 Legacy 受让 1.5 局水位持续走低，市场看好 VIT 小胜（→详§4）</span>
+            <span class="tag tag-consensus">共识</span><span>弹幕多数认为 VIT 图三手枪局后 Legacy 心态崩盘（→详§5）</span>
+        </div>
+        <div class="intel-item">
+            <strong>🎯 决策落点：</strong> LONG VIT 独赢 / 短盘 Legacy +1.5 有风险，建议观望图三残局表现。
+        </div>
+        <div class="source-label">溯源：本场弹幕 §2/§4/§5 ｜ 历史画像 §8 ｜ 盘口 §4</div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div>
+                <p><strong>赛事：</strong>CS2 国际邀请赛 2026 夏季赛</p>
+                <p><strong>League：</strong>CS2 Pro League 2026</p>
+                <p><strong>Slug：</strong>cs2-vit-lgc-2026-08-30</p>
+                <p><strong>赛制：</strong>BO3</p>
+                <p><strong>状态：</strong>已结束（弹幕多信号确认，官方待核对）</p>
+            </div>
+            <div>
+                <p><strong>最终比分（弹幕口径）：</strong>Vitality 2 : 1 Legacy</p>
+                <p><strong>地图顺序：</strong>Mirage (VIT 13:9) → Nuke (LEG 11:13) → Ancient (VIT 13:6)</p>
+                <p><strong>数据来源：</strong>本场弹幕 + 官方源（Riot/Liquipedia 待回填）</p>
+                <p><strong>情报输出时间：</strong>2026-08-30 23:20 (北京时间)</p>
+            </div>
+        </div>
+        <div class="quote">⚠️ 官方比分未回填，此处为弹幕共识推断，最终以官方结算为准。</div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <p style="color: var(--secondary); margin-bottom: 0.8rem;">基于全量灰词扫描（演员/演/明演/开演/菠菜/收米/剧本/假赛/322/黑帮/送人头/买了/故意送）</p>
+        <div class="intel-item"><span class="tag tag-risk">灰信号</span> <strong>“送人头”</strong> 出现 12 次，集中在图三 Ancient 防守方 Legacy 多次前压被秒。观众质疑“故意送”，但无实据。</div>
+        <div class="intel-item"><span class="tag tag-risk">灰信号</span> <strong>“剧本”</strong> 出现 5 次，多指向图二 Nuke 的 13:11 焦灼比分，但无明确指向。</div>
+        <div class="intel-item"><span class="tag tag-risk">灰信号</span> <strong>“买了”</strong> 出现 3 次，均为调侃语气，无实际指控。</div>
+        <details>
+            <summary>📋 灰信号弹幕原文摘录（折叠）</summary>
+            <div class="timeline">[23:01:22] 观众A: 这前压不是送？<br>[23:03:45] 观众B: 剧本吧，图二这么焦灼<br>[23:05:12] 观众C: 买了买了，legacy这波操作离谱<br>[23:08:33] 观众D: 明演？连续三把前压白给</div>
+        </details>
+        <p style="margin-top: 0.8rem; font-size: 0.9rem;">⚠️ 以上均为观众质疑，非结论。未发现实质假赛证据。</p>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <p><strong>BP 顺序（弹幕记录）：</strong>VIT 首ban Anubis，LEG 首ban Inferno；VIT 选 Mirage，LEG 选 Nuke，最终 Ancient 决胜。</p>
+        <p><strong>选人情报：</strong>VIT 在图三 Ancient 选择双狙体系（ZywOo + flameZ 起狙），Legacy 仍用常规步枪。</p>
+        <div class="intel-item"><span class="tag tag-anchor">锚点</span> 弹幕认为 VIT 图三选 Ancient 是刻意针对 Legacy 的 Ancient 胜率（历史画像 42%）。</div>
+        <details>
+            <summary>📋 BP 讨论弹幕摘录（折叠）</summary>
+            <div class="timeline">[22:15:10] 弹幕: VIT 这BP有点东西，放nuke选ancient<br>[22:17:48] 弹幕: LEGG 的ancient 胜率很低，VIT 稳了<br>[22:20:02] 弹幕: 双狙？ZywOo 要carry了</div>
+        </details>
+        <p><strong>BP 后战绩情报：</strong>无战绩情报提及（弹幕未讨论历史交手记录）。</p>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="grid-2">
+            <div>
+                <p><strong>赛前盘口（弹幕提及）：</strong>VIT 独赢 1.65 / LEG +1.5 水位 1.85</p>
+                <p><strong>临场变化：</strong>LEG +1.5 水位从 1.95 降至 1.85，市场资金偏向 VIT 小胜。</p>
+            </div>
+            <div>
+                <p><strong>弹幕讨论热度：</strong>盘口相关弹幕 23 条，其中 15 条认为 VIT 2:1 赢盘。</p>
+                <p><strong>分歧点：</strong>部分观众认为 LEG 图二能赢，受让 1.5 有希望。</p>
+            </div>
+        </div>
+        <div class="quote">💬 典型弹幕：<em>“VIT 2:1 稳的，LEG 图三必崩”</em> · <em>“受让1.5 还有机会，图二 LEG 打得好”</em></div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-3">
+            <div>
+                <h3 style="font-size: 1rem; color: var(--anchor);">✅ 正锚点</h3>
+                <div class="intel-item"><strong>VIT 图二 Nuke 进攻方</strong> 默认控图成功率高，多次打乱 LEG 防守站位。<br><span class="source-label">依据：本场弹幕 22:40-22:55 时段 8 条提及</span></div>
+                <div class="intel-item"><strong>ZywOo 状态</strong> 图三 Ancient 多次首杀，弹幕称“ZywOo 今天手感火热”。</div>
+            </div>
+            <div>
+                <h3 style="font-size: 1rem; color: var(--risk);">❌ 负锚点</h3>
+                <div class="intel-item"><strong>Legacy 图三防守前压</strong> 成功率低，被 VIT 连续得分，弹幕批评“战术单一”。</div>
+                <div class="intel-item"><strong>Legacy 残局</strong> 多次 1v2 失败，心态崩盘迹象。</div>
+            </div>
+            <div>
+                <h3 style="font-size: 1rem; color: var(--consensus);">🤝 群体共识</h3>
+                <div class="intel-item"><strong>VIT 2:1 获胜</strong> 共识度 70%（样本 43 条弹幕）。</div>
+                <div class="intel-item"><strong>分歧：</strong>LEG 图二表现超预期，部分观众认为 LEG 能赢图三。</div>
+                <div class="intel-item"><strong>样本量：</strong>方向性弹幕 58 条。</div>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;"><strong>灰信号条件预测：</strong>若 LEG 图三防守前压继续白给，则 VIT 大胜；若 LEG 调整战术，则可能拖入加时。</p>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div class="grid-2">
+            <div>
+                <p><span class="tag tag-anchor">LONG</span> <strong>VIT 独赢</strong> 置信度中高，基于图三碾压表现。</p>
+                <p><span class="tag tag-consensus">SHORT</span> <strong>LEG +1.5</strong> 风险较大，图三崩盘明显。</p>
+            </div>
+            <div>
+                <p><strong>决策建议：</strong>若官方确认比分 2:1，LONG VIT 合理；若 LEG 图三仅输 4 分内，则受让 1.5 有风险。</p>
+                <p><strong>观望点：</strong>官方数据回填后确认图三具体比分。</p>
+            </div>
+        </div>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <div class="intel-item">
+            <strong>图一 Mirage (VIT 13:9)</strong>
+            <div class="timeline">[22:05:12] VIT 手枪局 win，弹幕: “VIT 手枪局稳”<br>[22:12:45] LEG 强起翻盘，弹幕: “leg 这波可以”<br>[22:20:33] VIT 经济局翻盘，弹幕: “经济局的神”</div>
+        </div>
+        <div class="intel-item">
+            <strong>图二 Nuke (LEG 11:13)</strong>
+            <div class="timeline">[22:35:20] LEG 防守方 6:0 开局，弹幕: “leg 防守无敌”<br>[22:48:11] VIT 进攻方连续得分，弹幕: “VIT 默认控图好强”<br>[22:55:02] VIT 拿下赛点，弹幕: “图二要翻？”</div>
+        </div>
+        <div class="intel-item">
+            <strong>图三 Ancient (VIT 13:6)</strong>
+            <div class="timeline">[23:02:18] VIT 手枪局 win，弹幕: “ZywOo 三杀”<br>[23:10:44] LEG 前压失败，弹幕: “送人头？”<br>[23:18:30] VIT 赛点，弹幕: “leg 心态崩了”</div>
+        </div>
+        <details>
+            <summary>📋 完整弹幕时间线（折叠 · 含全部关键节点）</summary>
+            <div class="timeline">[22:00:00] 比赛开始<br>[22:05:12] VIT 手枪局 win<br>[22:12:45] LEG 强起翻盘<br>[22:20:33] VIT 经济局翻盘<br>[22:35:20] LEG 防守 6:0<br>[22:48:11] VIT 进攻得分潮<br>[22:55:02] VIT 赛点<br>[23:02:18] VIT 图三手枪局 win<br>[23:10:44] LEG 前压失败<br>[23:18:30] VIT 赛点</div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>Vitality</h3>
+                <div class="intel-item"><strong>ZywOo</strong> 提及 28 次 · 历史画像：大赛经验丰富，关键先生。</div>
+                <div class="intel-item"><strong>flameZ</strong> 提及 9 次 · 历史画像：图三双狙体系发挥稳定。</div>
+                <div class="intel-item"><strong>apEX</strong> 提及 4 次 · 指挥风格激进。</div>
+            </div>
+            <div>
+                <h3>Legacy</h3>
+                <div class="intel-item"><strong>dumau</strong> 提及 11 次 · 历史画像：残局能力尚可，但今天失误多。</div>
+                <div class="intel-item"><strong>latto</strong> 提及 6 次 · 图二发挥亮眼，图三隐身。</div>
+                <div class="intel-item"><strong>saffee</strong> 提及 3 次 · 狙击手，被ZywOo压制。</div>
+            </div>
+        </div>
+        <details>
+            <summary>📋 长画像与原文证据链（折叠）</summary>
+            <div class="timeline">[22:40:12] 弹幕: ZywOo 这枪法无敌<br>[22:52:33] 弹幕: latto 今天状态好<br>[23:05:44] 弹幕: dumau 这残局打的什么<br>[23:12:20] 弹幕: saffee 被diff了</div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p><strong>版本特点：</strong>当前版本 CT 方经济优势明显，VIT 图二 Nuke 防守方 6:0 开局印证。</p>
+        <p><strong>联赛规律：</strong>BO3 中图三 Ancient 胜率与手枪局相关性高，本场 VIT 手枪局胜后碾压。</p>
+        <p><strong>弹幕共识：</strong>“手枪局决定图三走势” 出现 7 次。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p><strong>赛前预测（弹幕）：</strong>多数看好 VIT 2:1，实际结果符合。</p>
+        <p><strong>验证：</strong>VIT 2:1 获胜，弹幕共识正确。</p>
+        <p><strong>偏差：</strong>部分观众认为 LEG 能赢图二，实际 LEG 赢了图二，但图三崩盘。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div>
+                <p><strong>实际数据源：</strong>本场弹幕切片（jsonl）· 规则层情报 JSON</p>
+            </div>
+            <div>
+                <p><strong>预期数据源：</strong>官方比分（Riot/Liquipedia）· 历史画像库</p>
+            </div>
+            <div>
+                <p><strong>缺口：</strong>官方比分未回填 · 历史交手记录未提及</p>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;"><strong>情报输出时间：</strong>2026-08-30 23:20 (北京时间)</p>
+        <p><strong>跨源一致性：</strong>弹幕共识与盘口走势一致（VIT 小胜），但官方未确认。</p>
+        <p><strong>比赛元数据：</strong>全称 CS2 Pro League 2026 · league: cs2-pro-league-2026 · slug: cs2-vit-lgc-2026-08-30 · 赛制 BO3</p>
+    </div>
+    <!-- 共识提炼表 -->
+    <div class="card">
+        <h2 style="border-bottom: none;">📊 弹幕共识提炼表</h2>
+        <table>
+            <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr></thead>
+            <tbody>
+                <tr><td>VIT 获胜</td><td>看好 VIT</td><td>43</td><td>“VIT 2:1 稳”</td><td>双源（弹幕+盘口）</td></tr>
+                <tr><td>LEG 图三崩盘</td><td>看衰 LEG</td><td>18</td><td>“leg 心态崩了”</td><td>单源（弹幕）</td></tr>
+                <tr><td>ZywOo 状态</td><td>正向</td><td>28</td><td>“ZywOo 无敌”</td><td>三路（弹幕+历史+盘口）</td></tr>
+            </tbody>
+        </table>
+        <p><strong>共识→信号链：</strong>弹幕共识 VIT 获胜与盘口走势同向，强化 VIT 独赢信号。</p>
+    </div>
+    <!-- 关键信息 TOP -->
+    <div class="card">
+        <h2 style="border-bottom: none;">🔝 关键信息 TOP</h2>
+        <ol style="padding-left: 1.2rem;">
+            <li><span class="tag tag-result">结果</span> VIT 2:1 LEG（弹幕口径）· 来源：本场弹幕 / 确认</li>
+            <li><span class="tag tag-anchor">胜负手</span> 图三 Ancient 手枪局后 LEG 崩盘 · 来源：多源共振</li>
+            <li><span class="tag tag-consensus">共识盲区</span> LEG 图二表现超预期，但图三未延续 · 来源：单源待验证</li>
+            <li><span class="tag tag-anchor">锚点</span> VIT 图二 Nuke 进攻方默认控图 · 来源：本场弹幕</li>
+            <li><span class="tag tag-risk">负锚</span> LEG 图三防守前压白给 · 来源：本场弹幕</li>
+            <li><span class="tag tag-grey">灰信号</span> “送人头” 质疑 12 条 · 来源：观众质疑·非结论</li>
+        </ol>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card">
+        <h2 style="border-bottom: none;">📌 本场长期沉淀点</h2>
+        <p>VIT 在 Ancient 的双狙体系值得长期关注；LEG 在劣势局的心态调整能力需进一步观察。</p>
+    </div>
+    <div class="footer-note">
+        情报生成时间 2026-08-30 23:20 (北京时间) · 数据源：弹幕切片/规则层/历史画像 · 官方待回填
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
