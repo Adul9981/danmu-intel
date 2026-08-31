@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · JDG vs WE · G4 局末</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            padding: 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff2d55;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            letter-spacing: 0.02em;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .subhead {
+            color: #6e6e73;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+        }
+        .meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem 2.5rem;
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .meta-item span {
+            color: #6e6e73;
+            margin-right: 0.5rem;
+        }
+        .meta-item strong {
+            font-weight: 600;
+        }
+        .score-line {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: #f0f0f5;
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .score-line .official {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        .score-line .danmaku-note {
+            color: #ff2d55;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background: #ffe5e9;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #f0f0f5;
+            padding-bottom: 0.5rem;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .signal-list {
+            list-style: none;
+        }
+        .signal-list li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #e8e8ed;
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            background: #e8f0fe;
+            color: #0071e3;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 30px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tag.risk {
+            background: #ffe5e9;
+            color: #d70015;
+        }
+        .tag.anchor {
+            background: #e6f2e6;
+            color: #1a7f37;
+        }
+        .tag.consensus {
+            background: #fff4e0;
+            color: #b25000;
+        }
+        .tag.market {
+            background: #f0e6ff;
+            color: #5e3c9e;
+        }
+        .source {
+            color: #6e6e73;
+            font-size: 0.8rem;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .pill {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 0.25rem 1rem;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .consensus-table th {
+            text-align: left;
+            background: #f0f0f5;
+            padding: 0.6rem 0.8rem;
+            font-weight: 600;
+        }
+        .consensus-table td {
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            margin: 1rem 0;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #0071e3;
+            padding: 0.25rem 0;
+        }
+        .timeline-item {
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        .footer-note {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8ed;
+            color: #6e6e73;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .highlight {
+            background: #fff4e0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+        }
+        .arrow {
+            color: #0071e3;
+            font-weight: 600;
+        }
+        @media (max-width: 800px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">JD Gaming-Team WE 2026-08-30 g4 end</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        JDG vs WE · 第4小局 局中弹幕情报快照
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="subhead">G4 局末/局间 · 弹幕口径 · 官方待回填 · 北京时间 2026-08-30</div>
+    <!-- 元数据卡片 -->
+    <div class="meta-grid">
+        <div class="meta-item"><span>赛事</span><strong>LPL 2026 夏季赛</strong></div>
+        <div class="meta-item"><span>对阵</span><strong>JD Gaming vs Team WE</strong></div>
+        <div class="meta-item"><span>当前官方比分</span><strong>JDG 1 : 3 WE</strong></div>
+        <div class="meta-item"><span>节点</span><strong>G4 局末（待结算校准）</strong></div>
+        <div class="meta-item"><span>弹幕总量</span><strong>19,347</strong></div>
+        <div class="meta-item"><span>活跃用户</span><strong>3,831</strong></div>
+        <div class="meta-item"><span>密度</span><strong>430.0 条/分</strong></div>
+    </div>
+    <!-- 比分与进度硬性行 -->
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>”“打野无间道”，负面提及 JDG 19次 本场弹幕 → §2/§8 锚点 WE 金克丝（Jinx）超前发育，弹幕多次强调“金克丝起飞”“太…</li><li>不敢抓线已经输了 盘口相关弹幕： 共 196 条，聚焦选手操作与“演员”质疑</li><li>WE 金克丝超前发育，弹幕一致看好 本场弹幕 WE 整体节奏压制，弹幕“恭喜WE”出现多次 本场弹幕 JDG 负面情绪集中，野辅/中单被喷 …</li><li>分歧： 少数弹幕认为“后期阵容前期领先”可能翻盘，但被“gg”刷屏淹没</li><li>决策建议： 若需参考弹幕情绪，可倾向 WE 方向，但注意“毒奶”风险（弹幕有“要被诅咒了”）</li></ul></div>
+</div><div class="card">
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <span class="pill">🎯 焦点制 · 5条</span>
+        </div>
+        <ul class="signal-list">
+            <li><span class="tag risk">风险</span>JDG 野辅遭集中质疑，弹幕称“野辅是人？”“打野无间道”，负面提及 JDG 19次 <span class="source">本场弹幕 → §2/§8</span></li>
+            <li><span class="tag anchor">锚点</span>WE 金克丝（Jinx）超前发育，弹幕多次强调“金克丝起飞”“太肥了” <span class="source">本场弹幕 → §3/§7</span></li>
+            <li><span class="tag market">盘口</span>观众质疑 Gala 贪人头/不交闪现，盘口讨论 196 条，聚焦选手操作 <span class="source">盘口 → §4</span></li>
+            <li><span class="tag consensus">共识</span>弹幕普遍认为 JDG 中单表现最差（“中单最菜”“没看到一点作用”） <span class="source">本场弹幕 → §5/§8</span></li>
+            <li><span class="tag anchor">锚点</span>WE 整体节奏压制，弹幕出现“恭喜WE”“WE要进世界赛了”等乐观情绪 <span class="source">本场弹幕 → §5</span></li>
+        </ul>
+        <div style="margin-top:1rem; background:#f0f0f5; padding:0.8rem 1rem; border-radius:12px;">
+            <strong>📌 一句话决策落点：</strong>本局弹幕情绪强烈看空 JDG，认为其阵容/选手状态崩盘；WE 获广泛支持，但需警惕“毒奶”反噬。建议 LONG WE 方向，但等待官方确认最终结果。
+        </div>
+    </div>
+    <!-- ========== 1 比赛信息与结果总览 ========== -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="card">
+        <p><strong>状态核验：</strong><span class="badge" style="background:#ff2d55;">局中·非终局，结果待定</span> 当前为 G4 局末/局间，按时间窗估计已结束，但官方尚未回填最终击杀/胜负。弹幕口径显示 JDG 处于劣势，但一切以官方为准。</p>
+        <div style="display:flex; gap:2rem; flex-wrap:wrap; margin-top:1rem;">
+            <div><strong>官方当前比分</strong> JDG 1 : 3 WE</div>
+            <div><strong>弹幕推测</strong> WE 4-0 结束（弹幕原句“4-0，结束”）</div>
+            <div><strong>进度</strong> 局末·待结算校准</div>
+        </div>
+        <p style="margin-top:1rem; color:#6e6e73;">※ 本页为 G4 唯一页面，覆盖 BP/选人、对线、关键团战、结局（弹幕口径）。</p>
+    </div>
+    <!-- ========== 2 灰信号汇总 ========== -->
+    <h2><span class="no">2</span>灰信号汇总 <span style="font-size:0.9rem; font-weight:400; color:#6e6e73;">（观众质疑·非结论）</span></h2>
+    <div class="card">
+        <p><strong>灰信号词表统计：</strong> 共 128 条灰信号，主要关键词：故意卖、京东故意的、演员相关。</p>
+        <ul class="signal-list">
+            <li><span class="tag risk">灰信号</span>“奥拉夫是故意自己卖的，要不自己后排就被打没了” ×2 <span class="source">本场弹幕</span></li>
+            <li><span class="tag risk">灰信号</span>“京东故意的吧” ×2 <span class="source">本场弹幕</span></li>
+        </ul>
+        <details>
+            <summary>📄 灰信号原始弹幕摘录（折叠 · 含时间戳）</summary>
+            <div style="margin-top:0.5rem;">
+                <div class="timeline-item">[08-30 20:08:33] 奥拉夫是故意自己卖的，要不自己后排就被打没了</div>
+                <div class="timeline-item">[08-30 20:08:33] 奥拉夫是故意自己卖的，要不自己后排就被打没了</div>
+                <div class="timeline-item">[08-30 20:08:33] 京东故意的吧</div>
+                <div class="timeline-item">[08-30 20:08:33] 京东故意的吧</div>
+            </div>
+        </details>
+        <p style="margin-top:0.8rem; font-size:0.9rem; color:#6e6e73;">⚠️ 以上为观众质疑，不代表真实情况，仅作风险提示。</p>
+    </div>
+    <!-- ========== 3 BP 锚点与选人情报 ========== -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="card">
+        <p><strong>本局阵容（弹幕口径）：</strong></p>
+        <ul style="margin-left:1.2rem; margin-bottom:1rem;">
+            <li><strong>WE</strong>：金克丝（Jinx）为核心，弹幕多次提及“金克丝起飞”“金克丝超前发育”</li>
+            <li><strong>JDG</strong>：中单被弹幕评为“最菜”，打野被指“两次大给猴子”（梦魇）</li>
+        </ul>
+        <p><strong>BP 后战绩情报：</strong> 无明确战绩情报提及，弹幕未讨论具体 BP 阶段。</p>
+        <details>
+            <summary>📄 选人相关弹幕摘录（折叠）</summary>
+            <div style="margin-top:0.5rem;">
+                <div class="timeline-item">[08-30 20:08:34] 金克丝已经起飞了</div>
+                <div class="timeline-item">[08-30 20:08:36] 金克斯超前发育了</div>
+                <div class="timeline-item">[08-30 20:08:38] 打野这么菜，2次大给猴子</div>
+                <div class="timeline-item">[08-30 20:08:39] 梦魇两个大，大有大的猴子。不敢抓线已经输了</div>
+            </div>
+        </details>
+    </div>
+    <!-- ========== 4 盘口与市场讨论 ========== -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card">
+        <p><strong>盘口相关弹幕：</strong> 共 196 条，聚焦选手操作与“演员”质疑。</p>
+        <ul class="signal-list">
+            <li><span class="tag market">盘口</span>“？？？？？这几个人不交闪现去收人头 救人？？？” <span class="source">本场弹幕</span></li>
+            <li><span class="tag market">盘口</span>“感觉gala贪人头了” <span class="source">本场弹幕</span></li>
+            <li><span class="tag market">盘口</span>“沟槽48Bin还没被禁赛啊” <span class="source">本场弹幕</span></li>
+            <li><span class="tag market">盘口</span>“二哥，沟槽48Bin为什么没被禁赛啊？？” <span class="source">本场弹幕</span></li>
+        </ul>
+        <p style="font-size:0.9rem; color:#6e6e73;">※ 盘口讨论多指向选手个人操作，未出现明显资金盘口信号。</p>
+    </div>
+    <!-- ========== 5 方向性情报板 ========== -->
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+        <div class="card">
+            <h3 style="margin-top:0;">✅ 正锚</h3>
+            <ul class="signal-list">
+                <li>WE 金克丝超前发育，弹幕一致看好 <span class="source">本场弹幕</span></li>
+                <li>WE 整体节奏压制，弹幕“恭喜WE”出现多次 <span class="source">本场弹幕</span></li>
+                <li>JDG 负面情绪集中，野辅/中单被喷 <span class="source">本场弹幕</span></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">❌ 负锚</h3>
+            <ul class="signal-list">
+                <li>JDG 中单被指“最菜”“没作用” <span class="source">本场弹幕</span></li>
+                <li>JDG 打野“无间道”“两次大给猴子” <span class="source">本场弹幕</span></li>
+                <li>Gala 被质疑“贪人头”“不敢A” <span class="source">盘口/本场弹幕</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card">
+        <h3 style="margin-top:0;">👥 群体共识（+分歧 +样本量）</h3>
+        <p><strong>共识：</strong> JDG 本局表现极差，WE 将赢下比赛（样本量：至少 20+ 条弹幕明确表达“结束”“恭喜WE”）。</p>
+        <p><strong>分歧：</strong> 少数弹幕认为“后期阵容前期领先”可能翻盘，但被“gg”刷屏淹没。</p>
+        <p><strong>灰信号条件预测：</strong> 若 JDG 后期无翻盘，则 WE 胜；若“故意卖”为真，则 JDG 可能战术性放弃。</p>
+    </div>
+    <!-- ========== 6 情报含义与决策落点 ========== -->
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div class="card">
+        <p><strong>LONG 方向：</strong> WE 胜（弹幕情绪强烈支持，且官方比分已 3:1，WE 赛点）。</p>
+        <p><strong>SHORT 方向：</strong> JDG 选手状态崩盘，尤其中单/野辅，短期难有改观。</p>
+        <p><strong>决策建议：</strong> 若需参考弹幕情绪，可倾向 WE 方向，但注意“毒奶”风险（弹幕有“要被诅咒了”）。</p>
+        <p style="font-size:0.9rem; color:#6e6e73;">※ 所有结论基于弹幕，非官方，请谨慎参考。</p>
+    </div>
+    <!-- ========== 7 逐局复盘 ========== -->
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <div class="card">
+        <p><strong>G4 已发生片段（弹幕时间线）：</strong></p>
+        <ul style="margin-left:1.2rem;">
+            <li>20:08:33 — 弹幕爆发“这野辅是人？”“G”“t了送”</li>
+            <li>20:08:34 — “金克丝已经起飞了”“we进季后赛”</li>
+            <li>20:08:35 — “恭喜WE”“junjia太菜了”</li>
+            <li>20:08:36 — “金克斯超前发育了”“Gala不适合这个版本”</li>
+            <li>20:08:38 — “打野这么菜，2次大给猴子”“纯ad差距”</li>
+            <li>20:08:39 — “梦魇两个大，大有大的猴子。不敢抓线已经输了”</li>
+        </ul>
+        <details>
+            <summary>📄 G4 完整弹幕时间线（折叠 · 含真实时间戳）</summary>
+            <div style="margin-top:0.5rem;">
+                <div class="timeline-item">[08-30 20:08:33] 这野辅是人？</div>
+                <div class="timeline-item">[08-30 20:08:33] G</div>
+                <div class="timeline-item">[08-30 20:08:33] t了送</div>
+                <div class="timeline-item">[08-30 20:08:33] 京东这个烂队可以解散了</div>
+                <div class="timeline-item">[08-30 20:08:33] 京东就是中单最菜</div>
+                <div class="timeline-item">[08-30 20:08:33] 4-0，结束</div>
+                <div class="timeline-item">[08-30 20:08:34] 金克丝已经起飞了</div>
+                <div class="timeline-item">[08-30 20:08:34] we进季后赛</div>
+                <div class="timeline-item">[08-30 20:08:35] 恭喜WE</div>
+                <div class="timeline-item">[08-30 20:08:35] junjia太菜了</div>
+                <div class="timeline-item">[08-30 20:08:36] 金克斯超前发育了</div>
+                <div class="timeline-item">[08-30 20:08:36] Gala不适合这个版本</div>
+                <div class="timeline-item">[08-30 20:08:38] 打野这么菜，2次大给猴子</div>
+                <div class="timeline-item">[08-30 20:08:38] 纯ad差距</div>
+                <div class="timeline-item">[08-30 20:08:39] 梦魇两个大，大有大的猴子。不敢抓线已经输了</div>
+            </div>
+        </details>
+        <p style="margin-top:0.8rem;"><strong>未发生片段：</strong> 官方结算数据待回填，后续团战细节待观察。</p>
+    </div>
+    <!-- ========== 8 队伍/人员画像 ========== -->
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+        <div class="card">
+            <h3 style="margin-top:0;">📊 队伍提及</h3>
+            <ul class="signal-list">
+                <li>WE：提及 477（正17/负22）</li>
+                <li>JDG：提及 144（正1/负19）</li>
+                <li>IG：提及 80（正12/负2）</li>
+                <li>BLG：提及 71（正0/负6）</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">👤 选手提及</h3>
+            <ul class="signal-list">
+                <li>Faker：提及 70（正2/负0）</li>
+                <li>Guma：提及 17（正0/负0）</li>
+                <li>Chovy：提及 4（正0/负0）</li>
+                <li>33：提及 2（正0/负0）</li>
+            </ul>
+        </div>
+    </div>
+    <details>
+        <summary>📄 队伍特质统计（折叠 · 长期画像）</summary>
+        <div style="margin-top:0.5rem;">
+            <p>被翻守不住:8 | 韧性逆转:4 | 心态摆烂:24 | 慢热手热:4 | 打法风格:63 | 选手特质:18</p>
+            <p style="font-size:0.85rem; color:#6e6e73;">JDG 负面提及远超正面，WE 相对均衡。</p>
+        </div>
+    </details>
+    <!-- ========== 9 联赛规律与版本 ========== -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="card">
+        <p><strong>版本趋势：</strong> 弹幕提及“金克丝”版本强势，AD 位置影响大。</p>
+        <p><strong>联赛规律：</strong> WE 在弹幕中被看好进世界赛，JDG 被指“烂队”。</p>
+        <p style="font-size:0.9rem; color:#6e6e73;">※ 基于本场弹幕，非官方数据。</p>
+    </div>
+    <!-- ========== 10 预测验证回填 ========== -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="card">
+        <p><strong>赛前预测（若有）：</strong> 无明确赛前预测数据。</p>
+        <p><strong>本局弹幕验证：</strong> 弹幕普遍预测 WE 获胜，与官方当前比分（WE 3:1）一致。</p>
+        <p><strong>回填状态：</strong> 待官方最终结果确认后回填。</p>
+    </div>
+    <!-- ========== 11 数据与溯源 ========== -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="card">
+        <p><strong>数据完整性三栏：</strong></p>
+        <div class="grid-3" style="margin-bottom:1rem;">
+            <div><strong>实际数据源</strong><br>弹幕切片 19,347 条<br>规则层统计 JSON</div>
+            <div><strong>预期数据源</strong><br>官方 gameWins<br>完整 BP 数据</div>
+            <div><strong>缺口</strong><br>官方结算未回填<br>BP 详细选人未确认</div>
+        </div>
+        <p><strong>跨源一致性提示：</strong> 弹幕口径与官方比分（WE 领先）方向一致，但具体击杀/时间待官方。</p>
+        <p><strong>情报输出时间：</strong> 2026-08-30 20:15:00（北京时间）</p>
+        <p style="font-size:0.85rem; color:#6e6e73;">来源分层：本场弹幕 / 前局弹幕 / 历史画像 / 盘口 / 推测·待验证</p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div style="margin-top:2rem; background:#f0f0f5; border-radius:12px; padding:1rem 1.5rem;">
+        <strong>📌 本场长期沉淀点：</strong> JDG 在弹幕中的负面形象固化（中单/野辅被集中批评），WE 则被视为“世界赛潜力股”。后续比赛可关注 JDG 人员调整或 WE 的稳定性。
+    </div>
+    <!-- 页脚 -->
+    <div class="footer-note">
+        <span>局中弹幕情报快照 · G4 · 非终局</span>
+        <span>生成时间：2026-08-30 20:15 北京时间</span>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>

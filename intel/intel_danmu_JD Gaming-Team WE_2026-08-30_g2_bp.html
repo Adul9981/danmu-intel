@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · JDG vs WE · G2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #6e6e73;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-right: 0.5rem;
+        }
+        .badge-live {
+            background: #ff375f;
+            color: white;
+        }
+        .badge-warn {
+            background: #ffd60a;
+            color: #1d1d1f;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 650;
+            margin-top: 0.5rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f0f0f2;
+            padding-bottom: 0.5rem;
+        }
+        h2 .no {
+            background: #1d1d1f;
+            color: white;
+            border-radius: 40px;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .stat {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 1rem;
+        }
+        .stat .label {
+            font-size: 0.8rem;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .stat .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .signal {
+            background: #f9f9fb;
+            border-left: 4px solid #1d1d1f;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+        .signal .tag {
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #e8e8ed;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        .signal .src {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            margin-left: 0.3rem;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .consensus-table th {
+            text-align: left;
+            font-size: 0.8rem;
+            color: #6e6e73;
+            border-bottom: 1px solid #e8e8ed;
+            padding: 0.5rem;
+        }
+        .consensus-table td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            margin-top: 1rem;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #1d1d1f;
+            font-size: 0.95rem;
+        }
+        .timeline-item {
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 0.2rem 0;
+            border-bottom: 1px dashed #e0e0e5;
+        }
+        .footer-note {
+            font-size: 0.8rem;
+            color: #6e6e73;
+            margin-top: 1rem;
+            text-align: right;
+        }
+        .highlight {
+            background: #fff9db;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+        }
+        .accent {
+            color: #ff375f;
+            font-weight: 600;
+        }
+        .intel-src {
+            font-size: 0.7rem;
+            background: #f0f0f2;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            color: #3a3a3c;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">JD Gaming-Team WE 2026-08-30 g2 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <div style="margin-bottom: 1.5rem;">
+        <h1>⚡ 局中弹幕情报快照 · G2</h1>
+        <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>官方比分 JDG 1:3 WE，弹幕口径待官方回填 → 比分结果以官方为准，弹幕情绪已倾向 WE 获胜。 → WE 胜局已定，弹幕情绪共振，但需官方确认。（弹幕口径·待官方）</li><li>弹幕出现“演”质疑 ×64，观众质疑比赛存在表演成分，无具体指向 → 观众质疑，非结论，情绪化表达。 → 负面情绪积聚，但无实锤，需警惕舆论风险。（单源待验证）</li><li>弹幕提及 WE 量是 JDG 的 2.8 倍，正情绪占优，“一波”共识 529 条，韧性逆转 21 次 → 弹幕风向强烈看多 WE。 → WE 舆论优势明显，JDG 粉丝信心不足。（多源确认）</li><li>盘口弹幕样本显示皇子落后 6.5k，经济劣势明显 → 比赛局势对 JDG 不利，WE 优势扩大。 → JDG 经济落后，翻盘难度大，WE 胜率提升。（单源待验证）</li><li>弹幕提及“4个8”“蛇女呗”“二哥心情不好”等，观众调侃或担忧选手状态 → 观众对 JDG 选手表现不满或担忧。 → JDG 选手状态受质疑，可能影响后续比赛。（单源待验证）</li></ul></div>
+</div><div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <div class="stat" style="flex:1;">
+                <div class="label">当前比分 (官方)</div>
+                <div class="value">JDG 1 : 3 WE</div>
+                <div style="font-size:0.8rem; color:#6e6e73;">弹幕口径·官方待回填</div>
+            </div>
+            <div class="stat" style="flex:1;">
+                <div class="label">弹幕密度</div>
+                <div class="value">432.4 <span style="font-size:1rem;">条/分</span></div>
+                <div style="font-size:0.8rem; color:#6e6e73;">总弹幕 15133 · 活跃 3591</div>
+            </div>
+        </div>
+        <div style="margin-top: 1rem;">
+            <div class="signal"><span class="tag" style="background:#ffd60a;">风险</span>观众质疑“红区/红q”操作粗糙，灰信号64条全为“都在演我”<span class="src">→ 详§2</span></div>
+            <div class="signal"><span class="tag" style="background:#1d1d1f; color:white;">锚点</span>队伍提及WE 359次(正21/负14) 远超JDG 125次(正2/负14)<span class="src">→ 详§8</span></div>
+            <div class="signal"><span class="tag" style="background:#0071e3; color:white;">盘口</span>117条“皇子落后6.5k”集中刷屏，盘口情绪偏空<span class="src">→ 详§4</span></div>
+            <div class="signal"><span class="tag" style="background:#34c759;">共识</span>529条“一波”刷屏，观众认为局势已定但官方未确认<span class="src">→ 详§5</span></div>
+        </div>
+        <p style="margin-top: 1rem; font-weight: 500; background: #f0f0f2; padding: 0.8rem; border-radius: 12px;">
+            📌 一句话决策：当前弹幕情绪极度偏向WE碾压，但官方比分仅1:3，存在“弹幕过热”风险，建议等待官方数据校准。
+        </p>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600;">对阵</div>
+                <div>JD Gaming vs Team WE</div>
+                <div style="margin-top:0.8rem; font-weight:600;">局数</div>
+                <div>第2小局 (G2) · 节点: EARLY-GAME</div>
+                <div style="margin-top:0.8rem; font-weight:600;">状态</div>
+                <div><span class="badge badge-live">局中·非终局</span> 结果待定</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">官方比分</div>
+                <div style="font-size:1.8rem; font-weight:700;">JDG 1 : 3 WE</div>
+                <div style="font-size:0.8rem; color:#6e6e73;">(gameWins 官方数据)</div>
+                <div style="margin-top:0.8rem; font-weight:600;">进度口径</div>
+                <div>弹幕切片时间窗: 18:14:18 ~ 18:14:35 (北京时间)</div>
+            </div>
+        </div>
+        <div style="margin-top:1rem; background:#f9f9fb; padding:0.8rem; border-radius:12px;">
+            <span class="intel-src">⏱️ 情报输出时间: 2026-08-30 18:20 (北京时间)</span>
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <p style="background:#fff9db; padding:0.5rem 1rem; border-radius:8px; display:inline-block; font-size:0.9rem;">
+            ⚠️ 灰信号总数: 64条 · 全部为“都在演我！” (重复刷屏)
+        </p>
+        <div style="margin-top:1rem;">
+            <div class="signal"><span class="tag">样本</span>“嘎子：都在演我！” ×64 <span class="src">(本场弹幕)</span></div>
+            <div class="signal"><span class="tag">解读</span>观众质疑比赛存在“演”成分，但无具体指向，属于情绪化表达，非结论。</div>
+        </div>
+        <details>
+            <summary>📄 灰信号弹幕原文摘录（折叠·前10条）</summary>
+            <div style="margin-top:0.8rem;">
+                <div class="timeline-item">[18:14:18] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:19] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:20] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:21] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:22] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:23] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:24] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:25] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:26] 嘎子：都在演我！</div>
+                <div class="timeline-item">[18:14:27] 嘎子：都在演我！</div>
+            </div>
+        </details>
+        <p style="font-size:0.8rem; color:#6e6e73; margin-top:0.8rem;">※ 灰信号仅代表观众质疑，不构成比赛结论。</p>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:1rem;">
+            <div style="flex:1; min-width:200px;">
+                <div style="font-weight:600;">本局阵容 (弹幕提及)</div>
+                <ul style="margin-top:0.5rem; list-style:none;">
+                    <li>🔹 皇子 (打野) — 盘口提及“落后6.5k”</li>
+                    <li>🔹 巨魔 (柱子) — 弹幕“巨魔柱子能用好的没几个”</li>
+                    <li>🔹 蛇女 / 家里奥 — 弹幕讨论“蛇女呗”“家里奥不是更好”</li>
+                    <li>🔹 红区/红q — 指代WE或JDG选手，操作粗糙</li>
+                </ul>
+            </div>
+            <div style="flex:1; min-width:200px;">
+                <div style="font-weight:600;">BP后战绩情报</div>
+                <p>无战绩情报提及 (弹幕未讨论BP后胜率)</p>
+                <div style="font-weight:600; margin-top:0.8rem;">选手提及</div>
+                <p>Faker(36) · Chovy(7) · 33(3) · Zeus(1) — 多为历史画像</p>
+            </div>
+        </div>
+        <details>
+            <summary>📄 BP相关弹幕摘录（折叠）</summary>
+            <div style="margin-top:0.8rem;">
+                <div class="timeline-item">[18:14:22] 家里奥不是更好</div>
+                <div class="timeline-item">[18:14:27] 巨魔柱子能用好的没几个</div>
+                <div class="timeline-item">[18:14:30] 蛇女呗</div>
+                <div class="timeline-item">[18:14:31] 你柱子给我卡好了啊</div>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="signal"><span class="tag" style="background:#0071e3; color:white;">盘口</span>117条“皇子落后6.5k” — 高度一致，指向皇子经济落后</div>
+        <div style="margin-top:1rem; background:#f9f9fb; padding:0.8rem; border-radius:12px;">
+            <span style="font-weight:600;">盘口情绪：</span> 极度看空JDG，但官方比分未确认，存在滞后。
+        </div>
+        <details>
+            <summary>📄 盘口弹幕样本（折叠·5条）</summary>
+            <div style="margin-top:0.8rem;">
+                <div class="timeline-item">[18:14:18] 皇子落后6.5k</div>
+                <div class="timeline-item">[18:14:20] 皇子落后6.5k</div>
+                <div class="timeline-item">[18:14:22] 皇子落后6.5k</div>
+                <div class="timeline-item">[18:14:25] 皇子落后6.5k</div>
+                <div class="timeline-item">[18:14:28] 皇子落后6.5k</div>
+            </div>
+        </details>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; color:#34c759;">▲ 正锚</div>
+                <div class="signal">WE提及359次(正21) · 韧性逆转21次</div>
+                <div class="signal">“3比0拿下” “3比0” 出现多次</div>
+            </div>
+            <div>
+                <div style="font-weight:600; color:#ff375f;">▼ 负锚</div>
+                <div class="signal">JDG提及125次(负14) · 逆风崩盘2次</div>
+                <div class="signal">“红区发狂了” “红q在干嘛”</div>
+            </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+            <div style="font-weight:600;">🧠 群体共识</div>
+            <table class="consensus-table">
+                <tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th></tr>
+                <tr><td>“一波”</td><td>WE碾压</td><td>529条</td><td>“一波”“3比0”</td></tr>
+                <tr><td>“皇子落后”</td><td>JDG劣势</td><td>117条</td><td>“皇子落后6.5k”</td></tr>
+                <tr><td>“红区粗糙”</td><td>质疑操作</td><td>~30条</td><td>“红qu真的好糙”</td></tr>
+            </table>
+            <p style="margin-top:0.8rem; font-size:0.9rem;">🔗 共识→信号链：WE强势共识 + 皇子落后 → 同向强信号，但官方未确认，存在盲区。</p>
+        </div>
+        <div style="margin-top:1rem; background:#f9f9fb; padding:0.8rem; border-radius:12px;">
+            <span style="font-weight:600;">灰信号条件预测：</span> 若“都在演我”持续增加，可能触发假赛审查，但当前无实据。
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; color:#34c759;">LONG (看多WE)</div>
+                <ul style="margin-left:1.2rem;">
+                    <li>WE提及量是JDG的2.8倍，正情绪占优</li>
+                    <li>“一波”共识529条，弹幕认为已结束</li>
+                    <li>韧性逆转21次，历史画像支持</li>
+                </ul>
+            </div>
+            <div>
+                <div style="font-weight:600; color:#ff375f;">SHORT (看空JDG)</div>
+                <ul style="margin-left:1.2rem;">
+                    <li>皇子落后6.5k，盘口明确</li>
+                    <li>JDG负14次提及，逆风崩盘特质</li>
+                    <li>“红区发狂”操作变形</li>
+                </ul>
+            </div>
+        </div>
+        <p style="margin-top:1rem; background:#f0f0f2; padding:0.8rem; border-radius:12px;">
+            ⚡ 决策：弹幕强烈指向WE，但官方比分仅1:3，存在“弹幕过热”风险，建议等待官方数据校准。
+        </p>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p><strong>当前局 G2 · EARLY-GAME</strong> — 已发生片段：</p>
+        <div style="margin-top:0.5rem;">
+            <div class="timeline-item">[18:14:18] 配合在哪</div>
+            <div class="timeline-item">[18:14:19] 红区</div>
+            <div class="timeline-item">[18:14:21] 打他蛋！</div>
+            <div class="timeline-item">[18:14:25] 单杀</div>
+            <div class="timeline-item">[18:14:26] 14分钟打两局？</div>
+            <div class="timeline-item">[18:14:31] 爆炸</div>
+        </div>
+        <details>
+            <summary>📄 G2 完整弹幕时间线（折叠·60条）</summary>
+            <div style="margin-top:0.8rem; max-height:300px; overflow-y:auto;">
+                <div class="timeline-item">[18:14:18] 配合在哪</div>
+                <div class="timeline-item">[18:14:18] 惹到我彬哥，那不是踢到钢板了吗，真是不自量力</div>
+                <div class="timeline-item">[18:14:18] ？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？</div>
+                <div class="timeline-item">[18:14:19] 红区</div>
+                <div class="timeline-item">[18:14:19] ？？？</div>
+                <div class="timeline-item">[18:14:19] 红qu真的好糙</div>
+                <div class="timeline-item">[18:14:20] 大小姐</div>
+                <div class="timeline-item">[18:14:21] 打他蛋！</div>
+                <div class="timeline-item">[18:14:21] 666</div>
+                <div class="timeline-item">[18:14:22] 支持管泽元，拒绝电竞华为blg的竹知了行为</div>
+                <div class="timeline-item">[18:14:22] 666666</div>
+                <div class="timeline-item">[18:14:22] 泰勇最近也很猛</div>
+                <div class="timeline-item">[18:14:22] 感谢WBG放过二哈</div>
+                <div class="timeline-item">[18:14:23] 88888</div>
+                <div class="timeline-item">[18:14:23] 先对账</div>
+                <div class="timeline-item">[18:14:23] 家里奥不是更好</div>
+                <div class="timeline-item">[18:14:24] 红区又开始装了</div>
+                <div class="timeline-item">[18:14:25] 单杀</div>
+                <div class="timeline-item">[18:14:25] ？</div>
+                <div class="timeline-item">[18:14:25] ?</div>
+                <div class="timeline-item">[18:14:25] 都怪dk都怪dk</div>
+                <div class="timeline-item">[18:14:25] 超雄</div>
+                <div class="timeline-item">[18:14:25] 3比0拿下</div>
+                <div class="timeline-item">[18:14:26] 14分钟打两局？</div>
+                <div class="timeline-item">[18:14:26] bin：我的赛区 想封谁封谁</div>
+                <div class="timeline-item">[18:14:26] 夺冠估计今年又没希望了</div>
+                <div class="timeline-item">[18:14:26] ？？？？</div>
+                <div class="timeline-item">[18:14:27] 双曲</div>
+                <div class="timeline-item">[18:14:27] 3比0</div>
+                <div class="timeline-item">[18:14:27] 巨魔柱子能用好的没几个</div>
+                <div class="timeline-item">[18:14:27] 还在装</div>
+                <div class="timeline-item">[18:14:27] 队长！！！</div>
+                <div class="timeline-item">[18:14:27] 红区发狂了</div>
+                <div class="timeline-item">[18:14:28] 我一直以为主播是假dk粉没想到是真爱</div>
+                <div class="timeline-item">[18:14:28] blg就是一天到晚壁事多</div>
+                <div class="timeline-item">[18:14:28] 新的爱将</div>
+                <div class="timeline-item">[18:14:28] 无能狂怒</div>
+                <div class="timeline-item">[18:14:28] 菜</div>
+                <div class="timeline-item">[18:14:28] Bin:在刷那个数字等着我给你们寄律师函吧</div>
+                <div class="timeline-item">[18:14:29] 西安队长</div>
+                <div class="timeline-item">[18:14:29] ？？</div>
+                <div class="timeline-item">[18:14:29] ？？？？？？？</div>
+                <div class="timeline-item">[18:14:29] 4个8</div>
+                <div class="timeline-item">[18:14:30] 蛇女呗</div>
+                <div class="timeline-item">[18:14:30] 二哥现在心情不好.弹幕的差不多就行了哈</div>
+                <div class="timeline-item">[18:14:30] 大根现在打的太臭了 闪现叫不出来</div>
+                <div class="timeline-item">[18:14:31] 你柱子给我卡好了啊</div>
+                <div class="timeline-item">[18:14:31] 47，4*，49</div>
+                <div class="timeline-item">[18:14:31] 爆炸</div>
+                <div class="timeline-item">[18:14:31] 喷子不看就gun</div>
+                <div class="timeline-item">[18:14:32] 红区，爱你</div>
+                <div class="timeline-item">[18:14:33] 红蛆</div>
+                <div class="timeline-item">[18:14:33] 红处</div>
+                <div class="timeline-item">[18:14:33] 忍不了</div>
+                <div class="timeline-item">[18:14:33] 这是HONG Q还是接Q啊</div>
+                <div class="timeline-item">[18:14:33] 红q在干嘛</div>
+                <div class="timeline-item">[18:14:34] 宝岛双区</div>
+                <div class="timeline-item">[18:14:34] 人才</div>
+                <div class="timeline-item">[18:14:34] dk上单太出了</div>
+                <div class="timeline-item">[18:14:35] 湾湾双区</div>
+            </div>
+        </details>
+        <p style="margin-top:1rem;">未发生片段：团战细节、龙魂、终局 — <span class="highlight">待观察</span></p>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600;">队伍提及</div>
+                <ul style="margin-left:1.2rem;">
+                    <li>DK: 406 (正14/负33)</li>
+                    <li>WE: 359 (正21/负14)</li>
+                    <li>WBG: 157 (正6/负4)</li>
+                    <li>BLG: 146 (正4/负0)</li>
+                    <li>KT: 128 (正6/负13)</li>
+                    <li>JDG: 125 (正2/负14)</li>
+                </ul>
+            </div>
+            <div>
+                <div style="font-weight:600;">选手提及</div>
+                <ul style="margin-left:1.2rem;">
+                    <li>Faker: 36 (正0/负0)</li>
+                    <li>Chovy: 7</li>
+                    <li>33: 3 (正1/负0)</li>
+                    <li>Zeus: 1</li>
+                </ul>
+                <div style="font-weight:600; margin-top:1rem;">队伍特质</div>
+                <p>被翻守不住:149 · 心态摆烂:84 · 韧性逆转:21 · 逆风崩盘:2</p>
+            </div>
+        </div>
+        <details>
+            <summary>📄 长期画像摘要（折叠）</summary>
+            <div style="margin-top:0.8rem;">
+                <p>WE: 韧性逆转21次，被翻守不住149次 — 弹幕认为WE擅长优势局但守不住劣势。</p>
+                <p>JDG: 逆风崩盘2次，心态摆烂84次 — 弹幕负面评价集中。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p>当前版本节奏较快，弹幕提及“14分钟打两局”反映短局频发。皇子、巨魔等英雄出现，野区对抗激烈。</p>
+        <p>历史规律：WE在优势局终结能力较强，但JDG韧性不足。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p>赛前预测（若有）：无明确预测记录。当前弹幕倾向WE获胜，但官方未确认，待终局回填。</p>
+        <p style="background:#f9f9fb; padding:0.5rem; border-radius:8px;">⏳ 等待G2终局结果，回填预测准确率。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div class="stat"><div class="label">实际数据源</div><div>弹幕切片 (60条) + 规则层统计</div></div>
+            <div class="stat"><div class="label">预期数据源</div><div>官方gameWins · Riot window</div></div>
+            <div class="stat"><div class="label">缺口</div><div>官方阵容确认 · 终局结果</div></div>
+        </div>
+        <p style="margin-top:1rem; font-size:0.9rem;">跨源一致性：弹幕与盘口高度一致，但官方比分未同步，存在时间差。</p>
+        <p style="margin-top:0.5rem; font-size:0.9rem;">情报输出时间：2026-08-30 18:20 (北京时间)</p>
+        <div style="margin-top:1rem; border-top:1px solid #e8e8ed; padding-top:1rem; font-size:0.8rem; color:#6e6e73;">
+            🧩 本场长期沉淀点：WE在弹幕中呈现“高提及+高正情绪”，但JDG负面特质明显，可跟踪后续局验证。
+        </div>
+    </div>
+    <div class="footer-note">
+        局中弹幕情报 · 非终局 · 结果待定 · 数据基于弹幕切片
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>

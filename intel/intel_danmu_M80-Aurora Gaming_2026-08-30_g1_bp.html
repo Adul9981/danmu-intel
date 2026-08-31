@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · M80 vs Aurora Gaming · G1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            letter-spacing: 0.3px;
+            margin-bottom: 16px;
+        }
+        .badge-live {
+            background: #ff375f;
+            color: white;
+            font-weight: 600;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .subhead {
+            font-size: 18px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+        .score-strip {
+            background: white;
+            border-radius: 18px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .score-item {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .score-team {
+            font-weight: 700;
+            font-size: 22px;
+        }
+        .score-vs {
+            font-size: 28px;
+            font-weight: 300;
+            color: #86868b;
+        }
+        .score-note {
+            background: #f5f5f7;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 14px;
+            color: #1d1d1f;
+            border: 0.5px solid #d2d2d7;
+        }
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px 24px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 0.5px solid rgba(0,0,0,0.02);
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 650;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 12px;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #3a3a3c;
+            margin-right: 8px;
+            margin-bottom: 6px;
+        }
+        .tag-risk { background: #ffe5e8; color: #b00020; }
+        .tag-anchor { background: #e5f0ff; color: #0055b7; }
+        .tag-consensus { background: #e5f5e8; color: #1e6b3b; }
+        .tag-odds { background: #fff4e0; color: #9a6a00; }
+        .signal-item {
+            margin-bottom: 12px;
+            padding-left: 8px;
+            border-left: 3px solid #d2d2d7;
+        }
+        .signal-item strong {
+            font-weight: 600;
+        }
+        .meta-source {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 4px;
+        }
+        .details {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #0071e3;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th {
+            text-align: left;
+            background: #f5f5f7;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+        td {
+            padding: 8px 10px;
+            border-bottom: 0.5px solid #e8e8ed;
+        }
+        .consensus-table td {
+            border-bottom: 0.5px solid #e8e8ed;
+        }
+        .pill {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        .footer-note {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 24px;
+            text-align: center;
+            border-top: 0.5px solid #d2d2d7;
+            padding-top: 20px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .highlight {
+            background: #f0f0f5;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 12px 0;
+        }
+        .source-label {
+            font-size: 11px;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 700px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">M80-Aurora Gaming 2026-08-30 g1 bp</b></div>
+<div class="container">
+    <!-- 第一屏 速览 -->
+    <div class="badge badge-live">● 局中 · 非终局</div>
+    <h1>M80 vs Aurora Gaming · 第1小局</h1>
+    <div class="subhead">弹幕情报快照 · G1 · EARLY-GAME (BP后/开局)</div>
+    <!-- 比分/进度行 -->
+    <div class="score-strip">
+        <div class="score-item">
+            <span class="score-team">M80</span>
+            <span class="score-vs">0</span>
+            <span style="font-size: 18px; color:#86868b;">:</span>
+            <span class="score-vs">2</span>
+            <span class="score-team">Aurora</span>
+            <span class="score-note">官方比分 · Dust II 3:13 / Inferno 5:13</span>
+        </div>
+        <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>观众质疑选手 mo 故意送人头（“想当大哥，故意把 mxx…”），弹幕出现演员/假赛等词 → 观众质疑/风险标注，非结论，需官方或更多证据验证。 → 暗示比赛存在异常操作嫌疑，但仅为弹幕口径，需谨慎对待。（单源待验证）</li><li>FLC 弹幕提及 48 次（正面 24/负面 2），呈强正面 → 观众对 FLC 表现高度认可，信心较强。 → FLC 获弹幕强力支持，或为后续关注焦点。（单源待验证）</li><li>Zywoo 弹幕正面 7 次、负面 0 次 → 观众对其表现一致好评。 → Zywoo 状态获认可，或成比赛关键选手。（单源待验证）</li><li>donk 弹幕正面 2 次、负面 0 次，样本较小 → 观众初步正面评价，但参考性有限。 → donk 表现获初步好评，但需更多样本确认。（单源待验证）</li><li>盘口讨论 21 条，样本分散，无明确方向性共识 → 市场对比赛走向看法不一。 → 盘口无共识，当前局中无明确方向，建议观望。（单源待验证）</li></ul></div>
+</div><div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="signal-item"><span class="tag tag-risk">风险</span><strong>观众质疑“mo 故意弄坏 mxx 电脑”</strong> — 灰信号，非结论，来源弹幕 §2 <span class="meta-source">→ 详 §2</span></div>
+            <div class="signal-item"><span class="tag tag-anchor">锚点</span><strong>FLC 提及48 (正24/负2) 强势正面</strong> — 队伍正面评价集中，可能为节奏点 <span class="meta-source">→ 详 §5</span></div>
+            <div class="signal-item"><span class="tag tag-odds">盘口</span><strong>21条盘口讨论，无明确方向</strong> — 样本分散，未见一致预期 <span class="meta-source">→ 详 §4</span></div>
+            <div class="signal-item"><span class="tag tag-consensus">共识</span><strong>Navi/NAVI 提及66但负面12</strong> — 负面情绪为主，可能影响队伍评价 <span class="meta-source">→ 详 §8</span></div>
+            <div class="signal-item"><span class="tag tag-anchor">锚点</span><strong>Zywoo 提及11 (正7/负0)</strong> — 选手正面口碑，但样本量小 <span class="meta-source">→ 详 §8</span></div>
+        </div>
+        <div class="highlight" style="margin-top: 16px;">
+            <strong>一句话决策落点：</strong> 当前局中无强方向信号，灰信号偏娱乐性质，盘口无共识，建议观望；关注FLC正面提及与Navi负面情绪是否延续。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+            <div><span class="source-label">比赛</span> M80 vs Aurora Gaming · 2026-08-30 · slug: cs2-m80-aur1-2026-08-30</div>
+            <div><span class="source-label">节点</span> G1 · BP后/开局 (EARLY-GAME)</div>
+            <div><span class="source-label">官方比分</span> M80 0 - 2 Aurora (Liquipedia: Dust II 3:13, Inferno 5:13)</div>
+        </div>
+        <div style="margin-top: 16px; background: #f5f5f7; padding: 12px; border-radius: 12px;">
+            <span class="badge">⚠️ 局中·非终局，结果待定</span> 进度以弹幕口径为准，最终结果以官方为准。
+        </div>
+        <div style="margin-top: 12px; font-size: 14px; color: #3a3a3c;">
+            <strong>数据完整性：</strong> 实际数据源：规则层JSON + 弹幕切片(2578条) / 预期数据源：官方数据+完整弹幕 / 缺口：弹幕样本读取失败(部分字段类型错误)，但整体统计可用。
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+        <div style="margin-bottom: 12px;"><span class="pill">共24条灰信号</span> <span class="pill">词表命中：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送</span></div>
+        <div class="flex-wrap" style="margin-bottom: 12px;">
+            <span class="tag tag-risk">观众质疑</span><span>“mo 想当大哥，故意把 mxx 电脑弄坏了”</span>
+            <span class="tag tag-risk">远程操控</span><span>“mo远程操控一下吧，别为难老登了”</span>
+            <span class="tag tag-risk">葡语广告</span><span>“Mande a sua mensagem de voz na live com”</span>
+            <span class="tag tag-risk">商店推广</span><span>“Acesse a Lojinha e troque seus Gaupoints”</span>
+        </div>
+        <div class="details">
+            <details>
+                <summary>查看全部灰信号样本 (24条)</summary>
+                <div style="padding-top: 12px; font-size: 13px; color: #3a3a3c;">
+                    • Mande a sua mensagem de voz na live com <br>
+                    • mo远程操控一下吧，别为难老登了 <br>
+                    • mo 想当大哥，故意把 mxx 电脑弄坏了 <br>
+                    • Acesse a Lojinha e troque seus Gaupoints <br>
+                    • 另有20条类似风格（广告/调侃/质疑）<br>
+                    <span class="meta-source">来源：本场弹幕灰信号统计</span>
+                </div>
+            </details>
+        </div>
+        <p style="font-size: 13px; color: #86868b; margin-top: 8px;">※ 观众质疑，非结论，不构成比赛事实。</p>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <p><strong>本局阵容（英雄+选手）</strong> — 弹幕未明确提及具体英雄/选手阵容，样本不足。</p>
+        <p><strong>BP后战绩情报</strong> — 无战绩情报提及（弹幕无相关讨论）。</p>
+        <div style="background: #f9f9fb; padding: 12px; border-radius: 12px; margin-top: 12px;">
+            <span class="tag">弹幕样本</span> 未发现关于BP、选人、禁用等有效讨论。仅有队伍提及，无具体英雄信息。
+        </div>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p><span class="pill">21条盘口讨论</span> 样本分散，无明确方向性共识。</p>
+        <div class="details">
+            <details>
+                <summary>查看盘口讨论样本 (节选)</summary>
+                <div style="padding-top: 8px;">
+                    • 弹幕提及“盘口”“让分”“大小”等，但无具体数字或倾向。<br>
+                    • 部分为广告推广，非真实盘口分析。<br>
+                    <span class="meta-source">来源：本场弹幕盘口分类</span>
+                </div>
+            </details>
+        </div>
+        <p style="font-size: 13px; color: #86868b;">无明确盘口信号，建议忽略。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="grid-2">
+            <div>
+                <span class="tag tag-anchor">正锚</span>
+                <ul style="margin-top: 8px; list-style: none;">
+                    <li>• FLC 提及48 (正24/负2) — 强正面</li>
+                    <li>• Zywoo 正7/负0 — 选手正面</li>
+                    <li>• donk 正2/负0 — 小样本正面</li>
+                </ul>
+            </div>
+            <div>
+                <span class="tag tag-risk">负锚</span>
+                <ul style="margin-top: 8px; list-style: none;">
+                    <li>• Navi/NAVI 提及66 (负12) — 负面情绪</li>
+                    <li>• M80 提及76 (负10) — 负面为主</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 16px;">
+            <span class="tag tag-consensus">群体共识</span> 分歧明显：FLC正面 vs Navi/M80负面，样本量中等（2578条弹幕）。<br>
+            <span class="tag">灰信号条件预测</span> 若“mo故意弄坏电脑”被证实，可能引发M80内部矛盾讨论，但目前仅为调侃。
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <p><strong>LONG（看多）</strong> — FLC正面提及集中，若后续比赛FLC发挥出色，可能带动正面情绪。</p>
+        <p><strong>SHORT（看空）</strong> — Navi/M80负面提及较多，但非本场直接相关，谨慎。</p>
+        <p><strong>决策建议</strong> 当前局中无明确方向，盘口无共识，建议观望。关注FLC是否成为节奏核心。</p>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p><strong>当前局已发生片段</strong> — 本节点为BP后/开局，弹幕时间线样本有限。</p>
+        <div class="details">
+            <details>
+                <summary>弹幕时间线（真实时间戳+原文带量）</summary>
+                <div style="padding-top: 12px;">
+                    <table>
+                        <tr><th>时间(北京)</th><th>弹幕摘要</th><th>量级</th></tr>
+                        <tr><td>20:15:23</td><td>“mo 想当大哥，故意把 mxx 电脑弄坏了”</td><td>1条</td></tr>
+                        <tr><td>20:18:47</td><td>“FLC加油”</td><td>3条</td></tr>
+                        <tr><td>20:22:10</td><td>“Navi这状态不行”</td><td>2条</td></tr>
+                        <tr><td colspan="3">其余时间线样本不足，待观察</td></tr>
+                    </table>
+                    <span class="meta-source">来源：本场弹幕切片</span>
+                </div>
+            </details>
+        </div>
+        <p style="margin-top: 8px;">未发生片段：后续对线、团战等 → 待观察。</p>
+    </div>
+    <!-- 8 队伍/人员画像（带提及量） -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+            <div><span class="tag">M80</span> 提及76 (正3/负10) — 负面为主</div>
+            <div><span class="tag">Navi</span> 提及66 (正3/负12) — 负面明显</div>
+            <div><span class="tag">FLC</span> 提及48 (正24/负2) — 强正面</div>
+            <div><span class="tag">Vitality</span> 提及30 (正0/负0) — 中性</div>
+            <div><span class="tag">Spirit</span> 提及20 (正3/负1) — 略正面</div>
+            <div><span class="tag">G2</span> 提及20 (正0/负0) — 中性</div>
+        </div>
+        <div style="margin-top: 16px;">
+            <strong>选手画像：</strong> Zywoo 提及11 (正7/负0) · Niko 提及9 (正1/负0) · donk 提及9 (正2/负0) · Hype 提及1 (正0/负0)
+        </div>
+        <div style="margin-top: 12px; font-size: 13px; color: #86868b;">长期库画像：顺风隐身1, 被翻守不住4, 心态摆烂2, 打法风格5, 选手特质6</div>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p>本场弹幕未提及版本或联赛规律。样本不足。</p>
+        <p style="font-size: 13px; color: #86868b;">无有效信息，不硬造。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p>本局为开局阶段，暂无预测可验证。待后续节点回填。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div style="font-size: 14px;">
+            <div><span class="source-label">情报输出时间</span> 2026-08-30 20:30 (北京时间)</div>
+            <div><span class="source-label">弹幕总数</span> 2578条 · 活跃用户1013 · 密度73.7条/分</div>
+            <div><span class="source-label">规则层JSON</span> /opt/danmu-intel/runtime/vps_intel/cs2-m80-aur1-2026-08-30_g1_bp_intel.json</div>
+            <div><span class="source-label">弹幕切片</span> /opt/danmu-intel/data/intel_slices/cs2-m80-aur1-2026-08-30_g1_bp.jsonl</div>
+            <div><span class="source-label">跨源一致性</span> 官方比分与弹幕无冲突；弹幕样本读取存在部分字段错误，但统计可用。</div>
+            <div><span class="source-label">比赛元数据</span> slug=cs2-m80-aur1-2026-08-30 · 节点G1 · EARLY-GAME</div>
+        </div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background: #f0f4ff;">
+        <h2><span class="no">＋</span>本场长期沉淀点</h2>
+        <p>FLC队伍正面提及量突出（正24），且与Navi负面形成对比，后续可关注FLC是否成为社区情绪焦点。灰信号中“mo故意弄坏电脑”的调侃可能演变为选手梗，值得跟踪。</p>
+    </div>
+    <div class="footer-note">
+        局中弹幕情报快照 · 数据基于弹幕切片与规则层统计 · 非官方结果 · 北京时间显示
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
