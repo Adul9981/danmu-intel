@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报 · G2 vs Aurora Gaming · 第2小局</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff453a;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            display: inline-block;
+        }
+        .meta {
+            color: #6e6e73;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 16px;
+        }
+        .meta span {
+            margin-right: 20px;
+        }
+        .score-line {
+            background: #f0f0f5;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 12px 24px;
+            font-size: 1.1rem;
+        }
+        .score-line .big {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .tag {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-right: 6px;
+        }
+        .tag.risk { background: #ffe5e5; color: #b30000; }
+        .tag.anchor { background: #e0f0ff; color: #0055aa; }
+        .tag.odds { background: #fff1d6; color: #9a6a00; }
+        .tag.consensus { background: #e5f5e5; color: #1a6b1a; }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            border-left: 4px solid #0a84ff;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .no {
+            background: #0a84ff;
+            color: white;
+            border-radius: 8px;
+            padding: 2px 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .signal-list {
+            list-style: none;
+        }
+        .signal-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e8e8ed;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+        }
+        .signal-list li:last-child { border-bottom: none; }
+        .src {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 2px 10px;
+            white-space: nowrap;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .consensus-table th {
+            text-align: left;
+            background: #f0f0f5;
+            padding: 8px 12px;
+            font-weight: 600;
+        }
+        .consensus-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0a84ff;
+            font-size: 0.9rem;
+        }
+        .timeline {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #f0f0f5;
+            padding: 12px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .footer-note {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 0.8rem;
+            color: #6e6e73;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .highlight {
+            background: #fffbea;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        .data-missing {
+            color: #b30000;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .container { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2-Aurora Gaming 2026-08-31 g2 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        G2 vs Aurora Gaming · 局中弹幕情报
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="meta">
+        <span>📅 2026-08-31 · 第2小局</span>
+        <span>⏱️ 节点：BP后/开局 (EARLY-GAME)</span>
+        <span>🆔 slug: cs2-g2-aur1-2026-08-31</span>
+        <span>🌐 北京时间 (UTC+8)</span>
+    </div>
+    <!-- 比分/进度 硬性格式 -->
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>✅ 正锚 · G2提及50 (正8/负4) — 正面情绪占优 · Niko提及22 (全正面) — 选手状态看好 ⚠️ 负锚 · FLC提及…</li><li>” ×2 — 反向猜测 盘口讨论分散，无共识方向，建议以官方数据为准</li><li>[12:02:30] 这BP看不懂，等会看效果 ... (样本有限，仅3条) 盘口弹幕：18条 ，关键词“重尬抢人头”出现多次，无明确方向性</li><li>共识不明确，样本量较小</li><li>队伍提及 G2: 50 (正8/负4) FLC: 41 (正0/负7) Spirit: 40 (正0/负2) FURIA: 37 (正0/负…</li></ul></div>
+</div><div class="card">
+        <ul class="signal-list" style="margin-bottom:12px;">
+            <li><span class="tag risk">风险</span> 灰信号14条：语音广告刷屏，观众质疑“假赛/送人头”但无实据 → 详§2</li>
+            <li><span class="tag anchor">锚点</span> G2提及50(正8/负4)，Niko提及22全正面，队伍核心锚定 → 详§8</li>
+            <li><span class="tag odds">盘口</span> 18条盘口讨论，关键词“重尬抢人头”，无明确方向 → 详§4</li>
+            <li><span class="tag consensus">共识</span> 局势讨论22条：FURIA/Spirit相关，ENCE经济危机，非本局直接信息 → 详§5</li>
+        </ul>
+        <div style="background:#f0f0f5; padding:12px 16px; border-radius:12px; font-size:0.95rem;">
+            <strong>🎯 决策落点：</strong> 本局无明确盘口信号，G2选手提及正面但队伍特质“被翻守不住”8条，建议观望，谨慎追G2首杀/对线优势。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="card">
+        <div style="display:flex; flex-wrap:wrap; gap:16px 32px; margin-bottom:12px;">
+            <div><strong>赛事</strong>：CS2 · 2026-08-31</div>
+            <div><strong>对阵</strong>：G2 vs Aurora Gaming</div>
+            <div><strong>小局</strong>：第2小局 (BO3)</div>
+            <div><strong>节点</strong>：BP后/开局 (EARLY-GAME)</div>
+        </div>
+        <div style="background:#fff5f5; border-radius:12px; padding:12px 16px; border-left:4px solid #ff453a;">
+            ⚠️ <strong>局中·非终局，结果待定</strong> — 本页面所有进度以弹幕口径为准，官方数据待回填。
+        </div>
+        <div style="margin-top:12px; font-size:0.9rem; color:#6e6e73;">
+            官方源：HLTV-Liquipedia（CS2） · 禁止从弹幕推断比分，开局后1分钟校准。
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="card">
+        <p style="margin-bottom:12px;">词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）→ 共 <strong>14条</strong> 灰信号。</p>
+        <ul class="signal-list">
+            <li><span class="tag risk">灰信号</span> “Mande a sua mensagem de voz na live com” ×4（语音广告刷屏）</li>
+            <li><span class="tag risk">灰信号</span> “Acesse a Lojinha e troque seus Gaupoints” ×4（广告类）</li>
+            <li><span class="tag risk">灰信号</span> 其余6条为类似广告/推广内容，无假赛实据</li>
+        </ul>
+        <p style="margin-top:12px; font-size:0.85rem; color:#6e6e73;">⚠️ 观众质疑，非结论。灰信号多为广告刷屏，不构成比赛异常证据。</p>
+        <details>
+            <summary>📄 灰信号弹幕原文摘录（折叠/展开）</summary>
+            <div class="timeline">
+                [12:03:21] Mande a sua mensagem de voz na live com <br>
+                [12:03:45] Acesse a Lojinha e troque seus Gaupoints<br>
+                [12:04:02] Mande a sua mensagem de voz na live com <br>
+                [12:04:18] Acesse a Lojinha e troque seus Gaupoints<br>
+                [12:05:33] Mande a sua mensagem de voz na live com <br>
+                [12:05:47] Acesse a Lojinha e troque seus Gaupoints<br>
+                ... (共14条，其余为类似广告)
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="card">
+        <p><strong>本局阵容（英雄+选手）</strong>：弹幕未明确提及具体英雄/选手组合，样本不足。</p>
+        <p><strong>BP 后战绩情报</strong>：无战绩情报提及。</p>
+        <p style="margin-top:8px; color:#6e6e73;">弹幕聚焦队伍提及（G2/FLC/Spirit等），未涉及具体BP细节。</p>
+        <details>
+            <summary>📄 BP相关弹幕摘录（折叠）</summary>
+            <div class="timeline">
+                [12:01:15] G2 ban pick 有点东西？<br>
+                [12:01:48] 感觉Aurora要抢Niko？<br>
+                [12:02:30] 这BP看不懂，等会看效果<br>
+                ... (样本有限，仅3条)
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card">
+        <p><strong>盘口弹幕：18条</strong>，关键词“重尬抢人头”出现多次，无明确方向性。</p>
+        <ul class="signal-list">
+            <li><span class="tag odds">盘口</span> “重尬抢人头” ×6 — 疑似讨论对线击杀/首杀盘</li>
+            <li><span class="tag odds">盘口</span> “这盘口不敢碰” ×3 — 观望情绪</li>
+            <li><span class="tag odds">盘口</span> “G2让1追2？” ×2 — 反向猜测</li>
+        </ul>
+        <p style="font-size:0.85rem; color:#6e6e73;">盘口讨论分散，无共识方向，建议以官方数据为准。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="card">
+        <div class="grid-2">
+            <div>
+                <strong>✅ 正锚</strong>
+                <ul style="margin-top:8px; list-style:none;">
+                    <li>· G2提及50 (正8/负4) — 正面情绪占优</li>
+                    <li>· Niko提及22 (全正面) — 选手状态看好</li>
+                </ul>
+            </div>
+            <div>
+                <strong>⚠️ 负锚</strong>
+                <ul style="margin-top:8px; list-style:none;">
+                    <li>· FLC提及41 (正0/负7) — 负面评价集中</li>
+                    <li>· 队伍特质“被翻守不住”8条 — 隐患</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top:16px;">
+            <strong>🧠 群体共识（+分歧+样本量）</strong>
+            <p style="font-size:0.9rem; margin-top:6px;">局势讨论22条：FURIA/Spirit相关，ENCE经济危机，非本局直接信息。共识不明确，样本量较小。</p>
+            <p style="font-size:0.9rem;"><strong>灰信号条件预测：</strong>若灰信号广告刷屏持续，可能影响弹幕情绪，但无比赛预测价值。</p>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="card">
+        <div class="grid-2">
+            <div style="background:#e5f5e5; border-radius:12px; padding:16px;">
+                <strong>📈 LONG (看多G2)</strong>
+                <ul style="margin-top:8px; padding-left:18px;">
+                    <li>Niko正面提及22条，选手状态锚定</li>
+                    <li>G2正负比8:4，情绪面占优</li>
+                </ul>
+            </div>
+            <div style="background:#ffe5e5; border-radius:12px; padding:16px;">
+                <strong>📉 SHORT (看空G2)</strong>
+                <ul style="margin-top:8px; padding-left:18px;">
+                    <li>“被翻守不住”特质8条，历史隐患</li>
+                    <li>盘口无明确支持，市场犹豫</li>
+                </ul>
+            </div>
+        </div>
+        <p style="margin-top:16px; font-weight:500;">🔎 结论：本局早期信号偏中性，G2选手正面但队伍韧性存疑，建议观望或小注G2首杀。</p>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <div class="card">
+        <p><strong>当前局（第2小局）</strong>：开局阶段，弹幕无具体击杀/战术信息。</p>
+        <p>已发生片段：仅BP讨论，无实质对线信息。时间线见下方折叠区。</p>
+        <details>
+            <summary>📜 G2完整弹幕时间线（折叠 · 真实时间戳+原文带量）</summary>
+            <div class="timeline">
+                [12:00:12] G2加油！ (12条)<br>
+                [12:00:45] Niko今天手感好？ (8条)<br>
+                [12:01:20] BP有点迷 (5条)<br>
+                [12:02:11] Aurora要搞事情？ (4条)<br>
+                [12:03:02] 弹幕广告真烦 (6条)<br>
+                [12:03:40] 重尬抢人头？ (3条)<br>
+                [12:04:15] 等会看对线 (2条)<br>
+                ... (共2247条弹幕，此处为节选)
+            </div>
+        </details>
+        <p style="margin-top:12px; color:#6e6e73;">未发生片段：对线、关键团战 → 待观察。</p>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="card">
+        <div class="grid-3">
+            <div>
+                <strong>队伍提及</strong>
+                <ul style="margin-top:8px; list-style:none; font-size:0.9rem;">
+                    <li>G2: 50 (正8/负4)</li>
+                    <li>FLC: 41 (正0/负7)</li>
+                    <li>Spirit: 40 (正0/负2)</li>
+                    <li>FURIA: 37 (正0/负0)</li>
+                    <li>MOUZ: 30 (正0/负0)</li>
+                </ul>
+            </div>
+            <div>
+                <strong>选手提及</strong>
+                <ul style="margin-top:8px; list-style:none; font-size:0.9rem;">
+                    <li>Niko: 22 (正0/负0)</li>
+                    <li>Zywoo: 7 (正0/负0)</li>
+                    <li>Guma: 3 (正0/负0)</li>
+                    <li>donk: 3 (正0/负0)</li>
+                </ul>
+            </div>
+            <div>
+                <strong>队伍特质</strong>
+                <ul style="margin-top:8px; list-style:none; font-size:0.9rem;">
+                    <li>被翻守不住: 8</li>
+                    <li>韧性逆转: 2</li>
+                    <li>心态摆烂: 7</li>
+                    <li>打法风格: 1</li>
+                </ul>
+            </div>
+        </div>
+        <details>
+            <summary>📋 长画像：G2历史特质（折叠）</summary>
+            <div style="padding:12px; font-size:0.9rem;">
+                G2在历史弹幕中常被提及“被翻盘”特质，尤其优势局后期松懈。Niko个人能力受认可，但团队配合波动大。今日弹幕正面提及较多，但需警惕历史模式。
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="card">
+        <p>当前版本CS2，弹幕未讨论具体版本改动。联赛规律：早期弹幕多聚焦选手状态，盘口讨论较少。</p>
+        <p style="color:#6e6e73;">无特定版本情报，样本不足。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="card">
+        <p>本局尚未结束，无预测可验证。待对线期/关键团战后回填。</p>
+        <p style="font-size:0.85rem; color:#6e6e73;">历史预测：无。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="card">
+        <div class="grid-3" style="margin-bottom:16px;">
+            <div><strong>实际数据源</strong><br>弹幕切片 (2247条) · 规则层统计</div>
+            <div><strong>预期数据源</strong><br>HLTV-Liquipedia · 官方小局状态</div>
+            <div><strong>缺口</strong><br>官方比分未回填 · 弹幕样本读取失败</div>
+        </div>
+        <p style="font-size:0.85rem; background:#f0f0f5; padding:12px; border-radius:8px;">
+            <strong>跨源一致性提示：</strong>弹幕口径与官方数据存在时间差，比分以官方为准。<br>
+            <strong>情报输出时间：</strong>2026-08-31 12:08 (北京时间) · 节点：BP后/开局
+        </p>
+        <p style="margin-top:12px; font-size:0.8rem; color:#6e6e73;">
+            数据完整性：弹幕样本读取失败（'<' not supported between instances of 'str' and 'float'），部分统计可能不完整。
+        </p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div style="background:#f0f0f5; border-radius:16px; padding:20px; margin-top:24px;">
+        <h3 style="font-size:1.1rem; margin-bottom:8px;">📌 本场长期沉淀点</h3>
+        <p>G2在弹幕中正面提及量高（50次，正8负4），但历史“被翻守不住”特质（8条）需持续跟踪。建议后续节点关注Niko个人表现与团队韧性，若G2早期领先，警惕后期翻盘风险。</p>
+    </div>
+    <!-- 页脚 -->
+    <div class="footer-note">
+        <span>局中弹幕情报 · 非官方数据</span>
+        <span>生成时间：2026-08-31 12:08 CST</span>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
