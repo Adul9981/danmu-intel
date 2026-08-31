@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报 · G4 BP后 · NS vs DNS · 2026-08-31</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            padding: 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff375f;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .meta-line {
+            color: #6e6e73;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+        }
+        .score-card {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 1rem;
+        }
+        .score-card .progress {
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+        .score-card .note {
+            font-size: 0.85rem;
+            color: #6e6e73;
+            background: #e8e8ed;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f5f5f7;
+            padding-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0071e3;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid #f0f0f2;
+        }
+        .signal-list {
+            list-style: none;
+        }
+        .signal-list li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #f5f5f7;
+            display: flex;
+            gap: 0.8rem;
+            align-items: baseline;
+        }
+        .tag {
+            background: #f0f0f2;
+            border-radius: 30px;
+            padding: 0.1rem 0.7rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #3a3a3c;
+            white-space: nowrap;
+        }
+        .tag.risk { background: #ffe5e5; color: #b3002d; }
+        .tag.anchor { background: #e5f0ff; color: #0066cc; }
+        .tag.market { background: #e5f7e5; color: #1a7a1a; }
+        .tag.consensus { background: #fff4e5; color: #b35900; }
+        .tag.gray { background: #f0e5ff; color: #5e3a8a; }
+        .source {
+            font-size: 0.75rem;
+            color: #86868b;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+        .details-block {
+            margin: 1rem 0;
+        }
+        details {
+            background: #fafafc;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #e8e8ed;
+            margin: 1rem 0;
+        }
+        summary {
+            font-weight: 500;
+            cursor: pointer;
+            color: #0066cc;
+            font-size: 0.9rem;
+        }
+        .time-line {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #f5f5f7;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .table-mini th, .table-mini td {
+            text-align: left;
+            padding: 0.5rem 0.3rem;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .footer-note {
+            margin-top: 2.5rem;
+            font-size: 0.8rem;
+            color: #86868b;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 1.5rem;
+            text-align: left;
+        }
+        .highlight {
+            background: #f0f7ff;
+            border-left: 4px solid #0071e3;
+            padding: 0.8rem 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 1.5rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Nongshim Esports Academy-DN SOOPers Challengers 2026-08-31 g4 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        <span>局中弹幕情报快照 · G4 BP后</span>
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="meta-line">
+        Nongshim Esports Academy vs DN SOOPers Challengers · 2026-08-31 · slug: lol-nsea-dnsc-2026-08-31 · 节点: G4 EARLY-GAME
+    </div>
+    <!-- 比分/进度硬性一行 -->
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>弹幕出现“랜서 왜던짐?”及“故意的啊/就是纯假赛/这剧本”等质疑，指向选手行为 → 观众质疑选手存在故意行为，风险标注，非结论。 → 负面情绪集中，需警惕舆论风险。（单源待验证）</li><li>弹幕围绕大龙/龙魂展开49条局势讨论，但分歧明显（“大龙没了”vs“龙魂打成这样”） → 关键资源点争议大，观众对局势判断不一。 → 关键决策点存在分歧，影响后续预期。（单源待验证）</li><li>灰信号共49条，关键词命中假赛/剧本/演员/故意，DNS提及14次（负1） → 负面情绪指向明显，但样本量不足，共识弱。 → 负面信号需关注，但证据有限。（单源待验证）</li></ul></div>
+</div><div class="card">
+        <ul class="signal-list" style="margin-bottom:1rem;">
+            <li><span class="tag risk">风险</span>灰信号49条，含“假赛/剧本”质疑，观众情绪偏向不信任<span class="source">→详§2</span></li>
+            <li><span class="tag anchor">锚点</span>Zeus提及17次(正1)，NS提及23次，DNS提及14次(负1)<span class="source">→详§8</span></li>
+            <li><span class="tag market">盘口</span>仅2条盘口讨论，提及“做大人头任务”<span class="source">→详§4</span></li>
+            <li><span class="tag consensus">共识</span>局势讨论49条，集中“大龙/龙魂”关键点，但样本不足<span class="source">→详§5</span></li>
+        </ul>
+        <div class="highlight">
+            <strong>一句话决策落点：</strong> 当前灰信号密度高但缺乏实质证据，盘口线索稀少，建议观望，不宜基于弹幕情绪做单边判断。
+        </div>
+    </div>
+    <!-- ========== 1 比赛信息与结果总览 ========== -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="card">
+        <div class="flex-between">
+            <div><strong>赛事</strong> 2026-08-31 · 第4小局</div>
+            <div><strong>状态</strong> <span style="background:#ff375f; color:white; padding:0.1rem 0.6rem; border-radius:20px;">局中·非终局</span></div>
+        </div>
+        <div style="margin-top:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+            <div><strong>弹幕总数</strong> 2684条</div>
+            <div><strong>活跃用户</strong> 665人</div>
+            <div><strong>密度</strong> 76.7条/分</div>
+            <div><strong>队伍提及</strong> NS 23 / DNS 14</div>
+        </div>
+        <p style="margin-top:1rem; font-size:0.9rem; color:#3a3a3c;">官方数据源：Riot小局状态（待校准）。当前仅弹幕口径，比分未确认。</p>
+    </div>
+    <!-- ========== 2 灰信号汇总 ========== -->
+    <h2><span class="no">2</span>灰信号汇总</h2>
+    <div class="card">
+        <p style="margin-bottom:0.8rem;"><span class="tag gray">观众质疑·非结论</span> 共49条灰信号，关键词命中：假赛/剧本/演员/故意。</p>
+        <ul style="list-style:none;">
+            <li style="padding:0.3rem 0;">• “랜서 왜던짐?” — 质疑选手行为</li>
+            <li style="padding:0.3rem 0;">• “故意的啊” / “就是纯假赛” / “这剧本” — 情绪性质疑</li>
+        </ul>
+        <details>
+            <summary>展开灰信号原文摘录（折叠）</summary>
+            <div class="time-line">[12:31:22] 랜서 왜던짐?<br>[12:32:05] 故意的啊<br>[12:33:41] 就是纯假赛<br>[12:35:19] 这剧本</div>
+        </details>
+        <p style="font-size:0.8rem; color:#86868b; margin-top:0.6rem;">注：以上为观众弹幕，不代表真实比赛进程。</p>
+    </div>
+    <!-- ========== 3 BP锚点与选人情报 ========== -->
+    <h2><span class="no">3</span>BP锚点与选人情报</h2>
+    <div class="card">
+        <p><strong>本局阵容（英雄+选手）</strong> — 官方数据待回填，弹幕未提及具体英雄组合。</p>
+        <p><strong>BP后战绩情报：</strong> 无战绩情报提及（弹幕样本中无BP后胜率讨论）。</p>
+        <details>
+            <summary>弹幕中BP相关讨论（折叠）</summary>
+            <div class="time-line">[12:28:44] NS这阵容有点抽象<br>[12:29:10] DNS下路组合强对线<br>[12:30:02] 上单Zeus能c吗</div>
+        </details>
+        <p style="font-size:0.8rem; color:#86868b;">来源：本场弹幕切片，样本有限。</p>
+    </div>
+    <!-- ========== 4 盘口与市场讨论 ========== -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card">
+        <p><strong>盘口讨论仅2条</strong>，样本极少，不构成方向。</p>
+        <ul style="list-style:none;">
+            <li>• “做大人头的任务，牛逼”</li>
+            <li>• “48”</li>
+        </ul>
+        <p style="font-size:0.8rem; color:#86868b;">来源：本场弹幕。盘口信息不完整，谨慎参考。</p>
+    </div>
+    <!-- ========== 5 方向性情报板 ========== -->
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+        <div class="card">
+            <h3 style="font-size:1rem; margin-bottom:0.5rem;">✅ 正锚</h3>
+            <p>Zeus 提及17次(正1)，NS整体提及23次(正0) — 但无明确正向战绩锚。</p>
+            <p style="font-size:0.8rem; color:#86868b;">来源：本场弹幕</p>
+        </div>
+        <div class="card">
+            <h3 style="font-size:1rem; margin-bottom:0.5rem;">⚠️ 负锚</h3>
+            <p>DNS 提及14次(负1)，灰信号49条指向负面情绪。</p>
+            <p style="font-size:0.8rem; color:#86868b;">来源：本场弹幕</p>
+        </div>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+        <p><strong>群体共识：</strong> 局势讨论49条，集中“大龙/龙魂”关键点，但分歧明显（有“大龙没了”也有“龙魂打成这样？”）。样本量不足，共识弱。</p>
+        <p><strong>灰信号条件预测：</strong> 若后续出现更多“假赛”弹幕且盘口异常，需警惕；当前仅情绪，无实证。</p>
+    </div>
+    <!-- ========== 6 情报含义与决策落点 ========== -->
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div class="card">
+        <p><strong>LONG / SHORT 倾向：</strong> 当前无明确方向。灰信号多但无实质证据，盘口讨论极少，建议观望。</p>
+        <p><strong>关键观察项：</strong> ①Zeus对线表现 ②大龙/龙魂团战结果 ③灰信号是否持续增加。</p>
+        <p style="font-size:0.8rem; color:#86868b;">推测·待验证</p>
+    </div>
+    <!-- ========== 7 逐局复盘 ========== -->
+    <h2><span class="no">7</span>逐局复盘</h2>
+    <div class="card">
+        <p><strong>当前局（G4）已发生片段：</strong> 开局阶段，弹幕提及“大龙”相关但未确认实际事件。</p>
+        <details>
+            <summary>G4 完整弹幕时间线（折叠）</summary>
+            <div class="time-line">
+                [12:25:10] 开局换野区<br>[12:26:33] Zeus压刀了<br>[12:27:45] 下路双招没了<br>[12:28:20] 大龙刷新还早<br>[12:29:55] 龙魂团战要来了？<br>[12:31:02] 大龙没了？<br>[12:32:18] 这波团战爆炸
+            </div>
+        </details>
+        <p><strong>未发生片段：</strong> 后续团战、龙魂归属、基地推进等待观察。</p>
+    </div>
+    <!-- ========== 8 队伍/人员画像 ========== -->
+    <h2><span class="no">8</span>队伍/人员画像</h2>
+    <div class="card">
+        <table class="table-mini">
+            <tr><th>队伍/选手</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+            <tr><td>NS</td><td>23</td><td>正0/负0</td><td>中性</td></tr>
+            <tr><td>DNS</td><td>14</td><td>正0/负1</td><td>负面情绪</td></tr>
+            <tr><td>Zeus</td><td>17</td><td>正1/负0</td><td>正向关注</td></tr>
+            <tr><td>Collapse</td><td>3</td><td>正0/负0</td><td>中性</td></tr>
+            <tr><td>Chovy</td><td>1</td><td>正0/负0</td><td>中性</td></tr>
+        </table>
+        <details>
+            <summary>长期画像补充（折叠）</summary>
+            <p>NS：被翻守不住(2)，韧性逆转(2)，心态摆烂(9) — 历史画像显示心态波动大。</p>
+            <p>DNS：打法风格(4)，选手特质(1) — 风格偏进攻。</p>
+        </details>
+    </div>
+    <!-- ========== 9 联赛规律与版本 ========== -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="card">
+        <p>当前版本节奏偏中期团战，弹幕提及“大龙/龙魂”频率高，但本场样本不足以总结规律。</p>
+        <p style="font-size:0.8rem; color:#86868b;">来源：本场弹幕 + 历史画像（推测）</p>
+    </div>
+    <!-- ========== 10 预测验证回填 ========== -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="card">
+        <p>本节点为开局阶段，暂无前期预测可回填。待后续节点更新。</p>
+        <p style="font-size:0.8rem; color:#86868b;">待验证</p>
+    </div>
+    <!-- ========== 11 数据与溯源 ========== -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="card">
+        <p><strong>情报输出时间：</strong> 2026-08-31 北京时间（节点内）</p>
+        <p><strong>数据完整性三栏：</strong></p>
+        <ul style="list-style:none; padding-left:0;">
+            <li>• 实际数据源：本场弹幕切片 + 规则层统计</li>
+            <li>• 预期数据源：Riot官方小局状态（待回填）</li>
+            <li>• 缺口：官方阵容、比分、BP后战绩</li>
+        </ul>
+        <p style="font-size:0.8rem; color:#86868b;">跨源一致性：弹幕与官方数据尚未校准，存在时间差。</p>
+        <p style="font-size:0.8rem; color:#86868b;">比赛元数据：slug=lol-nsea-dnsc-2026-08-31，G4，EARLY-GAME</p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="footer-note">
+        <strong>本场长期沉淀点：</strong> 灰信号密度高（49条）但缺乏实证，建议后续结合盘口变化与官方数据交叉验证；Zeus提及量高但正负比低，需观察实际表现。
+    </div>
+    <!-- 质量标杆对照（隐藏注释） -->
+    <!-- 对标 reports/intel_danmu_CS2-LVG-FUT_G1_2026-08-29.html 与 LoL 局中标杆 -->
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
