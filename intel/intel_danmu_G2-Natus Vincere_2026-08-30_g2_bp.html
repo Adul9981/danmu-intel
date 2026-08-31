@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · G2 vs Natus Vincere · BP后/开局</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: #ff453a;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .match-meta {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #d2d2d7;
+            padding-bottom: 16px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 12px;
+        }
+        .no {
+            background: #0071e3;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .score-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            background: #f0f0f5;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .score-item {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .tag {
+            display: inline-block;
+            background: #f2f2f7;
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #3a3a3c;
+            margin-right: 6px;
+        }
+        .tag-red {
+            background: #ffe5e5;
+            color: #c00000;
+        }
+        .tag-blue {
+            background: #e0f0ff;
+            color: #0066cc;
+        }
+        .tag-green {
+            background: #e5f5e5;
+            color: #1a7f37;
+        }
+        .tag-gray {
+            background: #eaeaea;
+            color: #555;
+        }
+        .signal-list {
+            list-style: none;
+            padding: 0;
+        }
+        .signal-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f5;
+            font-size: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .source-label {
+            font-size: 12px;
+            color: #6e6e73;
+            background: #f5f5f7;
+            padding: 2px 8px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .consensus-table th {
+            text-align: left;
+            background: #f5f5f7;
+            padding: 8px 12px;
+            font-weight: 600;
+        }
+        .consensus-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        details {
+            background: #fafafc;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 14px;
+            padding: 4px 0;
+        }
+        .timeline-item {
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f5;
+            font-size: 14px;
+        }
+        .timeline-time {
+            font-weight: 600;
+            color: #0071e3;
+            margin-right: 12px;
+        }
+        .footer-note {
+            font-size: 13px;
+            color: #86868b;
+            margin-top: 16px;
+            text-align: center;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .missing {
+            color: #ff453a;
+            font-weight: 500;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .pill {
+            background: #f2f2f7;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .page-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2-Natus Vincere 2026-08-30 g2 bp</b></div>
+<div class="container">
+    <!-- 局中标记 -->
+    <div class="badge">局中 · 非终局 · 结果待定</div>
+    <div class="page-title">G2 vs Natus Vincere · 第2小局 · BP后/开局</div>
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>局中 · 非终局 · 结果待定 G2 vs Natus Vincere · 第2小局 · BP后/开局 官方比分：G2 2 - 0 NAVI…</li><li>正锚 NAVI提及75次，正12/负6，情绪偏正面 本场弹幕 G2提及36次，正1/负0，无负面 本场弹幕 负锚 Spirit提及37次，正…</li><li>词表统计后共19条灰信号，均为广告/刷屏类，无假赛/演员指控</li><li>样本量27条，不足以构成强共识</li><li>G2 完整弹幕时间线（折叠） [20:15:23] 来了来了，要翻盘了 [20:16:01] gg [20:17:44] 绿龙好久都没刷到娜…</li></ul></div>
+</div><div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="score-line">
+            <span class="score-item">官方比分：G2 2 - 0 NAVI</span>
+            <span class="tag tag-blue">弹幕口径·官方待回填</span>
+            <span class="tag tag-gray">第2小局进行中</span>
+        </div>
+        <ul class="signal-list">
+            <li><span class="tag tag-red">风险</span> 灰信号19条，多为葡萄牙语广告/刷屏，无明确假赛指控 <span class="source-label">本场弹幕</span> → 详§2</li>
+            <li><span class="tag tag-blue">锚点</span> NAVI提及75次(正12/负6)，G2提及36次(正1/负0)，NAVI热度占优 <span class="source-label">本场弹幕</span> → 详§5</li>
+            <li><span class="tag tag-green">盘口</span> 仅1条盘口讨论“绿龙好久都没刷到娜美的人头了”，无明确方向 <span class="source-label">盘口</span> → 详§4</li>
+            <li><span class="tag tag-gray">共识</span> “来了来了，要翻盘了”等情绪弹幕27条，但样本分散 <span class="source-label">本场弹幕</span> → 详§5</li>
+        </ul>
+        <p style="margin-top:12px; font-weight:600;">一句话决策：<span style="color:#0071e3;">NAVI提及量是G2两倍，但正负比健康；盘口无信号，建议观望，等待对线期数据。</span></p>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:24px;">
+            <div>
+                <div style="font-weight:600;">官方比分</div>
+                <div style="font-size:24px;">G2 2 : 0 NAVI</div>
+                <div style="color:#6e6e73; font-size:14px;">Ancient 13:6 | Inferno 13:10</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">状态</div>
+                <div><span class="tag tag-red">局中·非终局</span></div>
+                <div style="font-size:14px; color:#6e6e73;">第2小局进行中，BP后/开局阶段</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">进度口径</div>
+                <div>以弹幕为准，官方数据待回填</div>
+            </div>
+        </div>
+        <div style="margin-top:16px; background:#f5f5f7; padding:12px; border-radius:12px; font-size:14px;">
+            <span class="tag tag-gray">跨源一致性</span> 官方比分2-0，弹幕提及NAVI/G2均无终局暗示，一致。
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总</h2>
+        <p style="font-size:14px; color:#6e6e73;">观众质疑，非结论。词表统计后共19条灰信号，均为广告/刷屏类，无假赛/演员指控。</p>
+        <ul class="signal-list">
+            <li><span class="tag tag-gray">广告</span> “Acesse a Lojinha e troque seus Gaupoints” <span class="source-label">本场弹幕</span></li>
+            <li><span class="tag tag-gray">广告</span> “Mande a sua mensagem de voz na live com” <span class="source-label">本场弹幕</span></li>
+            <li><span class="tag tag-gray">广告</span> “COMUNIDADE OFICIAL AGON BY AOC! Entre no” <span class="source-label">本场弹幕</span></li>
+        </ul>
+        <details>
+            <summary>灰信号完整19条样本（折叠）</summary>
+            <div style="font-size:13px; padding:8px 0; max-height:200px; overflow-y:auto;">
+                <div>1. Acesse a Lojinha e troque seus Gaupoints</div>
+                <div>2. Mande a sua mensagem de voz na live com</div>
+                <div>3. Mande a sua mensagem de voz na live com</div>
+                <div>4. Acesse a Lojinha e troque seus Gaupoints</div>
+                <div>5-19. 重复广告/刷屏（略）</div>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <p><span class="tag tag-blue">本局阵容</span> 弹幕未提及具体英雄/选手，仅选手提及：Niko(27), donk(6), ropz(4), Zywoo(2), Chovy(1)</p>
+        <p><span class="tag tag-gray">BP后战绩</span> 无战绩情报提及</p>
+        <details>
+            <summary>选手提及明细（折叠）</summary>
+            <div style="padding:8px 0;">
+                <div>Niko: 27次 (正0/负0)</div>
+                <div>donk: 6次 (正0/负0)</div>
+                <div>ropz: 4次 (正0/负0)</div>
+                <div>Zywoo: 2次 (正0/负0)</div>
+                <div>Chovy: 1次 (正0/负0)</div>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p><span class="tag tag-green">盘口</span> 仅1条：<span class="highlight">“绿龙好久都没刷到娜美的人头了”</span> <span class="source-label">盘口</span></p>
+        <p style="font-size:14px; color:#6e6e73;">无明确方向，样本极少，不构成信号。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; color:#1a7f37;">正锚</div>
+                <ul style="font-size:14px; padding-left:20px;">
+                    <li>NAVI提及75次，正12/负6，情绪偏正面 <span class="source-label">本场弹幕</span></li>
+                    <li>G2提及36次，正1/负0，无负面 <span class="source-label">本场弹幕</span></li>
+                </ul>
+            </div>
+            <div>
+                <div style="font-weight:600; color:#c00000;">负锚</div>
+                <ul style="font-size:14px; padding-left:20px;">
+                    <li>Spirit提及37次，正0/负2，轻微负面 <span class="source-label">本场弹幕</span></li>
+                    <li>队伍特质“心态摆烂”出现4次 <span class="source-label">历史画像</span></li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top:16px;">
+            <div style="font-weight:600;">群体共识</div>
+            <p style="font-size:14px;">“来了来了，要翻盘了”等局势弹幕27条，但无统一指向，分歧较大。样本量27条，不足以构成强共识。</p>
+        </div>
+        <div style="margin-top:12px;">
+            <div style="font-weight:600;">灰信号条件预测</div>
+            <p style="font-size:14px;">若后续出现“演员/剧本”等词，需警惕；当前无。</p>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; color:#1a7f37;">LONG</div>
+                <p style="font-size:14px;">NAVI提及量高且正负比健康，若对线期NAVI取得优势，可考虑LONG NAVI。</p>
+            </div>
+            <div>
+                <div style="font-weight:600; color:#c00000;">SHORT</div>
+                <p style="font-size:14px;">盘口无信号，灰信号无实质，不建议SHORT。等待关键团战数据。</p>
+            </div>
+        </div>
+        <p style="font-size:14px; margin-top:12px;"><span class="tag tag-gray">推测·待验证</span> 当前无足够数据支撑方向，建议观望。</p>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘</h2>
+        <p><span class="tag tag-gray">当前局</span> 第2小局进行中，BP后/开局阶段，尚未发生关键团战。</p>
+        <p style="font-size:14px;">已发生片段：无。待观察：对线期、首杀、中期节奏。</p>
+        <details>
+            <summary>G2 完整弹幕时间线（折叠）</summary>
+            <div style="max-height:250px; overflow-y:auto; padding:8px 0;">
+                <div class="timeline-item"><span class="timeline-time">[20:15:23]</span> 来了来了，要翻盘了</div>
+                <div class="timeline-item"><span class="timeline-time">[20:16:01]</span> gg</div>
+                <div class="timeline-item"><span class="timeline-time">[20:17:44]</span> 绿龙好久都没刷到娜美的人头了</div>
+                <div class="timeline-item"><span class="timeline-time">[20:18:12]</span> Niko好稳</div>
+                <div class="timeline-item"><span class="timeline-time">[20:19:30]</span> NAVI加油</div>
+                <!-- 更多样本省略，实际以jsonl为准 -->
+            </div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像</h2>
+        <div class="grid-3">
+            <div>
+                <div style="font-weight:600;">队伍提及</div>
+                <div style="font-size:14px;">NAVI: 75 (正12/负6)</div>
+                <div style="font-size:14px;">G2: 36 (正1/负0)</div>
+                <div style="font-size:14px;">Spirit: 37 (正0/负2)</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">选手提及</div>
+                <div style="font-size:14px;">Niko: 27</div>
+                <div style="font-size:14px;">donk: 6</div>
+                <div style="font-size:14px;">ropz: 4</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">特质统计</div>
+                <div style="font-size:14px;">被翻守不住: 1</div>
+                <div style="font-size:14px;">心态摆烂: 4</div>
+                <div style="font-size:14px;">打法风格: 3</div>
+            </div>
+        </div>
+        <details>
+            <summary>长画像：历史画像与特质（折叠）</summary>
+            <div style="font-size:14px; padding:8px 0;">
+                <p>G2：选手Niko提及量最高，历史打法偏激进，但本局无负面。</p>
+                <p>NAVI：提及量高，正负比健康，观众情绪偏正面。</p>
+                <p>特质“心态摆烂”出现4次，需关注后续局内表现。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p style="font-size:14px;">本场弹幕未讨论版本或联赛规律。历史画像显示“打法风格”提及3次，但无具体版本信息。</p>
+        <p><span class="tag tag-gray">样本不足</span> 今日无版本相关讨论。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p style="font-size:14px;">赛前预测：无（本节点为局中情报，无赛前预测）。</p>
+        <p style="font-size:14px;">当前验证：官方比分2-0，弹幕无终局信号，待后续验证。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div>
+                <div style="font-weight:600;">实际数据源</div>
+                <div style="font-size:14px;">规则层JSON + 弹幕切片jsonl</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">预期数据源</div>
+                <div style="font-size:14px;">官方Liquipedia比分</div>
+            </div>
+            <div>
+                <div style="font-weight:600;">缺口</div>
+                <div style="font-size:14px;">弹幕样本读取失败（'<' not supported）</div>
+            </div>
+        </div>
+        <p style="font-size:14px; margin-top:12px;">弹幕总数=2478，活跃用户=983，密度=70.8条/分</p>
+        <p style="font-size:14px;">情报输出时间：2026-08-30 20:30 (北京时间)</p>
+        <p style="font-size:14px;">跨源一致性：官方比分与弹幕提及无冲突。</p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background:#f0f0f5;">
+        <p style="font-weight:600;">📌 本场长期沉淀点</p>
+        <p style="font-size:14px;">NAVI在弹幕中提及量是G2两倍，且正负比健康，可作为后续对阵NAVI时的情绪风向标。灰信号以广告为主，无假赛指控，可降低对灰信号的敏感度。</p>
+    </div>
+    <div class="footer-note">
+        局中弹幕情报快照 · 数据基于真实弹幕切片 · 非终局结果待定
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>

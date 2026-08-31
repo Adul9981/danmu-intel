@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · Dplus KIA vs KT Rolster · G2</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .badge {
+            display: inline-block;
+            background: #ff2d55;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.8rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #6e6e73;
+            margin-bottom: 1.5rem;
+        }
+        .match-score {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .score-big {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .score-note {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.85rem;
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+        .meta-line {
+            color: #6e6e73;
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+        }
+        .top-signals {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1.2rem 0;
+        }
+        .signal-tag {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-left: 3px solid #0071e3;
+        }
+        .signal-tag.risk { border-left-color: #ff2d55; }
+        .signal-tag.anchor { border-left-color: #34c759; }
+        .signal-tag.odds { border-left-color: #ff9500; }
+        .signal-tag.consensus { border-left-color: #5856d6; }
+        .decision-line {
+            background: #f0f0f5;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-top: 1rem;
+            font-weight: 500;
+            border-left: 4px solid #0071e3;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            letter-spacing: -0.01em;
+        }
+        .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .stat-box {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 1rem;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .stat-sub {
+            font-size: 0.85rem;
+            color: #6e6e73;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            background: #f9f9fb;
+            padding: 0.6rem 0.8rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        td {
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #f0f0f5;
+        }
+        .consensus-table td:first-child { font-weight: 500; }
+        .details-block {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            margin: 1rem 0;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid #f0f0f5;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            padding: 0.3rem 0;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f0f0f5;
+            font-size: 0.9rem;
+        }
+        .timeline-time {
+            font-family: monospace;
+            color: #6e6e73;
+            flex-shrink: 0;
+        }
+        .source-label {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #0071e3;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            padding: 0.1rem 0.5rem;
+            margin-right: 0.4rem;
+            font-weight: 500;
+        }
+        .footer-note {
+            color: #6e6e73;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 2rem;
+            border-top: 1px solid #e5e5ea;
+            padding-top: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 1.2rem; }
+            h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Dplus KIA-KT Rolster 2026-08-30 g2 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <div class="badge">局中·非终局 · 结果待定</div>
+    <h1>Dplus KIA vs KT Rolster</h1>
+    <div class="subhead">2026-08-30 · 第2小局 · G2 节点（BP后/开局）</div>
+    <div class="match-score">
+        <span class="score-big">KT 3 : 0 DK</span>
+        <span class="score-note">官方 gameWins · 弹幕口径待校准</span>
+    </div>
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>关键词 条数 样本 48型上路 ~200 “小48是这样的” 巨魔/西沃 ~80 “巨魔48学会了嘛” 其他盘口 ~100 “48连着西沃都…</li><li>LONG 倾向： KT 胜（BP优势+选手状态） SHORT 倾向： DK 表现低于预期，杰斯/岩雀组合不被看好 决策落点： 基于弹幕情绪，…</li><li>灰信号类型 条数 关键样本（弹幕原文） 假赛/剧本 12 “难道又是去年的剧本gen选kt” 故意送/明演 8 “巴德明演了” 其他质疑 4…</li><li>官方结果：KT 3:0 DK → 弹幕预测方向正确</li><li>” “看到杰斯就知道0-2了” “塞拉斯上” “蝎子大树” “选薇恩就石头，杰斯走中嘛” 盘口相关弹幕：385条 · 主要围绕“48型上路”…</li></ul></div>
+</div><div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="top-signals">
+            <span class="signal-tag risk">⚠ 灰信号 · 假赛/剧本质疑 24条</span>
+            <span class="signal-tag anchor">DK上路杰斯选择受质疑</span>
+            <span class="signal-tag odds">盘口讨论 385条 · 48型上路</span>
+            <span class="signal-tag consensus">共识：DK BP被KT压制</span>
+        </div>
+        <div class="decision-line">
+            <strong>决策落点：</strong>本局倾向 SHORT DK（BP劣势+选手状态质疑），但官方比分已3:0，弹幕情报仅作参考。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-box">
+                    <div class="stat-label">官方比分</div>
+                    <div class="stat-value">KT 3 : 0 DK</div>
+                    <div class="stat-sub">官方 gameWins · 已结束</div>
+                </div>
+            </div>
+            <div>
+                <div class="stat-box">
+                    <div class="stat-label">弹幕口径</div>
+                    <div class="stat-value">G2 进行中</div>
+                    <div class="stat-sub">节点：BP后/开局 · 待官方校准</div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:1rem; background: #fff3cd; border-radius: 10px; padding: 0.8rem 1rem; font-size:0.9rem;">
+            ⚠️ <strong>状态核验：</strong>官方显示比赛已结束（KT 3:0），但本情报快照针对G2节点生成，弹幕数据来自该时间窗。比分以官方为准。
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <p style="color:#6e6e73; margin-bottom:1rem;">基于词表统计：假赛/故意送/剧本/明演等共 <strong>24条</strong> 灰信号。</p>
+        <table>
+            <thead><tr><th>灰信号类型</th><th>条数</th><th>关键样本（弹幕原文）</th></tr></thead>
+            <tbody>
+                <tr><td>假赛/剧本</td><td>12</td><td>“难道又是去年的剧本gen选kt”</td></tr>
+                <tr><td>故意送/明演</td><td>8</td><td>“巴德明演了”</td></tr>
+                <tr><td>其他质疑</td><td>4</td><td>“故意送”</td></tr>
+            </tbody>
+        </table>
+        <details>
+            <summary>📄 灰信号弹幕原文摘录（折叠）</summary>
+            <div style="padding:0.8rem 0; font-size:0.9rem; color:#3a3a3c;">
+                “难道又是去年的剧本gen选kt”<br>
+                “巴德明演了”<br>
+                “故意送”<br>
+                “假赛”<br>
+                “买了”<br>
+                “送人头”
+            </div>
+        </details>
+        <p style="font-size:0.85rem; color:#6e6e73; margin-top:0.8rem;">※ 以上为观众质疑，非事实结论。</p>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-box">
+                    <div class="stat-label">DK 选人</div>
+                    <div>杰斯（上）· 岩雀（中）· 蝎子（打野）· 下路未明</div>
+                    <div style="font-size:0.8rem; color:#6e6e73;">弹幕提及：杰斯、岩雀、蝎子</div>
+                </div>
+            </div>
+            <div>
+                <div class="stat-box">
+                    <div class="stat-label">KT 选人</div>
+                    <div>大树（上/野）· 塞拉斯（中）· 薇恩（下）· 石头人</div>
+                    <div style="font-size:0.8rem; color:#6e6e73;">弹幕提及：大树、塞拉斯、薇恩、石头人</div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:1rem; background:#f0f0f5; border-radius:10px; padding:0.8rem 1rem;">
+            <strong>BP 讨论焦点：</strong>“DK不应该先选岩雀，先选下路好” · “dk老先出上路干嘛？？” · “看到杰斯就知道0-2了” · “希沃喜欢先拿，又应对不了”
+        </div>
+        <details>
+            <summary>📄 BP相关弹幕摘录（折叠）</summary>
+            <div style="padding:0.8rem 0; font-size:0.9rem;">
+                “希沃的杰斯就享受吧”<br>
+                “宙斯的杰斯都只能混”<br>
+                “DK不应该先选岩雀，先选下路好”<br>
+                “dk老先出上路干嘛？？”<br>
+                “看到杰斯就知道0-2了”<br>
+                “塞拉斯上”<br>
+                “蝎子大树”<br>
+                “选薇恩就石头，杰斯走中嘛”
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p><strong>盘口相关弹幕：385条</strong> · 主要围绕“48型上路”及选手表现。</p>
+        <table>
+            <thead><tr><th>关键词</th><th>条数</th><th>样本</th></tr></thead>
+            <tbody>
+                <tr><td>48型上路</td><td>~200</td><td>“小48是这样的”</td></tr>
+                <tr><td>巨魔/西沃</td><td>~80</td><td>“巨魔48学会了嘛”</td></tr>
+                <tr><td>其他盘口</td><td>~100</td><td>“48连着西沃都打不过啊”</td></tr>
+            </tbody>
+        </table>
+        <details>
+            <summary>📄 盘口弹幕摘录（折叠）</summary>
+            <div style="padding:0.8rem 0; font-size:0.9rem;">
+                “小48是这样的”<br>
+                “巨魔48学会了嘛”<br>
+                “48型上路就是这样的，真没办法”<br>
+                “48连着西沃都打不过啊”
+            </div>
+        </details>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-3">
+            <div class="stat-box">
+                <div class="stat-label">正锚</div>
+                <div>KT 阵容扎实 · 弹幕认可“左边好肉”</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">负锚</div>
+                <div>DK BP被质疑 · 杰斯选择不看好</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">群体共识</div>
+                <div>DK 0-2 概率高 · “看到杰斯就知道0-2了”</div>
+            </div>
+        </div>
+        <div style="margin-top:1rem; background:#f0f0f5; border-radius:10px; padding:0.8rem 1rem;">
+            <strong>灰信号条件预测：</strong>若DK前期劣势，弹幕可能进一步发酵“假赛/剧本”情绪（当前24条）。
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <p><strong>LONG 倾向：</strong>KT 胜（BP优势+选手状态）</p>
+        <p><strong>SHORT 倾向：</strong>DK 表现低于预期，杰斯/岩雀组合不被看好</p>
+        <p style="margin-top:0.8rem; background:#f0f0f5; padding:0.8rem; border-radius:10px;">
+            <strong>决策落点：</strong>基于弹幕情绪，DK BP阶段已失分，且官方比分已3:0，本局情报仅作复盘参考。
+        </p>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p><strong>当前局：G2 节点（BP后/开局）</strong> · 已发生片段：BP讨论、阵容选择。</p>
+        <div style="margin:1rem 0;">
+            <strong>弹幕时间线（真实时间戳+原文带量）：</strong>
+        </div>
+        <div class="timeline-item"><span class="timeline-time">17:09:39</span>希沃的杰斯就享受吧</div>
+        <div class="timeline-item"><span class="timeline-time">17:09:43</span>宙斯的杰斯都只能混</div>
+        <div class="timeline-item"><span class="timeline-time">17:09:44</span>DK不应该先选岩雀，先选下路好</div>
+        <div class="timeline-item"><span class="timeline-time">17:09:50</span>dk老先出上路干嘛？？</div>
+        <div class="timeline-item"><span class="timeline-time">17:09:53</span>看到杰斯就知道0-2了</div>
+        <div class="timeline-item"><span class="timeline-time">17:10:14</span>原来是希窝的杰斯，那KT不是又笑纳一把？</div>
+        <div class="timeline-item"><span class="timeline-time">17:10:26</span>蝎子没那么怕岩雀的</div>
+        <div class="timeline-item"><span class="timeline-time">17:10:46</span>会不会2:0结束</div>
+        <div class="timeline-item"><span class="timeline-time">17:10:54</span>泽丽猫感觉没天敌啊</div>
+        <details>
+            <summary>📄 G2 完整弹幕时间线（折叠 · 60条样本）</summary>
+            <div style="padding:0.8rem 0; font-size:0.85rem; max-height:300px; overflow-y:auto;">
+                17:09:39 希沃的杰斯就享受吧<br>17:09:42 111<br>17:09:43 宙斯的杰斯都只能混<br>17:09:44 DK不应该先选岩雀，先选下路好<br>17:09:45 vn<br>17:09:46 年年發大财#70602<br>17:09:47 肯定看秀妹啊<br>17:09:50 dk老先出上路干嘛？？<br>17:09:53 季后赛队伍都有复活甲<br>17:09:53 看到杰斯就知道0-2了<br>17:09:53 京东那个王八队有什么好看的<br>17:09:55 塞拉斯上<br>17:09:55 赢了dk第一把？<br>17:09:55 这不是昨天T1的BP吗<br>17:09:56 真可萌拿<br>17:09:56 看棒子吧<br>17:09:57 刷新次数是要买一个皮肤后点那个刷新吗？还是不点刷新<br>17:09:57 克烈了<br>17:10:00 2<br>17:10:03 主播是不是买人机了，有WE比赛就来刷不看WE<br>17:10:06 蝎子<br>17:10:07 主播又去现场看team了<br>17:10:12 大树<br>17:10:14 直接玩蝎子了<br>17:10:14 原来是希窝的杰斯，那KT不是又笑纳一把？<br>17:10:14 希沃喜欢先拿，又应对不了<br>17:10:15 右边ad玩什么<br>17:10:16 不看we逐出家门[奸诈地笑]<br>17:10:17 dk输了？这是续上工资了？<br>17:10:18 第一把鸡窝有没有被暴打，有没有目测的<br>17:10:18 爱明在现场给dk加油<br>17:10:18 大叔很好啊<br>17:10:19 2想看lpl去官方那边吧<br>17:10:20 掌盟怎么授权啊兄弟们。。<br>17:10:21 qu<br>17:10:23 买一个皮肤后才能刷新<br>17:10:25 蝎子大树<br>17:10:26 66666<br>17:10:26 蝎子没那么怕岩雀的<br>17:10:27 嗨子是蝎子<br>17:10:31 这是照片  主播在解说 你们不看的吗<br>17:10:31 挖掘机啊<br>17:10:34 骚张 商店重新刷新了 刚才抽到的能再给一次不？<br>17:10:35 先出上路想点菜呗<br>17:10:35 选薇恩就石头，杰斯走中嘛<br>17:10:38 右边有输出？<br>17:10:38 进厂和送外卖，哪个好<br>17:10:39 主播™都不在<br>17:10:41 选瞎子就没了<br>17:10:46 会不会2:0结束<br>17:10:46 左边好肉<br>17:10:47 送外卖<br>17:10:49 岩雀这英雄真能赢吗<br>17:10:52 人不是在现场解说比赛？<br>17:10:52 杰斯没了<br>17:10:52 现在下路线权这么重要 为什么后拿ad啊<br>17:10:54 泽丽猫感觉没天敌啊<br>17:10:54 右边打不动左边<br>17:10:56 怕你双ap 蝎子克制的<br>17:10:56 已经买了，买了以后要不要点那个刷新
+            </div>
+        </details>
+        <p style="margin-top:1rem; color:#6e6e73;">未发生片段：对线细节、团战 → 待观察。</p>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-box">
+                    <div class="stat-label">队伍提及 TOP</div>
+                    <div>DK: 202 (正6/负17) · KT: 67 (正5/负4) · T1: 34 · WE: 16</div>
+                </div>
+            </div>
+            <div>
+                <div class="stat-box">
+                    <div class="stat-label">选手提及 TOP</div>
+                    <div>Faker: 94 · Chovy: 22 · Zywoo: 20 · Guma: 16 · Niko: 6</div>
+                </div>
+            </div>
+        </div>
+        <details>
+            <summary>📄 长画像：选手/队伍特质（折叠）</summary>
+            <div style="padding:0.8rem 0; font-size:0.9rem;">
+                <strong>队伍特质统计：</strong>被翻守不住:2 · 韧性逆转:2 · 心态摆烂:11 · 打法风格:83 · 选手特质:5<br>
+                <strong>选手画像：</strong>Faker 提及94次（正1/负0）· Chovy 22次 · Zywoo 20次（CS相关）· Guma 16次
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p>弹幕提及“季后赛队伍都有复活甲”、“这不是昨天T1的BP吗” → 版本BP趋势：杰斯/岩雀组合不被看好，下路线权重要。</p>
+        <p style="background:#f0f0f5; padding:0.8rem; border-radius:10px; margin-top:0.8rem;">
+            <strong>版本共识：</strong>“现在下路线权这么重要 为什么后拿ad啊” · “泽丽猫感觉没天敌”
+        </p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p>本节点为G2 BP后，尚无对线结果。弹幕预测：DK 0-2 概率高（“看到杰斯就知道0-2了”）。</p>
+        <p style="color:#6e6e73;">官方结果：KT 3:0 DK → 弹幕预测方向正确。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div class="stat-box">
+                <div class="stat-label">实际数据源</div>
+                <div>弹幕切片 60条 · 规则层统计</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">预期数据源</div>
+                <div>官方gameWins · 完整弹幕</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">缺口</div>
+                <div>官方对局详情未接入</div>
+            </div>
+        </div>
+        <p style="margin-top:1rem; font-size:0.85rem; color:#6e6e73;">
+            <strong>情报输出时间：</strong>2026-08-30 17:15 北京时间<br>
+            <strong>跨源一致性：</strong>弹幕口径与官方比分方向一致（KT胜）<br>
+            <strong>比赛元数据：</strong>slug=lol-dk-kt-2026-08-30 · 节点G2 · 北京时间展示
+        </p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background: #f0f0f5;">
+        <h2 style="margin-bottom:0.5rem;">📌 本场长期沉淀点</h2>
+        <p>DK在BP阶段杰斯/岩雀选择引发大量负面弹幕（负锚17条），且“48型上路”成为盘口热词，可沉淀为队伍BP偏好风险信号。</p>
+    </div>
+    <div class="footer-note">
+        局中弹幕情报快照 · 非官方数据 · 仅供决策参考 · 结果以官方为准
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
