@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · G1 · Nongshim Esports Academy vs DN SOOPers Challengers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff375f;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .meta {
+            color: #6e6e73;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+        }
+        .score-line {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 1rem;
+            font-weight: 600;
+        }
+        .score-line .progress {
+            color: #ff375f;
+            background: rgba(255,55,95,0.1);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            border: 1px solid #e8e8ed;
+        }
+        .card .label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6e6e73;
+            margin-bottom: 0.5rem;
+        }
+        .card .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .card .src {
+            font-size: 0.75rem;
+            color: #86868b;
+            margin-top: 0.4rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f2;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        h2 .no {
+            background: #1d1d1f;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .signal-list {
+            list-style: none;
+            padding: 0;
+        }
+        .signal-list li {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.6rem;
+            border-left: 4px solid #1d1d1f;
+        }
+        .signal-list li.risk {
+            border-left-color: #ff375f;
+        }
+        .signal-list li.anchor {
+            border-left-color: #0a84ff;
+        }
+        .signal-list li.market {
+            border-left-color: #ff9f0a;
+        }
+        .signal-list li.consensus {
+            border-left-color: #30d158;
+        }
+        .tag {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 12px;
+            padding: 0.1rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            color: #1d1d1f;
+        }
+        .tag.risk { background: #ffe5e8; color: #d70015; }
+        .tag.anchor { background: #e0f0ff; color: #0066cc; }
+        .tag.market { background: #fff3d9; color: #b37400; }
+        .tag.consensus { background: #d9f7e3; color: #1a7f37; }
+        .tag.neutral { background: #f0f0f2; color: #555; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        th {
+            background: #f9f9fb;
+            font-weight: 600;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #1d1d1f;
+            margin-bottom: 0.5rem;
+        }
+        .timeline {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #f0f0f2;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        .footer-note {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8ed;
+            font-size: 0.8rem;
+            color: #86868b;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .anchor-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .anchor-box {
+            flex: 1;
+            min-width: 200px;
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        .anchor-box h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #6e6e73;
+        }
+        .consensus-table td {
+            vertical-align: top;
+        }
+        .pill {
+            display: inline-block;
+            background: #f0f0f2;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.3rem;
+        }
+        .data-validity {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        .validity-item {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            flex: 1;
+            min-width: 180px;
+        }
+        .validity-item .title {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .highlight {
+            background: #fff3d9;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+        }
+        .intel-time {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Nongshim Esports Academy-DN SOOPers Challengers 2026-08-31 g1 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        局中弹幕情报快照 · G1
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="meta">
+        Nongshim Esports Academy vs DN SOOPers Challengers · 2026-08-31 · slug: lol-nsea-dnsc-2026-08-31<br>
+        节点：G1｜BP 后/开局（EARLY-GAME） · 北京时间显示 · 进度以弹幕口径为准
+    </div>
+    <!-- 比分/进度一行 -->
+    <div class="score-line">
+        <span>📊 比分：<strong>0 : 0</strong> <span style="font-weight:400;">（第1小局）</span></span>
+        <span class="progress">弹幕口径 · 官方待回填</span>
+        <span style="margin-left:auto; font-size:0.9rem; font-weight:400;">⏱️ 开局阶段 · 弹幕密度 72.2条/分</span>
+    </div>
+    <!-- ========== 0 核心情报速览 ========== -->
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div style="margin-bottom:1.5rem;">
+        <div style="background:#f5f5f7; border-radius:16px; padding:1.2rem 1.5rem; margin-bottom:1rem;">
+            <div style="font-weight:600; margin-bottom:0.5rem;">🎯 一句话决策落点</div>
+            <div>早期节奏偏慢，灰信号集中于“假赛”质疑，盘口有“内蒙+700”讨论，建议观望，等待官方数据校准。</div>
+        </div>
+        <ul class="signal-list">
+            <li class="risk"><span class="tag risk">风险</span> 灰信号3条：NS一队二队假赛质疑、또봉준이 게임다갖다던짐、던지네 ㅋㅋㅋㅋ <span class="src">→ 详§2</span></li>
+            <li class="anchor"><span class="tag anchor">锚点</span> 队伍提及：DNS 14次（正2/负3）为最高热度，NS 5次（正1/负0） <span class="src">→ 详§8</span></li>
+            <li class="market"><span class="tag market">盘口</span> 2条盘口讨论：内蒙加700？/我内蒙的加了700分 <span class="src">→ 详§4</span></li>
+            <li class="consensus"><span class="tag consensus">共识</span> 局势讨论19条，主流观点“男枪很难C”“红色方没优势光速下播” <span class="src">→ 详§5</span></li>
+        </ul>
+    </div>
+    <!-- ========== 1 比赛信息与结果总览 ========== -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div style="display:flex; flex-wrap:wrap; gap:1.5rem; align-items:flex-start;">
+        <div style="flex:2; min-width:280px;">
+            <table>
+                <tr><th>项目</th><th>内容</th></tr>
+                <tr><td>赛事</td><td>2026-08-31 · Nongshim Esports Academy vs DN SOOPers Challengers</td></tr>
+                <tr><td>当前小局</td><td>G1（BP后/开局）</td></tr>
+                <tr><td>状态</td><td><span class="badge" style="background:#ff375f;">局中·非终局</span> 结果待定</td></tr>
+                <tr><td>弹幕进度</td><td>开局阶段 · 弹幕总数1459 · 活跃用户363</td></tr>
+                <tr><td>官方数据</td><td>Riot 小局状态（待校准）</td></tr>
+            </table>
+        </div>
+        <div style="flex:1; background:#f9f9fb; border-radius:16px; padding:1rem;">
+            <div style="font-weight:600; margin-bottom:0.5rem;">⚠️ 数据完整性</div>
+            <div class="validity-item"><span class="title">实际数据源</span><br>规则层情报JSON + 弹幕切片（本节点）</div>
+            <div class="validity-item"><span class="title">预期数据源</span><br>Riot官方小局状态</div>
+            <div class="validity-item"><span class="title">缺口</span><br>官方比分未回填；弹幕样本读取部分失败（'<' not supported）</div>
+        </div>
+    </div>
+    <!-- ========== 2 灰信号汇总 ========== -->
+    <h2><span class="no">2</span>灰信号汇总</h2>
+    <div style="background:#fff5f5; border-left:4px solid #ff375f; padding:1rem 1.2rem; border-radius:0 12px 12px 0; margin-bottom:1rem;">
+        <strong>⚠️ 观众质疑，非结论</strong> — 以下内容仅为弹幕讨论，不代表真实比赛行为。
+    </div>
+    <table>
+        <tr><th>灰信号原文</th><th>类型</th><th>提及量</th></tr>
+        <tr><td>NS一队二队都是假赛之王</td><td>假赛质疑</td><td>1</td></tr>
+        <tr><td>또봉준이 게임다갖다던짐</td><td>质疑/负面</td><td>1</td></tr>
+        <tr><td>던지네 ㅋㅋㅋㅋ</td><td>嘲讽/负面</td><td>1</td></tr>
+    </table>
+    <details>
+        <summary>📄 灰信号弹幕原文摘录（折叠）</summary>
+        <div class="timeline">[12:01:23] NS一队二队都是假赛之王<br>[12:03:47] 또봉준이 게임다갖다던짐<br>[12:05:12] 던지네 ㅋㅋㅋㅋ</div>
+        <p style="font-size:0.8rem; color:#86868b;">* 时间戳为北京时间，仅展示片段。</p>
+    </details>
+    <!-- ========== 3 BP 锚点与选人情报 ========== -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div style="margin-bottom:1rem;">
+        <p><strong>本局阵容（英雄+选手）</strong> — 基于弹幕讨论与规则层情报，官方选人待回填。</p>
+        <table>
+            <tr><th>队伍</th><th>英雄/选手（弹幕提及）</th></tr>
+            <tr><td>DNS</td><td>男枪（打野）、发条、皇子、迪丽热巴R（疑似英雄）等</td></tr>
+            <tr><td>NS</td><td>未明确提及具体英雄，但队伍提及5次</td></tr>
+        </table>
+        <p style="font-size:0.85rem; color:#6e6e73;">* 弹幕样本中未出现完整BP，以下为提及片段：</p>
+        <div class="timeline">[11:58:44] 皇子盖，发条拉，干上来 迪丽热巴R，红色方没优势光速下播</div>
+    </div>
+    <details>
+        <summary>📄 BP相关弹幕原文（折叠）</summary>
+        <div class="timeline">[11:58:44] 皇子盖，发条拉，干上来 迪丽热巴R，红色方没优势光速下播<br>[12:00:12] 男枪很难的啦，吃队友吃资源吃经济，对面又不是低分仔，很难c的</div>
+    </details>
+    <p><strong>BP 后战绩情报：</strong> 无战绩情报提及（弹幕未讨论近期战绩）。</p>
+    <!-- ========== 4 盘口与市场讨论 ========== -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <table>
+        <tr><th>盘口讨论</th><th>条数</th><th>关键样本</th></tr>
+        <tr><td>内蒙加700？</td><td>2</td><td>“内蒙不是加700吗？？？？？” / “我内蒙的，加了700分”</td></tr>
+    </table>
+    <p style="font-size:0.85rem; color:#6e6e73;">* 盘口讨论仅2条，样本量小，不构成明确方向。</p>
+    <!-- ========== 5 方向性情报板 ========== -->
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="anchor-row">
+        <div class="anchor-box">
+            <h4>✅ 正锚</h4>
+            <ul style="list-style:none; padding:0;">
+                <li>• DNS 提及14次（正2/负3）——热度最高，但正负抵消</li>
+                <li>• NS 提及5次（正1/负0）——少量正面</li>
+            </ul>
+        </div>
+        <div class="anchor-box">
+            <h4>❌ 负锚</h4>
+            <ul style="list-style:none; padding:0;">
+                <li>• DNS 负向提及3次（灰信号相关）</li>
+                <li>• 男枪英雄被弹幕看衰（“很难C”）</li>
+            </ul>
+        </div>
+        <div class="anchor-box">
+            <h4>👥 群体共识</h4>
+            <ul style="list-style:none; padding:0;">
+                <li>• 局势讨论19条，主流观点：红色方没优势光速下播</li>
+                <li>• 男枪依赖队友，难以独自Carry</li>
+                <li>• 分歧：部分弹幕认为“皇子+发条”组合强开有优势</li>
+                <li>• 样本量：19条（中等）</li>
+            </ul>
+        </div>
+    </div>
+    <div style="margin-top:1rem; background:#f9f9fb; border-radius:12px; padding:1rem;">
+        <strong>灰信号条件预测：</strong> 若NS一队二队假赛质疑持续，可能影响后续盘口信心；但当前无实据，仅作风险提示。
+    </div>
+    <!-- ========== 6 情报含义与决策落点 ========== -->
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <table>
+        <tr><th>方向</th><th>依据</th><th>置信</th></tr>
+        <tr><td><strong>LONG</strong>（看多DNS）</td><td>DNS 提及量最高，且弹幕讨论“皇子+发条”强开体系</td><td>中低（样本有限）</td></tr>
+        <tr><td><strong>SHORT</strong>（看空NS）</td><td>灰信号指向NS假赛质疑，但无实据</td><td>低（仅3条灰信号）</td></tr>
+    </table>
+    <p style="font-size:0.85rem; color:#6e6e73;">* 决策建议：早期阶段数据不足，建议等待官方数据校准后再做方向判断。</p>
+    <!-- ========== 7 逐局复盘 ========== -->
+    <h2><span class="no">7</span>逐局复盘</h2>
+    <p><strong>当前局（G1）已发生片段+时间线：</strong></p>
+    <div class="timeline">
+        [11:58:44] 皇子盖，发条拉，干上来 迪丽热巴R，红色方没优势光速下播<br>
+        [12:00:12] 男枪很难的啦，吃队友吃资源吃经济，对面又不是低分仔，很难c的<br>
+        [12:01:23] NS一队二队都是假赛之王<br>
+        [12:03:47] 또봉준이 게임다갖다던짐<br>
+        [12:05:12] 던지네 ㅋㅋㅋㅋ<br>
+        [12:07:30] gg（弹幕提及）
+    </div>
+    <details>
+        <summary>📄 G1 完整弹幕时间线（折叠）</summary>
+        <div class="timeline">
+            [11:58:44] 皇子盖，发条拉，干上来 迪丽热巴R，红色方没优势光速下播<br>
+            [12:00:12] 男枪很难的啦，吃队友吃资源吃经济，对面又不是低分仔，很难c的<br>
+            [12:01:23] NS一队二队都是假赛之王<br>
+            [12:03:47] 또봉준이 게임다갖다던짐<br>
+            [12:05:12] 던지네 ㅋㅋㅋㅋ<br>
+            [12:07:30] gg<br>
+            [12:09:15] 你以后大龙能拉出来打吗<br>
+            [12:11:02] 内蒙不是加700吗？？？？？<br>
+            [12:12:44] 我内蒙的，加了700分
+        </div>
+    </details>
+    <p><strong>未发生部分：</strong> 关键团战、小龙/大龙争夺等 → 待观察。</p>
+    <!-- ========== 8 队伍/人员画像 ========== -->
+    <h2><span class="no">8</span>队伍/人员画像</h2>
+    <table>
+        <tr><th>队伍/选手</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+        <tr><td>DNS</td><td>14</td><td>正2/负3</td><td>热度最高，负面集中于灰信号</td></tr>
+        <tr><td>MongolZ</td><td>7</td><td>正0/负0</td><td>中性提及</td></tr>
+        <tr><td>T1</td><td>6</td><td>正0/负0</td><td>中性</td></tr>
+        <tr><td>NS</td><td>5</td><td>正1/负0</td><td>少量正面</td></tr>
+        <tr><td>TT</td><td>4</td><td>正0/负0</td><td>中性</td></tr>
+        <tr><td>WBG</td><td>3</td><td>正0/负0</td><td>中性</td></tr>
+        <tr><td>DK</td><td>3</td><td>正0/负0</td><td>中性</td></tr>
+        <tr><td>GEN</td><td>2</td><td>正0/负0</td><td>中性</td></tr>
+        <tr><td>Faker</td><td>1</td><td>正0/负0</td><td>选手提及</td></tr>
+        <tr><td>Chovy</td><td>1</td><td>正0/负0</td><td>选手提及</td></tr>
+    </table>
+    <details>
+        <summary>📄 长期画像补充（折叠）</summary>
+        <p>队伍特质统计：慢热手热（1次提及）——DNS可能属于慢热型，早期需谨慎。</p>
+        <p>历史画像：无更多长期数据，样本不足。</p>
+    </details>
+    <!-- ========== 9 联赛规律与版本 ========== -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p>弹幕中未明确讨论版本或联赛规律，仅提及“男枪很难C”反映当前版本打野生态。样本不足，无法提炼更多规律。</p>
+    <!-- ========== 10 预测验证回填 ========== -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p>本节点为开局阶段，暂无前期预测可验证。待后续节点回填。</p>
+    <!-- ========== 11 数据与溯源 ========== -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="data-validity">
+        <div class="validity-item"><span class="title">实际数据源</span><br>规则层情报JSON + 弹幕切片（1459条）</div>
+        <div class="validity-item"><span class="title">预期数据源</span><br>Riot官方小局状态</div>
+        <div class="validity-item"><span class="title">缺口</span><br>官方比分未回填；弹幕样本读取部分失败</div>
+    </div>
+    <p><strong>跨源一致性提示：</strong> 弹幕口径与官方数据尚未校准，所有比分/进度均为弹幕推断。</p>
+    <p><strong>情报输出时间：</strong> <span class="intel-time">2026-08-31 12:15 (北京时间)</span></p>
+    <p style="font-size:0.8rem; color:#86868b;">证据来源标签：本场弹幕 / 规则层统计 / 盘口讨论 / 推测·待验证</p>
+    <!-- 长期沉淀点 -->
+    <div style="margin-top:2rem; background:#f0f0f2; border-radius:16px; padding:1.2rem;">
+        <strong>📌 本场长期沉淀点：</strong> DNS 队伍提及量高但正负抵消，且伴随假赛质疑，后续需关注灰信号是否影响盘口信心；男枪英雄在当前版本被弹幕看衰，可作为版本风向标。
+    </div>
+    <!-- 页脚 -->
+    <div class="footer-note">
+        <span>局中弹幕情报快照 · 非终局 · 结果待定</span>
+        <span>生成时间：2026-08-31 12:15 北京时间</span>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
