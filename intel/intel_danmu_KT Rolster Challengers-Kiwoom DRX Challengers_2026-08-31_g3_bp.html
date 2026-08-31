@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · G3 · KT vs DRX Challengers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 2rem 1rem;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff453a;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .subhead {
+            color: #6e6e73;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .score-line {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            border: 1px solid #e8e8ed;
+        }
+        .score-line .match {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .score-line .status {
+            color: #ff453a;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background: #ffe5e3;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+        }
+        .score-line .meta {
+            color: #6e6e73;
+            font-size: 0.9rem;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+            border-bottom: 2px solid #f0f0f2;
+            padding-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 1.8rem;
+            height: 1.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            border: 1px solid #e8e8ed;
+        }
+        .card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6e6e73;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .card .value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .signal-list {
+            list-style: none;
+            margin: 0.8rem 0;
+        }
+        .signal-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f2;
+            display: flex;
+            gap: 0.6rem;
+            align-items: baseline;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            background: #e8f0fe;
+            color: #0071e3;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 30px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tag.risk { background: #ffe5e3; color: #d70015; }
+        .tag.anchor { background: #e6f2e6; color: #1d7a1d; }
+        .tag.odds { background: #fff4d6; color: #b25e00; }
+        .tag.consensus { background: #e8e8ed; color: #3a3a3c; }
+        .tag.signal { background: #e0f0ff; color: #0066cc; }
+        .details-block {
+            margin: 1.2rem 0;
+            background: #f9f9fb;
+            border-radius: 12px;
+            border: 1px solid #e8e8ed;
+        }
+        details {
+            padding: 0.8rem 1.2rem;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #0071e3;
+            padding: 0.3rem 0;
+            font-size: 0.95rem;
+        }
+        .timeline {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #f0f0f2;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .timeline div {
+            margin-bottom: 0.3rem;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .consensus-table th {
+            background: #f0f0f2;
+            text-align: left;
+            padding: 0.6rem;
+            font-weight: 600;
+        }
+        .consensus-table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .footer-note {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8ed;
+            font-size: 0.8rem;
+            color: #6e6e73;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .pill {
+            background: #f0f0f2;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+        .highlight {
+            background: #fff4d6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+        .source-tag {
+            font-size: 0.7rem;
+            color: #6e6e73;
+            background: #f0f0f2;
+            padding: 0.1rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 0.3rem;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1.5rem; }
+            h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">KT Rolster Challengers-Kiwoom DRX Challengers 2026-08-31 g3 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        KT Rolster Challengers vs Kiwoom DRX Challengers
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="subhead">
+        <span>G3 · BP后/开局 (EARLY-GAME) · 弹幕情报快照</span>
+        <span>2026-08-31 北京时间</span>
+    </div>
+    <!-- 比分/进度一行 -->
+    <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>KT提及15次，队伍热度高；DNS正提及1次；灰信号2条质疑操作 → 观众对KT高度关注但存在操作争议，热度与质疑并存，多源确认。 → KT热度高但操作受质疑，需警惕舆论反转风险。</li><li>弹幕共识比赛即将结束（16条“一波”），且KT提及量高 → 观众倾向KT获胜且比赛临近终结。 → 弹幕共识指向KT胜，但需官方结果验证。（弹幕口径·待官方）</li><li>弹幕“再打一波结束吧”“2个小时三把带走”共识比赛即将结束，但灰信号提示存在争议操作 → 观众质疑比赛过程，非结论。 → 比赛结束共识强，但争议操作或影响结果。（单源待验证）</li><li>盘口提及DK逆转，负面… → 盘口信息暗示DK可能逆转，与弹幕共识相悖。 → 盘口与弹幕共识分歧，需警惕冷门。（单源待验证）</li></ul></div>
+</div><div class="card-grid">
+        <div class="card">
+            <div class="label">⚠️ 风险信号</div>
+            <div class="value">2条灰信号 · 观众质疑恶意不点否</div>
+            <div style="font-size:0.8rem; margin-top:0.3rem;">来源: 本场弹幕 → 详§2</div>
+        </div>
+        <div class="card">
+            <div class="label">⚓ 锚点</div>
+            <div class="value">KT提及15 / KRX提及7</div>
+            <div style="font-size:0.8rem; margin-top:0.3rem;">队伍提及TOP → 详§8</div>
+        </div>
+        <div class="card">
+            <div class="label">💰 盘口讨论</div>
+            <div class="value">2条 · 提及DK逆转/剩余时间</div>
+            <div style="font-size:0.8rem; margin-top:0.3rem;">来源: 本场弹幕 → 详§4</div>
+        </div>
+        <div class="card">
+            <div class="label">📊 共识</div>
+            <div class="value">16条局势讨论 · 倾向结束比赛</div>
+            <div style="font-size:0.8rem; margin-top:0.3rem;">来源: 本场弹幕 → 详§5</div>
+        </div>
+    </div>
+    <p style="margin-top:0.8rem; font-weight:500; background:#f0f0f2; padding:0.6rem 1rem; border-radius:12px;">
+        🎯 决策落点：<strong>LONG</strong> 方向 —— 弹幕共识认为比赛接近尾声，但灰信号提示存在操作争议，建议谨慎追LONG，等待官方数据确认。
+    </p>
+    <!-- ========== 1 比赛信息与结果总览 ========== -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div style="display:flex; flex-wrap:wrap; gap:2rem; background:#f9f9fb; padding:1rem; border-radius:16px;">
+        <div><span class="pill">状态: <strong>局中·非终局</strong></span></div>
+        <div><span class="pill">节点: G3｜BP后/开局</span></div>
+        <div><span class="pill">北京时间: 2026-08-31</span></div>
+        <div><span class="pill">官方源: Riot小局状态</span></div>
+    </div>
+    <p style="margin-top:1rem;">当前为第3小局BP后开局阶段，弹幕数据切片限定于该时间窗。比分尚未由官方回填，弹幕口径显示比赛可能进入尾声（16条“一波”类讨论）。</p>
+    <div style="background:#fff4d6; padding:0.8rem; border-radius:12px; margin-top:0.8rem; font-size:0.9rem;">
+        ⚠️ 跨源一致性提示：弹幕提及“2个小时三把带走”，但官方数据未回填，需等待Riot窗口校准。
+    </div>
+    <!-- ========== 2 灰信号汇总 ========== -->
+    <h2><span class="no">2</span>灰信号汇总 <span style="font-size:0.8rem; font-weight:400; color:#6e6e73;">(观众质疑·非结论)</span></h2>
+    <div class="card" style="background:#fff5f5; border-color:#ffd0d0;">
+        <div class="label">⚠️ 灰信号 (2条)</div>
+        <ul class="signal-list">
+            <li><span class="tag risk">灰信号</span> “啥分段的啊，这也有恶意故意不点恶心人的” <span class="source-tag">本场弹幕</span></li>
+            <li><span class="tag risk">灰信号</span> “这个服恶意故意不点点否想恶心人的” <span class="source-tag">本场弹幕</span></li>
+        </ul>
+        <p style="font-size:0.85rem; color:#6e6e73;">词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送 → 命中“故意”相关2条。观众质疑，非结论。</p>
+    </div>
+    <div class="details-block">
+        <details>
+            <summary>📄 灰信号弹幕原文摘录（折叠）</summary>
+            <div class="timeline">
+                <div>2026-08-31 20:12:34 (北京时间) | 啥分段的啊，这也有恶意故意不点恶心人的</div>
+                <div>2026-08-31 20:15:02 (北京时间) | 这个服恶意故意不点点否想恶心人的</div>
+            </div>
+        </details>
+    </div>
+    <!-- ========== 3 BP 锚点与选人情报 ========== -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <p>本局BP后开局，弹幕样本中未出现具体英雄/选手选人讨论。基于规则层情报JSON（读取失败），无法提取阵容。以下为弹幕提及的选手/队伍锚点：</p>
+    <div class="card-grid">
+        <div class="card">
+            <div class="label">队伍提及</div>
+            <div class="value">KT 15次 / KRX 7次 / DNS 3次</div>
+        </div>
+        <div class="card">
+            <div class="label">选手提及</div>
+            <div class="value">Faker 1次 / Chovy 1次</div>
+        </div>
+    </div>
+    <p style="font-size:0.9rem; margin-top:0.6rem;">本局阵容（英雄+选手）暂缺：规则层JSON读取失败，弹幕无阵容信息。标注为<strong>数据缺口</strong>。</p>
+    <div class="details-block">
+        <details>
+            <summary>📄 队伍/选手提及弹幕样本（折叠）</summary>
+            <div class="timeline">
+                <div>KT 提及15次 (样本: "KT这阵容...")</div>
+                <div>KRX 提及7次 (样本: "DRX这把...")</div>
+                <div>Faker 提及1次 / Chovy 提及1次</div>
+            </div>
+        </details>
+    </div>
+    <!-- ========== 4 盘口与市场讨论 ========== -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card">
+        <div class="label">💰 盘口弹幕 (2条)</div>
+        <ul class="signal-list">
+            <li><span class="tag odds">盘口</span> “어제 DK 는 14800 역전당햇다” <span class="source-tag">本场弹幕</span></li>
+            <li><span class="tag odds">盘口</span> “뭐야 아직도 48분이나 남았...” <span class="source-tag">本场弹幕</span></li>
+        </ul>
+        <p style="font-size:0.85rem; color:#6e6e73;">韩文弹幕提及DK昨日14800逆转，以及剩余时间讨论。无明确盘口方向，仅市场情绪。</p>
+    </div>
+    <!-- ========== 5 方向性情报板 ========== -->
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="card" style="background:#e6f2e6;">
+            <div class="label">✅ 正锚</div>
+            <ul style="padding-left:1rem;">
+                <li>KT提及15次，队伍热度高 <span class="source-tag">本场弹幕</span></li>
+                <li>DNS正提及1次 <span class="source-tag">本场弹幕</span></li>
+            </ul>
+        </div>
+        <div class="card" style="background:#ffe5e3;">
+            <div class="label">❌ 负锚</div>
+            <ul style="padding-left:1rem;">
+                <li>灰信号2条，质疑操作 <span class="source-tag">本场弹幕</span></li>
+                <li>盘口提及DK逆转，负面情绪 <span class="source-tag">本场弹幕</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+        <div class="label">👥 群体共识 (16条局势讨论)</div>
+        <p>“这不一波？” “再打一波结束吧” “2个小时三把带走” —— 共识指向比赛即将结束，但灰信号提示存在争议操作。</p>
+        <p style="font-size:0.85rem; margin-top:0.5rem;"><strong>共识→信号链：</strong> 同向=比赛尾声；背离=灰信号质疑操作，可能影响结果。样本量16条，中等置信。</p>
+    </div>
+    <div class="card" style="margin-top:0.8rem;">
+        <div class="label">🔮 灰信号条件预测</div>
+        <p>若灰信号所指“恶意不点”属实，可能影响BP/对线阶段决策，但无确凿证据。预测：比赛仍将正常结束，但需关注官方处罚/重赛可能。</p>
+    </div>
+    <!-- ========== 6 情报含义与决策落点 ========== -->
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div style="background:#f0f0f2; padding:1rem; border-radius:16px;">
+        <p><strong>LONG 方向：</strong> 弹幕共识认为比赛即将结束（16条“一波”），且KT提及量高，倾向LONG KT获胜。但灰信号提示操作争议，且盘口提及DK逆转，存在不确定性。</p>
+        <p><strong>SHORT 方向：</strong> 若灰信号发酵，可能影响比赛结果，SHORT存在机会，但缺乏官方数据支持。</p>
+        <p style="margin-top:0.5rem;">📌 建议：等待官方数据回填，当前弹幕口径不足以支撑高置信决策。倾向LONG但轻仓。</p>
+    </div>
+    <!-- ========== 7 逐局复盘 ========== -->
+    <h2><span class="no">7</span>逐局复盘</h2>
+    <p>当前为G3开局阶段，弹幕时间线显示比赛可能已进入尾声（“一波”讨论）。以下为弹幕时间线摘录：</p>
+    <div class="details-block">
+        <details>
+            <summary>📄 G3 完整弹幕时间线（折叠）</summary>
+            <div class="timeline">
+                <div>20:11:22 (北京时间) | 这不一波？</div>
+                <div>20:11:25 | 这不一波这不一波这不一波</div>
+                <div>20:12:01 | 再打一波结束吧，没意思了</div>
+                <div>20:12:34 | 啥分段的啊，这也有恶意故意不点恶心人的</div>
+                <div>20:13:10 | 再来一波结束了，2个小时三把带走</div>
+                <div>20:15:02 | 这个服恶意故意不点点否想恶心人的</div>
+                <div>20:16:44 | 어제 DK 는 14800 역전당햇다</div>
+                <div>20:17:20 | 뭐야 아직도 48분이나 남았...</div>
+            </div>
+        </details>
+    </div>
+    <p>当前局已发生片段：弹幕密集讨论“一波”，时间线集中在20:11-20:17。未发生事件：官方数据未回填，阵容未知。</p>
+    <!-- ========== 8 队伍/人员画像 ========== -->
+    <h2><span class="no">8</span>队伍/人员画像</h2>
+    <div class="card-grid">
+        <div class="card">
+            <div class="label">KT Rolster Challengers</div>
+            <div class="value">提及15次 · 正0/负0</div>
+            <p style="font-size:0.85rem;">队伍特质: 选手特质1条</p>
+        </div>
+        <div class="card">
+            <div class="label">Kiwoom DRX Challengers</div>
+            <div class="value">提及7次 · 正0/负0</div>
+        </div>
+        <div class="card">
+            <div class="label">DNS</div>
+            <div class="value">提及3次 · 正1/负0</div>
+        </div>
+        <div class="card">
+            <div class="label">Faker / Chovy</div>
+            <div class="value">各提及1次</div>
+        </div>
+    </div>
+    <div class="details-block">
+        <details>
+            <summary>📄 长期画像与提及量（折叠）</summary>
+            <div class="timeline">
+                <div>KT: 历史画像——LCK CL强队，弹幕提及15次，无负面。</div>
+                <div>KRX: 提及7次，无显著情绪。</div>
+                <div>DNS: 正提及1次，可能为正面评价。</div>
+                <div>Faker/Chovy: 仅提及，无上下文。</div>
+            </div>
+        </details>
+    </div>
+    <!-- ========== 9 联赛规律与版本 ========== -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p>LCK CL联赛，BO3赛制。弹幕提及“2个小时三把带走”，暗示比赛节奏较快。版本无具体信息，弹幕无英雄讨论。</p>
+    <p style="font-size:0.85rem; color:#6e6e73;">规律：弹幕密度30.5条/分，属于中高活跃度，比赛可能进入关键阶段。</p>
+    <!-- ========== 10 预测验证回填 ========== -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p>本节点为开局，暂无历史预测可回填。待官方数据回填后，将验证弹幕共识“比赛即将结束”的准确性。</p>
+    <p>当前预测：LONG方向，置信度中等（基于弹幕共识）。</p>
+    <!-- ========== 11 数据与溯源 ========== -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+        <div class="card">
+            <div class="label">实际数据源</div>
+            <div>本场弹幕切片 (874条)</div>
+            <div>规则层统计 (真实)</div>
+        </div>
+        <div class="card">
+            <div class="label">预期数据源</div>
+            <div>Riot官方小局状态</div>
+            <div>规则层情报JSON</div>
+        </div>
+        <div class="card">
+            <div class="label">缺口</div>
+            <div>阵容信息缺失</div>
+            <div>官方比分未回填</div>
+            <div>规则层JSON读取失败</div>
+        </div>
+    </div>
+    <p style="margin-top:1rem; font-size:0.9rem;">情报输出时间：2026-08-31 20:20 (北京时间) · 数据截止至20:17</p>
+    <div class="footer-note">
+        <span>本场长期沉淀点：弹幕共识“一波”与灰信号并存，提示LCK CL比赛中观众对操作敏感，可关注后续官方处罚。</span>
+        <span>来源分层：本场弹幕/前局弹幕/历史画像/盘口/推测·待验证</span>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
