@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · Gen.G vs KT Rolster · G1 局中</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #1d1d1f;
+            margin-bottom: 0.5rem;
+        }
+        .badge-red {
+            background: #ffd1d1;
+            color: #b30000;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 0.5rem 0 0.25rem;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #6e6e73;
+            margin-bottom: 2rem;
+            border-left: 4px solid #0071e3;
+            padding-left: 1rem;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .stat {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat .num {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0071e3;
+        }
+        .stat .label {
+            font-size: 0.85rem;
+            color: #6e6e73;
+            margin-top: 0.2rem;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 650;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f0f0f2;
+            padding-bottom: 0.5rem;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .signal-card {
+            background: #f5f5f7;
+            border-left: 4px solid #0071e3;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+        .signal-card .tag {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #0071e3;
+            letter-spacing: 0.5px;
+        }
+        .signal-card p {
+            margin-top: 0.2rem;
+            font-size: 0.95rem;
+        }
+        .signal-card .src {
+            font-size: 0.75rem;
+            color: #86868b;
+            margin-top: 0.3rem;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .consensus-table th {
+            background: #f0f0f2;
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            font-weight: 600;
+        }
+        .consensus-table td {
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .details-block {
+            margin: 1rem 0;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #eaeaea;
+            margin: 1rem 0;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            padding: 0.3rem 0;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 0.9rem;
+        }
+        .timeline-time {
+            font-family: monospace;
+            color: #6e6e73;
+            flex-shrink: 0;
+        }
+        .pill {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 0.15rem 0.7rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.4rem;
+        }
+        .pill-blue {
+            background: #e0f0ff;
+            color: #0071e3;
+        }
+        .pill-red {
+            background: #ffe5e5;
+            color: #c00000;
+        }
+        .pill-gray {
+            background: #f0f0f2;
+            color: #555;
+        }
+        .footer-note {
+            font-size: 0.8rem;
+            color: #86868b;
+            text-align: center;
+            margin-top: 2rem;
+            border-top: 1px solid #eaeaea;
+            padding-top: 1.5rem;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .highlight {
+            background: #fff8e6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Gen.G-KT Rolster 2026-09-01 g1 mid</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <div class="flex-between">
+        <div>
+            <span class="badge badge-red">⚡ 局中 · 非终局 · 结果待定</span>
+            <h1>Gen.G vs KT Rolster · 第1小局</h1>
+            <div class="subhead">局中弹幕情报快照（G1 · MID-GAME）｜北京时间 2026-09-01 16:26 更新</div>
+        </div>
+        <div style="text-align:right">
+            <div style="font-size:0.85rem;color:#6e6e73">弹幕口径进度</div>
+            <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>官方源: Riot 小局状态 (待校准) 基于词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）→ 共 11条…</li><li>✅ 正锚 KT配合好 (弹幕: “kt配合不错”) 鸡窝滑板鞋发挥亮眼 BDD表现获好评 来源: 本场弹幕 ❌ 负锚 GEN团战“稀碎” C…</li><li>📈 LONG (看多KT) KT节奏好，弹幕正面评价多 GEN失误频繁 (闪现送、团战脱节) 盘口异常可能暗示GEN不稳 📉 SHORT (…</li><li>当前局中，已发生片段： 🔹 16:26:10-16:26:20 · 团战爆发，KT打出优势，弹幕“漂亮呀kt!” 🔹 16:26:30-16…</li><li>弹幕口径: 多数观众赛前看好GEN，但局中转向KT</li></ul></div>
+</div><div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem">
+            <div><span class="pill pill-gray">比分</span> <strong>0:0</strong> <span style="color:#86868b">(弹幕口径·官方待回填)</span></div>
+            <div><span class="pill pill-gray">系列</span> BO5 · 第1局</div>
+            <div><span class="pill pill-gray">节点</span> 局中 (MID-GAME)</div>
+            <div><span class="pill pill-gray">弹幕密度</span> 125.0条/分</div>
+        </div>
+        <div style="display:grid;gap:0.8rem">
+            <div class="signal-card">
+                <span class="tag">⚠️ 风险信号</span>
+                <p>弹幕大量质疑GEN“做局/演”，灰信号11条，聚焦“gg在演T1”“canyon在演许哥”</p>
+                <div class="src">来源: 本场弹幕灰信号词表 → 详§2</div>
+            </div>
+            <div class="signal-card">
+                <span class="tag">📌 锚点</span>
+                <p>KT选手“鸡窝”(滑板鞋)被弹幕评为“LCK第一滑板鞋”，KT配合获好评，GEN团战“稀碎”</p>
+                <div class="src">来源: 本场弹幕样本(16:26:18/16:27:02) → 详§3/§8</div>
+            </div>
+            <div class="signal-card">
+                <span class="tag">💰 盘口</span>
+                <p>盘口讨论69条，出现“支持48和48粉去48”“这盘口降没了”等，暗示盘口异常/大热</p>
+                <div class="src">来源: 规则层盘口统计 → 详§4</div>
+            </div>
+            <div class="signal-card">
+                <span class="tag">🧠 共识</span>
+                <p>弹幕共识: GEN状态低迷，Chovy“逃跑大师”“只会补刀”，KT若保持节奏有望拿小局</p>
+                <div class="src">来源: 本场弹幕样本(16:26:53/16:26:36) → 详§5</div>
+            </div>
+        </div>
+        <div style="margin-top:1.2rem;background:#f0f4ff;padding:0.8rem 1rem;border-radius:12px">
+            <strong>🎯 一句话决策落点</strong>：本局倾向 <span style="color:#0071e3;font-weight:700">KT +1.5（小局）</span> 或 <span style="color:#0071e3;font-weight:700">GEN第一滴塔/首小龙</span>，但灰信号干扰大，建议观望或轻仓。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600;margin-bottom:0.5rem">📋 比赛元数据</div>
+                <table style="width:100%;font-size:0.9rem">
+                    <tr><td style="padding:0.2rem 0">赛事</td><td>2026 LCK 夏季赛 (暂定)</td></tr>
+                    <tr><td style="padding:0.2rem 0">对阵</td><td>Gen.G vs KT Rolster</td></tr>
+                    <tr><td style="padding:0.2rem 0">日期</td><td>2026-09-01 (北京时间)</td></tr>
+                    <tr><td style="padding:0.2rem 0">当前小局</td><td>第1局 · 局中</td></tr>
+                    <tr><td style="padding:0.2rem 0">系列比分</td><td>0:0 (弹幕口径·官方待回填)</td></tr>
+                </table>
+            </div>
+            <div>
+                <div style="font-weight:600;margin-bottom:0.5rem">📊 状态核验</div>
+                <div style="background:#f5f5f7;padding:0.8rem;border-radius:12px">
+                    <span class="badge badge-red">局中·非终局</span>
+                    <p style="margin-top:0.5rem;font-size:0.9rem">本页面为第1小局局中情报，系列比分与结果一律以官方为准。弹幕口径仅反映观众即时情绪，不构成最终结果。</p>
+                    <p style="font-size:0.8rem;color:#86868b">官方源: Riot 小局状态 (待校准)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <p style="font-size:0.9rem;color:#6e6e73;margin-bottom:0.8rem">基于词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）→ 共 <strong>11条</strong> 灰信号</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
+            <span class="pill pill-red">去买了</span>
+            <span class="pill pill-red">canyon在演许哥</span>
+            <span class="pill pill-red">谁赢不知道反正打满剧本</span>
+            <span class="pill pill-red">gg在演T1</span>
+        </div>
+        <div class="details-block">
+            <details>
+                <summary>📄 灰信号弹幕原文摘录（折叠 · 含时间戳）</summary>
+                <div style="padding:0.5rem 0">
+                    <div class="timeline-item"><span class="timeline-time">16:26:21</span> 尺帝昨天被李警官逮捕了</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:24</span> gen别进不了世界赛就好玩了</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:30</span> 完了完了又被KT暴走</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:44</span> 又要等大超咯</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:05</span> 妈的想gen输，但是t1可能很危险</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:17</span> 复刻去年</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:30</span> gen又选错对手了</div>
+                </div>
+            </details>
+        </div>
+        <p style="font-size:0.8rem;color:#86868b">⚠️ 以上均为观众质疑/玩梗，非事实结论。灰信号仅提示市场情绪，不构成任何投资建议。</p>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600;margin-bottom:0.5rem">🔨 GEN (蓝方)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+                    <span class="pill pill-blue">瑞兹 (Chovy)</span>
+                    <span class="pill pill-blue">奥拉夫</span>
+                    <span class="pill pill-blue">卡蜜儿</span>
+                    <span class="pill pill-blue">滑板鞋? (存疑)</span>
+                    <span class="pill pill-blue">露露</span>
+                </div>
+                <p style="font-size:0.8rem;color:#86868b;margin-top:0.5rem">弹幕提及: 瑞兹大招逃跑、奥拉夫没开大、卡蜜儿被卖</p>
+            </div>
+            <div>
+                <div style="font-weight:600;margin-bottom:0.5rem">⚔️ KT (红方)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+                    <span class="pill pill-red">滑板鞋 (鸡窝)</span>
+                    <span class="pill pill-red">铁男</span>
+                    <span class="pill pill-red">狮子狗?</span>
+                    <span class="pill pill-red">BDD (中单)</span>
+                </div>
+                <p style="font-size:0.8rem;color:#86868b;margin-top:0.5rem">弹幕: “鸡窝现在lck第一滑板鞋”“bdd打的好”</p>
+            </div>
+        </div>
+        <div style="margin-top:1rem;background:#f5f5f7;padding:0.8rem;border-radius:12px">
+            <strong>📌 BP 后战绩情报</strong>：无战绩情报提及（本局局中，无历史对位数据弹幕）。弹幕焦点为GEN团战失误与KT配合。
+        </div>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p style="font-size:0.9rem;color:#6e6e73">盘口相关弹幕 <strong>69条</strong>，主要围绕“48”数字与盘口变化</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.8rem 0">
+            <span class="pill pill-gray">支持48和48粉去48</span>
+            <span class="pill pill-gray">我感觉大人头</span>
+            <span class="pill pill-gray">这盘口降没了</span>
+            <span class="pill pill-gray">也拿下了一个数字特权48</span>
+        </div>
+        <div class="details-block">
+            <details>
+                <summary>📈 盘口弹幕摘录（折叠）</summary>
+                <div style="padding:0.5rem 0">
+                    <div class="timeline-item"><span class="timeline-time">16:26:40</span> 现在狮子狗强化w可以解铁男大吗</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:55</span> 为什么不选t1</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:08</span> 有鸡窝没意外的，KT包输</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:35</span> 明天T1赢了韩华 有机会冠军</div>
+                </div>
+            </details>
+        </div>
+        <p style="font-size:0.8rem;color:#86868b">盘口讨论暗示市场对GEN信心不足，但“48”含义不明，需谨慎。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-3">
+            <div style="background:#e8f5e9;padding:1rem;border-radius:12px">
+                <div style="font-weight:700;color:#2e7d32">✅ 正锚</div>
+                <ul style="margin-top:0.5rem;font-size:0.9rem;padding-left:1.2rem">
+                    <li>KT配合好 (弹幕: “kt配合不错”)</li>
+                    <li>鸡窝滑板鞋发挥亮眼</li>
+                    <li>BDD表现获好评</li>
+                </ul>
+                <div style="font-size:0.75rem;color:#555;margin-top:0.5rem">来源: 本场弹幕</div>
+            </div>
+            <div style="background:#fdecea;padding:1rem;border-radius:12px">
+                <div style="font-weight:700;color:#c62828">❌ 负锚</div>
+                <ul style="margin-top:0.5rem;font-size:0.9rem;padding-left:1.2rem">
+                    <li>GEN团战“稀碎”</li>
+                    <li>Chovy“逃跑大师”“只会补刀”</li>
+                    <li>尺帝闪现送 (弹幕: “尺老🐶闪现送”)</li>
+                </ul>
+                <div style="font-size:0.75rem;color:#555;margin-top:0.5rem">来源: 本场弹幕</div>
+            </div>
+            <div style="background:#e3f2fd;padding:1rem;border-radius:12px">
+                <div style="font-weight:700;color:#1565c0">🧩 群体共识</div>
+                <p style="font-size:0.9rem;margin-top:0.5rem">“GEN状态差，KT有机会” (样本量≥20条)</p>
+                <p style="font-size:0.8rem;color:#555;margin-top:0.3rem">分歧: 部分弹幕认为KT“包输” (有鸡窝没意外)</p>
+                <div style="font-size:0.75rem;color:#555;margin-top:0.5rem">样本量: 52条局势讨论</div>
+            </div>
+        </div>
+        <div style="margin-top:1rem;background:#fff8e6;padding:0.8rem;border-radius:12px">
+            <strong>⚡ 灰信号条件预测</strong>：若GEN继续“演” (灰信号)，KT小局获胜概率上升；但若GEN调整，可能翻盘。建议观望。
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px;background:#f0f4ff;padding:1rem;border-radius:12px">
+                <div style="font-weight:700;color:#0071e3">📈 LONG (看多KT)</div>
+                <ul style="margin-top:0.5rem;font-size:0.9rem;padding-left:1.2rem">
+                    <li>KT节奏好，弹幕正面评价多</li>
+                    <li>GEN失误频繁 (闪现送、团战脱节)</li>
+                    <li>盘口异常可能暗示GEN不稳</li>
+                </ul>
+            </div>
+            <div style="flex:1;min-width:200px;background:#fdecea;padding:1rem;border-radius:12px">
+                <div style="font-weight:700;color:#c62828">📉 SHORT (看空GEN)</div>
+                <ul style="margin-top:0.5rem;font-size:0.9rem;padding-left:1.2rem">
+                    <li>GEN选手状态差 (Chovy/尺帝)</li>
+                    <li>灰信号指向GEN“演”</li>
+                    <li>弹幕共识偏空GEN</li>
+                </ul>
+            </div>
+        </div>
+        <p style="margin-top:1rem;font-size:0.9rem"><strong>决策建议</strong>：小局倾向KT +1.5或首小龙，但灰信号干扰大，建议轻仓或观望。</p>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p style="font-size:0.9rem;color:#6e6e73">当前局中，已发生片段：</p>
+        <div style="background:#f5f5f7;padding:0.8rem;border-radius:12px;margin-bottom:1rem">
+            <div>🔹 16:26:10-16:26:20 · 团战爆发，KT打出优势，弹幕“漂亮呀kt!”</div>
+            <div>🔹 16:26:30-16:26:45 · GEN撤退，Chovy被包逃跑，弹幕“大超逃跑大师”</div>
+            <div>🔹 16:26:50-16:27:10 · KT持续压制，BDD获好评，GEN团战“稀碎”</div>
+            <div>🔹 16:27:20-16:27:35 · 弹幕讨论GEN“复刻去年”“选错对手”</div>
+        </div>
+        <div class="details-block">
+            <details>
+                <summary>📜 完整弹幕时间线（折叠 · 真实时间戳+原文）</summary>
+                <div style="padding:0.5rem 0;max-height:300px;overflow-y:auto">
+                    <div class="timeline-item"><span class="timeline-time">16:26:10</span> 臭味 往哪里大招呢？</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:11</span> 奥拉夫大都没开</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:12</span> 尺子又被大调查了</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:13</span> 鸡窝 给我杀尺子</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:14</span> 漂亮呀kt!</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:16</span> 尺老🐶闪现送</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:18</span> kt配合不错</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:20</span> 这就是你们吹半天的三星吗，闹麻了</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:22</span> 团战稀碎啊</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:28</span> 天才梭哈王要起飞了</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:32</span> 大超被包了，他怕被秒</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:36</span> 超威逃跑大师</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:41</span> 大超好跑</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:45</span> 大超卖得太果断了</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:49</span> Chovy太搞了吧</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:52</span> bdd打的好</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:53</span> 超威只会补刀</div>
+                    <div class="timeline-item"><span class="timeline-time">16:26:59</span> 尺站不出来GG就是一坨</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:02</span> 鸡窝现在lck第一滑板鞋</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:08</span> 有鸡窝没意外的，KT包输</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:12</span> 鸡窝是KT最后一块拼图</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:20</span> 瑞兹在人堆里肯定得先撤啊</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:26</span> 三星纸面最强几年了，完全没冠军命</div>
+                    <div class="timeline-item"><span class="timeline-time">16:27:30</span> gen又选错对手了</div>
+                </div>
+            </details>
+        </div>
+        <p style="font-size:0.8rem;color:#86868b">未发生: 后续团战/推塔待观察</p>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600;margin-bottom:0.5rem">🏢 队伍提及</div>
+                <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+                    <span class="pill pill-gray">KT: 141 (正14/负1)</span>
+                    <span class="pill pill-gray">GEN: 73 (正6/负0)</span>
+                    <span class="pill pill-gray">T1: 70</span>
+                    <span class="pill pill-gray">DK: 35</span>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:600;margin-bottom:0.5rem">👤 选手提及</div>
+                <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+                    <span class="pill pill-blue">Chovy: 85 (正6/负1)</span>
+                    <span class="pill pill-gray">Faker: 3</span>
+                    <span class="pill pill-gray">Zeus: 3</span>
+                    <span class="pill pill-gray">Guma: 1</span>
+                </div>
+            </div>
+        </div>
+        <div class="details-block">
+            <details>
+                <summary>📋 长画像（折叠 · 队伍特质统计）</summary>
+                <div style="padding:0.5rem 0">
+                    <div>被翻守不住: 1条</div>
+                    <div>韧性逆转: 1条</div>
+                    <div>心态摆烂: 6条</div>
+                    <div>打法风格: 5条</div>
+                    <div>选手特质: 5条</div>
+                    <p style="font-size:0.8rem;color:#86868b;margin-top:0.5rem">GEN被贴“心态摆烂”标签，KT被赞“韧性”</p>
+                </div>
+            </details>
+        </div>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p style="font-size:0.9rem">弹幕提及“复刻去年”“现在是秋天”等，暗示GEN秋季赛传统拉胯。版本上，滑板鞋+瑞兹组合被讨论，狮子狗强化W可解铁男大 (弹幕技术讨论)。</p>
+        <p style="font-size:0.8rem;color:#86868b">来源: 本场弹幕 + 历史画像</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p style="font-size:0.9rem">本局暂无赛前预测数据。弹幕口径: 多数观众赛前看好GEN，但局中转向KT。回填状态: <span class="pill pill-red">待终局验证</span></p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div class="stat">
+                <div class="num">2489</div>
+                <div class="label">弹幕总数</div>
+            </div>
+            <div class="stat">
+                <div class="num">1188</div>
+                <div class="label">活跃用户</div>
+            </div>
+            <div class="stat">
+                <div class="num">125.0</div>
+                <div class="label">密度 (条/分)</div>
+            </div>
+        </div>
+        <div style="margin-top:1rem;font-size:0.85rem;background:#f5f5f7;padding:0.8rem;border-radius:12px">
+            <strong>数据完整性</strong><br>
+            实际数据源: 规则层JSON + 弹幕切片 (本节点) + 官方Riot状态<br>
+            预期数据源: 同上，无缺失<br>
+            缺口: 官方最终比分未回填 (局中)
+        </div>
+        <div style="margin-top:1rem;font-size:0.8rem;color:#86868b">
+            <strong>跨源一致性提示</strong>: 弹幕口径与规则层统计一致，无矛盾。<br>
+            <strong>情报输出时间</strong>: 2026-09-01 16:30 (北京时间)
+        </div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background:#f0f4ff;border-left:4px solid #0071e3">
+        <h2 style="border:none;padding:0;margin-bottom:0.5rem">📌 本场长期沉淀点</h2>
+        <p style="font-size:0.95rem">GEN在秋季赛的“心态摆烂”标签再次被弹幕强化，且Chovy风评波动大；KT的“鸡窝”滑板鞋可能成为版本答案。建议长期跟踪KT下路组合表现。</p>
+    </div>
+    <div class="footer-note">
+        ⚡ 局中弹幕情报快照 · 非官方数据 · 仅供决策参考<br>
+        数据来源: 弹幕切片 + 规则层统计 | 生成时间: 2026-09-01 16:30 北京时间
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
