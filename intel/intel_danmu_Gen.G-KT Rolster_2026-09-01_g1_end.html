@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · Gen.G vs KT Rolster · G1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            padding: 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff453a;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .subhead {
+            color: #6e6e73;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .score-line {
+            background: #f5f5f7;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .score-line span {
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+        .section {
+            margin-bottom: 2.5rem;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            border-left: 4px solid #0071e3;
+            padding-left: 16px;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 18px;
+            padding: 1.2rem 1.5rem;
+            border: 1px solid #e8e8ed;
+        }
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #1d1d1f;
+        }
+        .tag {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #0066cc;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 2px 10px;
+            border-radius: 30px;
+            margin-right: 6px;
+        }
+        .tag-risk {
+            background: #ffe5e5;
+            color: #c00000;
+        }
+        .tag-anchor {
+            background: #e5f6e5;
+            color: #1e7a1e;
+        }
+        .tag-odds {
+            background: #fff2d9;
+            color: #b25e00;
+        }
+        .tag-consensus {
+            background: #e8e8ff;
+            color: #3a3a9e;
+        }
+        .signal-item {
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px dashed #d2d2d7;
+        }
+        .signal-item:last-child {
+            border-bottom: none;
+        }
+        .source {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            margin-top: 4px;
+        }
+        .details-block {
+            margin: 1rem 0;
+        }
+        details {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #e8e8ed;
+            margin: 1rem 0;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 0.95rem;
+        }
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .table-mini th {
+            text-align: left;
+            background: #f0f0f5;
+            padding: 8px 10px;
+        }
+        .table-mini td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .consensus-table {
+            margin: 1rem 0;
+        }
+        .consensus-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .consensus-table th {
+            background: #f0f0f5;
+            padding: 8px;
+            text-align: left;
+        }
+        .consensus-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .pill {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.8rem;
+        }
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #86868b;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 1rem;
+            text-align: center;
+        }
+        .highlight {
+            background: #fff9e0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 1.2rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Gen.G-KT Rolster 2026-09-01 g1 end</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        ⚡ 局中弹幕情报快照 · G1
+        <span class="badge">局中·非终局</span>
+    </h1>
+    <div class="subhead">
+        <div><strong>Gen.G vs KT Rolster</strong> · 2026-09-01 · 第1小局</div>
+        <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>开大跟盲僧干啊 [16:51:02] 瞎子和青钢影弄不死卡莉斯塔，去切对面ad，这潘森 [16:51:13] 这发条波波打团死了大还在 [1…</li><li>本局弹幕共识为GEN翻盘，实际官方GEN 1:0，方向正确</li><li>” “太假了” ⚠️ 观众质疑，非结论</li><li>· Canyon盲僧抢龙两次，弹幕“三叔无敌” · GEN翻盘韧性，队伍特质“韧性逆转:2” · 弹幕“没抢到也能赢” · KT惩戒失误 (…</li><li>共识→信号链：同向=强信号 (GEN胜)，但灰信号背离，需谨慎</li></ul></div>
+</div><div class="card" style="background: #f0f4ff;">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+                <span class="pill">⏱️ 弹幕密度 54.5条/分</span>
+                <span class="pill">👥 活跃 795人</span>
+                <span class="pill">📊 总弹幕 2839</span>
+            </div>
+            <div class="signal-item"><span class="tag tag-risk">风险</span> 大量观众质疑“抢龙/假赛” (灰信号42条) → 详§2</div>
+            <div class="signal-item"><span class="tag tag-anchor">锚点</span> Canyon盲僧两次抢龙，弹幕称“三叔无敌” → 详§3</div>
+            <div class="signal-item"><span class="tag tag-odds">盘口</span> 盘口讨论16条，“大人头”“降盘” → 详§4</div>
+            <div class="signal-item"><span class="tag tag-consensus">共识</span> KT运营失误+惩戒失误，GEN翻盘 → 详§5</div>
+            <div class="source">一句话决策落点：GEN韧性逆转，但灰信号干扰大，建议观望或轻仓LONG GEN，警惕剧本论。</div>
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="section">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>📋 比赛元数据</h3>
+                <div>Gen.G vs KT Rolster · 2026-09-01 · LCK</div>
+                <div>slug: lol-gen-kt-2026-09-01 · 第1小局</div>
+                <div>节点: G1｜局末/局间 (GAME-REVIEW)</div>
+                <div style="margin-top: 8px;"><span class="badge" style="background: #ff453a;">局中·非终局，结果待定</span></div>
+            </div>
+            <div class="card">
+                <h3>📊 状态核验</h3>
+                <div>官方比分：GEN 1 : 0 KT (gameWins)</div>
+                <div>弹幕口径：GEN 胜 (翻盘)</div>
+                <div>⏱️ 时间窗：局末阶段，弹幕密度峰值 54.5条/分</div>
+                <div>⚠️ 跨源一致性：官方已确认GEN拿下本局，但弹幕存在“假赛”质疑，需谨慎。</div>
+            </div>
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="section">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="card">
+            <p><span class="tag tag-risk">灰信号 42条</span> 高频词：买了/演/剧本/假赛/故意送</p>
+            <ul style="margin-left: 1.2rem; margin-top: 8px;">
+                <li>“去买了” (多次出现)</li>
+                <li>“canyon在演许哥” (重复2次)</li>
+                <li>“谁赢不知道反正打满剧本”</li>
+                <li>“买了吧。” “太假了”</li>
+            </ul>
+            <div class="source">⚠️ 观众质疑，非结论。灰信号漏检修正：已跑词表(演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送) 共42条。</div>
+        </div>
+        <details>
+            <summary>📄 灰信号弹幕摘录（折叠/展开）</summary>
+            <div style="padding: 0.8rem 0; font-size: 0.9rem; color: #3a3a3c;">
+                [16:50:20] 买了吧。<br>[16:51:20] 太假了<br>[16:52:20] 只能说右边真神人，拔毛，还有潘森的q惩，这能被抢<br>[16:53:31] 假鸡毛，菜就是菜<br>[16:57:29] 222<br>[16:50:07] djcanyou回来了，这三叔太无敌了
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="section">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>🔨 GEN (蓝) 阵容</h3>
+                <div>上单: 奥拉夫 (Zeus) </div>
+                <div>打野: 盲僧 (Canyon) </div>
+                <div>中单: 发条 (Chovy) </div>
+                <div>ADC: 卡莉斯塔 (Peyz) </div>
+                <div>辅助: 列娜塔 (Lehends) </div>
+                <div style="margin-top: 8px;"><span class="tag">BP后战绩</span> 无战绩情报提及</div>
+            </div>
+            <div class="card">
+                <h3>🔨 KT (红) 阵容</h3>
+                <div>上单: 青钢影 (PerfecT) </div>
+                <div>打野: 潘森 (Cuzz) </div>
+                <div>中单: 沙皇 (Bdd) </div>
+                <div>ADC: 韦鲁斯 (Deft) </div>
+                <div>辅助: 芮尔 (BeryL) </div>
+                <div style="margin-top: 8px;"><span class="tag">BP后战绩</span> 无战绩情报提及</div>
+            </div>
+        </div>
+        <div class="source">基于弹幕样本+规则层统计，选手提及：Chovy 85次, Zeus 4次, 33(疑似Cuzz) 3次。</div>
+        <details>
+            <summary>📄 选人相关弹幕摘录（折叠）</summary>
+            <div>[16:50:13] 奥拉夫是人吗？开大跟盲僧干啊<br>[16:51:02] 瞎子和青钢影弄不死卡莉斯塔，去切对面ad，这潘森<br>[16:51:13] 这发条波波打团死了大还在<br>[16:52:42] 其实拉夫一直砍瞎子，右边压力会少很多</div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="section">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="card">
+            <p><span class="tag tag-odds">盘口 16条</span> 主要观点：</p>
+            <ul>
+                <li>“我感觉大人头”</li>
+                <li>“这盘口降没了”</li>
+                <li>“看赔率去了”</li>
+                <li>“48"”</li>
+            </ul>
+            <div class="source">盘口讨论偏少，但存在“降盘”信号，市场可能看好GEN。</div>
+        </div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="section">
+        <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>✅ 正锚</h3>
+                <div>· Canyon盲僧抢龙两次，弹幕“三叔无敌”</div>
+                <div>· GEN翻盘韧性，队伍特质“韧性逆转:2”</div>
+                <div>· 弹幕“没抢到也能赢”</div>
+            </div>
+            <div class="card">
+                <h3>❌ 负锚</h3>
+                <div>· KT惩戒失误 (拔毛惩被抢)</div>
+                <div>· BDD/ Cuzz 被狂喷“战犯”</div>
+                <div>· 辅助列娜塔大招空</div>
+            </div>
+        </div>
+        <div class="card" style="margin-top: 1rem;">
+            <h3>🧠 群体共识 (样本量≥5)</h3>
+            <div>· KT不配赢 (惩戒失误+决策失误) —— 约12条</div>
+            <div>· GEN靠抢龙翻盘，但“只靠抢龙难看” —— 约8条</div>
+            <div>· 灰信号条件预测：若后续出现更多“演”讨论，则盘口异常概率升高。</div>
+            <div class="source">共识→信号链：同向=强信号 (GEN胜)，但灰信号背离，需谨慎。</div>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="section">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <div class="card">
+            <p><span class="tag tag-anchor">LONG</span> GEN (韧性+抢龙+翻盘) —— 但灰信号干扰，建议轻仓或等待官方确认。</p>
+            <p><span class="tag tag-risk">SHORT</span> KT (决策失误+心态崩) —— 弹幕“KT我上我也行”，但存在剧本论，不宜追空。</p>
+            <p><span class="tag">结论</span> 本局GEN胜概率高，但“假赛”质疑可能影响后续盘口，建议观望或小注LONG GEN。</p>
+        </div>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="section">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <div class="card">
+            <h3>⏱️ 关键时间线 (北京时间)</h3>
+            <div>16:49:58 废物拉夫 → 16:50:05 翻了翻了 → 16:50:07 Canyon无敌</div>
+            <div>16:50:24 拔毛惩戒，两次被抢 → 16:51:01 BDD不被Q没那么好抢</div>
+            <div>16:51:07 大超真菜，给Canyon磕一个 → 16:52:04 打团就赢了，打非要打龙</div>
+            <div>16:53:48 弱悲太可怜了 → 16:54:38 三叔告诉你为什么是亚运打野</div>
+            <div>16:57:41 无敌</div>
+        </div>
+        <details>
+            <summary>📜 G1 完整弹幕时间线（折叠/展开）</summary>
+            <div style="font-size: 0.85rem; max-height: 300px; overflow-y: auto; background: #fafafc; padding: 1rem; border-radius: 12px;">
+                [09-01 16:49:58] 废物拉夫<br>[09-01 16:50:00] 这是人嘛<br>[09-01 16:50:01] 这龙枪的<br>[09-01 16:50:02] 停手啊<br>[09-01 16:50:04] 刚刚潘森惩戒永远在<br>[09-01 16:50:05] 翻了翻了<br>[09-01 16:50:07] djcanyou回来了，这三叔太无敌了<br>[09-01 16:50:09] ???<br>[09-01 16:50:10] 奥拉夫不是人<br>[09-01 16:50:13] 奥拉夫是人吗？开大跟盲僧干啊<br>[09-01 16:50:16] 三叔牛的呢<br>[09-01 16:50:17] 叫的人呢<br>[09-01 16:50:20] 买了吧。<br>[09-01 16:50:24] 拔毛惩戒，两次被抢笑死我<br>[09-01 16:50:28] 这个bdd跟cuzz纯畜牲<br>[09-01 16:50:31] 这比赛好看<br>[09-01 16:50:37] 奥拉夫：太君这边来！<br>[09-01 16:50:38] 真的逆天<br>[09-01 16:50:40] ICU<br>[09-01 16:50:43] 太逆天了<br>[09-01 16:50:45] ad没拔毛<br>[09-01 16:50:47] 不配赢！一次是概率，二次就是人垃圾了<br>[09-01 16:50:49] 太变态了<br>[09-01 16:50:51] 哈哈哈哈<br>[09-01 16:50:53] CUZZ 闹麻了<br>[09-01 16:50:56] 3:0带走了<br>[09-01 16:50:58] 最会打野<br>[09-01 16:51:01] bdd不被Q没那么好抢<br>[09-01 16:51:02] 瞎子和青钢影弄不死卡莉斯塔，去切对面ad，这潘森<br>[09-01 16:51:04] 史上最机子阴间比赛诞生<br>[09-01 16:51:07] 大超是真菜啊，给坎永叠 磕一个吧！大超是真菜啊，给坎永叠 磕<br>[09-01 16:51:09] 这kt我上我也行，真的<br>[09-01 16:51:13] 这发条波波打团死了大还在<br>[09-01 16:51:16] 3千血就是了<br>[09-01 16:51:20] 太假了<br>[09-01 16:51:21] cuzz号称15分钟战神懂？反正都比大o厉害<br>[09-01 16:51:29] 自己打不过能不打龙<br>[09-01 16:51:34] 第一被强可以理解第二次？<br>[09-01 16:51:38] 没抢到也能赢<br>[09-01 16:51:43] cuzz晚上一掀被子全是盲僧<br>[09-01 16:51:49] 最畜的是这个辅助，顶级大招永远都空<br>[09-01 16:51:56] 还不如直接开团，对面一条龙没有拼惩戒<br>[09-01 16:52:04] 打团就赢了，打非要打龙<br>[09-01 16:52:14] 只靠抢龙确实有点难看了<br>[09-01 16:52:20] 只能说右边真神人，拔毛，还有潘森的q惩，这能被抢<br>[09-01 16:52:37] 别挡啊<br>[09-01 16:52:42] 其实拉夫一直砍瞎子，右边压力会少很多<br>[09-01 16:52:53] 捞批捞野中继续叫啊<br>[09-01 16:53:08] 都是战犯<br>[09-01 16:53:23] 饭桶拉夫和辅助<br>[09-01 16:53:31] 假鸡毛，菜就是菜<br>[09-01 16:53:41] 然后列娜塔的大招放的也臭<br>[09-01 16:53:48] 弱悲太可怜了<br>[09-01 16:54:10] BDD.就是个战犯<br>[09-01 16:54:22] 拔毛惩能被抢龙也不配赢<br>[09-01 16:54:38] 三叔这把告诉你，自己为什么是亚运打野<br>[09-01 16:55:57] 瞎子去找奥拉夫，最后居然还能回来抢龙，简直了<br>[09-01 16:56:59] 瞎子过来抢龙，没人管假不假<br>[09-01 16:57:29] 222<br>[09-01 16:57:41] 无敌
+            </div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="section">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>📈 队伍提及</h3>
+                <div>KT: 123 (正8/负8)</div>
+                <div>T1: 87 (正4/负3)</div>
+                <div>GEN: 79 (正2/负4)</div>
+                <div>DK: 18 · HLE:4 · WE:3 · BFX:3</div>
+            </div>
+            <div class="card">
+                <h3>👤 选手提及</h3>
+                <div>Chovy: 85 (正2/负5)</div>
+                <div>Zeus: 4 · Faker:3 · 33:3 (正2) · Guma:1</div>
+                <div style="margin-top: 8px;">特质: 被翻守不住:6 · 心态摆烂:10 · 韧性逆转:2</div>
+            </div>
+        </div>
+        <details>
+            <summary>📇 长画像：KT/ GEN 风格标签（折叠）</summary>
+            <div style="padding: 0.5rem 0;">KT: 被翻守不住(6)、心态摆烂(10)、慢热手热(3) —— 弹幕“KT我上我也行”</div>
+            <div>GEN: 韧性逆转(2)、打法风格(7) —— “三叔无敌”“亚运打野”</div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="section">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="card">
+            <p>LCK 2026夏季赛 · 版本偏向打野节奏，盲僧/潘森对抗激烈。</p>
+            <p>弹幕提及“15分钟战神” (Cuzz) ，“拔毛惩”等惩戒失误频发，版本龙魂重要。</p>
+            <p>规律：KT在优势局被翻盘次数较多 (被翻守不住:6)，GEN擅长韧性逆转。</p>
+        </div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="section">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="card">
+            <p>赛前预测（若有）：无明确记录。本局弹幕共识为GEN翻盘，实际官方GEN 1:0，方向正确。</p>
+            <p>灰信号预测：若“假赛”讨论继续，后续局次需警惕盘口异常。</p>
+            <p>本场长期沉淀点：Canyon抢龙名场面，KT惩戒失误成隐患。</p>
+        </div>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="section">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="card">
+            <h3>📁 数据完整性</h3>
+            <table class="table-mini">
+                <tr><th>实际数据源</th><th>预期数据源</th><th>缺口</th></tr>
+                <tr><td>弹幕切片 (2839条)</td><td>规则层JSON+弹幕</td><td>官方详细数据未回填</td></tr>
+                <tr><td>规则层统计</td><td>完整情报</td><td>无</td></tr>
+            </table>
+            <p style="margin-top: 12px;">情报输出时间：2026-09-01 17:05 (北京时间)</p>
+            <p>来源标签：本场弹幕 / 规则层统计 / 历史画像 / 盘口讨论</p>
+            <p>跨源一致性：官方比分已确认GEN 1:0，弹幕口径一致，但灰信号需警惕。</p>
+        </div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="footer-note">
+        ⭐ 本场长期沉淀点：Canyon盲僧两次抢龙封神，KT惩戒失误成笑柄；GEN翻盘韧性+1，KT“被翻守不住”标签强化。
+        <br>© 局中弹幕情报 · 非终局 · 结果待官方最终确认
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
