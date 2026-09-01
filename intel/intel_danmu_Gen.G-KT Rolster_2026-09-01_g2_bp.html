@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · Gen.G vs KT Rolster · G2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1d1d1f;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            padding: 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff375f;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .subhead {
+            color: #6e6e73;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .meta-chip {
+            background: #f0f0f5;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #3a3a3c;
+            font-weight: 500;
+        }
+        .score-line {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-left: 4px solid #0071e3;
+        }
+        .score-item {
+            font-size: 1.3rem;
+            font-weight: 650;
+        }
+        .score-note {
+            color: #e0435a;
+            font-weight: 600;
+            background: #ffe9ec;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 2.5rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: -0.01em;
+            border-bottom: 2px solid #f0f0f5;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin: 1.2rem 0;
+        }
+        .card {
+            background: #fafafc;
+            border-radius: 16px;
+            padding: 1.2rem 1.2rem;
+            border: 1px solid #f0f0f5;
+        }
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .tag {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #0066cc;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 30px;
+            margin-right: 0.4rem;
+            letter-spacing: 0.2px;
+        }
+        .tag-risk { background: #ffe9ec; color: #c72a3f; }
+        .tag-anchor { background: #e6f2e6; color: #1e7a3c; }
+        .tag-odds { background: #fff3d9; color: #b26a00; }
+        .tag-consensus { background: #e9e9f0; color: #4a4a6a; }
+        .tag-gray { background: #f1e5ff; color: #6b3fa0; }
+        .signal-list {
+            list-style: none;
+            margin: 0.5rem 0;
+        }
+        .signal-list li {
+            padding: 0.4rem 0;
+            border-bottom: 1px dashed #e8e8ed;
+            font-size: 0.95rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .signal-list li:last-child { border-bottom: none; }
+        .src {
+            color: #86868b;
+            font-size: 0.75rem;
+            margin-left: auto;
+            white-space: nowrap;
+            padding-top: 0.2rem;
+        }
+        .consensus-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .consensus-table th {
+            background: #f5f5f7;
+            text-align: left;
+            padding: 0.6rem 0.8rem;
+            font-weight: 600;
+            border-bottom: 1px solid #d8d8df;
+        }
+        .consensus-table td {
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #f0f0f5;
+            vertical-align: top;
+        }
+        .details-block {
+            background: #fafafc;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid #e8e8ed;
+        }
+        details {
+            margin: 1rem 0;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            padding: 0.3rem 0;
+            font-size: 0.95rem;
+        }
+        .timeline {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #f5f5f7;
+            padding: 1rem;
+            border-radius: 8px;
+            line-height: 1.7;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .footer-note {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8e8ed;
+            font-size: 0.8rem;
+            color: #86868b;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .highlight {
+            background: #fff9db;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .pill {
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+            color: #3a3a3c;
+            display: inline-block;
+        }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .mt-2 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .text-small { font-size: 0.85rem; }
+        .text-muted { color: #6e6e73; }
+        .divider { border-top: 1px solid #f0f0f5; margin: 1.5rem 0; }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日比赛</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="market_links.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">市场链接</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Gen.G-KT Rolster 2026-09-01 g2 bp</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <h1>
+        <span>⚡ 局中弹幕情报快照</span>
+        <span class="badge">G2 · 非终局</span>
+    </h1>
+    <div class="subhead">
+        <span>Gen.G vs KT Rolster · 2026-09-01 · 第2小局 BP后/开局</span>
+        <span class="meta-chip">北京时间 · 弹幕口径</span>
+    </div>
+    <!-- 比分进度行（硬性） -->
+    <div class="score-line">
+        <div class="score-item">
+            <span style="font-weight:700;">GEN</span> 1 : 0 <span style="font-weight:700;">KT</span>
+            <span style="font-size:0.9rem; color:#6e6e73; margin-left:0.8rem;">(官方gameWins)</span>
+        </div>
+        <div class="score-note">⚠️ 局中·非终局，结果待定 · 弹幕口径</div>
+        <div class="card speed">
+  <h2><span class="no">0</span>核心情报速览</h2>
+<div style="margin-top:8px"><ul style="padding-left:18px;margin:6px 0;font-size:13px;line-height:1.75"><li>弹幕质疑GEN杰斯选择不当，认可KT中单卡牌 → GEN BP负面评价，KT中单获认可，方向偏KT，置信单源待验证</li><li>弹幕称KT上野状态好，进攻性强，如“虫子有R了直接扛塔约杰斯” → KT前中期强势，GEN面临压力，方向偏KT，置信单源待验证</li><li>弹幕批评GEN有电龙魂不打架、拼惩戒失误，称打野内鬼 → GEN决策失误，舆论负面，方向偏GEN，置信单源待验证</li><li>弹幕普遍质疑GEN BP和上局表现，认为KT前中期更强 → GEN负面共识，KT优势预期，方向偏KT，置信多源确认</li></ul></div>
+</div><div class="card-grid">
+        <div class="card">
+            <h3>🔻 风险信号</h3>
+            <ul class="signal-list">
+                <li><span class="tag tag-risk">灰信号</span>假赛/剧本质疑14条<strong class="src">→ §2</strong></li>
+                <li><span class="tag tag-risk">BP质疑</span>“垃圾阵容”“杰斯送”等负面BP评价<strong class="src">→ §3</strong></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>⚓ 锚点</h3>
+            <ul class="signal-list">
+                <li><span class="tag tag-anchor">正锚</span>KT上野前中期状态好<strong class="src">→ §5</strong></li>
+                <li><span class="tag tag-anchor">负锚</span>GEN第一局优势被翻，电龙魂输<strong class="src">→ §5</strong></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>💰 盘口</h3>
+            <ul class="signal-list">
+                <li><span class="tag tag-odds">盘口</span>“48”评分梗、BLG关联讨论26条<strong class="src">→ §4</strong></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>📊 共识</h3>
+            <ul class="signal-list">
+                <li><span class="tag tag-consensus">共识</span>KT前期节奏强，GEN阵容被质疑<strong class="src">→ §5</strong></li>
+            </ul>
+        </div>
+    </div>
+    <div style="background:#f5f5f7; border-radius:12px; padding:0.8rem 1.2rem; margin-top:0.5rem;">
+        <strong>🎯 一句话决策落点：</strong> 本局弹幕情绪偏空GEN，认为BP劣势且上局被翻盘阴影；但官方比分GEN 1:0领先，需警惕弹幕反向指标。建议观望开局对线，KT前中期强度是主要共识。
+    </div>
+    <!-- ========= 1 比赛信息与结果总览 ========= -->
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="flex-between">
+        <div>
+            <div><span class="pill">🏆 赛事</span> LCK 2026 夏季赛 (slug: lol-gen-kt-2026-09-01)</div>
+            <div style="margin-top:0.5rem;"><span class="pill">📅 时间</span> 2026-09-01 · 第2小局 · 节点: G2 (BP后/开局)</div>
+            <div style="margin-top:0.5rem;"><span class="pill">📊 官方比分</span> GEN 1 : 0 KT (gameWins)</div>
+        </div>
+        <div style="text-align:right;">
+            <div class="badge" style="background:#ff375f;">局中·非终局</div>
+            <div class="text-muted text-small mt-2">结果待定 · 以官方为准</div>
+        </div>
+    </div>
+    <div class="details-block" style="margin-top:1rem;">
+        <details>
+            <summary>📋 比赛元数据（点击展开）</summary>
+            <ul style="margin-top:0.8rem; list-style:none;">
+                <li><strong>比赛ID：</strong>lol-gen-kt-2026-09-01</li>
+                <li><strong>当前小局：</strong>G2（第2局）</li>
+                <li><strong>节点阶段：</strong>EARLY-GAME (BP后/开局)</li>
+                <li><strong>弹幕切片窗口：</strong>17:02:44 ~ 17:17:16 (北京时间)</li>
+                <li><strong>官方gameWins：</strong>GEN 1 - 0 KT</li>
+                <li><strong>情报生成时间：</strong>2026-09-01 17:20 (北京时间)</li>
+            </ul>
+        </details>
+    </div>
+    <!-- ========= 2 灰信号汇总 ========= -->
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="card">
+        <p style="margin-bottom:0.5rem;"><span class="tag tag-gray">灰信号</span> 共检测到 <strong>14条</strong> 灰信号弹幕，集中为“假赛”“剧本”质疑。以下为关键词统计：</p>
+        <ul style="list-style:none; margin-left:0.2rem;">
+            <li>• “假赛”相关：<strong>6条</strong>（“假赛假赛假赛”“这lck也开始打假赛了”“上把绝对的假赛”等）</li>
+            <li>• “剧本”相关：<strong>3条</strong>（“上来就是击杀远古巨龙剧本？”）</li>
+            <li>• “演/买了”相关：<strong>2条</strong>（“打野是内鬼”“买了？”）</li>
+            <li>• 其他（“322”“送人头”）：<strong>3条</strong></li>
+        </ul>
+        <div class="details-block">
+            <details>
+                <summary>📄 灰信号弹幕原文摘录（折叠）</summary>
+                <div class="timeline">
+                    17:06:41 假赛假赛假赛<br>
+                    17:08:44 不是龙魂没用，是唯一输的一种方法被kt找到了<br>
+                    17:09:53 Kt他妈的一条远古龙被抢是失误第二条又被抢是啥？<br>
+                    17:11:49 有电龙魂不打架选择拼惩戒就该输<br>
+                    17:13:30 又是赢局输盘<br>
+                    17:13:57 打野是内鬼<br>
+                    17:15:05 张畜故意挑48的时间来报<br>
+                    17:16:44 4保1已经被老赖俱乐部给证明不行了
+                </div>
+            </details>
+        </div>
+        <p class="text-small text-muted" style="margin-top:0.5rem;">⚠️ 以上均为观众质疑，不代表真实比赛走向，仅作为风险提示。</p>
+    </div>
+    <!-- ========= 3 BP 锚点与选人情报 ========= -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="card-grid">
+        <div class="card">
+            <h3>📋 本局阵容（弹幕提及）</h3>
+            <ul style="list-style:none;">
+                <li><strong>GEN（蓝方）</strong>：杰斯（上单）、梦魇（打野）、阿卡丽/佐伊（中单）、泽丽（ADC）、璐璐/卡尔玛（辅助）</li>
+                <li><strong>KT（红方）</strong>：卡牌（中单）、虫子/虚空遁地兽（打野）、加里奥（可能ban）、其他未明确</li>
+            </ul>
+            <p class="text-small text-muted" style="margin-top:0.5rem;">※ 基于弹幕“佐伊来了”“超威不会阿卡丽”“卡牌好选择”“杰斯选出来就是送的”等推断，非官方确认。</p>
+        </div>
+        <div class="card">
+            <h3>🎯 BP 关键锚点</h3>
+            <ul class="signal-list">
+                <li><span class="tag tag-anchor">负面</span>“这什么b阵容”“垃圾阵容”<strong class="src">→ 弹幕</strong></li>
+                <li><span class="tag tag-anchor">质疑</span>“杰斯就宙活能玩”暗示GEN杰斯选择不当<strong class="src">→ 弹幕</strong></li>
+                <li><span class="tag tag-anchor">正面</span>“卡牌好选择”对KT中单认可<strong class="src">→ 弹幕</strong></li>
+            </ul>
+        </div>
+    </div>
+    <div class="details-block">
+        <details>
+            <summary>📄 BP相关弹幕摘录（折叠）</summary>
+            <div class="timeline">
+                17:10:16 加里奥黑办了<br>
+                17:10:34 超位玩谁啊超位<br>
+                17:11:04 佐伊来了<br>
+                17:11:25 超威不会阿卡丽<br>
+                17:11:37 卡牌好选择<br>
+                17:11:56 woc 垃圾阵容<br>
+                17:12:00 这什么b阵容<br>
+                17:12:06 杰斯要赢了有感觉吗<br>
+                17:12:09 这4个英雄跟梦魇有什么关系吗<br>
+                17:12:17 歪嘴这采购怎么好意思点出杰斯的<br>
+                17:12:26 杰斯选出来就是送的，别不信<br>
+                17:12:30 右边什么辣鸡阵容<br>
+                17:12:33 不就是上次那把阵容<br>
+                17:12:46 杰斯就宙活能玩<br>
+                17:13:07 虫子抓不了人<br>
+                17:14:49 虫子有r了直接扛着塔去约杰斯
+            </div>
+        </details>
+    </div>
+    <!-- ========= 4 盘口与市场讨论 ========= -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card">
+        <p><span class="tag tag-odds">盘口</span> 共 <strong>26条</strong> 盘口/评分相关弹幕，主要围绕“48”评分和BLG战队梗。</p>
+        <ul class="signal-list">
+            <li>“主播48什么意思”“鲳鱼评分48” <span class="src">→ 盘口</span></li>
+            <li>“BLG承认自己是48垃圾桶战队” ×2 <span class="src">→ 盘口/梗</span></li>
+            <li>“又是赢局输盘” <span class="src">→ 盘口</span></li>
+            <li>“张畜故意挑48的时间来报” <span class="src">→ 盘口</span></li>
+        </ul>
+        <div class="details-block">
+            <details>
+                <summary>📄 盘口弹幕摘录（折叠）</summary>
+                <div class="timeline">
+                    17:12:42 BLG承认自己是48垃圾桶战队<br>
+                    17:13:30 又是赢局输盘<br>
+                    17:14:37 48<br>
+                    17:15:05 张畜故意挑48的时间来报<br>
+                    17:15:18 弹幕无敌了，生活不如意
+                </div>
+            </details>
+        </div>
+        <p class="text-small text-muted">注：盘口讨论多为情绪宣泄，无明确投注建议。</p>
+    </div>
+    <!-- ========= 5 方向性情报板 ========= -->
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="card-grid">
+        <div class="card">
+            <h3>✅ 正锚</h3>
+            <ul class="signal-list">
+                <li>KT上野前中期状态很好 <span class="src">→ 弹幕</span></li>
+                <li>“虫子有R了直接扛塔约杰斯” 暗示KT进攻性强 <span class="src">→ 弹幕</span></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>❌ 负锚</h3>
+            <ul class="signal-list">
+                <li>GEN第一把优势被翻，电龙魂输 <span class="src">→ 前局弹幕</span></li>
+                <li>“杰斯选出来就是送的” <span class="src">→ 弹幕</span></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>🧠 群体共识</h3>
+            <ul class="signal-list">
+                <li>KT前期节奏强，GEN阵容不被看好 <span class="src">→ 弹幕</span></li>
+                <li>“4保1是最菜的” <span class="src">→ 弹幕</span></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>🔮 灰信号条件预测</h3>
+            <ul class="signal-list">
+                <li>若KT前期取得优势，弹幕可能进一步发酵“假赛”论 <span class="src">→ 推测</span></li>
+                <li>若GEN翻盘，灰信号可能减弱 <span class="src">→ 推测</span></li>
+            </ul>
+        </div>
+    </div>
+    <p class="text-small text-muted">样本量：弹幕总数534条，活跃用户212人，密度20.9条/分。</p>
+    <!-- ========= 6 情报含义与决策落点 ========= -->
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="card">
+        <p><strong>📉 SHORT 倾向（GEN负面）：</strong> 弹幕普遍质疑GEN BP和上局表现，认为KT前中期更强。若GEN开局劣势，可能引发更多负面情绪。</p>
+        <p><strong>📈 LONG 倾向（GEN正面）：</strong> 官方比分GEN 1:0领先，且弹幕情绪往往有反向指标效应。若GEN稳住对线，可能扭转舆论。</p>
+        <p><strong>⚖️ 决策落点：</strong> 本局建议观望开局5分钟，重点看KT上野节奏。若KT取得击杀，SHORT方向更明确；若GEN平稳发育，则LONG方向有支撑。</p>
+    </div>
+    <!-- ========= 7 逐局复盘 ========= -->
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <div class="card">
+        <p><strong>当前局（G2）已发生片段：</strong> 弹幕时间窗覆盖17:02-17:17，处于BP后/开局阶段，尚未爆发大规模团战。</p>
+        <ul class="signal-list">
+            <li>17:11-17:12：BP讨论密集，负面评价集中</li>
+            <li>17:13-17:14：提及“上野把对面弄翻”“KT前中期状态好”</li>
+            <li>17:15-17:16：下路对线讨论，“泽丽麻了”“下路打野来就有”</li>
+        </ul>
+        <div class="details-block">
+            <details>
+                <summary>📜 G2 完整弹幕时间线（折叠）</summary>
+                <div class="timeline">
+                    17:02:44 好了<br>
+                    17:02:54 不播就滚<br>
+                    17:03:13 5090不卡<br>
+                    17:03:55 秀彬<br>
+                    17:05:05 骚硕<br>
+                    17:05:25 开了<br>
+                    17:06:05 你发了还拆<br>
+                    17:06:41 假赛假赛假赛<br>
+                    17:07:02 活该bdd一辈子没冠军<br>
+                    17:07:23 电龙魂赢不了那就难咯<br>
+                    17:07:32 看这哥们脸红的<br>
+                    17:08:05 打红温了？<br>
+                    17:08:20 Geng赢了是不是geng t1都能进世界赛了<br>
+                    17:08:37 瑶妹<br>
+                    17:08:44 不是龙魂没用，是唯一输的一种方法被kt找到了<br>
+                    17:09:01 虫子无敌了<br>
+                    17:09:24 我刚看了下回放吗好像远古龙拿到了团也打不赢，对面状态都是满的<br>
+                    17:09:53 Kt他妈的一条远古龙被抢是失误第二条又被抢是啥？<br>
+                    17:10:05 都姓J<br>
+                    17:10:16 加里奥黑办了<br>
+                    17:10:34 超位玩谁啊超位<br>
+                    17:10:43 弱杯战队，拉低了电龙魂的胜率<br>
+                    17:11:04 佐伊来了<br>
+                    17:11:25 超威不会阿卡丽<br>
+                    17:11:29 马威可以打<br>
+                    17:11:37 卡牌好选择<br>
+                    17:11:47 ？<br>
+                    17:11:49 有电龙魂不打架选择拼惩戒就该输<br>
+                    17:11:53 没联动的都<br>
+                    17:11:56 woc 垃圾阵容<br>
+                    17:12:00 这什么b阵容<br>
+                    17:12:06 杰斯要赢了有感觉吗<br>
+                    17:12:09 这4个英雄跟梦魇有什么关系吗<br>
+                    17:12:17 歪嘴这采购怎么好意思点出杰斯的<br>
+                    17:12:26 杰斯选出来就是送的，别不信<br>
+                    17:12:30 右边什么辣鸡阵容<br>
+                    17:12:33 不就是上次那把阵容<br>
+                    17:12:42 BLG承认自己是48垃圾桶战队<br>
+                    17:12:46 杰斯就宙活能玩<br>
+                    17:12:59 管泽元几号解说<br>
+                    17:13:07 虫子抓不了人<br>
+                    17:13:30 又是赢局输盘<br>
+                    17:13:36 我感觉上野把对面弄翻了<br>
+                    17:13:48 杰斯要赢了<br>
+                    17:13:57 打野是内鬼<br>
+                    17:14:13 紧张什么 就是菜<br>
+                    17:14:25 上野kt最近前中期状态很好<br>
+                    17:14:37 48<br>
+                    17:14:41 杰斯有啥用<br>
+                    17:14:49 虫子有r了直接扛着塔去约杰斯<br>
+                    17:14:57 二哥很狂妄啊<br>
+                    17:15:05 张畜故意挑48的时间来报<br>
+                    17:15:18 弹幕无敌了，生活不如意<br>
+                    17:15:35 泽利麻了<br>
+                    17:15:48 下路打野来就有啊，随便越<br>
+                    17:16:11 4保1是最菜的<br>
+                    17:16:30 泽丽懵逼了<br>
+                    17:16:44 4保1已经被老赖俱乐部给证明不行了<br>
+                    17:16:51 这射手装什么<br>
+                    17:17:16 抓建模
+                </div>
+            </details>
+        </div>
+        <p class="text-small text-muted">未发生大规模团战，后续待观察。</p>
+    </div>
+    <!-- ========= 8 队伍/人员画像 ========= -->
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="card-grid">
+        <div class="card">
+            <h3>📊 队伍提及</h3>
+            <ul class="signal-list">
+                <li>KT：提及26次（正0/负2）</li>
+                <li>GEN：提及9次（正1/负1）</li>
+                <li>T1：提及5次（正1/负0）</li>
+                <li>BLG：提及5次（正0/负5）</li>
+                <li>BRO：提及2次（正0/负0）</li>
+                <li>NIP：提及1次（正0/负0）</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>👤 选手提及</h3>
+            <ul class="signal-list">
+                <li>Chovy：提及5次（正1/负0）</li>
+                <li>Faker：提及1次（正0/负0）</li>
+            </ul>
+        </div>
+    </div>
+    <div class="details-block">
+        <details>
+            <summary>📄 长期画像补充（折叠）</summary>
+            <p class="text-small">队伍特质统计：被翻守不住:1；选手特质:1。基于历史弹幕库，KT有被翻盘历史，GEN有优势局被翻记录。</p>
+        </details>
+    </div>
+    <!-- ========= 9 联赛规律与版本 ========= -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="card">
+        <p><strong>版本特点：</strong> 弹幕提及“电龙魂”“远古龙”等元素，当前版本龙魂重要性高，但KT曾逆龙魂翻盘。</p>
+        <p><strong>LCK规律：</strong> 弹幕调侃“这lck也开始打假赛了”，反映观众对LCK比赛戏剧性的敏感。</p>
+        <p><strong>英雄优先级：</strong> 杰斯、卡牌、佐伊、梦魇等英雄被讨论，杰斯评价两极。</p>
+    </div>
+    <!-- ========= 10 预测验证回填 ========= -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="card">
+        <p><strong>赛前/局前预测：</strong> 无明确历史预测记录。</p>
+        <p><strong>当前验证：</strong> 弹幕共识“KT前中期强”正在验证中，GEN BP负面评价尚未被比赛结果证实。</p>
+        <p class="text-small text-muted">待本局结束后回填实际结果。</p>
+    </div>
+    <!-- ========= 11 数据与溯源 ========= -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="card">
+        <table class="consensus-table">
+            <tr><th>数据完整性</th><th>实际数据源</th><th>预期数据源</th><th>缺口</th></tr>
+            <tr><td>弹幕切片</td><td>✅ 534条</td><td>≥500条</td><td>无</td></tr>
+            <tr><td>规则层统计</td><td>✅ 完整</td><td>完整</td><td>无</td></tr>
+            <tr><td>官方数据</td><td>✅ 比分1:0</td><td>官方gameWins</td><td>无</td></tr>
+            <tr><td>灰信号词表</td><td>✅ 14条</td><td>自动检测</td><td>无</td></tr>
+            <tr><td>盘口数据</td><td>✅ 26条</td><td>弹幕提及</td><td>无官方盘口</td></tr>
+        </table>
+        <p style="margin-top:1rem;"><strong>情报输出时间：</strong> 2026-09-01 17:20 (北京时间)</p>
+        <p><strong>跨源一致性提示：</strong> 弹幕口径与官方比分无冲突，但弹幕情绪偏空GEN，需注意反向指标。</p>
+        <p><strong>来源标签：</strong> 本场弹幕 / 前局弹幕 / 历史画像 / 盘口 / 推测·待验证</p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="footer-note">
+        <span>📌 本场长期沉淀点：KT在弹幕中被视为“前中期强队”，但历史画像显示其有被翻盘记录；GEN的BP选择在弹幕中易引发负面评价，可作为后续比赛参考。</span>
+        <span>© 2026 弹幕情报系统</span>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
