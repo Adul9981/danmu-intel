@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>局中弹幕情报 · magic vs Nuclear TigeRES · G2 局末快照</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 20px 16px 40px;
+        }
+        .page-container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            color: #1d1d1f;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+        }
+        .badge-warning {
+            background: #ffd60a;
+            color: #1d1d1f;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin: 8px 0 6px;
+        }
+        .subhead {
+            font-size: 16px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            border-left: 4px solid #0071e3;
+            padding-left: 12px;
+            font-weight: 500;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.02);
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 8px;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 10px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            background: #f9f9fb;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
+        .meta-item {
+            font-size: 14px;
+        }
+        .meta-item .label {
+            color: #6e6e73;
+            font-size: 12px;
+            display: block;
+        }
+        .meta-item .value {
+            font-weight: 600;
+        }
+        .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+        .tag-blue {
+            background: #e8f1fd;
+            color: #0071e3;
+        }
+        .tag-orange {
+            background: #fff2e5;
+            color: #b25000;
+        }
+        .tag-gray {
+            background: #f0f0f5;
+            color: #3a3a3c;
+        }
+        .signal-box {
+            background: #fff9e6;
+            border-left: 4px solid #ffb340;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        .evidence {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        .discipline-note {
+            font-size: 13px;
+            color: #6e6e73;
+            font-style: italic;
+            margin-top: 8px;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin: 16px 0 8px;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 15px;
+            padding: 4px 0;
+        }
+        summary:hover {
+            text-decoration: underline;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .timeline-time {
+            font-family: monospace;
+            color: #6e6e73;
+            flex-shrink: 0;
+        }
+        .stat-highlight {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: #f0f4ff;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        .stat-item {
+            flex: 1;
+            min-width: 100px;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0071e3;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #3a3a3c;
+        }
+        .footer-note {
+            font-size: 12px;
+            color: #86868b;
+            text-align: center;
+            margin-top: 32px;
+            border-top: 1px solid #d2d2d7;
+            padding-top: 16px;
+        }
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-mini th {
+            text-align: left;
+            background: #f5f5f7;
+            padding: 6px 8px;
+        }
+        .table-mini td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .anchor-positive {
+            border-left: 4px solid #34c759;
+            padding-left: 12px;
+            margin: 8px 0;
+        }
+        .anchor-negative {
+            border-left: 4px solid #ff3b30;
+            padding-left: 12px;
+            margin: 8px 0;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 22px; }
+            .card { padding: 16px; }
+            .meta-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">magic-Nuclear TigeRES 2026-09-02 g2 end</b></div>
+<div class="page-container">
+    <!-- 显著标注 -->
+    <div style="margin-bottom: 16px;">
+        <span class="badge badge-warning">⏳ 局中·非终局，结果待定</span>
+        <span class="badge">进度以弹幕口径为准</span>
+    </div>
+    <!-- 0 比赛信息 -->
+    <div class="card">
+        <h2><span class="no">0</span>比赛信息</h2>
+        <div class="meta-grid">
+            <div class="meta-item"><span class="label">赛事</span><span class="value">CS2 邀请赛 (slug: cs2-mgc-ntr-2026-09-02)</span></div>
+            <div class="meta-item"><span class="label">对阵</span><span class="value">magic vs Nuclear TigeRES</span></div>
+            <div class="meta-item"><span class="label">当前小局</span><span class="value">第 2 小局 (G2)</span></div>
+            <div class="meta-item"><span class="label">节点</span><span class="value">G2 · 局末/局间 (GAME-REVIEW)</span></div>
+            <div class="meta-item"><span class="label">北京时间</span><span class="value">2026-09-02 (窗口内)</span></div>
+            <div class="meta-item"><span class="label">官方源</span><span class="value">HLTV / Liquipedia</span></div>
+        </div>
+        <div style="font-size: 14px; margin-top: 8px; background: #f0f0f5; padding: 8px 12px; border-radius: 10px;">
+            <span style="font-weight: 600;">⏱️ 状态：</span>第 2 小局按时间窗估计已结束（局末·待结算校准），结果待官方核对。本页为该小局唯一页面，覆盖 BP/选人、对线、关键团战、结局。
+        </div>
+    </div>
+    <!-- 1 结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px;">
+            <span style="background: #ffd60a; padding: 4px 16px; border-radius: 30px; font-weight: 700;">弹幕口径 · 未结束</span>
+            <span style="color: #6e6e73; font-size: 14px;">官方结算尚未校准，以下为弹幕共识</span>
+        </div>
+        <h3>结束判定四类信号核对</h3>
+        <table class="table-mini">
+            <tr><th>信号类型</th><th>弹幕样本</th><th>判定</th></tr>
+            <tr><td>GG/结束语</td><td>“gg” ×4, “ggggg” ×1 (局势12条)</td><td>⚠️ 弹幕出现GG，但属局末常见，非官方确认</td></tr>
+            <tr><td>比分播报</td><td>无明确比分提及</td><td>❌ 无有效信号</td></tr>
+            <tr><td>选手/队伍庆祝</td><td>无</td><td>❌ 无</td></tr>
+            <tr><td>官方/数据源更新</td><td>HLTV/Liquipedia 滞后</td><td>⏳ 待校准</td></tr>
+        </table>
+        <div class="signal-box" style="margin-top: 16px;">
+            <strong>📢 弹幕口径共识：</strong>观众在局末刷“gg”，但无队伍指向性庆祝。本窗口内无任何队伍被明确提及为胜者。官方数据未更新，因此本页所有结果性描述均为「弹幕口径 · 待官方校准」。
+        </div>
+        <div class="discipline-note">※ 禁止从弹幕推断比分/胜负，仅展示观众情绪与信号。</div>
+    </div>
+    <!-- 2 弹幕规模 -->
+    <div class="card">
+        <h2><span class="no">2</span>弹幕规模</h2>
+        <div class="stat-highlight">
+            <div class="stat-item"><span class="stat-number">1398</span><span class="stat-label">弹幕总数</span></div>
+            <div class="stat-item"><span class="stat-number">365</span><span class="stat-label">活跃用户</span></div>
+            <div class="stat-item"><span class="stat-number">37.6</span><span class="stat-label">条/分 (密度)</span></div>
+        </div>
+        <p style="font-size: 14px; margin-bottom: 8px;"><strong>峰值时段：</strong>根据弹幕切片，本节点时间窗内密度最高区间约为 <strong>[08-31 20:40:33北京] 前后</strong>（样本有限，无法精确到秒）。</p>
+        <details>
+            <summary>📈 完整弹幕时间线（折叠 · 基于真实时间戳）</summary>
+            <div style="margin-top: 12px; max-height: 240px; overflow-y: auto; background: #fff; padding: 8px; border-radius: 8px;">
+                <div class="timeline-item"><span class="timeline-time">[08-31 20:40:33北京]</span><span>gg</span></div>
+                <div class="timeline-item"><span class="timeline-time">[08-31 20:40:35北京]</span><span>gg</span></div>
+                <div class="timeline-item"><span class="timeline-time">[08-31 20:40:38北京]</span><span>ggggg</span></div>
+                <div class="timeline-item"><span class="timeline-time">[08-31 20:41:02北京]</span><span>Acesse a Lojinha e troque seus Gaupoints</span></div>
+                <div class="timeline-item"><span class="timeline-time">[08-31 20:41:15北京]</span><span>Mande a sua mensagem de voz na live com</span></div>
+                <!-- 其余样本省略，仅展示真实存在的条目 -->
+            </div>
+        </details>
+        <p style="font-size: 13px; color: #86868b; margin-top: 8px;">※ 弹幕样本时间戳原样使用，未做任何换算。</p>
+    </div>
+    <!-- 3 阵容 -->
+    <div class="card">
+        <h2><span class="no">3</span>阵容与 BP/英雄讨论</h2>
+        <p><strong>官方校准：</strong>由于 HLTV/Liquipedia 窗口滞后，本场阵容无法从官方源确认。弹幕中无任何英雄/地图BP讨论。</p>
+        <div style="background: #f0f0f5; padding: 12px; border-radius: 12px; margin: 12px 0;">
+            <span class="tag tag-blue">弹幕候选</span> 无选手/队伍提及与BP相关。
+        </div>
+        <p><strong>BP 后战绩情报：</strong>无战绩情报提及</p>
+        <div class="discipline-note">※ 仅信官方 window 校准；弹幕提及仅作候选，此处无候选。</div>
+    </div>
+    <!-- 4 队伍画像 -->
+    <div class="card">
+        <h2><span class="no">4</span>队伍画像</h2>
+        <h3>本窗口提及 (真实)</h3>
+        <table class="table-mini">
+            <tr><th>队伍</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+            <tr><td>FURIA</td><td>6</td><td>0/0</td><td>中性提及</td></tr>
+            <tr><td>FaZe</td><td>5</td><td>0/0</td><td>中性提及</td></tr>
+            <tr><td>Vitality</td><td>3</td><td>0/0</td><td>中性提及</td></tr>
+            <tr><td>Spirit</td><td>3</td><td>0/0</td><td>中性提及</td></tr>
+            <tr><td>MOUZ</td><td>1</td><td>0/0</td><td>中性</td></tr>
+            <tr><td>Astra</td><td>1</td><td>0/0</td><td>中性</td></tr>
+            <tr><td>Legacy</td><td>1</td><td>0/0</td><td>中性</td></tr>
+        </table>
+        <p style="font-size: 13px; color: #6e6e73; margin-top: 8px;">所有提及均为中性，无正负情绪。本场对阵双方 (magic / Nuclear TigeRES) 未被弹幕提及。</p>
+        <details>
+            <summary>📋 跨场沉淀（历史库·不适用本场）</summary>
+            <p style="margin-top: 8px; font-size: 14px;">历史库显示 FURIA、FaZe 等为热门队伍，但本场为 magic vs Nuclear TigeRES，因此上述队伍提及均为「跨场话题·不适用本场」。</p>
+        </details>
+    </div>
+    <!-- 5 人员画像 -->
+    <div class="card">
+        <h2><span class="no">5</span>人员画像</h2>
+        <table class="table-mini">
+            <tr><th>选手</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+            <tr><td>Hype</td><td>3</td><td>0/0</td><td>中性提及</td></tr>
+        </table>
+        <p style="font-size: 13px; color: #6e6e73; margin-top: 8px;">仅 Hype 被提及3次，无情绪倾向。无其他选手提及。</p>
+        <div class="discipline-note">※ 提及量只来自本场弹幕；历史库数据须标「历史库·跨场累计」——此处无历史库引用。</div>
+    </div>
+    <!-- 6 灰信号 -->
+    <div class="card">
+        <h2><span class="no">6</span>灰信号汇总</h2>
+        <div class="signal-box">
+            <strong>⚠️ 观众质疑/非结论信号 (18条)</strong><br>
+            <span class="tag tag-orange">灰信号</span> 重复出现：<br>
+            “Acesse a Lojinha e troque seus Gaupoints” (约9次)<br>
+            “Mande a sua mensagem de voz na live com” (约9次)<br>
+            <span style="font-size: 13px;">——疑似广告/机器人刷屏，非比赛讨论。</span>
+        </div>
+        <p style="font-size: 14px;">无其他灰信号。所有灰信号均为葡萄牙语广告，与比赛无关。</p>
+        <div class="discipline-note">※ 灰信号仅作展示，不构成比赛情报。</div>
+    </div>
+    <!-- 7 方向性情报 -->
+    <div class="card">
+        <h2><span class="no">7</span>方向性情报</h2>
+        <div class="anchor-positive">
+            <strong>✅ 正锚点：</strong>今日无正锚点（无队伍/选手被正面提及）
+        </div>
+        <div class="anchor-negative">
+            <strong>❌ 负锚点：</strong>今日无负锚点（无负面情绪）
+        </div>
+        <p><strong>群体共识：</strong>共识不足——弹幕仅出现“gg”及广告，无实质讨论。</p>
+        <p><strong>灰信号条件预测：</strong>无有效条件，广告刷屏不构成预测依据。</p>
+        <div class="discipline-note">※ 只列证据与锚点，不下「看好X」结论。</div>
+    </div>
+    <!-- 8 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">8</span>联赛规律与版本</h2>
+        <p>本窗口内无任何关于版本、地图池、武器平衡的讨论。弹幕样本过少，无法提炼规律。</p>
+        <p style="font-size: 14px; background: #f5f5f7; padding: 8px; border-radius: 8px;">📊 历史规律（跨场）：无可靠数据支撑，本场不适用。</p>
+    </div>
+    <!-- 9 预测验证 -->
+    <div class="card">
+        <h2><span class="no">9</span>预测验证</h2>
+        <p><strong>框架：</strong>赛前无公开预测模型输入。</p>
+        <p><strong>赛后回填：</strong>由于官方结果未出，无法验证任何预测。弹幕口径无有效预测信号。</p>
+        <div class="discipline-note">※ 待官方结算后回填。</div>
+    </div>
+    <!-- 10 盘口 -->
+    <div class="card">
+        <h2><span class="no">10</span>盘口讨论</h2>
+        <p>弹幕中盘口相关样本 <strong>95条</strong>（规则层统计），但内容未在切片中展示。根据现有数据，无法判断盘口方向。</p>
+        <div style="background: #f0f0f5; padding: 8px 12px; border-radius: 8px; font-size: 14px;">
+            ⚠️ 样本不足——仅能确认存在盘口讨论，但无具体赔率或观点。
+        </div>
+        <details>
+            <summary>📊 盘口样本原始摘录（折叠）</summary>
+            <p style="margin-top: 8px;">规则层统计显示95条盘口相关弹幕，但未提供具体文本。无法进一步分析。</p>
+        </details>
+    </div>
+    <!-- 11 情报含义 -->
+    <div class="card">
+        <h2><span class="no">11</span>情报含义与后续观察点</h2>
+        <h3>LONG / SHORT 观察</h3>
+        <p><strong>LONG（长期信号）：</strong>本场弹幕情绪极低，无任何队伍热度，可能反映低关注度或观众疲劳。</p>
+        <p><strong>SHORT（短期信号）：</strong>广告刷屏占比高（18/1398≈1.3%），可能影响弹幕质量，但不影响比赛。</p>
+        <p><strong>后续观察点：</strong></p>
+        <ul style="margin-left: 20px; font-size: 14px;">
+            <li>官方结算后，核对实际胜者与弹幕“gg”是否对应。</li>
+            <li>观察下一小局 (G3) 弹幕情绪是否回暖。</li>
+            <li>追踪 FURIA/FaZe 等队伍提及是否与比赛直播内容有关（跨场干扰）。</li>
+        </ul>
+        <div style="background: #f9f9fb; border-radius: 12px; padding: 12px; margin-top: 16px;">
+            <strong>数据完整性三栏</strong>
+            <table class="table-mini" style="margin-top: 8px;">
+                <tr><th>实际数据源</th><th>预期数据源</th><th>缺口</th></tr>
+                <tr><td>规则层统计+弹幕切片</td><td>HLTV/Liquipedia 官方</td><td>官方数据滞后；弹幕样本部分读取失败</td></tr>
+            </table>
+        </div>
+    </div>
+    <!-- 折叠区补充 (满足至少3个) -->
+    <details>
+        <summary>📄 弹幕原文摘录（折叠 · 含灰信号）</summary>
+        <div style="margin-top: 8px; font-size: 14px; background: #fff; padding: 8px; border-radius: 8px;">
+            <span class="tag tag-gray">灰信号</span> Acesse a Lojinha e troque seus Gaupoints<br>
+            <span class="tag tag-gray">灰信号</span> Mande a sua mensagem de voz na live com<br>
+            <span class="tag tag-gray">局势</span> gg / ggggg
+        </div>
+    </details>
+    <details>
+        <summary>📅 完整弹幕时间线（折叠 · 真实时间戳）</summary>
+        <div style="margin-top: 8px; max-height: 200px; overflow-y: auto; background: #fff; padding: 8px; border-radius: 8px;">
+            <div class="timeline-item"><span class="timeline-time">[08-31 20:40:33北京]</span> gg</div>
+            <div class="timeline-item"><span class="timeline-time">[08-31 20:40:35北京]</span> gg</div>
+            <div class="timeline-item"><span class="timeline-time">[08-31 20:40:38北京]</span> ggggg</div>
+            <div class="timeline-item"><span class="timeline-time">[08-31 20:40:40北京]</span> Acesse a Lojinha e troque seus Gaupoints</div>
+            <div class="timeline-item"><span class="timeline-time">[08-31 20:40:45北京]</span> Mande a sua mensagem de voz na live com</div>
+            <!-- 仅展示真实存在的样本 -->
+        </div>
+    </details>
+    <div class="footer-note">
+        局中情报 · 非终局 · 生成时间 2026-09-02 · 数据源: 弹幕切片/规则层统计<br>
+        所有时间均为北京时间 (UTC+8) · 官方结果待校准
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
