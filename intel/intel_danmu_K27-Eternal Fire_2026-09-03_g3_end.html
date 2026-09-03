@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>局中情报 · K27 vs Eternal Fire · G3 局末快照</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1d1d1f;
+            padding: 16px 12px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .banner {
+            background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+            color: #f5f5f7;
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .banner h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+        .banner .tag {
+            background: #ff453a;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            margin-left: 12px;
+            white-space: nowrap;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 8px;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            color: #1d1d1f;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin: 8px 0;
+        }
+        .meta-item {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 10px 12px;
+            border-left: 3px solid #0071e3;
+        }
+        .meta-item .label {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            font-weight: 500;
+        }
+        .meta-item .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #fff4e5;
+            color: #b25000;
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid #ffd9a8;
+            margin: 4px 0;
+        }
+        .status-badge.blue {
+            background: #e8f1ff;
+            color: #0066cc;
+            border-color: #b8d4ff;
+        }
+        .signal-list {
+            list-style: none;
+            padding: 0;
+        }
+        .signal-list li {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-left: 4px solid #8e8e93;
+            font-size: 0.95rem;
+        }
+        .signal-list li.gray {
+            border-left-color: #8e8e93;
+            background: #f4f4f6;
+        }
+        .signal-list li.anchor {
+            border-left-color: #0071e3;
+        }
+        .signal-list li.consensus {
+            border-left-color: #34c759;
+        }
+        .signal-list li.caution {
+            border-left-color: #ff9500;
+        }
+        .chip {
+            display: inline-block;
+            background: #f0f0f2;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+        .chip.blue {
+            background: #e8f1ff;
+            color: #0066cc;
+        }
+        .chip.green {
+            background: #e5f5e8;
+            color: #1e7b34;
+        }
+        .chip.orange {
+            background: #fff1e0;
+            color: #b25000;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 0.9rem;
+        }
+        .timeline-time {
+            font-family: "SF Mono", monospace;
+            color: #6e6e73;
+            min-width: 90px;
+            font-size: 0.8rem;
+            padding-top: 2px;
+        }
+        .timeline-text {
+            flex: 1;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 0.95rem;
+            padding: 4px 0;
+            outline: none;
+        }
+        summary:hover {
+            text-decoration: underline;
+        }
+        .footnote {
+            font-size: 0.8rem;
+            color: #6e6e73;
+            margin-top: 12px;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 12px;
+        }
+        .table-compact {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .table-compact th {
+            text-align: left;
+            background: #f9f9fb;
+            padding: 8px 10px;
+            font-weight: 600;
+        }
+        .table-compact td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .highlight {
+            background: #fffbea;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .disclaimer {
+            background: #fdf0f0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            border-left: 4px solid #ff3b30;
+            font-size: 0.9rem;
+            margin: 12px 0;
+        }
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .data-source {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+        .data-source div {
+            background: #f0f0f2;
+            padding: 8px;
+            border-radius: 10px;
+        }
+        .data-source .label {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        @media (max-width: 600px) {
+            body { padding: 12px 8px 30px; }
+            .banner { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .banner h1 { font-size: 1.3rem; }
+            .meta-grid { grid-template-columns: 1fr 1fr; }
+            .data-source { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">K27-Eternal Fire 2026-09-03 g3 end</b></div>
+<!-- 顶部横幅 -->
+<div class="banner">
+    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <h1>🎮 K27 vs Eternal Fire</h1>
+        <span class="tag">局中·非终局</span>
+    </div>
+    <div style="font-size: 0.9rem; opacity: 0.9;">
+        CS2 · 2026-09-03 · 第3小局（G3）
+    </div>
+</div>
+<!-- 0. 比赛信息 -->
+<div class="card">
+    <h2><span class="no">0</span>比赛信息</h2>
+    <div class="meta-grid">
+        <div class="meta-item">
+            <div class="label">赛事</div>
+            <div class="value">CS2 · 正式比赛</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">对阵</div>
+            <div class="value">K27 vs Eternal Fire</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">局数</div>
+            <div class="value">第 3 小局 (G3)</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">节点</div>
+            <div class="value">局末/局间 (GAME-REVIEW)</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">北京时间</div>
+            <div class="value">2026-09-03</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">数据源</div>
+            <div class="value">HLTV / Liquipedia</div>
+        </div>
+    </div>
+    <div class="flex-row" style="margin-top: 8px;">
+        <span class="chip blue">slug: cs2-k271-ef1-2026-09-03</span>
+        <span class="chip orange">唯一页面 · 局中快照</span>
+    </div>
+    <div class="disclaimer" style="margin-top: 12px;">
+        ⚠️ 本页为第3小局唯一情报页，结果待官方核对。页面所有信息以弹幕口径与官方数据双重标注，不构成最终赛果。
+    </div>
+</div>
+<!-- 1. 结果总览 -->
+<div class="card">
+    <h2><span class="no">1</span>结果总览</h2>
+    <div class="flex-row" style="margin-bottom: 12px;">
+        <span class="status-badge">⏳ 弹幕口径 · 未结束</span>
+        <span class="status-badge blue">官方数据滞后 · 待校准</span>
+    </div>
+    <p style="margin-bottom: 12px;"><strong>结束判定四类信号核对：</strong></p>
+    <table class="table-compact">
+        <tr><th>信号类型</th><th>状态</th><th>说明</th></tr>
+        <tr><td>弹幕终结信号</td><td>❌ 未出现</td><td>无一致“GG”或终局庆祝</td></tr>
+        <tr><td>官方数据</td><td>⏳ 滞后</td><td>HLTV/Liquipedia 未更新最终比分</td></tr>
+        <tr><td>时间窗</td><td>✅ 已结束</td><td>按时间窗估计已结束，待结算校准</td></tr>
+        <tr><td>观众共识</td><td>⚠️ 模糊</td><td>弹幕无明确胜负指向</td></tr>
+    </table>
+    <div style="background: #f0f0f2; border-radius: 12px; padding: 12px; margin-top: 12px;">
+        <p style="font-weight: 600; margin-bottom: 4px;">📌 当前结论</p>
+        <p>第3小局按时间窗已进入局末，但弹幕口径未确认终局。官方数据尚未同步，本页为唯一情报快照，结果待定。</p>
+    </div>
+</div>
+<!-- 2. 弹幕规模 -->
+<div class="card">
+    <h2><span class="no">2</span>弹幕规模</h2>
+    <div class="meta-grid">
+        <div class="meta-item">
+            <div class="label">总条数</div>
+            <div class="value">243</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">活跃用户</div>
+            <div class="value">67</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">密度</div>
+            <div class="value">6.0 条/分</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">时间窗</div>
+            <div class="value">G3 局末</div>
+        </div>
+    </div>
+    <h3>⏱️ 峰值时段</h3>
+    <p>本窗口未记录到显著峰值（样本均匀分布）。弹幕内容以广告/频道推广为主，比赛讨论占比低。</p>
+    <details>
+        <summary>📄 完整弹幕时间线（折叠 · 52条样本）</summary>
+        <div style="margin-top: 12px; max-height: 300px; overflow-y: auto; background: #fff; padding: 8px; border-radius: 12px;">
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Aproveite o Esquenta 9DO9 lá no Kabum com o cupom</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Mande a sua mensagem de voz na live com o seus gau</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">esse jogo é pelo navegador</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:39265:EDMusiC]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">kkkkkkkkkkkk ai caramba</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">!jogos</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">queria ganhou?</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Confira os periféricos da Corsair https://corsairb</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">!jogos HyR0shi</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">6 is not a _good_ try [emote:37226:KEKW]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">SALVE CHAT FALTA 1 SEGUIDOR PRA 150 NA KICK</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1730752:emojiAngel]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:37229:OOOO]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">feito mano, sucesso!</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5747996:collectiblesGoldenKEKW]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5748120:collectiblesGG] [emote:5748120:coll</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">gg[emote:5756627:politeCat]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5747956:collectiblesUnlucky]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Quer dar a god para sua coluna? Acesse Flexform e</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">!casters</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Venha torcer junto na nova casa do Povo, Isso é G3</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Acesse a Lojinha e troque seus Gaupoints da Kick!</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1730834:emojiYay]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5748035:collectiblesmonkaEyes]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:3645850:EDDIE]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5747850:collectibles5Head]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">KkKkKk</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5748047:collectiblesAloo]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">kKkkKKkk</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1730756:emojiCheerful]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:37230:POLICE]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5747989:collectiblespeepoSad]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">F</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Vem pro alambrado com a torcida organizada! https:</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Confira os periféricos da Corsair https://corsairb</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5747900:collectiblesOkayge]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1730839:emojiYuh]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1730759:emojiCool]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5748074:collectiblesModTime]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Quer ganhar um R$1.000,00 na hora? Participe da Pr</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Participe dos Sorteios do Freezetime! https://hell</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:37234:Prayge]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">A onde eu posso jogar esse jogo?</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5273243:lowCortisol]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1579036:emojiBlowKiss]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:1730831:emojiWink]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">salve!</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5747942:collectiblesYikes]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Siga e acompanhe a galera da Tribo na Kick! https</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">[emote:5470844:kickclassic]</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">Confira os periféricos da Corsair https://corsairb</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知]</span><span class="timeline-text">OneBlade. Feito para cortar o pelo, não a pele! ht</span></div>
+        </div>
+    </details>
+</div>
+<!-- 3. 阵容 -->
+<div class="card">
+    <h2><span class="no">3</span>阵容</h2>
+    <p style="font-size: 0.9rem; color: #6e6e73; margin-bottom: 12px;">官方校准：HLTV / Liquipedia（window 数据）</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: #f9f9fb; border-radius: 14px; padding: 12px;">
+            <h3 style="margin-top: 0;">🔵 K27</h3>
+            <p style="font-size: 0.9rem;">阵容待官方窗口确认（本窗口未提供详细名单）</p>
+        </div>
+        <div style="background: #f9f9fb; border-radius: 14px; padding: 12px;">
+            <h3 style="margin-top: 0;">🟠 Eternal Fire</h3>
+            <p style="font-size: 0.9rem;">阵容待官方窗口确认（本窗口未提供详细名单）</p>
+        </div>
+    </div>
+    <h3>🎙️ BP / 英雄讨论</h3>
+    <p>本窗口弹幕未出现BP讨论或英雄选择相关话题。无战绩情报提及。</p>
+    <p style="background: #f0f0f2; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem;"><strong>结论：</strong>无战绩情报提及（弹幕样本中无BP/选人讨论）</p>
+    <details>
+        <summary>📋 历史库阵容参考（折叠 · 可能过期）</summary>
+        <p style="margin-top: 8px; font-size: 0.9rem;">历史库无K27/Eternal Fire过往阵容记录。引用历史库须谨慎，本场以官方window为准。</p>
+    </details>
+</div>
+<!-- 4. 队伍画像 -->
+<div class="card">
+    <h2><span class="no">4</span>队伍画像</h2>
+    <p style="font-size: 0.9rem; color: #6e6e73;">本窗口提及量（弹幕统计）</p>
+    <table class="table-compact">
+        <tr><th>队伍</th><th>提及</th><th>正/负</th><th>备注</th></tr>
+        <tr><td>FURIA</td><td>3</td><td>0/0</td><td>中性提及</td></tr>
+        <tr><td>Vitality</td><td>2</td><td>0/0</td><td>中性提及</td></tr>
+        <tr><td>G2</td><td>2</td><td>0/0</td><td>中性提及</td></tr>
+        <tr><td>FLC</td><td>2</td><td>0/0</td><td>中性提及</td></tr>
+        <tr><td>paiN</td><td>2</td><td>0/0</td><td>中性提及</td></tr>
+    </table>
+    <p style="margin-top: 8px; font-size: 0.9rem;">本窗口未出现K27或Eternal Fire的直接队伍提及。上述队伍均为弹幕闲聊，与当前比赛无直接关联。</p>
+    <details>
+        <summary>📊 跨场队伍沉淀（折叠 · 历史库）</summary>
+        <p style="margin-top: 8px; font-size: 0.9rem;">历史库数据：FURIA、Vitality等为其他赛事常见队伍，跨场话题·不适用本场。</p>
+    </details>
+</div>
+<!-- 5. 人员画像 -->
+<div class="card">
+    <h2><span class="no">5</span>人员画像</h2>
+    <p style="font-size: 0.9rem; color: #6e6e73;">本窗口提及量（弹幕统计）</p>
+    <table class="table-compact">
+        <tr><th>选手</th><th>提及</th><th>正/负</th><th>备注</th></tr>
+        <tr><td>Hype</td><td>1</td><td>0/0</td><td>中性提及</td></tr>
+    </table>
+    <p style="margin-top: 8px;">仅一名选手被提及，且无情绪倾向。无K27/Eternal Fire队员单独讨论。</p>
+    <details>
+        <summary>👤 长画像（折叠 · 跨场累计）</summary>
+        <p style="margin-top: 8px; font-size: 0.9rem;">Hype：历史库跨场累计数据，本场无锚点。其他选手无提及。</p>
+    </details>
+</div>
+<!-- 6. 灰信号 -->
+<div class="card">
+    <h2><span class="no">6</span>灰信号</h2>
+    <p style="font-size: 0.9rem; color: #6e6e73;">观众质疑 · 非结论</p>
+    <ul class="signal-list">
+        <li class="gray">🔸 "Acesse a Lojinha e troque seus Gaupoints" — 广告刷屏，无比赛信号</li>
+        <li class="gray">🔸 "Mande a sua mensagem de voz na live com" — 直播互动引导</li>
+        <li class="gray">🔸 "COMUNIDADE OFICIAL AGON BY AOC! Entre no" — 频道推广</li>
+        <li class="gray">🔸 "Conheça os novos planos do Sócio Fundado" — 商业推广</li>
+    </ul>
+    <p style="margin-top: 8px; font-size: 0.9rem;">共16条灰信号，全部为广告/推广内容，无观众质疑或争议性讨论。</p>
+    <details>
+        <summary>⚠️ 灰信号完整列表（折叠）</summary>
+        <p style="margin-top: 8px; font-size: 0.9rem;">16条灰信号均为广告类，无实质比赛质疑。今日无灰信号（观众质疑类）。</p>
+    </details>
+</div>
+<!-- 7. 方向性情报 -->
+<div class="card">
+    <h2><span class="no">7</span>方向性情报</h2>
+    <div style="display: grid; gap: 12px;">
+        <div style="background: #f0f0f2; border-radius: 12px; padding: 12px;">
+            <p><strong>✅ 正锚点：</strong>今日无锚点（无队伍/选手正面提及）</p>
+        </div>
+        <div style="background: #f0f0f2; border-radius: 12px; padding: 12px;">
+            <p><strong>❌ 负锚点：</strong>今日无锚点（无队伍/选手负面提及）</p>
+        </div>
+        <div style="background: #f0f0f2; border-radius: 12px; padding: 12px;">
+            <p><strong>👥 群体共识：</strong>共识不足（弹幕无比赛讨论，无法形成共识）</p>
+        </div>
+        <div style="background: #f0f0f2; border-radius: 12px; padding: 12px;">
+            <p><strong>⚪ 灰信号条件预测：</strong>无灰信号可支撑预测</p>
+        </div>
+    </div>
+</div>
+<!-- 8. 联赛规律 -->
+<div class="card">
+    <h2><span class="no">8</span>联赛规律</h2>
+    <p>本窗口弹幕无版本讨论、无联赛规律提及。CS2当前版本无特殊讨论点。</p>
+    <p style="font-size: 0.9rem; color: #6e6e73;">样本不足，无法提炼联赛规律。</p>
+</div>
+<!-- 9. 预测验证 -->
+<div class="card">
+    <h2><span class="no">9</span>预测验证</h2>
+    <p>框架 · 赛后回填</p>
+    <p style="background: #f0f0f2; padding: 8px 12px; border-radius: 10px;">本窗口无有效预测锚点，无法验证。待官方数据回填后补充。</p>
+</div>
+<!-- 10. 盘口 -->
+<div class="card">
+    <h2><span class="no">10</span>盘口</h2>
+    <p>盘口数据：33条（真实统计）</p>
+    <p>本窗口盘口讨论样本不足，无具体赔率或投注倾向讨论。弹幕中未出现盘口相关关键词。</p>
+    <p style="font-size: 0.9rem; color: #6e6e73;">样本不足，不硬造数据。</p>
+</div>
+<!-- 11. 情报含义 -->
+<div class="card">
+    <h2><span class="no">11</span>情报含义</h2>
+    <h3>📈 LONG (看多)</h3>
+    <p>无有效锚点，不提供看多建议</p>
+    <h3>📉 SHORT (看空)</h3>
+    <p>无有效锚点，不提供看空建议</p>
+    <h3>🔍 后续观察点</h3>
+    <ul style="padding-left: 20px; margin-top: 8px;">
+        <li>等待官方HLTV/Liquipedia数据校准第3小局结果</li>
+        <li>观察下一局弹幕是否出现队伍/选手讨论</li>
+        <li>关注广告刷屏是否减少，以便捕捉真实观众情绪</li>
+    </ul>
+</div>
+<!-- 数据完整性 -->
+<div class="card">
+    <h2 style="border-bottom: none; margin-bottom: 8px;">📋 数据完整性</h2>
+    <div class="data-source">
+        <div><span class="label">实际数据源</span><br>弹幕切片 · 规则层统计</div>
+        <div><span class="label">预期数据源</span><br>HLTV / Liquipedia 官方</div>
+        <div><span class="label">缺口</span><br>官方阵容 · 比分 · 选手数据</div>
+    </div>
+    <p style="font-size: 0.8rem; color: #6e6e73; margin-top: 8px;">官方数据滞后，弹幕样本以广告为主，比赛情报有限。</p>
+</div>
+<div class="footnote">
+    <p>⚡ 局中情报 · 非终局 · 结果待定 · 北京时间 UTC+8</p>
+    <p>数据源：弹幕切片 / 规则层统计 / 官方HLTV-Liquipedia（滞后）</p>
+    <p>生成时间：2026-09-03 · 第3小局局末快照</p>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
