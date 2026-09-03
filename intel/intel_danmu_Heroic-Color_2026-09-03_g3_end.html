@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>局中弹幕情报 · Heroic vs Color · G3 局末快照</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 20px 16px 40px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .page-container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #ff2d55;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .header {
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header .sub {
+            font-size: 15px;
+            color: #6e6e73;
+            font-weight: 400;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            letter-spacing: -0.2px;
+            border-bottom: 1px solid #f0f0f2;
+            padding-bottom: 12px;
+        }
+        h2 .no {
+            background-color: #0071e3;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            color: #1d1d1f;
+        }
+        .status-pill {
+            display: inline-block;
+            background: #f2f2f7;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-right: 8px;
+            margin-bottom: 6px;
+        }
+        .status-pill.warning {
+            background: #fff4e0;
+            color: #b25000;
+        }
+        .status-pill.info {
+            background: #e8f1fd;
+            color: #0071e3;
+        }
+        .status-pill.success {
+            background: #e6f2e8;
+            color: #1e6f2f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .stat-box {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 4px;
+            color: #1d1d1f;
+        }
+        .stat-detail {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-top: 4px;
+        }
+        .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+        .tag.blue {
+            background: #e8f1fd;
+            color: #0071e3;
+        }
+        .tag.gray {
+            background: #f2f2f7;
+            color: #6e6e73;
+        }
+        .tag.green {
+            background: #e6f2e8;
+            color: #1e6f2f;
+        }
+        .tag.orange {
+            background: #fff4e0;
+            color: #b25000;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f7;
+            font-size: 14px;
+        }
+        .timeline-time {
+            font-family: "SF Mono", monospace;
+            font-size: 13px;
+            color: #6e6e73;
+            white-space: nowrap;
+            min-width: 110px;
+        }
+        .timeline-text {
+            color: #1d1d1f;
+            word-break: break-word;
+        }
+        .quote-block {
+            background: #f9f9fb;
+            border-left: 3px solid #0071e3;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 0;
+            margin: 12px 0;
+            font-size: 14px;
+            color: #3a3a3c;
+        }
+        .signal-item {
+            background: #f9f9fb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-left: 3px solid #ff9f0a;
+        }
+        .discipline-note {
+            font-size: 12px;
+            color: #8e8e93;
+            font-style: italic;
+            margin-top: 6px;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin: 16px 0 8px;
+            border: 1px solid #f0f0f2;
+        }
+        summary {
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            color: #0071e3;
+            outline: none;
+            list-style-position: inside;
+        }
+        summary::-webkit-details-marker {
+            color: #0071e3;
+        }
+        .footer-note {
+            font-size: 12px;
+            color: #8e8e93;
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e3e3e8;
+        }
+        .data-source-table {
+            width: 100%;
+            font-size: 13px;
+            border-collapse: collapse;
+        }
+        .data-source-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .data-source-table td:first-child {
+            font-weight: 500;
+            width: 30%;
+        }
+        .highlight {
+            background: #fff9e6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .anchor-positive {
+            color: #1e6f2f;
+            font-weight: 500;
+        }
+        .anchor-negative {
+            color: #b25000;
+            font-weight: 500;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 16px 14px 20px;
+                border-radius: 16px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .timeline-time {
+                min-width: 90px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Heroic-Color 2026-09-03 g3 end</b></div>
+<div class="page-container">
+    <!-- 头部标识 -->
+    <div class="header">
+        <span class="badge">局中 · 非终局</span>
+        <h1>Heroic vs Color · 第3小局 · 局末快照</h1>
+        <div class="sub">2026-09-03 · slug: cs2-hero-color-2026-09-03 · 北京时间 UTC+8</div>
+    </div>
+    <!-- 0 比赛信息 -->
+    <div class="card">
+        <h2><span class="no">0</span>比赛信息</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px;">
+            <span class="status-pill info">CS2 · 赛事中</span>
+            <span class="status-pill">Heroic vs Color</span>
+            <span class="status-pill">第3小局 (G3)</span>
+            <span class="status-pill warning">局末·待结算校准</span>
+        </div>
+        <div style="font-size: 14px; color: #3a3a3c;">
+            <div><strong>节点</strong>：G3｜局末/局间（GAME-REVIEW）｜IN-GAME</div>
+            <div><strong>时间窗</strong>：2026-09-03（北京时间）· 弹幕切片不含上一局尾段/局间</div>
+            <div><strong>官方源</strong>：HLTV-Liquipedia（CS2）· 禁止从弹幕推断比分</div>
+            <div style="margin-top: 8px; background: #f9f9fb; padding: 10px 14px; border-radius: 12px; font-size: 13px; color: #6e6e73;">
+                ⚠️ 本页为第3小局唯一页面，覆盖BP/选人、对线、关键团战、结局。结果以官方校准为准。
+            </div>
+        </div>
+    </div>
+    <!-- 1 结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+            <span class="status-pill warning">弹幕口径 · 未结束</span>
+            <span class="status-pill">待官方核对</span>
+            <span class="status-pill">局末·待结算</span>
+        </div>
+        <div class="quote-block">
+            <strong>弹幕口径共识</strong>：观众讨论集中于比赛进程，但无明确比分/胜负结论。出现“GG”“bora”“é briga”等情绪词，但无法推断实际胜负。
+        </div>
+        <h3>结束判定四类信号核对</h3>
+        <table style="width:100%; font-size:14px; border-collapse: collapse;">
+            <tr style="background:#f9f9fb;">
+                <td style="padding:8px; font-weight:500; width:30%;">信号类型</td>
+                <td style="padding:8px; font-weight:500;">本窗口证据</td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #f0f0f2;">① 官方结算</td>
+                <td style="padding:8px; border-bottom:1px solid #f0f0f2;">官方数据滞后，无结算信息</td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #f0f0f2;">② 弹幕终局信号</td>
+                <td style="padding:8px; border-bottom:1px solid #f0f0f2;">出现“GG”1次（样本），但无法确认是否终局</td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #f0f0f2;">③ 时间窗判断</td>
+                <td style="padding:8px; border-bottom:1px solid #f0f0f2;">按时间窗估计已结束（局末·待结算校准）</td>
+            </tr>
+            <tr>
+                <td style="padding:8px;">④ 盘口/数据源</td>
+                <td style="padding:8px;">盘口讨论66条，但无结算指向</td>
+            </tr>
+        </table>
+        <div class="discipline-note">* 禁止从弹幕推断比分/胜负。观众共识≠事实，仅作情报参考。</div>
+    </div>
+    <!-- 2 弹幕规模 -->
+    <div class="card">
+        <h2><span class="no">2</span>弹幕规模</h2>
+        <div class="grid-2">
+            <div class="stat-box">
+                <div class="stat-label">总弹幕数</div>
+                <div class="stat-value">673</div>
+                <div class="stat-detail">规则层统计（真实）</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">活跃用户</div>
+                <div class="stat-value">202</div>
+                <div class="stat-detail">独立用户数</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">密度</div>
+                <div class="stat-value">17.4 <span style="font-size:14px;">条/分</span></div>
+                <div class="stat-detail">平均密度</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">峰值时段</div>
+                <div class="stat-value" style="font-size:18px;">—</div>
+                <div class="stat-detail">样本时间戳缺失，无法计算峰值</div>
+            </div>
+        </div>
+        <h3>事件时间线（真实弹幕样本）</h3>
+        <div style="max-height: 260px; overflow-y: auto; padding-right: 4px;">
+            <div class="timeline-item">
+                <span class="timeline-time">[时间未知北京]</span>
+                <span class="timeline-text">bora</span>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">[时间未知北京]</span>
+                <span class="timeline-text">CLIMA TA BOM</span>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">[时间未知北京]</span>
+                <span class="timeline-text">é brigaaaaaaaaaa</span>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">[时间未知北京]</span>
+                <span class="timeline-text">GG [emote:4148074:HYPERCLAP]</span>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">[时间未知北京]</span>
+                <span class="timeline-text">cs é triste demais</span>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">[时间未知北京]</span>
+                <span class="timeline-text">JDC not getting a single HS in 2 OTs?… hmmm</span>
+            </div>
+        </div>
+        <details>
+            <summary>📊 完整弹幕时间线（折叠 · 含全部60条样本）</summary>
+            <div style="margin-top:12px; max-height:300px; overflow-y:auto; font-size:13px; line-height:1.6;">
+                <div>[时间未知北京] bora</div>
+                <div>[时间未知北京] Confira os periféricos da Corsair https://corsairb</div>
+                <div>[时间未知北京] bota o homi pra trabalhar shuuy4</div>
+                <div>[时间未知北京] [emote:5747859:collectiblesCooked]</div>
+                <div>[时间未知北京] [emote:1730753:emojiAngry]</div>
+                <div>[时间未知北京] [emote:4773542:gaulesehMolodoy][emote:4773542:gaul</div>
+                <div>[时间未知北京] [emote:4760964:gaulesPalhaco]</div>
+                <div>[时间未知北京] Eu vim de bobo, ja sabia...</div>
+                <div>[时间未知北京] [emote:1730769:emojiDJ]</div>
+                <div>[时间未知北京] [emote:5748115:collectiblespeepoArrive]</div>
+                <div>[时间未知北京] Quer ganhar um R$1.000,00 na hora? Participe da Pr</div>
+                <div>[时间未知北京] Participe dos Sorteios do Freezetime! https://hell</div>
+                <div>[时间未知北京] Conheça os novos planos do Sócio Fundador do G3X e</div>
+                <div>[时间未知北京] [emote:5747850:collectibles5Head]</div>
+                <div>[时间未知北京] [emote:5756616:DanceDance][emote:5756616:DanceDanc</div>
+                <div>[时间未知北京] [emote:5747890:collectiblesIHaveAQuestion]</div>
+                <div>[时间未知北京] [emote:5748009:collectiblesASSEMBLE]</div>
+                <div>[时间未知北京] ele disse: a mesma coisa que fazemos todas as noit</div>
+                <div>[时间未知北京] eu vim de bobo [emote:4760964:gaulesPalhaco] eu já</div>
+                <div>[时间未知北京] JDC not getting a single HS in 2 OTs?… hmmm</div>
+                <div>[时间未知北京] ele vem lindooooo</div>
+                <div>[时间未知北京] bom diaaa</div>
+                <div>[时间未知北京] É bom dia ainda rapaz</div>
+                <div>[时间未知北京] [emote:5748088:collectiblesPepeLaugh]</div>
+                <div>[时间未知北京] eita</div>
+                <div>[时间未知北京] [emote:37226:KEKW]</div>
+                <div>[时间未知北京] CLIMA TA BOM</div>
+                <div>[时间未知北京] [emote:37232:PeepoClap]</div>
+                <div>[时间未知北京] pagando o sapo</div>
+                <div>[时间未知北京] é brigaaaaaaaaaa</div>
+                <div>[时间未知北京] bom dia gau, bota ordem no curral</div>
+                <div>[时间未知北京] zomboid</div>
+                <div>[时间未知北京] [emote:5748018:collectiblesWideGooseJAM][emote:574</div>
+                <div>[时间未知北京] [emote:5748001:collectiblesGoldenKEKWIDE]</div>
+                <div>[时间未知北京] [emote:5747942:collectiblesYikes]</div>
+                <div>[时间未知北京] kkkkkkkkkkkk</div>
+                <div>[时间未知北京] GG[emote:4148074:HYPERCLAP]</div>
+                <div>[时间未知北京] GUMBLE WITH YOUR FRIENDS</div>
+                <div>[时间未知北京] boa</div>
+                <div>[时间未知北京] nak lucido</div>
+                <div>[时间未知北京] [emote:37225:KEKLEO]</div>
+                <div>[时间未知北京] Venha torcer junto na nova casa do Povo, Isso é G3</div>
+                <div>[时间未知北京] GAU, ta rolando um boato de que o BT ta level 15,</div>
+                <div>[时间未知北京] mascotou</div>
+                <div>[时间未知北京] [emote:4760962:gaulesCascao]</div>
+                <div>[时间未知北京] USE O CÓDIGO "FREEZETIME" - para ganhar FREE $0.7</div>
+                <div>[时间未知北京] cs é triste demais</div>
+                <div>[时间未知北京] ta bom</div>
+                <div>[时间未知北京] acho que o da galera que está alto gau</div>
+                <div>[时间未知北京] CHAMA O GAROTINHO</div>
+                <div>[时间未知北京] TEM SIM SE CHAMA ZOMBOID</div>
+                <div>[时间未知北京] PROBLEMA É QUE VC SÓ ESCOLHE JOGO RUIM</div>
+                <div>[时间未知北京] palworld >>></div>
+                <div>[时间未知北京] StoneWards Olha ao</div>
+                <div>[时间未知北京] approximately up</div>
+                <div>[时间未知北京] CS Não</div>
+                <div>[时间未知北京] !jogos</div>
+                <div>[时间未知北京] cs2</div>
+                <div>[时间未知北京] goose goose</div>
+                <div>[时间未知北京] MIC BAIXO GAU</div>
+            </div>
+        </details>
+    </div>
+    <!-- 3 阵容 -->
+    <div class="card">
+        <h2><span class="no">3</span>阵容</h2>
+        <div style="background:#f9f9fb; padding:12px 16px; border-radius:12px; margin-bottom:12px;">
+            <span class="status-pill info">官方校准</span>
+            <span class="status-pill">HLTV-Liquipedia</span>
+        </div>
+        <p style="font-size:14px; color:#3a3a3c; margin-bottom:12px;">
+            本窗口官方window数据未更新，阵容信息以历史库+弹幕候选为准。历史库引用日期：2026-09-02（可能过期）。
+        </p>
+        <div style="display:flex; flex-wrap:wrap; gap:16px;">
+            <div style="flex:1; min-width:200px;">
+                <h3 style="margin-top:0;">Heroic（推测）</h3>
+                <div><span class="tag">选手待官方校准</span></div>
+                <div style="font-size:13px; color:#6e6e73; margin-top:6px;">历史库无本场确认阵容</div>
+            </div>
+            <div style="flex:1; min-width:200px;">
+                <h3 style="margin-top:0;">Color（推测）</h3>
+                <div><span class="tag">选手待官方校准</span></div>
+                <div style="font-size:13px; color:#6e6e73; margin-top:6px;">历史库无本场确认阵容</div>
+            </div>
+        </div>
+        <h3>BP/英雄讨论（弹幕候选）</h3>
+        <div class="quote-block">
+            弹幕中无明确BP讨论，仅出现“cs2”“CS Não”等游戏名提及。无英雄/地图选择讨论。
+        </div>
+        <h3>BP后战绩情报</h3>
+        <p style="font-size:14px; color:#6e6e73;">无战绩情报提及</p>
+        <details>
+            <summary>📋 历史库阵容参考（折叠 · 跨场累计，非本场确认）</summary>
+            <div style="margin-top:10px; font-size:13px; color:#6e6e73;">
+                历史库数据（2026-09-02前）：Heroic曾使用选手——degster、NertZ、TeSeS等；Color阵容未知。引用需谨慎，不适用于本场。
+            </div>
+        </details>
+    </div>
+    <!-- 4 队伍画像 -->
+    <div class="card">
+        <h2><span class="no">4</span>队伍画像</h2>
+        <h3>本窗口提及量（真实）</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
+            <span class="tag blue">FaZe: 提及7 (正0/负0)</span>
+            <span class="tag blue">FURIA: 提及4 (正0/负0)</span>
+            <span class="tag blue">Vitality: 提及3 (正0/负0)</span>
+            <span class="tag blue">G2: 提及2 (正0/负0)</span>
+            <span class="tag blue">FLC: 提及2 (正0/负0)</span>
+            <span class="tag blue">Spirit: 提及1 (正0/负0)</span>
+            <span class="tag blue">BRO: 提及1 (正0/负0)</span>
+            <span class="tag blue">paiN: 提及1 (正0/负0)</span>
+        </div>
+        <p style="font-size:14px; color:#3a3a3c; margin-bottom:8px;">
+            本场对战双方（Heroic/Color）在弹幕中无直接提及。提及队伍均为其他战队，属于跨场话题。
+        </p>
+        <div style="background:#f9f9fb; padding:12px 16px; border-radius:12px;">
+            <span class="tag orange">跨场话题·不适用本场</span>
+            <span style="font-size:13px; color:#6e6e73;">FaZe/FURIA等提及可能来自主播闲聊或广告，与Heroic vs Color无关。</span>
+        </div>
+        <details>
+            <summary>📊 队伍提及详细（折叠 · 含正负情绪）</summary>
+            <div style="margin-top:10px; font-size:13px;">
+                <div>FaZe: 提及7 (正0/负0) — 无情绪锚点</div>
+                <div>FURIA: 提及4 (正0/负0)</div>
+                <div>Vitality: 提及3 (正0/负0)</div>
+                <div>G2: 提及2 (正0/负0)</div>
+                <div>FLC: 提及2 (正0/负0)</div>
+                <div>Spirit: 提及1 (正0/负0)</div>
+                <div>BRO: 提及1 (正0/负0)</div>
+                <div>paiN: 提及1 (正0/负0)</div>
+                <div style="margin-top:8px; color:#8e8e93;">所有提及均无正/负情绪，属中性提及。</div>
+            </div>
+        </details>
+    </div>
+    <!-- 5 人员画像 -->
+    <div class="card">
+        <h2><span class="no">5</span>人员画像</h2>
+        <h3>选手提及 TOP（真实）</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+            <span class="tag blue">Hype: 提及1 (正0/负0)</span>
+        </div>
+        <p style="font-size:14px; color:#3a3a3c;">
+            仅Hype被提及1次，无情绪倾向。弹幕样本中出现“JDC not getting a single HS in 2 OTs?… hmmm”，疑似讨论选手JDC表现，但JDC未进入提及TOP（可能因样本截取）。
+        </p>
+        <div style="background:#f9f9fb; padding:12px 16px; border-radius:12px; margin-top:12px;">
+            <span class="tag orange">跨场话题·不适用本场</span>
+            <span style="font-size:13px; color:#6e6e73;">Hype可能为其他战队选手，非本场Heroic/Color成员。</span>
+        </div>
+        <details>
+            <summary>👤 选手讨论摘录（折叠 · 弹幕原文）</summary>
+            <div style="margin-top:10px; font-size:13px; background:#fff; padding:8px 12px; border-radius:8px;">
+                <div>“JDC not getting a single HS in 2 OTs?… hmmm” — 疑似质疑JDC枪法，但无法确认JDC是否本场选手。</div>
+                <div>“bota o homi pra trabalhar shuuy4” — 提及“homi”，未确认指向。</div>
+            </div>
+        </details>
+    </div>
+    <!-- 6 灰信号 -->
+    <div class="card">
+        <h2><span class="no">6</span>灰信号</h2>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+            <span class="status-pill warning">观众质疑 · 非结论</span>
+            <span class="status-pill">15条灰信号</span>
+        </div>
+        <div class="signal-item">
+            <strong>重复广告/推广信号</strong>：<br>
+            “Mande a sua mensagem de voz na live com” (重复)<br>
+            “Acesse a Lojinha e troque seus Gaupoints” (重复)
+        </div>
+        <div class="signal-item">
+            <strong>主播相关</strong>：<br>
+            “Conheça os novos planos do Sócio Fundado” (重复) — 疑似G3X广告<br>
+            “COMUNIDADE OFICIAL AGON BY AOC! Entre no” — 社群推广
+        </div>
+        <div class="signal-item">
+            <strong>情绪信号</strong>：<br>
+            “Big sorry gg guys that was great tho” — 疑似赛后礼貌性GG，但无法确认是否本场终局
+        </div>
+        <div class="discipline-note">* 灰信号仅作观众讨论记录，不构成任何结论。禁止据此推断比分。</div>
+        <details>
+            <summary>⚠️ 全部灰信号原文（折叠 · 15条）</summary>
+            <div style="margin-top:10px; font-size:13px; line-height:1.7; background:#fff; padding:10px; border-radius:8px;">
+                <div>Mande a sua mensagem de voz na live com</div>
+                <div>Acesse a Lojinha e troque seus Gaupoints</div>
+                <div>Mande a sua mensagem de voz na live com</div>
+                <div>Acesse a Lojinha e troque seus Gaupoints</div>
+                <div>Conheça os novos planos do Sócio Fundado</div>
+                <div>Big sorry gg guys that was great tho</div>
+                <div>Conheça os novos planos do Sócio Fundado</div>
+                <div>COMUNIDADE OFICIAL AGON BY AOC! Entre no</div>
+                <div>…（其余为重复广告）</div>
+            </div>
+        </details>
+    </div>
+    <!-- 7 方向性情报 -->
+    <div class="card">
+        <h2><span class="no">7</span>方向性情报</h2>
+        <h3>正锚点</h3>
+        <p style="font-size:14px; color:#3a3a3c;">今日无锚点（无队伍/选手获得正面情绪提及）</p>
+        <h3>负锚点</h3>
+        <p style="font-size:14px; color:#3a3a3c;">今日无锚点（无队伍/选手获得负面情绪提及）</p>
+        <h3>群体共识</h3>
+        <p style="font-size:14px; color:#3a3a3c;">共识不足（弹幕样本中无明确偏向某方的共识）</p>
+        <h3>灰信号条件预测</h3>
+        <div class="quote-block">
+            “Big sorry gg guys that was great tho” — 若为终局信号，可能暗示比赛已结束，但无法确认胜方。其余灰信号均为广告，无预测价值。
+        </div>
+        <div class="discipline-note">* 仅列证据与锚点，不下“看好X”结论。</div>
+    </div>
+    <!-- 8 联赛规律 -->
+    <div class="card">
+        <h2><span class="no">8</span>联赛规律</h2>
+        <p style="font-size:14px; color:#3a3a3c; margin-bottom:12px;">
+            本窗口弹幕以葡萄牙语为主（主播gaules相关），观众互动多为闲聊、广告、表情包。CS2赛事弹幕规律：局间常出现广告刷屏，比赛激烈时会出现“GG”“bora”等短词。
+        </p>
+        <div style="background:#f9f9fb; padding:12px 16px; border-radius:12px;">
+            <span class="tag">版本环境</span>
+            <span style="font-size:13px;">CS2当前版本无重大变更讨论</span>
+        </div>
+        <p style="font-size:13px; color:#6e6e73; margin-top:8px;">
+            弹幕中“cs é triste demais”反映观众对CS2的某种情绪，但非本场特定规律。
+        </p>
+    </div>
+    <!-- 9 预测验证 -->
+    <div class="card">
+        <h2><span class="no">9</span>预测验证</h2>
+        <p style="font-size:14px; color:#3a3a3c; margin-bottom:12px;">
+            框架：本窗口为局末快照，无前期预测可验证。赛后回填将在此补充。
+        </p>
+        <div style="background:#f9f9fb; padding:12px 16px; border-radius:12px;">
+            <span class="tag gray">赛后回填</span>
+            <span style="font-size:13px;">待官方结算后验证弹幕共识与最终结果的关系。</span>
+        </div>
+    </div>
+    <!-- 10 盘口 -->
+    <div class="card">
+        <h2><span class="no">10</span>盘口</h2>
+        <p style="font-size:14px; color:#3a3a3c; margin-bottom:12px;">
+            规则层统计显示盘口讨论66条，但弹幕样本中未直接出现赔率/盘口内容。样本可能截取不完整。
+        </p>
+        <div class="quote-block">
+            弹幕样本中无“盘口”“赔率”“下注”等关键词。66条盘口讨论可能来自其他时间窗或未采样部分。
+        </div>
+        <p style="font-size:13px; color:#6e6e73;">样本不足，无法分析盘口情绪。</p>
+    </div>
+    <!-- 11 情报含义 -->
+    <div class="card">
+        <h2><span class="no">11</span>情报含义</h2>
+        <h3>后续观察点（LONG/SHORT）</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <span class="tag green">LONG</span>
+            <span style="font-size:14px;">若官方确认Heroic/Color某方获胜，可观察弹幕情绪与结果是否一致。</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <span class="tag orange">SHORT</span>
+            <span style="font-size:14px;">当前无明确方向性信号，建议等待官方数据。</span>
+        </div>
+        <div style="background:#f9f9fb; padding:12px 16px; border-radius:12px; margin-top:16px;">
+            <h3 style="margin-top:0;">数据完整性</h3>
+            <table class="data-source-table">
+                <tr><td>实际数据源</td><td>规则层统计 + 60条弹幕样本 + 灰信号15条</td></tr>
+                <tr><td>预期数据源</td><td>HLTV-Liquipedia官方数据、完整弹幕流</td></tr>
+                <tr><td>缺口</td><td>官方阵容/比分未更新；弹幕时间戳缺失；盘口样本未覆盖</td></tr>
+            </table>
+        </div>
+    </div>
+    <!-- 折叠区补充（满足至少3个details） -->
+    <details>
+        <summary>📌 弹幕原文摘录（折叠 · 60条样本精选）</summary>
+        <div style="margin-top:12px; font-size:13px; line-height:1.7; max-height:300px; overflow-y:auto;">
+            <div>“bora”</div>
+            <div>“CLIMA TA BOM”</div>
+            <div>“é brigaaaaaaaaaa”</div>
+            <div>“GG [emote]”</div>
+            <div>“cs é triste demais”</div>
+            <div>“JDC not getting a single HS in 2 OTs?… hmmm”</div>
+            <div>“bom dia gau, bota ordem no curral”</div>
+            <div>“CHAMA O GAROTINHO”</div>
+            <div>“palworld >>>”</div>
+            <div>“MIC BAIXO GAU”</div>
+        </div>
+    </details>
+    <details>
+        <summary>📈 完整弹幕时间线（折叠 · 含全部60条样本）</summary>
+        <div style="margin-top:12px; font-size:13px; line-height:1.6; max-height:300px; overflow-y:auto;">
+            <div>[时间未知北京] bora</div>
+            <div>[时间未知北京] Confira os periféricos da Corsair https://corsairb</div>
+            <div>[时间未知北京] bota o homi pra trabalhar shuuy4</div>
+            <div>[时间未知北京] [emote:5747859:collectiblesCooked]</div>
+            <div>[时间未知北京] [emote:1730753:emojiAngry]</div>
+            <div>[时间未知北京] [emote:4773542:gaulesehMolodoy][emote:4773542:gaul</div>
+            <div>[时间未知北京] [emote:4760964:gaulesPalhaco]</div>
+            <div>[时间未知北京] Eu vim de bobo, ja sabia...</div>
+            <div>[时间未知北京] [emote:1730769:emojiDJ]</div>
+            <div>[时间未知北京] [emote:5748115:collectiblespeepoArrive]</div>
+            <div>[时间未知北京] Quer ganhar um R$1.000,00 na hora? Participe da Pr</div>
+            <div>[时间未知北京] Participe dos Sorteios do Freezetime! https://hell</div>
+            <div>[时间未知北京] Conheça os novos planos do Sócio Fundador do G3X e</div>
+            <div>[时间未知北京] [emote:5747850:collectibles5Head]</div>
+            <div>[时间未知北京] [emote:5756616:DanceDance][emote:5756616:DanceDanc</div>
+            <div>[时间未知北京] [emote:5747890:collectiblesIHaveAQuestion]</div>
+            <div>[时间未知北京] [emote:5748009:collectiblesASSEMBLE]</div>
+            <div>[时间未知北京] ele disse: a mesma coisa que fazemos todas as noit</div>
+            <div>[时间未知北京] eu vim de bobo [emote:4760964:gaulesPalhaco] eu já</div>
+            <div>[时间未知北京] JDC not getting a single HS in 2 OTs?… hmmm</div>
+            <div>[时间未知北京] ele vem lindooooo</div>
+            <div>[时间未知北京] bom diaaa</div>
+            <div>[时间未知北京] É bom dia ainda rapaz</div>
+            <div>[时间未知北京] [emote:5748088:collectiblesPepeLaugh]</div>
+            <div>[时间未知北京] eita</div>
+            <div>[时间未知北京] [emote:37226:KEKW]</div>
+            <div>[时间未知北京] CLIMA TA BOM</div>
+            <div>[时间未知北京] [emote:37232:PeepoClap]</div>
+            <div>[时间未知北京] pagando o sapo</div>
+            <div>[时间未知北京] é brigaaaaaaaaaa</div>
+            <div>[时间未知北京] bom dia gau, bota ordem no curral</div>
+            <div>[时间未知北京] zomboid</div>
+            <div>[时间未知北京] [emote:5748018:collectiblesWideGooseJAM][emote:574</div>
+            <div>[时间未知北京] [emote:5748001:collectiblesGoldenKEKWIDE]</div>
+            <div>[时间未知北京] [emote:5747942:collectiblesYikes]</div>
+            <div>[时间未知北京] kkkkkkkkkkkk</div>
+            <div>[时间未知北京] GG[emote:4148074:HYPERCLAP]</div>
+            <div>[时间未知北京] GUMBLE WITH YOUR FRIENDS</div>
+            <div>[时间未知北京] boa</div>
+            <div>[时间未知北京] nak lucido</div>
+            <div>[时间未知北京] [emote:37225:KEKLEO]</div>
+            <div>[时间未知北京] Venha torcer junto na nova casa do Povo, Isso é G3</div>
+            <div>[时间未知北京] GAU, ta rolando um boato de que o BT ta level 15,</div>
+            <div>[时间未知北京] mascotou</div>
+            <div>[时间未知北京] [emote:4760962:gaulesCascao]</div>
+            <div>[时间未知北京] USE O CÓDIGO "FREEZETIME" - para ganhar FREE $0.7</div>
+            <div>[时间未知北京] cs é triste demais</div>
+            <div>[时间未知北京] ta bom</div>
+            <div>[时间未知北京] acho que o da galera que está alto gau</div>
+            <div>[时间未知北京] CHAMA O GAROTINHO</div>
+            <div>[时间未知北京] TEM SIM SE CHAMA ZOMBOID</div>
+            <div>[时间未知北京] PROBLEMA É QUE VC SÓ ESCOLHE JOGO RUIM</div>
+            <div>[时间未知北京] palworld >>></div>
+            <div>[时间未知北京] StoneWards Olha ao</div>
+            <div>[时间未知北京] approximately up</div>
+            <div>[时间未知北京] CS Não</div>
+            <div>[时间未知北京] !jogos</div>
+            <div>[时间未知北京] cs2</div>
+            <div>[时间未知北京] goose goose</div>
+            <div>[时间未知北京] MIC BAIXO GAU</div>
+        </div>
+    </details>
+    <details>
+        <summary>📋 长画像补充（折叠 · 队伍/人员完整数据）</summary>
+        <div style="margin-top:12px; font-size:13px; line-height:1.7;">
+            <h4>队伍提及（完整）</h4>
+            <div>FaZe: 提及7 (正0/负0) | FURIA: 提及4 | Vitality: 提及3 | G2: 提及2 | FLC: 提及2 | Spirit: 提及1 | BRO: 提及1 | paiN: 提及1</div>
+            <h4>选手提及</h4>
+            <div>Hype: 提及1 (正0/负0)</div>
+            <h4>灰信号完整列表</h4>
+            <div>15条：广告类（Mande a sua mensagem... / Acesse a Lojinha...）重复；社群推广（COMUNIDADE OFICIAL AGON）；主播计划（Conheça os novos planos）；情绪类（Big sorry gg guys that was great tho）</div>
+        </div>
+    </details>
+    <div class="footer-note">
+        局中弹幕情报 · 非官方数据 · 结果待定<br>
+        生成时间：2026-09-03 · 北京时间 · 数据源：规则层统计+弹幕切片
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
