@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>局中情报 · FlyQuest vs DEPO · G3 局末快照</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 16px 12px 40px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #3a3a3c;
+            letter-spacing: 0.2px;
+            margin-bottom: 10px;
+        }
+        .badge-warning {
+            background: #ffd60a;
+            color: #1d1d1f;
+            font-weight: 600;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 8px 0 12px;
+            line-height: 1.2;
+        }
+        .subhead {
+            font-size: 16px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            border-left: 4px solid #0071e3;
+            padding-left: 12px;
+            font-weight: 400;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9e9ed;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 650;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #f0f0f2;
+            padding-bottom: 12px;
+            letter-spacing: -0.2px;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            border-radius: 30px;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .status-pill {
+            background: #f2f2f6;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+            margin-right: 8px;
+            margin-bottom: 6px;
+        }
+        .status-pill.blue {
+            background: #e8f0fe;
+            color: #0066cc;
+        }
+        .status-pill.orange {
+            background: #fff3e0;
+            color: #b25e00;
+        }
+        .status-pill.gray {
+            background: #e8e8ed;
+            color: #555;
+        }
+        .highlight {
+            background: #f0f7ff;
+            border-left: 4px solid #0071e3;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-size: 15px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .stat-num {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0071e3;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .mention {
+            background: #f5f5f7;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 13px;
+            display: inline-block;
+            margin: 3px 4px 3px 0;
+        }
+        .signal-box {
+            background: #fbfbfd;
+            border: 1px solid #e1e1e6;
+            border-radius: 14px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .signal-box .sig {
+            color: #b25e00;
+            font-weight: 500;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            border: 1px solid #e5e5ea;
+        }
+        summary {
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            color: #1d1d1f;
+            padding: 4px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        th {
+            text-align: left;
+            color: #6e6e73;
+            font-weight: 500;
+            padding: 8px 4px;
+            border-bottom: 1px solid #e1e1e6;
+        }
+        td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 12px;
+            border-top: 1px solid #e9e9ed;
+            padding-top: 12px;
+        }
+        .disclaimer {
+            background: #fff8e6;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid #ffe5a3;
+            margin-bottom: 20px;
+        }
+        .time-window {
+            font-family: monospace;
+            background: #f0f0f2;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        .flex {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 12px 0;
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 24px; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">FlyQuest-DEPO 2026-09-03 g3 end</b></div>
+<div class="container">
+    <!-- 显著标注局中非终局 -->
+    <div class="disclaimer">
+        <span style="font-weight:700; font-size:18px;">⏳ 局中 · 非终局，结果待定</span><br>
+        <span style="font-size:15px;">第3小局按时间窗估计已结束（局末·待结算校准），结果以官方核对为准。弹幕口径仅反映观众即时情绪。</span>
+    </div>
+    <!-- 比赛信息 0 -->
+    <div class="card">
+        <h2><span class="no">0</span>比赛信息</h2>
+        <div class="flex" style="margin-bottom:8px;">
+            <span class="badge">CS2 · FlyQuest vs DEPO</span>
+            <span class="badge">2026-09-03</span>
+            <span class="badge blue">slug: cs2-fly-dep-2026-09-03</span>
+        </div>
+        <div style="font-size:15px; margin-top:6px;">
+            <div><strong>节点</strong> G3 · 局末/局间 (GAME-REVIEW) · IN-GAME</div>
+            <div><strong>北京时间</strong> 2026-09-03 (窗口内弹幕无绝对时间，样本标记为[时间未知北京])</div>
+            <div><strong>官方源</strong> HLTV / Liquipedia (CS2) — 禁止弹幕推断比分</div>
+        </div>
+    </div>
+    <!-- 1 结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览 · 状态核验</h2>
+        <div class="highlight">
+            <span style="font-weight:600;">弹幕口径 · 未结束</span> — 本页为局中快照，第3小局已进入局末窗口，但官方未结算。弹幕无任何比分/胜负讨论。
+        </div>
+        <div style="margin:10px 0;">
+            <span class="status-pill blue">官方数据滞后</span>
+            <span class="status-pill orange">弹幕口径: 无明确领先方</span>
+            <span class="status-pill gray">灰信号13条</span>
+        </div>
+        <div style="background:#f5f5f7; border-radius:12px; padding:12px;">
+            <strong>结束判定四类信号核对</strong>
+            <table>
+                <tr><th>信号</th><th>状态</th></tr>
+                <tr><td>官方比分/胜负</td><td>未发布 · 待校准</td></tr>
+                <tr><td>弹幕庆祝/沮丧</td><td>无 (样本中无情绪倾向)</td></tr>
+                <tr><td>选手/战队讨论</td><td>提及量极低 (Vitality/G2/FURIA/FLC各1次)</td></tr>
+                <tr><td>盘口/结算讨论</td><td>盘口17条 (无实质内容)</td></tr>
+            </table>
+            <div class="footnote">* 弹幕无法推断比分，仅反映直播间氛围。</div>
+        </div>
+    </div>
+    <!-- 2 弹幕规模与事件时间线 -->
+    <div class="card">
+        <h2><span class="no">2</span>弹幕规模 · 密度峰值与事件时间线</h2>
+        <div class="grid-2" style="margin-bottom:12px;">
+            <div><span class="stat-num">186</span><div class="stat-label">弹幕总数</div></div>
+            <div><span class="stat-num">50</span><div class="stat-label">活跃用户</div></div>
+        </div>
+        <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;">
+            <div><span class="stat-num" style="font-size:24px;">5.1</span><div class="stat-label">条/分</div></div>
+            <div><span class="stat-num" style="font-size:24px;">—</span><div class="stat-label">峰值时间(无绝对时间)</div></div>
+        </div>
+        <div class="signal-box">
+            <span class="sig">⏱️ 时间线样本 (弹幕原文，无时间戳)</span>
+            <div style="margin-top:8px; font-size:13px; color:#3a3a3c;">
+                “!csmoney” · “!aoc” · “collectiblesslayy” · “que isso” · “lol” · “what’s happen” · “kkk” · “agora vai!! 💚” · “classic” · “Venha torcer junto na nova casa do Povo”
+            </div>
+            <div style="margin-top:8px;">📌 弹幕多为表情/广告/闲聊，无比赛事件锚点。灰信号占比高 (13条)。</div>
+        </div>
+        <details>
+            <summary>📋 查看完整弹幕样本 (49条提炼)</summary>
+            <div style="font-size:13px; max-height:200px; overflow-y:auto; background:#fff; padding:8px; border-radius:8px;">
+                !csmoney · !aoc · [emote] · Acesse a Lojinha... · !kabum · OneBlade... · [OOOO] · [gaulesAPOKAO] · Venha torcer... · USE O CÓDIGO... · [collectiblesMEGALUL] · [collectiblesGG] · Mande a sua mensagem... · collectiblesslayy · [collectiblesslayyy] · [highCortisol] · [collectiblesbye] · [emojiDisappoint] · [gauleszap] · Confira os periféricos Corsair · Troque skins... · [emojiCool] · que isso · Conheça os novos planos... · lol · [collectiblesUnlucky] · Confira os periféricos... · [collectiblesSaved] · [gaulesG3] · [collectiblesGoldenKEKW] · [emojiCrave] · Compre um PS5... · [collectiblesFeelsComfyMan] · [emojiAngel] · [gaulesKEK] · [gaules190] · what’s happen · kkk · agora vai!! 💚 · [emojiSwearing] · [collectiblesRAGEY] · [collectiblesAwkward] · classic · [gaulesG3X] · [collectiblesPepeNPC] · [collectiblesGoldenLOOT] · [collectiblespeepoArrive] · [gaulesCapa] · [vibePls]
+            </div>
+        </details>
+    </div>
+    <!-- 3 阵容与BP/英雄讨论 -->
+    <div class="card">
+        <h2><span class="no">3</span>阵容与 BP · 英雄讨论</h2>
+        <div style="background:#f5f5f7; border-radius:12px; padding:12px;">
+            <span class="status-pill blue">官方校准 (HLTV/Liquipedia)</span>
+            <span class="status-pill gray">弹幕无BP讨论</span>
+        </div>
+        <p style="margin:12px 0;"><strong>阵容信息</strong> — 官方窗口未推送具体选手×队伍×位置。历史库可能过期，不引用。</p>
+        <p><strong>弹幕英雄/BP提及</strong> — 无任何选手或英雄讨论。样本中仅有“lol”“classic”等无指向词汇。</p>
+        <div class="highlight">📋 BP后战绩情报：<strong>无战绩情报提及</strong> (弹幕无相关讨论)</div>
+        <details>
+            <summary>📌 历史库阵容警示 (2026-09-02教训)</summary>
+            <div style="font-size:14px;">历史库阵容可能过期，本场不采用任何历史阵容。所有选手×队伍×位置仅信官方window。当前官方未发布，故阵容留白。</div>
+        </details>
+    </div>
+    <!-- 4 队伍画像 -->
+    <div class="card">
+        <h2><span class="no">4</span>队伍画像 (本窗口+跨场沉淀)</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <span class="mention">Vitality: 提及1 (正0/负0)</span>
+            <span class="mention">G2: 提及1 (正0/负0)</span>
+            <span class="mention">FURIA: 提及1 (正0/负0)</span>
+            <span class="mention">FLC: 提及1 (正0/负0)</span>
+        </div>
+        <p style="font-size:14px; color:#555;">本窗口弹幕对参赛队FlyQuest/DEPO零提及。提及的队伍均为非本场战队，属于跨场话题·不适用本场。</p>
+        <div style="background:#f2f2f6; border-radius:12px; padding:12px; margin-top:10px;">
+            <span style="font-weight:600;">跨场沉淀</span> — 历史库数据不用于本场判断，仅标注“跨场话题·不适用本场”。
+        </div>
+    </div>
+    <!-- 5 人员画像 -->
+    <div class="card">
+        <h2><span class="no">5</span>人员画像 (带提及量)</h2>
+        <p>本窗口弹幕<strong>无任何选手个人提及</strong> (无选手名，无ID)。</p>
+        <div class="signal-box">样本中无选手相关词汇。所有人员讨论缺失。</div>
+        <p style="font-size:14px;">提及量均为0。跨场选手话题不适用。</p>
+    </div>
+    <!-- 6 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">6</span>灰信号汇总 (观众质疑·非结论)</h2>
+        <div style="background:#fff8e6; border-radius:14px; padding:12px; border:1px solid #ffe0a3;">
+            <span style="font-weight:600;">⚠️ 灰信号 13条 (重复性广告/链接)</span>
+            <div style="margin-top:8px; font-size:14px;">
+                “Acesse a Lojinha e troque seus Gaupoints” (重复多次)<br>
+                “Mande a sua mensagem de voz na live com...”<br>
+                “Conheça os novos planos do Sócio Fundador” (重复)
+            </div>
+            <div style="margin-top:8px; color:#6e6e73;">这些信号多为直播间广告/机器人，不构成比赛质疑。但观众可能被广告刷屏，影响情绪。</div>
+        </div>
+        <p style="margin-top:12px;"><strong>纪律</strong> — 灰信号仅作为观众注意力分散的参考，非比赛结论。</p>
+    </div>
+    <!-- 7 方向性情报 -->
+    <div class="card">
+        <h2><span class="no">7</span>方向性情报 (锚点×共识×灰信号)</h2>
+        <div style="display:grid; gap:12px;">
+            <div><span class="status-pill blue">正锚点</span> 无 — 今日无锚点 (弹幕无队伍倾向)</div>
+            <div><span class="status-pill orange">负锚点</span> 无 — 无负面提及</div>
+            <div><span class="status-pill gray">群体共识</span> 共识不足 — 观众未讨论比赛，无法提炼共识</div>
+            <div><span class="status-pill">灰信号条件预测</span> 广告刷屏导致讨论度低，可能说明比赛缺乏悬念或观众疲劳。</div>
+        </div>
+        <div class="highlight" style="margin-top:12px;">📊 认知错位：观众对比赛几乎无关注，官方若有大节奏则存在信息差，但当前无任何锚点。</div>
+    </div>
+    <!-- 8 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">8</span>联赛规律与版本</h2>
+        <p>本窗口弹幕无任何版本讨论 (无枪械/地图/经济讨论)。</p>
+        <p style="color:#6e6e73;">CS2版本信息需官方源，弹幕未提供有效内容。</p>
+        <details>
+            <summary>📈 历史规律 (跨场沉淀)</summary>
+            <div>无有效数据。本场弹幕样本不涉及版本规律。</div>
+        </details>
+    </div>
+    <!-- 9 预测验证 -->
+    <div class="card">
+        <h2><span class="no">9</span>预测验证 (框架·赛后回填)</h2>
+        <p>本局为局中快照，无赛前预测框架。赛后回填待官方结算后进行。</p>
+        <div class="signal-box">当前无预测可验证。所有预测相关留待终局。</div>
+    </div>
+    <!-- 10 盘口讨论 -->
+    <div class="card">
+        <h2><span class="no">10</span>盘口讨论</h2>
+        <p><span class="status-pill">盘口信号 17条</span> — 但内容均为广告/无实质盘口分析。</p>
+        <div style="background:#f5f5f7; border-radius:12px; padding:10px;">
+            样本不足 — 弹幕中无赔率/让分/大小讨论。仅有“USE O CÓDIGO”等推广。
+        </div>
+    </div>
+    <!-- 11 情报含义与观察点 -->
+    <div class="card">
+        <h2><span class="no">11</span>情报含义与后续观察点 (LONG/SHORT)</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="background:#eaf6ea; border-radius:12px; padding:12px;">
+                <strong>📈 LONG (看多)</strong><br>无明确信号。观众不关注，可能缺乏资金热度。
+            </div>
+            <div style="background:#fdeaea; border-radius:12px; padding:12px;">
+                <strong>📉 SHORT (看空)</strong><br>无锚点。灰信号过多，直播间质量低。
+            </div>
+        </div>
+        <p style="margin-top:12px; font-size:14px;"><strong>后续观察点</strong> — 官方结算后需核对比分；弹幕若突然爆发则需重新评估。</p>
+    </div>
+    <!-- 数据完整性三栏 -->
+    <div class="card">
+        <h2 style="border-bottom:none;">📋 数据完整性</h2>
+        <table>
+            <tr><th>实际数据源</th><th>预期数据源</th><th>缺口</th></tr>
+            <tr><td>规则层JSON+弹幕切片</td><td>官方HLTV/Liquipedia</td><td>官方阵容/比分未发布</td></tr>
+            <tr><td>弹幕样本49条</td><td>全量弹幕</td><td>无绝对时间戳</td></tr>
+            <tr><td>灰信号/盘口统计</td><td>—</td><td>盘口内容无实质</td></tr>
+        </table>
+        <div class="footnote">样本不足已标注，未硬造数据。</div>
+    </div>
+    <!-- 折叠区至少3个已包含 -->
+    <div style="text-align:center; font-size:12px; color:#86868b; margin-top:24px;">
+        局中情报 · 非终局 · 北京时间 UTC+8<br>生成时间 2026-09-03 · 依据旧框架B型
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
