@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>局中弹幕情报 · BFX vs DK · G5 BP后</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f5f7;
+            padding: 16px 12px 40px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #ff3b30;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+        }
+        .header-title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .match-meta {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #d2d2d7;
+            padding-bottom: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+        .match-meta strong {
+            color: #1d1d1f;
+            font-weight: 600;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.02);
+            transition: 0.2s ease;
+        }
+        h2 {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            margin-bottom: 14px;
+            color: #1d1d1f;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 8px;
+        }
+        h2 .no {
+            background-color: #0071e3;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .status-pill {
+            background: #f2f2f6;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .status-ongoing {
+            background-color: #ffd60a;
+            color: #1d1d1f;
+            font-weight: 600;
+        }
+        .grid-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            background: #f9f9fb;
+            padding: 12px 14px;
+            border-radius: 16px;
+            margin-top: 6px;
+        }
+        .stat-item {
+            font-size: 14px;
+        }
+        .stat-label {
+            color: #6e6e73;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .stat-value {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .tag {
+            background: #f2f2f6;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            display: inline-block;
+            margin: 4px 4px 0 0;
+        }
+        .tag-blue {
+            background: #e8f0fe;
+            color: #0071e3;
+        }
+        .tag-orange {
+            background: #fff1e0;
+            color: #b25000;
+        }
+        .tag-red {
+            background: #ffe9e9;
+            color: #c41e1e;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            margin-bottom: 8px;
+            border-left: 2px solid #e8e8ed;
+            padding-left: 12px;
+        }
+        .timeline-time {
+            color: #6e6e73;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .quote {
+            background: #f5f5f7;
+            border-left: 4px solid #0071e3;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 10px 0;
+            color: #3a3a3c;
+        }
+        .details-block {
+            margin-top: 12px;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::before {
+            content: "▸";
+            color: #0071e3;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+        details[open] summary::before {
+            content: "▾";
+        }
+        .intel-meta {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 6px;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #86868b;
+            text-align: center;
+            margin-top: 24px;
+        }
+        .highlight {
+            background: #fff6bf;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .source-badge {
+            background: #e8e8ed;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #1d1d1f;
+        }
+        .official {
+            background: #0071e3;
+            color: white;
+        }
+        .danmu {
+            background: #f2a900;
+            color: #1d1d1f;
+        }
+        .no-wrap {
+            white-space: nowrap;
+        }
+        .table-mini {
+            width: 100%;
+            font-size: 14px;
+            border-collapse: collapse;
+        }
+        .table-mini td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">BNK FEARX-Dplus KIA 2026-09-03 g5 bp</b></div>
+<div class="container">
+    <!-- 显著标注局中·非终局 -->
+    <div class="badge">⚡ 局中 · 非终局 · 结果待定</div>
+    <div class="header-title">BNK FEARX vs Dplus KIA</div>
+    <div class="match-meta">
+        <span><strong>2026-09-03</strong> · 第5小局</span>
+        <span>slug: lol-fox1-dk-2026-09-03</span>
+        <span><strong>节点</strong> G5 · BP后/开局</span>
+        <span style="background:#f2f2f6; padding:2px 10px; border-radius:20px;">⏱ 北京时间</span>
+    </div>
+    <!-- 0 比赛信息 -->
+    <div class="card">
+        <h2><span class="no">0</span>比赛信息</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px 24px;">
+            <div><span style="color:#6e6e73;">官方比分</span><br><strong>BFX 2 : 2 DK</strong> <span style="font-size:13px; color:#0071e3;">(gameWins)</span></div>
+            <div><span style="color:#6e6e73;">当前小局</span><br>第5局 · BP后 (EARLY-GAME)</div>
+            <div><span style="color:#6e6e73;">数据窗口</span><br>G5 BP后弹幕切片</div>
+        </div>
+        <div style="margin-top: 12px; background:#f5f5f7; padding: 8px 12px; border-radius: 12px; font-size:14px;">
+            <span class="source-badge official">官方</span> 系列比分以官方为准，弹幕不推断比分。
+        </div>
+    </div>
+    <!-- 1 结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览 · 状态核验</h2>
+        <div class="status-pill status-ongoing">🔴 弹幕口径 · 未结束</div>
+        <p style="margin: 8px 0 12px; font-size:15px;"><strong>结束判定四类信号核对</strong> (弹幕切片内)</p>
+        <div style="display:flex; flex-direction: column; gap: 6px; font-size:14px;">
+            <div>✅ 终局信号: 无 (无“恭喜/冠军/结束”等)</div>
+            <div>✅ 基地爆炸: 无明确本场爆炸描述</div>
+            <div>✅ 选手/队伍庆祝: 无</div>
+            <div>✅ 官方gameWins: 2:2 (未结束)</div>
+        </div>
+        <div style="margin-top: 12px; background: #f0f4ff; border-radius: 12px; padding: 10px 14px;">
+            <span class="source-badge danmu">弹幕口径</span> 观众热议“翻三/让二追三”等，但无终局确认。本页为BP后开局情报。
+        </div>
+    </div>
+    <!-- 2 弹幕规模、密度峰值与事件时间线 -->
+    <div class="card">
+        <h2><span class="no">2</span>弹幕规模 · 峰值 · 时间线</h2>
+        <div class="grid-stats">
+            <div class="stat-item"><span class="stat-label">总弹幕</span><div class="stat-value">269</div></div>
+            <div class="stat-item"><span class="stat-label">活跃用户</span><div class="stat-value">160</div></div>
+            <div class="stat-item"><span class="stat-label">密度</span><div class="stat-value">17.9条/分</div></div>
+            <div class="stat-item"><span class="stat-label">窗口</span><div class="stat-value">~15min</div></div>
+        </div>
+        <p style="margin-top: 12px; font-size:14px;"><span class="source-badge official">真实统计</span> 峰值时间约 <strong>19:34-19:35</strong> (样本密集), 单分钟超30条。</p>
+        <div style="margin-top: 16px;">
+            <div style="font-weight:600; margin-bottom: 8px;">📌 事件时间线 (真实弹幕时间)</div>
+            <div class="timeline-item"><span class="timeline-time">19:32:57</span><span>“LCK现在也是假的半死了” (灰信号开端)</span></div>
+            <div class="timeline-item"><span class="timeline-time">19:33:25</span><span>“t1的严父dk来了” (队伍梗)</span></div>
+            <div class="timeline-item"><span class="timeline-time">19:34:27</span><span>“翻一翻二，难道还能翻三？？” (热议翻盘)</span></div>
+            <div class="timeline-item"><span class="timeline-time">19:35:19</span><span>“we牛逼” (提及WE)</span></div>
+            <div class="timeline-item"><span class="timeline-time">19:36:07</span><span>“48斌” (盘口/选手)</span></div>
+            <div class="timeline-item"><span class="timeline-time">19:39:55</span><span>“3:1开局能被22分钟打爆” (局势)</span></div>
+            <div class="timeline-item"><span class="timeline-time">19:41:43</span><span>“2-2了？” (弹幕疑问)</span></div>
+        </div>
+        <details>
+            <summary>查看完整时间线样本 (6条)</summary>
+            <div style="margin-top: 8px; font-size:13px; color:#3a3a3c;">
+                [19:33:35] 全剧本无敌了 · [19:34:51] dk这个队伍就是永远有假赛 · [19:35:47] DK和WE产生共鸣了说是 · [19:36:43] 全部是第三局开始送 · [19:37:37] 这能不拿2？？？ · [19:45:23] 2
+            </div>
+        </details>
+    </div>
+    <!-- 3 阵容与BP/英雄讨论 -->
+    <div class="card">
+        <h2><span class="no">3</span>阵容与BP · 英雄讨论</h2>
+        <div style="background:#f9f9fb; border-radius: 14px; padding: 12px;">
+            <span class="source-badge official">官方校准</span> 本窗口无官方阵容详细数据 (BP后未提供)。弹幕提及英雄/选手：
+        </div>
+        <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="tag tag-blue">狐狸 (19:33:11)</span>
+            <span class="tag tag-blue">泽丽 (19:35:26)</span>
+            <span class="tag tag-blue">人马 (19:36:29)</span>
+            <span class="tag tag-blue">飓风 (芸阿娜)</span>
+            <span class="tag">小鸡蛋 (伤害)</span>
+            <span class="tag tag-orange">许哥 (ShowMaker?)</span>
+        </div>
+        <p style="margin-top: 10px; font-size:14px;"><strong>BP后战绩情报：</strong> 无战绩情报提及 (弹幕未讨论具体胜率/战绩)。</p>
+        <div class="quote" style="margin-top: 8px;">💬 “这个狐狸真变态” · “小鸡蛋这伤害爆了” · “人马教学”</div>
+        <details>
+            <summary>英雄/选手讨论折叠 (仅弹幕候选)</summary>
+            <div style="font-size:13px; padding: 6px 0;">候选: 狐狸(中路?), 人马(打野), 泽丽(下路), 飓风(装备)。未官方确认，仅弹幕提及。</div>
+        </details>
+    </div>
+    <!-- 4 队伍画像 -->
+    <div class="card">
+        <h2><span class="no">4</span>队伍画像 (本窗口+跨场)</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+            <div><span class="tag tag-blue">WE 提及10</span> (正1/负0)</div>
+            <div><span class="tag">DK 提及8</span> (正0/负0)</div>
+            <div><span class="tag">BFX 提及8</span> (正0/负1)</div>
+            <div><span class="tag">BLG 提及7</span> (正0/负1)</div>
+            <div><span class="tag">T1 提及6</span> (正0/负0)</div>
+        </div>
+        <div style="font-size:14px; background:#f5f5f7; padding: 10px 12px; border-radius: 12px;">
+            <strong>队伍特质统计</strong> (真实) 被翻守不住:2 · 韧性逆转:1 · 心态摆烂:3 · 选手特质:1
+        </div>
+        <div style="margin-top: 12px;">
+            <span class="source-badge danmu">弹幕口径</span> “dk这个队伍就是永远有假赛” (灰信号) ; “DK和WE产生共鸣了” (调侃)
+        </div>
+        <div style="margin-top: 8px; font-size:13px; color:#6e6e73;">跨场话题: WE/BLG/T1 为跨场提及，不适用本场对决。</div>
+        <details>
+            <summary>跨场沉淀 (历史库·不适用本场)</summary>
+            <div style="font-size:13px;">WE/BLG/T1 均为其他场次提及，仅作背景。本场队伍为BFX vs DK。</div>
+        </details>
+    </div>
+    <!-- 5 人员画像 -->
+    <div class="card">
+        <h2><span class="no">5</span>人员画像 (带提及量)</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px 20px;">
+            <div><span class="tag tag-orange">许哥/许秀? 提及≥3</span> (ShowMaker?)</div>
+            <div><span class="tag">48斌 提及2</span> (盘口/选手)</div>
+            <div><span class="tag">小鸡蛋 提及1</span></div>
+            <div><span class="tag">关羽 提及2</span> (梗)</div>
+            <div><span class="tag">芸阿娜 提及1</span></div>
+        </div>
+        <p style="margin-top: 10px; font-size:14px;">弹幕样本中“许哥是你们大爹啊一直叫哥” (19:35:08) 指向DK中单。但无官方校准。</p>
+        <div class="intel-meta">跨场选手: 无明确跨场选手数据，仅本窗口提及。</div>
+    </div>
+    <!-- 6 灰信号汇总 -->
+    <div class="card" style="border-left: 4px solid #ff3b30;">
+        <h2><span class="no">6</span>灰信号汇总 · 观众质疑</h2>
+        <div style="background: #fff5f5; border-radius: 12px; padding: 12px;">
+            <span class="source-badge" style="background:#ff3b30; color:white;">灰信号 13条</span>
+            <div style="margin-top: 8px;">
+                <div>• “假赛，正常”</div>
+                <div>• “两天全是一样剧本 太纯粹了”</div>
+                <div>• “全剧本无敌了”</div>
+                <div>• “天天剧本一样 韩国还是太纯粹了”</div>
+            </div>
+            <p style="font-size:13px; margin-top: 8px; color:#6e6e73;">观众质疑非结论。弹幕频繁出现“假赛/剧本”等灰信号，需谨慎对待。</p>
+        </div>
+        <div style="margin-top: 10px; font-size:14px;"><span class="source-badge danmu">弹幕口径</span> 情绪偏向不信任比赛真实性，但仅为观众质疑。</div>
+    </div>
+    <!-- 7 方向性情报 -->
+    <div class="card">
+        <h2><span class="no">7</span>方向性情报 (锚点×共识×灰信号)</h2>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div><span class="tag tag-blue">正锚点</span> 无明确正向锚点 (弹幕无队伍优势共识)</div>
+            <div><span class="tag tag-orange">负锚点</span> “心态摆烂:3” “被翻守不住:2” (弹幕特质)</div>
+            <div><span class="tag">群体共识</span> 共识不足 (观众热议翻盘/假赛，无一致方向)</div>
+            <div><span class="tag tag-red">灰信号条件</span> 若灰信号持续，可能影响观赛情绪，但非比赛事实。</div>
+        </div>
+        <div class="quote" style="margin-top: 12px;">⚠️ 仅列证据与锚点，不下“看好X”结论。今日无强锚点。</div>
+    </div>
+    <!-- 8 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">8</span>联赛规律与版本</h2>
+        <p style="font-size:14px;">弹幕提及“LCK现在也是假的半死了”“韩国还是太纯粹了”反映观众对LCK赛区观感。版本讨论较少。</p>
+        <div style="background:#f5f5f7; padding: 8px 12px; border-radius: 12px; font-size:14px;">
+            <span class="source-badge danmu">弹幕口径</span> 提及“王者联盟”“海斗”等，但无版本规律共识。
+        </div>
+        <p style="font-size:13px; color:#6e6e73; margin-top: 8px;">无明确版本锚点，样本不足。</p>
+    </div>
+    <!-- 9 预测验证框架 -->
+    <div class="card">
+        <h2><span class="no">9</span>预测验证 (框架·赛后回填)</h2>
+        <p style="font-size:14px;">本窗口为BP后开局，暂无赛前预测验证。赛后回填区域：</p>
+        <div style="background:#f9f9fb; border-radius: 12px; padding: 10px; font-size:13px;">
+            ⬜ 待赛后回填: 弹幕共识 vs 实际结果
+        </div>
+        <details>
+            <summary>预测框架说明</summary>
+            <div style="font-size:13px;">基于弹幕锚点(如“翻三”讨论)赛后验证。当前无有效预测。</div>
+        </details>
+    </div>
+    <!-- 10 盘口讨论 -->
+    <div class="card">
+        <h2><span class="no">10</span>盘口讨论</h2>
+        <p><span class="source-badge danmu">真实盘口</span> 2条: “48斌” “48垃圾” (样本极少)</p>
+        <div style="background:#f5f5f7; padding: 8px 12px; border-radius: 12px;">
+            <span class="tag">48斌</span> <span class="tag">48垃圾</span> — 含义不明，样本不足。
+        </div>
+        <p style="font-size:13px; color:#6e6e73; margin-top: 8px;">盘口讨论极少，不做推断。</p>
+    </div>
+    <!-- 11 情报含义与观察点 -->
+    <div class="card">
+        <h2><span class="no">11</span>情报含义 · 后续观察点</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div><span class="tag tag-blue">LONG</span> 若弹幕灰信号持续且队伍表现波动，可能影响后续观赛情绪。</div>
+            <div><span class="tag tag-orange">SHORT</span> 观众对“假赛”质疑强烈，但无事实依据，注意认知错位。</div>
+        </div>
+        <div style="margin-top: 12px; background: #f0f4ff; border-radius: 12px; padding: 10px;">
+            <strong>观察点：</strong> 1. 弹幕热议“翻三”是否对应实际局势；2. 灰信号是否继续增加；3. 官方数据更新后校准。
+        </div>
+    </div>
+    <!-- 数据完整性三栏 -->
+    <div class="card" style="background: #f9f9fb;">
+        <h2 style="border-bottom: none;">📋 数据完整性</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size:13px;">
+            <div style="flex:1; min-width:120px;"><span class="source-badge official">实际数据源</span><br>规则层统计+弹幕切片</div>
+            <div style="flex:1; min-width:120px;"><span class="source-badge">预期数据源</span><br>官方window / Liquipedia</div>
+            <div style="flex:1; min-width:120px;"><span class="source-badge" style="background:#ff3b30; color:white;">缺口</span><br>官方阵容/经济数据滞后</div>
+        </div>
+        <p style="font-size:12px; color:#86868b; margin-top: 10px;">无样本部分已标注“样本不足”，未硬造。</p>
+    </div>
+    <!-- 折叠区至少3个已满足 (details) -->
+    <div class="footnote">
+        局中情报 · 弹幕口径非官方 · 北京时间 UTC+8<br>
+        生成于 2026-09-03 · 仅供情报参考
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
