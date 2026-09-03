@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>局中弹幕情报 · MIBR vs K27 · G3 中场快照</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1d1d1f;
+            padding: 16px 12px 40px;
+        }
+        .page-wrap {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: #ffd60a;
+            color: #1d1d1f;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        .subhead {
+            font-size: 1rem;
+            color: #6e6e73;
+            margin-bottom: 20px;
+            font-weight: 400;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+        .subhead span {
+            background: #ffffff;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            border: 1px solid #e0e0e5;
+            color: #1d1d1f;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0,0,0,0.02);
+        }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 650;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #f0f0f2;
+            padding-bottom: 8px;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            color: #3a3a3c;
+            margin-right: 6px;
+            font-weight: 500;
+        }
+        .official-tag { background: #e8f0fe; color: #0066cc; }
+        .danmu-tag { background: #f2e8d5; color: #8a5a00; }
+        .spec-tag { background: #e6e6ed; color: #4b4b50; }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .stat-num {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0071e3;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6e6e73;
+            margin-top: 4px;
+        }
+        .intel-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f2f2f6;
+        }
+        .intel-row:last-child { border-bottom: none; }
+        .signal-box {
+            background: #fafafc;
+            border-left: 4px solid #ff9f0a;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+        .signal-box .sig-title {
+            font-weight: 600;
+            color: #b25000;
+            margin-bottom: 6px;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin: 16px 0 8px;
+            border: 1px solid #e6e6ec;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 0.95rem;
+            padding: 4px 0;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .timeline-time {
+            min-width: 120px;
+            color: #6e6e73;
+            font-weight: 500;
+        }
+        .quote {
+            background: #f5f5f7;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 6px 0;
+            font-size: 0.9rem;
+            color: #2c2c2e;
+        }
+        .footnote {
+            font-size: 0.8rem;
+            color: #86868b;
+            margin-top: 12px;
+            border-top: 1px solid #e0e0e5;
+            padding-top: 12px;
+        }
+        .three-cols {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: space-between;
+        }
+        .three-cols > div {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 12px;
+            flex: 1 1 30%;
+            min-width: 100px;
+        }
+        .anchor {
+            color: #0071e3;
+            font-weight: 500;
+        }
+        hr { border: none; border-top: 1px solid #e6e6ec; margin: 16px 0; }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .timeline-time { min-width: 90px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">MIBR-K27 2026-09-03 g3 mid</b></div>
+<div class="page-wrap">
+    <!-- 显著局中标识 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="badge">⚡ 局中 · 非终局 · 结果待定</span>
+        <span style="font-size:0.8rem; color:#86868b;">弹幕口径为准 · 北京时间</span>
+    </div>
+    
+    <h1>MIBR vs K27 <span style="font-weight:400; font-size:1.2rem;">G3 中场</span></h1>
+    <div class="subhead">
+        <span>📅 2026-09-03</span>
+        <span>🎮 CS2</span>
+        <span>⏱️ 第3小局 · 局中</span>
+        <span>🔞 slug: cs2-mibr-k271-2026-09-03</span>
+    </div>
+    <!-- 0. 比赛信息 -->
+    <div class="card">
+        <h2><span class="no">0</span>比赛信息</h2>
+        <div class="intel-row"><span>对阵</span><strong>MIBR (巴西) vs K27</strong></div>
+        <div class="intel-row"><span>赛事</span>G3 · 局中快照 (MID-GAME)</div>
+        <div class="intel-row"><span>节点</span>G3 · 第3小局 · 进行中</div>
+        <div class="intel-row"><span>官方源</span>HLTV / Liquipedia (CS2)</div>
+        <div class="intel-row"><span>数据窗口</span>本小局时间窗 (不含局间)</div>
+        <div class="footnote">* 页面所有时间均为北京时间 (UTC+8)。弹幕样本时间戳原样展示。</div>
+    </div>
+    <!-- 1. 结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览 · 状态核验</h2>
+        <div style="background: #e8f0fe; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
+            <div style="font-weight:700; font-size:1.2rem;">🔵 弹幕口径 · 未结束</div>
+            <div style="margin-top: 8px; font-size:0.95rem;">比赛进行中 (第3小局) · 非终局 · 结果待定</div>
+        </div>
+        <div style="font-weight:600; margin-bottom: 8px;">结束判定四类信号核对</div>
+        <div class="intel-row"><span>① 官方赛果</span><span class="tag official-tag">未结束 (进行中)</span></div>
+        <div class="intel-row"><span>② 弹幕终局语言</span><span class="tag danmu-tag">无终局信号 (无GG/胜利庆祝)</span></div>
+        <div class="intel-row"><span>③ 时间线推进</span><span class="tag spec-tag">局中 · 无赛后数据</span></div>
+        <div class="intel-row"><span>④ 盘口结算信号</span><span class="tag spec-tag">无结算讨论</span></div>
+        <div style="margin-top: 12px; background: #f5f5f7; padding: 10px; border-radius: 12px; font-size:0.9rem;">
+            <span class="tag danmu-tag">弹幕口径</span> 观众讨论集中在小局战术/主播画面，无任何结束倾向。本页为局中快照。
+        </div>
+    </div>
+    <!-- 2. 弹幕规模、密度峰值与事件时间线 -->
+    <div class="card">
+        <h2><span class="no">2</span>弹幕规模 · 峰值 · 时间线</h2>
+        <div class="grid-2" style="margin-bottom: 16px;">
+            <div><div class="stat-num">362</div><div class="stat-label">弹幕总数 (真实)</div></div>
+            <div><div class="stat-num">159</div><div class="stat-label">活跃用户</div></div>
+            <div><div class="stat-num">22.6</div><div class="stat-label">条/分 (密度)</div></div>
+            <div><div class="stat-num">峰值</div><div class="stat-label">时间窗内高活跃 (样本)</div></div>
+        </div>
+        <div style="background: #f5f5f7; border-radius: 16px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-weight:600; margin-bottom: 8px;">📈 密度峰值 (基于真实样本)</div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知北京]</span><span>弹幕密集区：大量 "kkkkkk" / "TELA" / "mini golf" 刷屏，峰值段约每分钟30+条 (样本推断)</span></div>
+            <div class="timeline-item"><span class="timeline-time">[时间未知北京]</span><span>代表样本: "APAGOU NA PAULADA" · "BUNNY DO SAPO" · "Camera exclusiva mesmo"</span></div>
+        </div>
+        <div style="font-weight:600; margin-bottom: 8px;">⏳ 事件时间线 (弹幕提及)</div>
+        <div class="timeline-item"><span class="timeline-time">[时间未知北京]</span><span>主播画面切换 → 弹幕刷 "tela mula" "mudou a tela mula"</span></div>
+        <div class="timeline-item"><span class="timeline-time">[时间未知北京]</span><span>讨论 "feign" "mini golf" "among com missões" → 疑似主播小游戏/娱乐</span></div>
+        <div class="timeline-item"><span class="timeline-time">[时间未知北京]</span><span>选手提及: "nak" 出现多次 ( "nak ta acusando todos" )</span></div>
+        <div class="footnote">* 时间戳原样为[时间未知北京]，未做任何换算。</div>
+    </div>
+    <!-- 3. 阵容与BP/英雄讨论 -->
+    <div class="card">
+        <h2><span class="no">3</span>阵容与BP讨论</h2>
+        <div style="margin-bottom: 12px;"><span class="tag official-tag">官方校准</span> 阵容以HLTV/Liquipedia为准 (window校准)</div>
+        <div class="intel-row"><span>当前阵容</span><span>官方数据未提供详细名单 (仅显示MIBR vs K27)</span></div>
+        <div class="intel-row"><span>弹幕候选提及</span><span>“liminha, nak, steelega, yel, sangras, prata” (弹幕样本)</span></div>
+        <div class="intel-row"><span>BP/英雄讨论</span><span>无明确BP讨论；弹幕提及 "nak" 疑似选手</span></div>
+        <div class="intel-row"><span>战绩情报</span><span>无战绩情报提及 (本窗口无BP后胜率讨论)</span></div>
+        <div style="margin-top: 12px; background: #f5f5f7; padding: 10px; border-radius: 12px;">
+            <span class="tag spec-tag">注意</span> 弹幕提及的选手名仅作候选，不构成官方阵容。历史库可能过期，引用需谨慎。
+        </div>
+        <details>
+            <summary>📋 历史库阵容参考 (跨场·不适用本场)</summary>
+            <div style="padding: 8px 0; font-size:0.9rem;">历史库数据 (2026-09-02前) 可能不准确。当前阵容以官方window为准。本场无官方详细名单，不强行推断。</div>
+        </details>
+    </div>
+    <!-- 4. 队伍画像 -->
+    <div class="card">
+        <h2><span class="no">4</span>队伍画像</h2>
+        <div style="font-weight:600; margin-bottom: 6px;">本窗口队伍特质 (弹幕情绪)</div>
+        <div class="quote">🎯 弹幕焦点：主播娱乐内容 (mini golf, among us) 与比赛画面混杂；观众对“tela”切换不满。</div>
+        <div class="intel-row"><span>MIBR</span><span>提及量: 0 (本窗口无直接提及)</span></div>
+        <div class="intel-row"><span>K27</span><span>提及量: 0 (本窗口无直接提及)</span></div>
+        <div class="intel-row"><span>跨场沉淀</span><span>跨场话题·不适用本场 (历史库无有效数据)</span></div>
+        <div style="margin-top: 12px; background: #f5f5f7; padding: 10px; border-radius: 12px;">
+            <span class="tag danmu-tag">弹幕口径</span> 观众热议主播“Gaules”及游戏画面，而非队伍对抗。队伍画像暂缺。
+        </div>
+        <details>
+            <summary>📊 跨场队伍数据 (历史库·不用于本场)</summary>
+            <div>历史库累计: 无有效样本。本场窗口未提供队伍特质统计。</div>
+        </details>
+    </div>
+    <!-- 5. 人员画像 -->
+    <div class="card">
+        <h2><span class="no">5</span>人员画像 (带提及量)</h2>
+        <div class="intel-row"><span>Hype</span><span>提及2次 (正0/负0) · 真实</span></div>
+        <div class="intel-row"><span>nak (选手?)</span><span>弹幕提及多次 (样本: "nak ta acusando todos", "esse papinho não pega nak")</span></div>
+        <div class="intel-row"><span>其他选手</span><span>liminha, steelega, yel, sangras, prata (仅一次弹幕列表)</span></div>
+        <div class="intel-row"><span>跨场选手</span><span>跨场话题·不适用本场</span></div>
+        <div class="footnote">提及量仅来自本场弹幕，历史库数据不混入。</div>
+    </div>
+    <!-- 6. 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">6</span>灰信号汇总 (观众质疑·非结论)</h2>
+        <div class="signal-box">
+            <div class="sig-title">⚠️ 灰信号 (真实8条)</div>
+            <div>• “Acesse a Lojinha e troque seus Gaupoints” (广告/刷屏)</div>
+            <div>• “Mande a sua mensagem de voz na live com” (推广)</div>
+            <div>• “This match is rigged. Check my TG channe” (质疑假赛)</div>
+            <div>• “This match is rigged. Check my TG @NipFi” (重复质疑)</div>
+            <div>• 另有4条类似推广/质疑 (共8条)</div>
+        </div>
+        <div style="font-size:0.9rem; color:#6e6e73;">观众质疑“比赛被操纵” (rigged) 出现2次，但属于灰信号，非结论。无其他负面信号。</div>
+        <details>
+            <summary>🔍 灰信号纪律说明</summary>
+            <div>灰信号仅代表观众质疑/广告，不代表事实。本场出现“rigged”字样，但无证据，仅记录。</div>
+        </details>
+    </div>
+    <!-- 7. 方向性情报 -->
+    <div class="card">
+        <h2><span class="no">7</span>方向性情报 (锚点×共识×灰信号)</h2>
+        <div style="margin-bottom: 12px;">
+            <div><span class="tag official-tag">正锚点</span> 今日无锚点 (无队伍优势讨论)</div>
+            <div><span class="tag official-tag">负锚点</span> 今日无锚点</div>
+            <div><span class="tag danmu-tag">群体共识</span> 共识不足 (弹幕主要围绕主播娱乐，非比赛)</div>
+            <div><span class="tag spec-tag">灰信号条件预测</span> 若“rigged”讨论增加，可能影响观众情绪，但无实质方向。</div>
+        </div>
+        <div style="background: #f5f5f7; padding: 12px; border-radius: 12px;">
+            <span class="tag danmu-tag">弹幕口径</span> 观众热议“nak acusando todos” (指控所有人) 可能指向游戏内互动，非比赛方向。
+        </div>
+    </div>
+    <!-- 8. 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">8</span>联赛规律与版本</h2>
+        <div>本窗口无版本讨论；弹幕提及“the outlast trials”“among us”等游戏，非CS2版本内容。</div>
+        <div style="margin-top: 8px;"><span class="tag spec-tag">推测</span> 无有效联赛规律信息。</div>
+    </div>
+    <!-- 9. 预测验证框架 -->
+    <div class="card">
+        <h2><span class="no">9</span>预测验证 (框架·赛后回填)</h2>
+        <div>本局未结束，无预测验证。赛后回填区域。</div>
+        <details>
+            <summary>📌 赛后回填占位</summary>
+            <div>比赛结束后，将根据官方结果与弹幕共识对比，记录认知错位。</div>
+        </details>
+    </div>
+    <!-- 10. 盘口讨论 -->
+    <div class="card">
+        <h2><span class="no">10</span>盘口讨论</h2>
+        <div>盘口情报: 18条真实 (但内容未提供具体盘口数据)。</div>
+        <div style="margin-top: 8px; background: #f5f5f7; padding: 10px; border-radius: 12px;">
+            <span class="tag danmu-tag">弹幕样本</span> 未出现明确盘口讨论，仅规则层显示18条盘口相关，但样本中无具体赔率/预测。样本不足。
+        </div>
+        <div class="footnote">* 盘口数据存在但样本未展示，标注样本不足。</div>
+    </div>
+    <!-- 11. 情报含义与后续观察点 -->
+    <div class="card">
+        <h2><span class="no">11</span>情报含义 · 后续观察点</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex:1; background: #f5f5f7; border-radius: 16px; padding: 14px;">
+                <div style="font-weight:600; color:#0071e3;">LONG</div>
+                <ul style="margin-top: 8px; padding-left: 18px; font-size:0.9rem;">
+                    <li>观察主播是否回归比赛画面</li>
+                    <li>弹幕对“nak”的讨论是否影响选手心态</li>
+                </ul>
+            </div>
+            <div style="flex:1; background: #f5f5f7; border-radius: 16px; padding: 14px;">
+                <div style="font-weight:600; color:#0071e3;">SHORT</div>
+                <ul style="margin-top: 8px; padding-left: 18px; font-size:0.9rem;">
+                    <li>若“rigged”刷屏加剧，可能影响观众信任</li>
+                    <li>小局结束前无明确方向</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 16px; background: #f5f5f7; padding: 12px; border-radius: 12px;">
+            <span class="tag spec-tag">数据完整性</span>
+            <div class="three-cols" style="margin-top: 8px;">
+                <div>实际数据源<br>规则层+弹幕切片</div>
+                <div>预期数据源<br>官方window (滞后)</div>
+                <div>缺口<br>官方阵容/比分未更新</div>
+            </div>
+        </div>
+    </div>
+    <!-- 折叠区 (已包含多个details) 额外增加一个 -->
+    <details>
+        <summary>📄 弹幕样本摘录 (55条真实样本精选)</summary>
+        <div style="padding: 8px 0; font-size:0.85rem; color:#3a3a3c; max-height: 200px; overflow-y: auto;">
+            “APAGOU NA PAULADA” · “choryel” · “tá com uma carinha que é o nak” · “liminha, nak, steelega…” · “nak ta acusando todos” · “kkkkkkkk” · “BUNNY DO SAPO” · “tela mula” · “Camera exclusiva mesmo” · “mini golf” · “feign é mt bom” · “among com missões” · “RANCHO” · “derrruba” · “O impostor é o Gau” · 等。
+        </div>
+    </details>
+    
+    <div style="text-align: center; margin-top: 24px; font-size:0.8rem; color:#86868b; border-top: 1px solid #e0e0e5; padding-top: 16px;">
+        局中情报 · 弹幕口径 · 非终局 · 北京时间展示 · 生成于2026-09-03
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
