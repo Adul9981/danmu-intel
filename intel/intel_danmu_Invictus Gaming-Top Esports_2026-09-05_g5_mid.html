@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>局中弹幕情报 · IG vs TES · G5 局中快照</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1d1d1f;
+            padding: 16px 12px 32px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #ff2d55;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+        }
+        .subhead {
+            font-size: 16px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            border-left: 4px solid #0071e3;
+            padding-left: 12px;
+            background: rgba(0, 113, 227, 0.04);
+            border-radius: 0 8px 8px 0;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 10px;
+        }
+        .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0071e3;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .tag {
+            display: inline-block;
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #3a3a3c;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .tag-blue {
+            background: #e8f1fd;
+            color: #0071e3;
+        }
+        .tag-orange {
+            background: #fff2e0;
+            color: #b37400;
+        }
+        .tag-red {
+            background: #ffeaea;
+            color: #d70015;
+        }
+        .stat-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .stat-item {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 12px 16px;
+            flex: 1 1 140px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+        .stat-sub {
+            font-size: 13px;
+            color: #6e6e73;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            border-left: 2px solid #e8e8ed;
+            padding-left: 12px;
+        }
+        .time {
+            font-weight: 600;
+            color: #0071e3;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        .sample-text {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #1d1d1f;
+            margin: 6px 0;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            border: 1px solid #e8e8ed;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #0071e3;
+            font-size: 15px;
+            padding: 4px 0;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 8px;
+        }
+        .anchor {
+            background: #f0f0f5;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin: 8px 0;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gray-signal {
+            background: #fef4f4;
+            border-left: 4px solid #ff2d55;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 24px; }
+            .card { padding: 16px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Invictus Gaming-Top Esports 2026-09-05 g5 mid</b></div>
+<div class="container">
+    <!-- 显著标注局中非终局 -->
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span class="badge">⚡ 局中 · 非终局 · 结果待定</span>
+        <span style="font-size: 14px; background: #f0f0f5; padding: 2px 10px; border-radius: 30px;">弹幕口径为准</span>
+    </div>
+    
+    <!-- 0 比赛信息 -->
+    <div class="card">
+        <h2><span class="no">0</span>比赛信息</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            <div><span class="tag tag-blue">LOL · 2026-09-05</span></div>
+            <div><span class="tag">G5 局中 (MID-GAME)</span></div>
+            <div><span class="tag">Invictus Gaming vs Top Esports</span></div>
+        </div>
+        <div style="margin-top: 12px; background: #f5f5f7; padding: 12px; border-radius: 16px;">
+            <div style="font-weight: 600;">官方当前比分：IG 2 : 2 TES（gameWins）</div>
+            <div style="font-size: 14px; color: #6e6e73;">本页为第5小局局中情报 · 系列比分与结果以官方为准，禁止从弹幕推断比分</div>
+        </div>
+        <div style="margin-top: 10px; font-size: 14px;">⏱️ 时间基准：北京时间 (UTC+8) · 弹幕样本时间原样展示</div>
+    </div>
+    <!-- 1 结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>结果总览 · 状态核验</h2>
+        <div style="background: #e8f1fd; border-radius: 16px; padding: 16px;">
+            <div style="font-size: 18px; font-weight: 700; color: #0071e3;">弹幕口径 · 未结束</div>
+            <div style="margin-top: 8px; font-size: 15px;">⏳ 第5小局进行中 (MID-GAME) · 结束判定四类信号核对：</div>
+        </div>
+        <div style="margin-top: 16px;">
+            <div><span class="tag">① 基地爆炸/胜利字样</span> 未出现（弹幕样本无终局信号）</div>
+            <div><span class="tag">② 官方gameWins变化</span> 官方仍为2:2，无变化</div>
+            <div><span class="tag">③ 时间窗结束</span> 本节点为局中快照，时间窗未闭合</div>
+            <div><span class="tag">④ 弹幕口径“GG/结束”</span> 未出现，仍为激烈讨论</div>
+        </div>
+        <div class="footnote">* 所有结束判定均为“未结束”，结果待定。</div>
+    </div>
+    <!-- 2 弹幕规模、密度峰值与事件时间线 -->
+    <div class="card">
+        <h2><span class="no">2</span>弹幕规模 · 密度峰值 · 时间线</h2>
+        <div class="stat-grid">
+            <div class="stat-item"><div class="stat-label">总弹幕</div><div class="stat-value">25,504</div></div>
+            <div class="stat-item"><div class="stat-label">活跃用户</div><div class="stat-value">4,946</div></div>
+            <div class="stat-item"><div class="stat-label">密度</div><div class="stat-value">1672.2 <span style="font-size: 14px;">条/分</span></div></div>
+        </div>
+        <div style="background: #f9f9fb; border-radius: 12px; padding: 12px; margin-top: 8px;">
+            <div style="font-weight: 600;">📈 峰值时间窗口（基于样本）</div>
+            <div class="timeline-item" style="margin-top: 12px;">
+                <div class="time">18:14:02-18:14:52</div>
+                <div>高密度爆发，样本集中，包含大量战术讨论与情绪弹幕（约50秒内60+条样本）</div>
+            </div>
+            <div style="font-size: 14px; color: #6e6e73;">* 峰值具体条数无法精确到秒级，但样本显示18:14:02~18:14:52为活跃段</div>
+        </div>
+        <div style="margin-top: 16px;">
+            <div style="font-weight: 600; margin-bottom: 8px;">📌 事件时间线（真实弹幕时间戳）</div>
+            <div class="timeline-item"><span class="time">18:14:02</span> “狂风向前”“能不能限制大师以下发言？偶是钻石”</div>
+            <div class="timeline-item"><span class="time">18:14:04</span> “we玩具选拔赛”“玉玉了”</div>
+            <div class="timeline-item"><span class="time">18:14:05</span> “又是杰克最拿手的泽丽 这把不串了好好学”</div>
+            <div class="timeline-item"><span class="time">18:14:08</span> “滔博必剩”</div>
+            <div class="timeline-item"><span class="time">18:14:11</span> “滑脸泽丽”</div>
+            <div class="timeline-item"><span class="time">18:14:17</span> “还第一上单呢，把把被新人压几千经济”</div>
+            <div class="timeline-item"><span class="time">18:14:24</span> “会玩厄斐琉斯吗”“jokerfive为啥把把前期都是落后啊？”</div>
+            <div class="timeline-item"><span class="time">18:14:35</span> “泽丽活不了，青钢影大招加里奥，梦魇”</div>
+            <div class="timeline-item"><span class="time">18:14:52</span> “ig要输了”“稳”</div>
+        </div>
+    </div>
+    <!-- 3 阵容与BP/英雄讨论 -->
+    <div class="card">
+        <h2><span class="no">3</span>阵容与 BP · 英雄讨论</h2>
+        <div style="background: #f0f0f5; padding: 12px; border-radius: 12px; font-size: 14px;">
+            <span class="tag tag-blue">官方校准</span> 当前阵容以官方window为准，弹幕仅作候选。本页不提供未经校准的阵容。
+        </div>
+        <div style="margin-top: 12px;">
+            <div style="font-weight: 600;">弹幕热议英雄/阵容关键词：</div>
+            <div style="margin-top: 8px;">
+                <span class="tag">泽丽</span> <span class="tag">厄斐琉斯</span> <span class="tag">锤石</span> 
+                <span class="tag">青钢影</span> <span class="tag">加里奥</span> <span class="tag">梦魇</span> 
+                <span class="tag">蒙多</span> <span class="tag">奥恩</span> <span class="tag">鳄鱼</span> <span class="tag">VN</span>
+            </div>
+        </div>
+        <div style="margin-top: 12px; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <div><span class="tag tag-orange">BP后战绩情报</span> 无战绩情报提及（弹幕未讨论选人后战绩）</div>
+            <div style="margin-top: 8px;"><span class="tag">争议点</span> “上把奥恩打鳄鱼还优势，又能开团，不知道选个蒙多搞毛” (重复多次)</div>
+            <div class="sample-text" style="margin-top: 8px;">“你拿卡密尔对vn塔都出不到，真的zz发言”</div>
+        </div>
+        <details>
+            <summary>🔍 查看BP相关弹幕样本（节选）</summary>
+            <div class="sample-text">“又是杰克最拿手的泽丽 这把不串了好好学”</div>
+            <div class="sample-text">“会玩厄斐琉斯吗”</div>
+            <div class="sample-text">“泽丽活不了，青钢影大招加里奥，梦魇”</div>
+            <div class="sample-text">“这猫咪不会下去吃伤害，只会挂身上”</div>
+        </details>
+    </div>
+    <!-- 4 队伍画像 -->
+    <div class="card">
+        <h2><span class="no">4</span>队伍画像（本窗口+跨场沉淀）</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px; background: #f9f9fb; border-radius: 16px; padding: 12px;">
+                <div style="font-weight: 700; font-size: 18px;">IG</div>
+                <div style="font-size: 14px; margin-top: 6px;">提及4157 (正90/负112)</div>
+                <div style="font-size: 13px; color: #6e6e73;">弹幕情绪：偏正向但负面亦多</div>
+                <div style="margin-top: 8px; font-size: 13px;">“igigigigig...” “ig必胜” “ig拿下了”</div>
+            </div>
+            <div style="flex: 1; min-width: 150px; background: #f9f9fb; border-radius: 16px; padding: 12px;">
+                <div style="font-weight: 700; font-size: 18px;">TES</div>
+                <div style="font-size: 14px; margin-top: 6px;">提及517 (正25/负13)</div>
+                <div style="font-size: 13px; color: #6e6e73;">弹幕提及相对克制</div>
+                <div style="margin-top: 8px; font-size: 13px;">“TES必胜” “滔博必剩”</div>
+            </div>
+        </div>
+        <div style="margin-top: 16px;">
+            <div style="font-weight: 600;">队伍特质统计（规则层）</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <span class="tag">韧性逆转:51</span>
+                <span class="tag">心态摆烂:21</span>
+                <span class="tag">被翻守不住:10</span>
+                <span class="tag">顺风隐身:9</span>
+                <span class="tag">逆风崩盘:6</span>
+                <span class="tag">慢热手热:3</span>
+                <span class="tag">打法风格:30</span>
+                <span class="tag">选手特质:31</span>
+            </div>
+        </div>
+        <div style="margin-top: 12px; font-size: 14px; color: #6e6e73;">
+            <span class="tag tag-orange">跨场话题·不适用本场</span> MOUZ/BLG/T1等提及为跨场话题，不用于本场队伍画像。
+        </div>
+    </div>
+    <!-- 5 人员画像 -->
+    <div class="card">
+        <h2><span class="no">5</span>人员画像（带提及量）</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            <div style="background: #f9f9fb; border-radius: 16px; padding: 12px; flex: 1 1 150px;">
+                <div style="font-weight: 700;">Faker</div>
+                <div>提及102 (正3/负0)</div>
+                <div style="font-size: 12px; color: #6e6e73;">跨场话题·不适用本场</div>
+            </div>
+            <div style="background: #f9f9fb; border-radius: 16px; padding: 12px; flex: 1 1 150px;">
+                <div style="font-weight: 700;">Zeus</div>
+                <div>提及56 (正0/负0)</div>
+                <div style="font-size: 12px; color: #6e6e73;">跨场话题·不适用本场</div>
+            </div>
+            <div style="background: #f9f9fb; border-radius: 16px; padding: 12px; flex: 1 1 150px;">
+                <div style="font-weight: 700;">Chovy</div>
+                <div>提及10 (正0/负0)</div>
+                <div style="font-size: 12px; color: #6e6e73;">跨场话题·不适用本场</div>
+            </div>
+        </div>
+        <div style="margin-top: 12px; background: #f5f5f7; padding: 12px; border-radius: 12px;">
+            <div style="font-weight: 600;">本场弹幕焦点选手（非官方阵容，仅弹幕提及）</div>
+            <div class="sample-text">“哥哥这把翻山吗” “又是杰克最拿手的泽丽” “jokerfive为啥把把前期都是落后啊？”</div>
+            <div class="sample-text">“还第一上单呢，把把被新人压几千经济” “小兲”</div>
+            <div style="font-size: 13px; color: #6e6e73;">* 弹幕提及“哥哥”“杰克”等指向TES选手，但未官方校准，仅作弹幕口径。</div>
+        </div>
+    </div>
+    <!-- 6 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">6</span>灰信号汇总（观众质疑·非结论）</h2>
+        <div class="gray-signal">
+            <div style="font-weight: 700; margin-bottom: 8px;">⚠️ 灰信号 (29条) 观众质疑/阴谋论</div>
+            <div style="background: white; padding: 8px 12px; border-radius: 8px; font-size: 14px;">
+                “剧本罢了，资本家的玩具” (重复多次)
+            </div>
+            <div style="margin-top: 8px; font-size: 13px; color: #6e6e73;">观众质疑比赛公正性，非事实结论，仅记录。</div>
+        </div>
+        <div style="margin-top: 12px;">
+            <span class="tag tag-red">灰信号纪律</span> 观众质疑·非结论，不构成任何投资/预测依据。
+        </div>
+    </div>
+    <!-- 7 方向性情报 -->
+    <div class="card">
+        <h2><span class="no">7</span>方向性情报（锚点×共识×灰信号）</h2>
+        <div style="background: #f0f0f5; border-radius: 12px; padding: 12px;">
+            <div style="font-weight: 600;">正锚点</div>
+            <div>IG韧性逆转特质51次提及，弹幕出现“igigigig”刷屏，部分观众支持IG。</div>
+            <div style="margin-top: 8px; font-weight: 600;">负锚点</div>
+            <div>“ig要输了” “ig这实力赢了明天当陀螺吗” 负面情绪存在，但样本较少。</div>
+            <div style="margin-top: 8px; font-weight: 600;">群体共识</div>
+            <div>弹幕普遍关注下路对线（泽丽/厄斐琉斯/锤石），认为TES下路有优势？但存在争议：“泽丽活不了”等。</div>
+            <div style="margin-top: 8px; font-weight: 600;">灰信号条件预测</div>
+            <div>若“剧本”言论扩散，可能影响观众信任，但非竞技信号。</div>
+        </div>
+        <div style="margin-top: 12px; font-size: 14px; color: #6e6e73;">* 仅列证据与锚点，不下“看好X”结论。今日无强锚点，共识不足。</div>
+    </div>
+    <!-- 8 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">8</span>联赛规律与版本</h2>
+        <div style="background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <div>版本讨论：弹幕提及“青钢影大招加里奥，梦魇”等克制关系，强调强开体系。</div>
+            <div style="margin-top: 8px;">“上把奥恩打鳄鱼还优势，又能开团，不知道选个蒙多搞毛” —— 对BP选择有质疑。</div>
+            <div style="margin-top: 8px;">“又是杰克最拿手的泽丽” 说明泽丽在当前版本受信赖。</div>
+            <div style="margin-top: 8px; font-size: 14px; color: #6e6e73;">联赛规律：观众对阵容开团能力敏感，强开组合受关注。</div>
+        </div>
+    </div>
+    <!-- 9 预测验证（框架·赛后回填） -->
+    <div class="card">
+        <h2><span class="no">9</span>预测验证（框架·赛后回填）</h2>
+        <div style="background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <div style="font-weight: 600;">赛前预测（若有）</div>
+            <div>暂无赛前预测记录，本栏为框架预留。</div>
+            <div style="margin-top: 8px; font-weight: 600;">赛后回填</div>
+            <div>待比赛结束后，对比弹幕共识与官方结果。</div>
+            <div style="margin-top: 8px; font-size: 13px; color: #6e6e73;">* 本局未结束，无法验证。</div>
+        </div>
+    </div>
+    <!-- 10 盘口讨论 -->
+    <div class="card">
+        <h2><span class="no">10</span>盘口讨论</h2>
+        <div style="background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <div><span class="tag">盘口信号 (5条)</span> “60多个人头吹成高质量” “厄斐琉斯锤石需要优势得有人头”</div>
+            <div style="margin-top: 8px;">样本不足，仅5条提及，且未形成明确方向。</div>
+            <div style="margin-top: 8px; font-size: 13px; color: #6e6e73;">标注：样本不足，不硬造盘口倾向。</div>
+        </div>
+    </div>
+    <!-- 11 情报含义与后续观察点 -->
+    <div class="card">
+        <h2><span class="no">11</span>情报含义与后续观察点 (LONG/SHORT)</h2>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <div style="flex: 1; background: #f0f0f5; border-radius: 16px; padding: 12px;">
+                <div style="font-weight: 700; color: #0071e3;">LONG 观察点</div>
+                <ul style="margin-left: 16px; font-size: 14px;">
+                    <li>IG韧性逆转特质突出，若前期落后能否翻盘</li>
+                    <li>弹幕对IG支持声音大，但需官方局势佐证</li>
+                </ul>
+            </div>
+            <div style="flex: 1; background: #f0f0f5; border-radius: 16px; padding: 12px;">
+                <div style="font-weight: 700; color: #d70015;">SHORT 观察点</div>
+                <ul style="margin-left: 16px; font-size: 14px;">
+                    <li>TES下路泽丽+锤石组合，若优势滚雪球可能终结</li>
+                    <li>弹幕负面“ig要输了”等，但样本少</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 16px; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <div style="font-weight: 600;">后续重点</div>
+            <div>关注官方经济/击杀数据，弹幕口径与官方校准差异。灰信号是否增多。</div>
+        </div>
+    </div>
+    <!-- 数据完整性三栏 -->
+    <div class="card">
+        <h2><span class="no">📋</span>数据完整性</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="flex:1; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+                <div style="font-weight: 600;">实际数据源</div>
+                <div style="font-size: 14px;">规则层统计+弹幕切片+官方gameWins</div>
+            </div>
+            <div style="flex:1; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+                <div style="font-weight: 600;">预期数据源</div>
+                <div style="font-size: 14px;">官方window校准阵容/经济</div>
+            </div>
+            <div style="flex:1; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+                <div style="font-weight: 600;">缺口</div>
+                <div style="font-size: 14px;">官方实时经济/击杀未接入；阵容未校准</div>
+            </div>
+        </div>
+        <div class="footnote" style="margin-top: 12px;">* 无样本部分已标注“样本不足”，未硬造。</div>
+    </div>
+    <!-- 折叠区（已包含多个details） -->
+    <details>
+        <summary>📄 查看弹幕样本精选 (60条中节选)</summary>
+        <div style="margin-top: 8px; font-size: 14px; max-height: 200px; overflow-y: auto;">
+            <div>18:14:02 狂风向前</div>
+            <div>18:14:03 哥哥这把翻山吗</div>
+            <div>18:14:04 we玩具选拔赛</div>
+            <div>18:14:05 又是杰克最拿手的泽丽</div>
+            <div>18:14:08 滔博必剩</div>
+            <div>18:14:11 滑脸泽丽</div>
+            <div>18:14:17 还第一上单呢，把把被新人压几千经济</div>
+            <div>18:14:24 会玩厄斐琉斯吗</div>
+            <div>18:14:35 泽丽活不了，青钢影大招加里奥，梦魇</div>
+            <div>18:14:52 ig要输了</div>
+        </div>
+    </details>
+    <details>
+        <summary>📊 规则层统计原始数据</summary>
+        <div>弹幕总数=25504，活跃用户=4946，密度=1672.2条/分</div>
+        <div>队伍提及：IG 4157, TES 517, MOUZ 232, BLG 123, T1 61</div>
+        <div>选手提及：Faker 102, Zeus 56, Chovy 10</div>
+    </details>
+    <details>
+        <summary>⚠️ 灰信号与盘口明细</summary>
+        <div>灰信号29条：“剧本罢了，资本家的玩具”</div>
+        <div>盘口5条：“60多个人头吹成高质量”等</div>
+    </details>
+    <div style="text-align: center; font-size: 12px; color: #86868b; margin-top: 24px;">
+        局中弹幕情报 · 生成于2026-09-05 · 北京时间 · 非终局
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
