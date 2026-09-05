@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>局中弹幕情报 · NIP vs JDG · G2 局末快照</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 16px 12px 40px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .banner {
+            background: #0071e3;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 4px 0 8px;
+            line-height: 1.2;
+        }
+        .subhead {
+            font-size: 1rem;
+            color: #6e6e73;
+            margin-bottom: 20px;
+            border-left: 4px solid #0071e3;
+            padding-left: 12px;
+            background: rgba(0, 113, 227, 0.04);
+            border-radius: 0 8px 8px 0;
+        }
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.02);
+        }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 650;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            letter-spacing: -0.01em;
+        }
+        .no {
+            background: #0071e3;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .status-tag {
+            background: #f5f5f7;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            border: 1px solid #d2d2d7;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .status-tag.warning {
+            background: #fff8e6;
+            border-color: #f5c542;
+            color: #8a6d00;
+        }
+        .status-tag.live {
+            background: #e8f4ff;
+            border-color: #0071e3;
+            color: #0071e3;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .stat-box {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid #f0f0f2;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            font-weight: 500;
+        }
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-top: 4px;
+        }
+        .stat-detail {
+            font-size: 0.8rem;
+            color: #6e6e73;
+            margin-top: 6px;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        .pill {
+            display: inline-block;
+            background: #f0f0f5;
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .pill.highlight {
+            background: #0071e3;
+            color: white;
+        }
+        .pill.negative {
+            background: #fde8e8;
+            color: #b42318;
+        }
+        .pill.positive {
+            background: #e6f4ea;
+            color: #1e7e34;
+        }
+        .quote {
+            background: #f9f9fb;
+            border-left: 3px solid #0071e3;
+            padding: 10px 14px;
+            border-radius: 0 12px 12px 0;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            color: #3a3a3c;
+        }
+        .quote-gray {
+            background: #f2f2f7;
+            border-left-color: #8e8e93;
+        }
+        .quote-warning {
+            background: #fffbea;
+            border-left-color: #f5a623;
+        }
+        details {
+            background: #f9f9fb;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border: 1px solid #ececf0;
+        }
+        summary {
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #0071e3;
+            outline: none;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+        .timeline-time {
+            font-weight: 600;
+            color: #0071e3;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+        .chip {
+            background: #e8f4ff;
+            color: #0071e3;
+            border-radius: 30px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .footnote {
+            font-size: 0.75rem;
+            color: #86868b;
+            margin-top: 20px;
+            text-align: center;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 16px;
+        }
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .table-mini td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .table-mini tr:last-child td {
+            border-bottom: none;
+        }
+        .table-mini td:first-child {
+            font-weight: 500;
+            color: #6e6e73;
+            width: 40%;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .source-badge {
+            font-size: 0.7rem;
+            background: #e8e8ed;
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: #6e6e73;
+        }
+        .scoreboard {
+            background: #1d1d1f;
+            color: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .scoreboard .teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .scoreboard .team {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .scoreboard .score {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .scoreboard .meta {
+            color: #a1a1a6;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .official-note {
+            background: #e8f4ff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Ninjas in Pyjamas-JD Gaming 2026-09-05 g2 end</b></div>
+<!-- 局中标记 -->
+<div class="banner">⚡ 局中情报 · 非终局 · 结果待官方结算</div>
+<div style="margin-bottom: 8px;">
+    <span class="status-tag warning">⏳ 弹幕口径 · 第2小局已结束（待结算校准）</span>
+    <span class="status-tag live">● 官方比分 NIP 2 : 0 JDG</span>
+</div>
+<h1>NIP vs JDG · 第2小局<br>局末快照</h1>
+<div class="subhead">
+    2026-09-05 · 北京时间 · slug: lol-nip-jdg-2026-09-05<br>
+    节点 G2 · 局末/局间 (GAME-REVIEW) · 弹幕切片 21:04–21:06
+</div>
+<!-- 0. 比赛信息 -->
+<div class="card">
+    <h2><span class="no">0</span>比赛信息</h2>
+    <div class="flex-between" style="margin-bottom: 10px;">
+        <div><span class="source-badge">官方</span></div>
+        <div style="font-size:0.8rem; color:#6e6e73;">2026-09-05 · LPL</div>
+    </div>
+    <div class="scoreboard">
+        <div class="teams">
+            <span class="team">NIP</span>
+            <span class="score">2 : 0</span>
+            <span class="team">JDG</span>
+        </div>
+        <div class="meta">BO5 · 官方 gameWins · 第2小局结束</div>
+    </div>
+    <div class="official-note">
+        <strong>⚠️ 双口径提示：</strong>本页为第2小局结束情报，系列比分以官方为准。弹幕中出现的“3:0”“让二追三”等均为观众预期/玩梗，非官方结果。
+    </div>
+    <div style="margin-top: 12px; font-size: 0.85rem; color: #3a3a3c;">
+        <div><strong>节点：</strong>G2 局末（局间） · 唯一页面，覆盖本局BP/对线/团战/结局</div>
+        <div style="margin-top: 4px;"><strong>时间窗：</strong>21:04:59 – 21:06:31（北京时间）</div>
+    </div>
+</div>
+<!-- 1. 结果总览/状态核验 -->
+<div class="card">
+    <h2><span class="no">1</span>结果总览 · 状态核验</h2>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+        <span class="pill highlight">弹幕口径 · 未结束</span>
+        <span class="pill">官方待结算</span>
+    </div>
+    <div class="quote">
+        <strong>弹幕共识：</strong>观众普遍认为NIP已拿下第2局，且大量讨论“3:0”“nip王朝了”“碾压局”。但按纪律，本页不判定胜负，仅记录观众认知。
+    </div>
+    <table class="table-mini">
+        <tr><td>结束判定四类信号</td><td>核对结果</td></tr>
+        <tr><td>① 弹幕刷“结束/恭喜”</td><td>出现“王朝了”“3比0”“碾压局”等，但无明确“比赛结束”字样</td></tr>
+        <tr><td>② 时间窗覆盖</td><td>21:04–21:06 属局末，符合结束特征</td></tr>
+        <tr><td>③ 官方数据</td><td>官方 gameWins: NIP 2 : 0（第2局已结束）</td></tr>
+        <tr><td>④ 灰信号</td><td>16条灰信号含“故意输”“不想IG去世界赛”，非结束信号</td></tr>
+    </table>
+    <div style="margin-top: 12px; font-size:0.85rem; background: #f9f9fb; padding: 10px; border-radius: 12px;">
+        <strong>结论：</strong>第2小局按时间窗估计已结束，官方比分为NIP 2:0领先。弹幕情绪高涨，但存在大量反讽/玩梗（如“故意输”），需谨慎对待。
+    </div>
+</div>
+<!-- 2. 弹幕规模、密度峰值与事件时间线 -->
+<div class="card">
+    <h2><span class="no">2</span>弹幕规模 · 密度峰值 · 时间线</h2>
+    <div class="grid-2">
+        <div class="stat-box">
+            <div class="stat-label">总弹幕数</div>
+            <div class="stat-value">43,134</div>
+            <div class="stat-detail">活跃用户 8,514</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">密度</div>
+            <div class="stat-value">875.3</div>
+            <div class="stat-detail">条/分钟</div>
+        </div>
+    </div>
+    <div style="margin-top: 16px;">
+        <div class="flex-between">
+            <span style="font-weight:600;">峰值时间</span>
+            <span class="chip">21:05:30 – 21:05:45</span>
+        </div>
+        <div style="background:#f0f0f5; height: 6px; border-radius: 3px; margin: 8px 0;">
+            <div style="width: 85%; background: #0071e3; height: 6px; border-radius: 3px;"></div>
+        </div>
+        <div style="font-size:0.8rem; color:#6e6e73;">峰值样本：</div>
+        <div class="quote" style="margin-top:6px;">
+            “就在今天！涅槃组把登峰组三四名锤了！！！” (21:05:30)<br>
+            “小芳再不上要3:0了” (21:05:48)<br>
+            “狐狸15k” (21:05:49)
+        </div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-weight:600; margin-bottom: 8px;">📌 事件时间线（弹幕口径）</div>
+    <div class="timeline-item">
+        <div class="timeline-time">21:04:59</div>
+        <div>“刚刚跟” — 对局刚结束？</div>
+    </div>
+    <div class="timeline-item">
+        <div class="timeline-time">21:05:02</div>
+        <div>“加里奥城墙” “叛逆俱乐部” — 阵容讨论</div>
+    </div>
+    <div class="timeline-item">
+        <div class="timeline-time">21:05:10</div>
+        <div>“3比0” “jdg不换上单没啥希望”</div>
+    </div>
+    <div class="timeline-item">
+        <div class="timeline-time">21:05:30</div>
+        <div>“就在今天！涅槃组把登峰组锤了” — 高潮</div>
+    </div>
+    <div class="timeline-item">
+        <div class="timeline-time">21:05:49</div>
+        <div>“狐狸15k” “9.5K兰博” — 伤害面板讨论</div>
+    </div>
+    <div class="timeline-item">
+        <div class="timeline-time">21:06:22</div>
+        <div>“碾压局” “史上最没有悬念的让二追三”</div>
+    </div>
+</div>
+<!-- 3. 阵容与 BP/英雄讨论 -->
+<div class="card">
+    <h2><span class="no">3</span>阵容与 BP · 英雄讨论</h2>
+    <div class="source-badge" style="margin-bottom: 10px;">官方 window 校准 · 弹幕仅候选</div>
+    <div style="background: #f9f9fb; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+        <div style="font-weight:600;">官方阵容（待校准）</div>
+        <div style="font-size:0.85rem; color:#6e6e73; margin-top:4px;">本节点官方window未提供详细阵容，以下为弹幕提及的英雄/选手</div>
+    </div>
+    <table class="table-mini">
+        <tr><td>弹幕提及英雄</td><td>加里奥、兰博、狐狸、薇、射手（长手）</td></tr>
+        <tr><td>选手线索</td><td>“小芳”（JDG上单？）、“GaGL”（疑似JDG选手）、“徐处”（打野？）</td></tr>
+        <tr><td>BP讨论焦点</td><td>“上单射手”“换ale”“48号上单谁来谁死”</td></tr>
+    </table>
+    <div class="quote-gray" style="margin-top: 12px;">
+        <strong>弹幕口径：</strong>观众认为JDG上单是最大短板，呼吁换上单（“小芳”“ale”）。NIP阵容被评价“太稳健太团队”。
+    </div>
+    <details>
+        <summary>📋 BP后战绩情报（官方）</summary>
+        <p style="font-size:0.85rem; margin-top:8px;">无战绩情报提及（官方window未推送）。弹幕有“狐狸15k”“兰博9.5K”等伤害面板数据，但非官方BP后战绩。</p>
+    </details>
+</div>
+<!-- 4. 队伍画像 -->
+<div class="card">
+    <h2><span class="no">4</span>队伍画像</h2>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+        <span class="pill positive">NIP 正205/负20</span>
+        <span class="pill negative">JDG 正25/负98</span>
+        <span class="pill">IG 正63/负30</span>
+    </div>
+    <div style="font-size:0.85rem; color:#6e6e73;">本窗口提及量 TOP（真实）</div>
+    <div class="divider"></div>
+    <div style="margin-bottom: 8px;"><strong>NIP（909提及）</strong> — 正205/负20</div>
+    <div class="quote" style="margin-top: 4px;">
+        “nip王朝了” “nip太稳健太团队可以去世界赛？” “nip可以冲亚军”<br>
+        <span style="color:#6e6e73;">观众印象：稳健、团队、强。但“涅槃组”标签被反复提及。</span>
+    </div>
+    <div style="margin-bottom: 8px; margin-top: 12px;"><strong>JDG（625提及）</strong> — 正25/负98</div>
+    <div class="quote" style="margin-top: 4px;">
+        “京东这么拉垮吗” “一碰就碎没看过那么菜的” “京东本来就菜”<br>
+        <span style="color:#6e6e73;">负面情绪主导，观众认为JDG上单/打野问题大。</span>
+    </div>
+    <details>
+        <summary>📊 队伍特质统计（本窗口）</summary>
+        <div style="margin-top:8px;">
+            <span class="pill">逆风崩盘:3</span>
+            <span class="pill">被翻守不住:4</span>
+            <span class="pill">韧性逆转:15</span>
+            <span class="pill">心态摆烂:47</span>
+            <span class="pill">慢热手热:11</span>
+            <span class="pill">打法风格:100</span>
+            <span class="pill">选手特质:89</span>
+        </div>
+        <p style="font-size:0.8rem; margin-top:8px;">“心态摆烂”47次，主要指向JDG；“韧性逆转”15次，可能指NIP或IG。</p>
+    </details>
+</div>
+<!-- 5. 人员画像 -->
+<div class="card">
+    <h2><span class="no">5</span>人员画像</h2>
+    <div style="font-size:0.85rem; color:#6e6e73; margin-bottom: 8px;">本窗口提及量（真实）</div>
+    <table class="table-mini">
+        <tr><td>Faker</td><td>121提及 (正6/负6)</td><td><span class="source-badge">跨场话题</span></td></tr>
+        <tr><td>m0NESY</td><td>18提及 (正0/负18)</td><td><span class="source-badge">跨场·CS</span></td></tr>
+        <tr><td>33</td><td>16提及</td><td><span class="source-badge">跨场</span></td></tr>
+        <tr><td>Zeus</td><td>10提及</td><td><span class="source-badge">跨场</span></td></tr>
+        <tr><td>Chovy</td><td>6提及</td><td><span class="source-badge">跨场</span></td></tr>
+    </table>
+    <div class="quote-gray" style="margin-top: 12px;">
+        <strong>本场焦点选手（弹幕口径）：</strong>“小芳”（JDG上单替补？）、“GaGL”（被喷退役）、“徐处”（打野被喷）。Faker等为跨场话题，不适用本场。
+    </div>
+    <details>
+        <summary>📌 跨场选手说明</summary>
+        <p style="font-size:0.8rem; margin-top:8px;">Faker、m0NESY、Zeus等提及来自其他赛事弹幕，非本场选手。本场选手提及量未进入TOP，说明弹幕更聚焦队伍整体。</p>
+    </details>
+</div>
+<!-- 6. 灰信号汇总 -->
+<div class="card">
+    <h2><span class="no">6</span>灰信号汇总</h2>
+    <div class="status-tag warning" style="margin-bottom: 12px;">观众质疑 · 非结论</div>
+    <div style="background: #fffbea; border-radius: 12px; padding: 12px;">
+        <div style="font-weight:600;">16条灰信号（真实）</div>
+        <ul style="margin-top: 8px; list-style: none; font-size:0.9rem;">
+            <li>“g2不演了？”</li>
+            <li>“又故意输，就是不想ig去世界赛” ×3</li>
+        </ul>
+    </div>
+    <div class="quote-warning" style="margin-top: 12px;">
+        <strong>解读：</strong>观众质疑JDG“故意输”以影响IG的世界赛资格。这是严重的灰信号，但无实据，仅记录。
+    </div>
+</div>
+<!-- 7. 方向性情报 -->
+<div class="card">
+    <h2><span class="no">7</span>方向性情报</h2>
+    <div style="margin-bottom: 12px;">
+        <div style="font-weight:600;">正锚点</div>
+        <div class="quote" style="margin-top:4px;">NIP“太稳健太团队” “可以冲亚军” — 观众对NIP评价极高</div>
+    </div>
+    <div style="margin-bottom: 12px;">
+        <div style="font-weight:600;">负锚点</div>
+        <div class="quote" style="margin-top:4px;">JDG“一碰就碎” “上单谁来谁死” “没有牙膏的京东真的一坨”</div>
+    </div>
+    <div style="margin-bottom: 12px;">
+        <div style="font-weight:600;">群体共识</div>
+        <div class="quote" style="margin-top:4px;">共识：JDG上单是最大短板，NIP状态火热。但“故意输”灰信号削弱共识可信度。</div>
+    </div>
+    <div>
+        <div style="font-weight:600;">灰信号条件预测</div>
+        <div class="quote-gray" style="margin-top:4px;">若JDG后续换上单（小芳/ale），可能改变局势；否则观众预期NIP 3:0。</div>
+    </div>
+</div>
+<!-- 8. 联赛规律与版本 -->
+<div class="card">
+    <h2><span class="no">8</span>联赛规律与版本</h2>
+    <div style="font-size:0.9rem;">
+        <div class="quote" style="margin-top:0;">
+            “涅槃组把登峰组三四名锤了” — 观众热议涅槃组实力<br>
+            “we本质涅槃队 打不过的” — 涅槃/登峰组实力讨论
+        </div>
+        <div style="margin-top: 12px; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <strong>版本观察：</strong>弹幕提及“上单射手”“长手打短手”，暗示当前版本上单射手可行。兰博、狐狸高伤害成为讨论点。
+        </div>
+    </div>
+</div>
+<!-- 9. 预测验证 -->
+<div class="card">
+    <h2><span class="no">9</span>预测验证（框架·赛后回填）</h2>
+    <div style="font-size:0.9rem;">
+        <div style="background: #f0f0f5; padding: 12px; border-radius: 12px;">
+            <strong>赛前预测（如有）：</strong>本节点未提供赛前预测框架。<br>
+            <span style="color:#6e6e73;">弹幕提及“一开始我就说nip赢，数据那么强凭什么输京东” — 部分观众赛前看好NIP。</span>
+        </div>
+        <div style="margin-top: 12px;">
+            <strong>赛后回填：</strong>官方比分NIP 2:0，弹幕共识与官方一致（但存在灰信号干扰）。
+        </div>
+    </div>
+</div>
+<!-- 10. 盘口讨论 -->
+<div class="card">
+    <h2><span class="no">10</span>盘口讨论</h2>
+    <div style="font-size:0.9rem;">
+        <div style="background: #f9f9fb; padding: 12px; border-radius: 12px;">
+            <strong>盘口样本（44条）：</strong><br>
+            “改48上单谁来谁死” ×2<br>
+            “这把薇不做事情抓几个人头，JD又完了” ×2
+        </div>
+        <div style="margin-top: 8px; color:#6e6e73;">样本不足，仅记录。无明确盘口方向。</div>
+    </div>
+</div>
+<!-- 11. 情报含义与后续观察点 -->
+<div class="card">
+    <h2><span class="no">11</span>情报含义与后续观察点</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: #e8f4ff; border-radius: 12px; padding: 12px;">
+            <div style="font-weight:600; color:#0071e3;">LONG</div>
+            <ul style="margin-top: 8px; font-size:0.85rem; padding-left: 16px;">
+                <li>NIP状态火热，观众信心强</li>
+                <li>JDG上单问题严重，若不上ale/小芳，第3局仍可能崩</li>
+            </ul>
+        </div>
+        <div style="background: #fde8e8; border-radius: 12px; padding: 12px;">
+            <div style="font-weight:600; color:#b42318;">SHORT</div>
+            <ul style="margin-top: 8px; font-size:0.85rem; padding-left: 16px;">
+                <li>灰信号“故意输”可能影响JDG心态</li>
+                <li>观众情绪过度乐观，存在反讽风险</li>
+            </ul>
+        </div>
+    </div>
+    <div style="margin-top: 16px; background: #f9f9fb; padding: 12px; border-radius: 12px;">
+        <strong>后续观察：</strong>① 第3局JDG是否换上单；② 官方结算确认；③ 灰信号是否发酵。
+    </div>
+</div>
+<!-- 数据完整性 -->
+<div class="card">
+    <h2><span class="no">📊</span>数据完整性</h2>
+    <table class="table-mini">
+        <tr><td>实际数据源</td><td>规则层JSON + 弹幕切片 + 官方gameWins</td></tr>
+        <tr><td>预期数据源</td><td>官方window阵容、BP详情</td></tr>
+        <tr><td>缺口</td><td>官方阵容未推送；BP后战绩无；盘口样本不足</td></tr>
+    </table>
+</div>
+<div class="footnote">
+    局中情报 · 弹幕口径非官方 · 北京时间 UTC+8<br>
+    生成时间 2026-09-05 · 数据真实 · 禁止转载
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script>
+<script>
+(function () {
+  var KEY = "danmu_member_v1";
+  try {
+    var c = JSON.parse(localStorage.getItem(KEY));
+    if (c && c.member && c.checkedAt && Date.now() - c.checkedAt < 86400000) return;
+  } catch (e) {}
+  var d = document.createElement("div");
+  d.id = "paywall";
+  d.style.cssText = "position:fixed;inset:0;background:rgba(245,245,247,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,'PingFang SC',sans-serif";
+  d.innerHTML =
+    '<div style="max-width:440px;width:100%;background:#fff;border:1px solid #e5e5ea;border-radius:20px;padding:32px 28px;box-shadow:0 16px 48px rgba(0,0,0,.10)">' +
+    '<div style="text-align:center">' +
+    '<div style="width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5ac8fa);display:grid;place-items:center">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#0071e3;margin-bottom:6px">Pro · 实时情报</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1d1d1f;margin-bottom:8px">此内容需要订阅</div>' +
+    '<div style="font-size:13px;color:#6e6e73;margin-bottom:14px">局中情报 / 节点时间轴为付费内容 · 赛后复盘免费开放</div>' +
+    '</div>' +
+    '<div style="background:#fff7f0;border:1px solid #ffd8a8;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#7a4a12;line-height:1.75">' +
+    '🔥 早鸟 <b>$39/月</b>（限前 20 名，或 9/15 截止）· 季付 $105 · 年付 $390<br>' +
+    '满 20 人涨价（正式 $59 起 · <b>$99 封顶</b>）· 订阅后终身锁价</div>' +
+    '<a href="../subscribe.html#join" style="display:block;text-align:center;background:#0071e3;color:#fff;border-radius:12px;padding:13px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px">立即订阅 · $39/月 →</a>' +
+    '<div style="display:flex;align-items:center;gap:10px;color:#c7c7cc;font-size:12px;margin:4px 0 12px"><div style="flex:1;height:1px;background:#e5e5ea"></div>已订阅？验证解锁<div style="flex:1;height:1px;background:#e5e5ea"></div></div>' +
+    '<input id="pwId" placeholder="TG 用户名或 QQ 号" style="width:100%;border:1px solid #e5e5ea;border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;margin-bottom:10px">' +
+    '<button id="pwBtn" style="width:100%;background:#fff;color:#0071e3;border:1px solid #0071e3;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">验证解锁</button>' +
+    '<div id="pwMsg" style="font-size:12px;color:#c92a2a;margin-top:10px;text-align:center"></div>' +
+    '<div style="font-size:11px;color:#aeaeb2;text-align:center;margin-top:10px">免费看赛后复盘 · 历史情报库 · 画像与灰信号统计<br><a href="../subscribe.html#join" style="color:#0071e3">想先体验？$1 试用 3 天 →</a></div>' +
+    '</div>';
+  document.body.appendChild(d);
+  document.getElementById("pwBtn").addEventListener("click", function () {
+    var id = document.getElementById("pwId").value.trim();
+    var msg = document.getElementById("pwMsg");
+    if (!id) { msg.textContent = "请输入账号"; return; }
+    msg.textContent = "验证中…";
+    fetch("https://danmu-intel-api.vercel.app/api/verify-member", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.member) {
+        localStorage.setItem(KEY, JSON.stringify({ member: true, expires: data.expires || null, checkedAt: Date.now() }));
+        d.remove();
+      } else {
+        msg.textContent = data.freePeriod ? "当前为免费体验期" : "未找到该会员，请确认账号或先订阅";
+      }
+    }).catch(function () { msg.textContent = "验证服务暂不可用，请稍后再试"; });
+  });
+})();
+</script></body>
+</html>
