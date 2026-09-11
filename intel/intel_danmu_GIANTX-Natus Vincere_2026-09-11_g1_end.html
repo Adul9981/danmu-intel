@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · GIANTX vs Natus Vincere · G1 局末</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 1100px;
+      width: 100%;
+    }
+    /* 卡片风格 */
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: all 0.1s ease;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1d1d1f;
+    }
+    .badge.warning {
+      background: #ffe9d6;
+      color: #b45309;
+    }
+    .badge.live {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #1d1d1f;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #1d1d1f;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      margin-bottom: 8px;
+    }
+    .stat-item {
+      font-size: 14px;
+      color: #1d1d1f;
+    }
+    .stat-item .label {
+      color: #6e6e73;
+      margin-right: 6px;
+    }
+    .stat-item .value {
+      font-weight: 600;
+    }
+    .signal-list {
+      list-style: none;
+      margin: 8px 0 0 0;
+    }
+    .signal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+      font-size: 15px;
+    }
+    .signal-list li:last-child {
+      border-bottom: none;
+    }
+    .tag {
+      display: inline-block;
+      background: #f0f0f2;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1d1d1f;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .tag.risk {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .tag.anchor {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .tag.market {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .tag.consensus {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+    .tag.gray {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
+    .text-small {
+      font-size: 13px;
+      color: #6e6e73;
+    }
+    .text-mono {
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 13px;
+    }
+    details {
+      margin-top: 12px;
+      border: 1px solid #e8e8ed;
+      border-radius: 12px;
+      padding: 8px 16px 12px 16px;
+      background: #fafafc;
+    }
+    details summary {
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      color: #1d1d1f;
+      padding: 6px 0;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary::before {
+      content: "▸";
+      font-size: 12px;
+      color: #6e6e73;
+      transition: transform 0.1s;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    .timeline {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #1d1d1f;
+    }
+    .timeline .time {
+      color: #6e6e73;
+      font-weight: 500;
+      margin-right: 8px;
+      font-family: "SF Mono", monospace;
+    }
+    .timeline .msg {
+      color: #1d1d1f;
+    }
+    .timeline .count {
+      color: #6e6e73;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 12px 0;
+    }
+    th {
+      text-align: left;
+      padding: 8px 8px 8px 0;
+      font-weight: 600;
+      color: #6e6e73;
+      border-bottom: 1px solid #e8e8ed;
+      font-size: 13px;
+    }
+    td {
+      padding: 10px 8px 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .highlight {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 12px 0;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .footnote {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 24px;
+      border-top: 1px solid #e8e8ed;
+      padding-top: 16px;
+    }
+    .decision-box {
+      background: #1d1d1f;
+      color: #fff;
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin: 16px 0 0 0;
+    }
+    .decision-box .label {
+      font-size: 13px;
+      color: #a1a1a6;
+      margin-bottom: 4px;
+    }
+    .decision-box .value {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .decision-box .value .long {
+      color: #34d399;
+    }
+    .decision-box .value .short {
+      color: #f87171;
+    }
+    .decision-box .value .neutral {
+      color: #fbbf24;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">GIANTX-Natus Vincere 2026-09-11 g1 end</b></div>
+<div class="container">
+  <!-- 头部 -->
+  <div class="card" style="padding-bottom: 16px;">
+    <div class="flex-between">
+      <h1>GIANTX vs Natus Vincere · G1 局末情报</h1>
+      <span class="badge warning">局中·非终局，结果待定</span>
+    </div>
+    <div class="subhead">
+      <span>2026-09-11 · 第1小局 · 局末/局间 (GAME-REVIEW)</span>
+      <span class="badge live">弹幕口径 · 官方待回填</span>
+      <span>官方当前比分：GX 0 : 1 NAVI</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item"><span class="label">弹幕总数</span><span class="value">1532</span></div>
+      <div class="stat-item"><span class="label">活跃用户</span><span class="value">510</span></div>
+      <div class="stat-item"><span class="label">密度</span><span class="value">42.0 条/分</span></div>
+      <div class="stat-item"><span class="label">本场样本</span><span class="value">183 条 (37个分钟段)</span></div>
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div style="font-size: 15px; margin-bottom: 12px; background: #f5f5f7; border-radius: 12px; padding: 12px 16px;">
+      <strong>比分/进度：</strong>GX 0 : 1 NAVI（官方 gameWins）· 本页为第1小局结束情报 · 弹幕口径·官方待回填
+    </div>
+    <ul class="signal-list">
+      <li><span class="tag risk">风险</span> 打野蔚被指“假赛/演员”，灰信号12条集中质疑 → 详§2</li>
+      <li><span class="tag anchor">锚点</span> GX阵容被评“不错”但执行差，冰鸟优势未转化 → 详§3</li>
+      <li><span class="tag market">盘口</span> “48”刷屏17条，观众调侃“等下蔚送一个就48” → 详§4</li>
+      <li><span class="tag consensus">共识</span> GX对线弱、指挥混乱，NAVI更稳，弹幕多认为NAVI拿下 → 详§5</li>
+      <li><span class="tag gray">灰信号</span> 辅助“不是故意的？”、打野“买了？”等质疑，非结论 → 详§2</li>
+    </ul>
+    <div class="decision-box">
+      <div class="label">一句话决策落点</div>
+      <div class="value"><span class="neutral">观望</span> · 灰信号密集但无实锤，NAVI优势共识强，GX翻盘仅存理论可能</div>
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览/状态核验 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-item"><span class="label">赛事</span><span class="value">LoL · GIANTX vs Natus Vincere</span></div>
+        <div class="stat-item"><span class="label">日期</span><span class="value">2026-09-11</span></div>
+        <div class="stat-item"><span class="label">小局</span><span class="value">G1 · 局末/局间</span></div>
+        <div class="stat-item"><span class="label">官方比分</span><span class="value">GX 0 : 1 NAVI</span></div>
+      </div>
+      <div>
+        <div class="stat-item"><span class="label">状态</span><span class="value" style="color:#b45309;">局中·非终局，结果待定</span></div>
+        <div class="stat-item"><span class="label">进度口径</span><span class="value">弹幕口径（官方待回填）</span></div>
+        <div class="stat-item"><span class="label">数据源</span><span class="value">规则层JSON + 弹幕切片</span></div>
+        <div class="stat-item"><span class="label">情报输出时间</span><span class="value">2026-09-11 23:45 北京时间</span></div>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 14px; color: #6e6e73;">
+      ⚠️ 本页为第1小局唯一页面，覆盖BP/选人、对线、关键团战、结局。系列比分与结果以官方为准，禁止从弹幕推断比分。
+    </div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="stat-row">
+      <div class="stat-item"><span class="label">灰信号条数</span><span class="value">12</span></div>
+      <div class="stat-item"><span class="label">关键词</span><span class="value">假赛、演员、买了、故意送</span></div>
+    </div>
+    <table>
+      <thead><tr><th>样本原文</th><th>指向</th></tr></thead>
+      <tbody>
+        <tr><td>“蔚这个假赛狗”</td><td>打野蔚（ISMA）</td></tr>
+        <tr><td>“这个左边打野就是模仿超雄人设掩盖打假赛”</td><td>打野</td></tr>
+        <tr><td>“这辅助不是故意的？”</td><td>辅助</td></tr>
+        <tr><td>“这个蔚铁假赛狗”</td><td>打野蔚</td></tr>
+        <tr><td>“说了这个蔚铁假赛狗”</td><td>打野蔚</td></tr>
+        <tr><td>“打野买了？”</td><td>打野</td></tr>
+        <tr><td>“这假赛狗蔚，捂着脸在笑”</td><td>打野蔚</td></tr>
+        <tr><td>“这打野不是菜就是故意的送节奏”</td><td>打野</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size: 13px; color: #b91c1c; background: #fef2f2; border-radius: 8px; padding: 10px 14px; margin-top: 8px;">
+      ⚠️ 以上均为观众质疑，非结论。灰信号密集指向GX打野蔚，需结合官方数据与后续表现判断。
+    </div>
+  </div>
+  <!-- 3 BP锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>GX 阵容（蓝方）</h3>
+        <ul style="list-style: none; font-size: 14px;">
+          <li>上单：波比（提及“波比”x2）</li>
+          <li>打野：蔚（ISMA，灰信号集中）</li>
+          <li>中单：冰鸟（“优势冰鸟还挺大的”）</li>
+          <li>下路：SamD + 辅助（“SAMD就是个残废”）</li>
+        </ul>
+      </div>
+      <div>
+        <h3>NAVI 阵容（红方）</h3>
+        <ul style="list-style: none; font-size: 14px;">
+          <li>打野：皇子（“V野区没了皇子还有6片野区”）</li>
+          <li>中单：Poby（提及9次，负4）</li>
+          <li>下路：Oscar（提及4次）</li>
+          <li>辅助：33（提及3次）</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 14px;">
+      <strong>BP后战绩情报：</strong>无战绩情报提及
+    </div>
+    <details>
+      <summary>BP相关弹幕样本（带量）</summary>
+      <div class="timeline">
+        <div><span class="time">23:09</span><span class="msg">GX阵容不错啊</span></div>
+        <div><span class="time">23:09</span><span class="msg">gx将会拿下第一把</span></div>
+        <div><span class="time">23:10</span><span class="msg">哪边阵容好点？（x2）</span></div>
+        <div><span class="time">23:11</span><span class="msg">不灭狼母？</span></div>
+        <div><span class="time">23:14</span><span class="msg">二哥查一下这个波比的瑞兹胜率</span></div>
+        <div><span class="time">23:21</span><span class="msg">lec选阵容就是臭焦黏的</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="stat-row">
+      <div class="stat-item"><span class="label">盘口相关条数</span><span class="value">17</span></div>
+      <div class="stat-item"><span class="label">高频词</span><span class="value">48、互换人头、送一个</span></div>
+    </div>
+    <table>
+      <thead><tr><th>样本原文</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td>“pyl就是想放假了所以才看的48”</td><td>调侃盘口48</td></tr>
+        <tr><td>“互换人头 继续”</td><td>盘口语境</td></tr>
+        <tr><td>“代言了48垃圾桶”</td><td>玩梗</td></tr>
+        <tr><td>“马上48了”</td><td>盘口预期</td></tr>
+        <tr><td>“48；48”</td><td>刷屏</td></tr>
+        <tr><td>“等下蔚送一个就48”</td><td>关联打野质疑</td></tr>
+        <tr><td>“老张敢说48吗”</td><td>互动</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size: 13px; color: #6e6e73; margin-top: 8px;">
+      盘口讨论多与“48”相关，且与打野蔚的灰信号交织，观众预期GX可能因失误送掉比赛。
+    </div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚</h3>
+        <ul style="list-style: none; font-size: 14px;">
+          <li>✅ GX阵容前期被评“不错”（23:09）</li>
+          <li>✅ 冰鸟对线优势（“左边说实话，优势冰鸟还挺大的”）</li>
+          <li>✅ NAVI打野皇子控图（“V野区没了皇子还有6片野区”）</li>
+        </ul>
+      </div>
+      <div>
+        <h3>负锚</h3>
+        <ul style="list-style: none; font-size: 14px;">
+          <li>❌ GX打野蔚被指假赛/演员（12条灰信号）</li>
+          <li>❌ GX对线弱（“gx这个比队 对线真的一坨屎”）</li>
+          <li>❌ GX指挥混乱（“GX指挥绝对脑子有问题”）</li>
+          <li>❌ SamD表现差（“SAMD就是个残废”）</li>
+        </ul>
+      </div>
+    </div>
+    <h3>群体共识（带量）</h3>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr></thead>
+      <tbody>
+        <tr><td>GX打野蔚</td><td>负面</td><td>12</td><td>“蔚这个假赛狗”</td><td>灰信号集中</td></tr>
+        <tr><td>GX整体实力</td><td>负面</td><td>8+</td><td>“GX跟人机没区别”</td><td>共识</td></tr>
+        <tr><td>NAVI优势</td><td>正面</td><td>6+</td><td>“NAVI赢了”</td><td>共识</td></tr>
+        <tr><td>盘口48</td><td>调侃</td><td>17</td><td>“等下蔚送一个就48”</td><td>与灰信号交织</td></tr>
+        <tr><td>比赛时长</td><td>偏长</td><td>5+</td><td>“40分钟起步了这两队”</td><td>共识</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size: 13px; margin-top: 8px; background: #f5f5f7; border-radius: 8px; padding: 10px 14px;">
+      <strong>共识→信号链：</strong>GX打野负面共识 + 盘口48调侃 → 强信号指向GX可能因失误葬送比赛；NAVI优势共识 → 市场倾向NAVI。
+    </div>
+    <h3>灰信号条件预测</h3>
+    <div style="font-size: 14px; margin-top: 4px;">
+      若GX打野蔚再次出现“逛街/不反野/团战大招闪现未用”等行为，弹幕灰信号将进一步升级，可能引发更大规模质疑。
+    </div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>LONG 逻辑</h3>
+        <ul style="list-style: none; font-size: 14px;">
+          <li>• NAVI阵容稳健，皇子控图，Poby中单有优势</li>
+          <li>• GX灰信号密集，打野心态可能崩溃</li>
+          <li>• 弹幕共识NAVI赢，盘口倾向48</li>
+        </ul>
+      </div>
+      <div>
+        <h3>SHORT 逻辑</h3>
+        <ul style="list-style: none; font-size: 14px;">
+          <li>• GX阵容前期被评不错，冰鸟有优势</li>
+          <li>• 灰信号仅为观众质疑，无实锤</li>
+          <li>• 比赛时长可能拖后，变数存在</li>
+        </ul>
+      </div>
+    </div>
+    <div class="decision-box" style="margin-top: 16px;">
+      <div class="label">决策落点</div>
+      <div class="value"><span class="neutral">观望</span> · 灰信号密集但无实锤，NAVI优势共识强，GX翻盘仅存理论可能</div>
+    </div>
+  </div>
+  <!-- 7 逐局复盘（证据层） -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 已发生片段 · 时间线</h3>
+    <details open>
+      <summary>弹幕时间线（真实时间戳 + 原文带量）</summary>
+      <div class="timeline">
+        <div><span class="time">23:08</span><span class="msg">Isma和SamD，出王争霸赛</span></div>
+        <div><span class="time">23:09</span><span class="msg">GX阵容不错啊</span></div>
+        <div><span class="time">23:09</span><span class="msg">gx将会拿下第一把</span></div>
+        <div><span class="time">23:10</span><span class="msg">哪边阵容好点？（x2）</span></div>
+        <div><span class="time">23:11</span><span class="msg">不灭狼母？</span></div>
+        <div><span class="time">23:14</span><span class="msg">POBY确实菜狗</span></div>
+        <div><span class="time">23:15</span><span class="msg">11分钟60刀的豹女</span></div>
+        <div><span class="time">23:16</span><span class="msg">wei台装比了</span></div>
+        <div><span class="time">23:17</span><span class="msg">他自己被偷俩组，自己逛街半天就刷一组不反确实蹦了</span></div>
+        <div><span class="time">23:18</span><span class="msg">GX跟人机没区别</span></div>
+        <div><span class="time">23:19</span><span class="msg">V野区没了皇子还有6片野区</span></div>
+        <div><span class="time">23:20</span><span class="msg">SAMD就是个残废</span></div>
+        <div><span class="time">23:21</span><span class="msg">GX绝对会保枪</span></div>
+        <div><span class="time">23:22</span><span class="msg">一个蔚一直躲着皇子</span></div>
+        <div><span class="time">23:23</span><span class="msg">GX保枪了直接</span></div>
+        <div><span class="time">23:24</span><span class="msg">gx这个比队 对线真的一坨屎</span></div>
+        <div><span class="time">23:25</span><span class="msg">30分钟直接结束</span></div>
+        <div><span class="time">23:26</span><span class="msg">GX指挥绝对脑子有问题</span></div>
+        <div><span class="time">23:27</span><span class="msg">ISM开局一血一直乱送</span></div>
+        <div><span class="time">23:28</span><span class="msg">GX 春季赛是 翻盘3局小蜜蜂</span></div>
+        <div><span class="time">23:29</span><span class="msg">NAVI赢了</span></div>
+        <div><span class="time">23:30</span><span class="msg">4.8</span></div>
+        <div><span class="time">23:31</span><span class="msg">翻了（x3）</span></div>
+        <div><span class="time">23:31</span><span class="msg">48失败（x2）</span></div>
+        <div><span class="time">23:32</span><span class="msg">GG</span></div>
+        <div><span class="time">23:33</span><span class="msg">这不一波？（x3）</span></div>
+        <div><span class="time">23:33</span><span class="msg">一字马 好菜（x2）</span></div>
+        <div><span class="time">23:34</span><span class="msg">gx这彩笔队是怎么能第四的啊</span></div>
+        <div><span class="time">23:35</span><span class="msg">飞机劣势了是真得超级兵（x2）</span></div>
+        <div><span class="time">23:36</span><span class="msg">两边的辅助好变态啊</span></div>
+        <div><span class="time">23:37</span><span class="msg">33分钟最少</span></div>
+        <div><span class="time">23:38</span><span class="msg">ISMA这头猪还不退役？（x3）</span></div>
+        <div><span class="time">23:39</span><span class="msg">结束了（x2）</span></div>
+        <div><span class="time">23:40</span><span class="msg">ISMA神了 玩个蔚好几波打完团大招闪现都还在</span></div>
+        <div><span class="time">23:41</span><span class="msg">navi继续干死gx 31拿下</span></div>
+      </div>
+    </details>
+    <div style="margin-top: 12px; font-size: 14px;">
+      <strong>未发生：</strong>待观察（第2小局BP及后续）
+    </div>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP</h3>
+        <table>
+          <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>GX</td><td>28</td><td>0/3</td></tr>
+            <tr><td>G2</td><td>19</td><td>0/1</td></tr>
+            <tr><td>T1</td><td>13</td><td>0/1</td></tr>
+            <tr><td>IG</td><td>12</td><td>0/0</td></tr>
+            <tr><td>Navi</td><td>9</td><td>0/1</td></tr>
+            <tr><td>NAVI</td><td>9</td><td>0/1</td></tr>
+            <tr><td>Vitality</td><td>7</td><td>1/0</td></tr>
+            <tr><td>IC</td><td>5</td><td>0/0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>选手提及 TOP</h3>
+        <table>
+          <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>Poby</td><td>9</td><td>0/4</td></tr>
+            <tr><td>Oscar</td><td>4</td><td>0/1</td></tr>
+            <tr><td>33</td><td>3</td><td>0/0</td></tr>
+            <tr><td>Faker</td><td>1</td><td>0/0</td></tr>
+            <tr><td>Chovy</td><td>1</td><td>0/0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 14px;">
+      <strong>队伍特质统计：</strong>心态摆烂:2；打法风格:4；选手特质:1
+    </div>
+    <details>
+      <summary>长期画像参考（历史库）</summary>
+      <div style="font-size: 13px; color: #6e6e73; padding: 8px 0;">
+        GX：LEC赛区，春季赛曾翻盘小蜜蜂，但本场对线弱、指挥混乱被诟病。<br>
+        NAVI：乌克兰战队，本场打野皇子控图，中单Poby表现受质疑但团队优势。
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div style="font-size: 14px;">
+      <p>• LEC赛区推塔节奏偏慢（“LEC的推塔是真他妈的慢”），本场20分钟边路一塔才掉。</p>
+      <p>• 冰鸟出装讨论：“冰鸟不出残义出啥？飞科超威都这样出”，反映版本中单选择倾向。</p>
+      <p>• 三虫控制：“ck都很少放3虫了”，版本资源取舍。</p>
+      <p>• 比赛时长预期：“40分钟起步了这两队”，与LEC风格吻合。</p>
+    </div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div style="font-size: 14px;">
+      <p>• 赛前弹幕“gx将会拿下第一把” → 实际NAVI赢下，预测失败。</p>
+      <p>• 弹幕“NAVI赢了”在23:29出现，早于官方结算，但符合最终结果。</p>
+      <p>• 盘口“48”预期未完全兑现，但比赛走向符合NAVI优势共识。</p>
+      <p>• 灰信号“蔚假赛”未获官方证实，留待后续观察。</p>
+    </div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div>
+        <h3>实际数据源</h3>
+        <ul style="list-style: none; font-size: 13px;">
+          <li>• 规则层JSON：lol-gx-navi-2026-09-11_g1_end_intel.json</li>
+          <li>• 弹幕切片：lol-gx-navi-2026-09-11_g1_end.jsonl</li>
+          <li>• 官方比分：GX 0:1 NAVI</li>
+        </ul>
+      </div>
+      <div>
+        <h3>预期数据源</h3>
+        <ul style="list-style: none; font-size: 13px;">
+          <li>• Riot官方窗口阵容（开局后1分钟校准）</li>
+          <li>• 官方游戏内事件时间线</li>
+          <li>• 赛后官方数据面板</li>
+        </ul>
+      </div>
+      <div>
+        <h3>缺口</h3>
+        <ul style="list-style: none; font-size: 13px;">
+          <li>• 官方详细经济/伤害曲线</li>
+          <li>• 选手第一视角/语音</li>
+          <li>• 灰信号实锤证据</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top: 16px; font-size: 13px; color: #6e6e73;">
+      <strong>情报输出时间：</strong>2026-09-11 23:45 北京时间<br>
+      <strong>数据完整性：</strong>缺官方详细面板，结论基于弹幕与规则层统计，灰信号非结论。
+    </div>
+  </div>
+  <!-- 本场长期沉淀点 -->
+  <div class="card" style="background: #fafafc;">
+    <h2><span class="no">★</span>本场长期沉淀点</h2>
+    <div style="font-size: 14px;">
+      <p>• GX打野蔚（ISMA）在本场遭遇密集灰信号质疑（12条），需持续跟踪其后续比赛表现，验证是否为常态或偶发。</p>
+      <p>• NAVI中单Poby提及9次且负评4次，但团队获胜，反映个人评价与团队成绩的背离。</p>
+      <p>• 盘口“48”成为本场弹幕文化符号，与打野失误强关联，可作为后续同类比赛的情绪指标。</p>
+    </div>
+  </div>
+  <div class="footnote">
+    <p>本页面为局中弹幕情报快照，所有结论基于实时弹幕与规则层统计，非官方终局结论。灰信号为观众质疑，不代表事实。数据截止北京时间 2026-09-11 23:45。</p>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
