@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · GIANTX vs Natus Vincere · G5</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 980px;
+      width: 100%;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1d1d1f;
+      letter-spacing: 0.01em;
+    }
+    .badge.warning {
+      background: #fff3e0;
+      color: #b45f06;
+    }
+    .badge.live {
+      background: #e3f2fd;
+      color: #0a58ca;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #0071e3;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #1d1d1f;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 32px;
+      margin-bottom: 12px;
+    }
+    .stat-item {
+      font-size: 14px;
+    }
+    .stat-item .label {
+      color: #6e6e73;
+      margin-right: 6px;
+    }
+    .stat-item .value {
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+    .signal-list {
+      list-style: none;
+      margin: 8px 0 0 0;
+    }
+    .signal-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .signal-list li:last-child {
+      border-bottom: none;
+    }
+    .tag {
+      display: inline-block;
+      background: #f0f0f2;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6e6e73;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .tag.risk {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .tag.anchor {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .tag.market {
+      background: #fff8e1;
+      color: #f57f17;
+    }
+    .tag.consensus {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    .tag.gray {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    .tag.pred {
+      background: #e0f2f1;
+      color: #00695c;
+    }
+    .decision-box {
+      background: #f8f8fa;
+      border-left: 4px solid #0071e3;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .decision-box strong {
+      color: #0071e3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      background: #f8f8fa;
+      font-weight: 600;
+      color: #1d1d1f;
+      border-bottom: 1px solid #e8e8ed;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    details {
+      margin: 12px 0;
+      border: 1px solid #e8e8ed;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    summary {
+      padding: 12px 16px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      background: #f8f8fa;
+      color: #0071e3;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::before {
+      content: "▸";
+      font-size: 12px;
+      transition: transform 0.2s;
+      display: inline-block;
+      color: #0071e3;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details .details-content {
+      padding: 12px 16px;
+      border-top: 1px solid #e8e8ed;
+      font-size: 13px;
+      color: #3a3a3c;
+      background: #fff;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f5f5f7;
+      font-size: 13px;
+    }
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+    .timeline-time {
+      color: #6e6e73;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      font-size: 12px;
+      min-width: 80px;
+    }
+    .timeline-text {
+      color: #1d1d1f;
+    }
+    .footnote {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 12px;
+      border-top: 1px solid #f0f0f2;
+      padding-top: 12px;
+    }
+    .highlight {
+      background: #fff9c4;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .muted {
+      color: #8e8e93;
+    }
+    .small {
+      font-size: 12px;
+    }
+    .mt-8 {
+      margin-top: 8px;
+    }
+    .mt-12 {
+      margin-top: 12px;
+    }
+    .mb-8 {
+      margin-bottom: 8px;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">GIANTX-Natus Vincere 2026-09-11 g5 mid</b></div>
+<div class="container">
+  <!-- 头部 -->
+  <div class="card">
+    <div class="flex-between">
+      <div>
+        <h1>GIANTX vs Natus Vincere · 局中弹幕情报快照</h1>
+        <div class="subhead">
+          <span>2026-09-11 · 第5小局 (G5) · 局中 MID-GAME</span>
+          <span class="badge live">弹幕口径·官方待回填</span>
+          <span class="badge warning">局中·非终局，结果待定</span>
+        </div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item"><span class="label">官方当前比分</span><span class="value">GX 2 : 2 NAVI</span></div>
+      <div class="stat-item"><span class="label">本页小局</span><span class="value">G5 局中</span></div>
+      <div class="stat-item"><span class="label">弹幕总数</span><span class="value">264</span></div>
+      <div class="stat-item"><span class="label">活跃用户</span><span class="value">149</span></div>
+      <div class="stat-item"><span class="label">密度</span><span class="value">23.3条/分</span></div>
+    </div>
+    <div class="footnote" style="margin-top:0;border-top:none;padding-top:0;">
+      情报输出时间：2026-09-12 03:05 北京时间 · 数据源：规则层统计 + 本节点弹幕切片
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div style="font-size:15px;font-weight:500;margin-bottom:12px;">
+      比分/进度：GX 2 : 2 NAVI（官方 gameWins）· 第5小局局中 · 弹幕口径·官方待回填
+    </div>
+    <ul class="signal-list">
+      <li>
+        <span class="tag risk">风险</span>
+        <span>NAVI 阵容被指“上个时代”“双AP不等死”，观众质疑BP合理性 → §3</span>
+      </li>
+      <li>
+        <span class="tag anchor">锚点</span>
+        <span>GX 剑魔（IC）被多次提及“绝活”“无敌”，可能成为本局核心支点 → §3</span>
+      </li>
+      <li>
+        <span class="tag market">盘口</span>
+        <span>弹幕出现“28是胜还是输？”等盘口讨论，但样本极少，无有效市场共识 → §4</span>
+      </li>
+      <li>
+        <span class="tag consensus">共识</span>
+        <span>“右边赢了 小龙拿下”与“右边中路不该拿沙皇”形成局势分歧 → §5</span>
+      </li>
+      <li>
+        <span class="tag gray">灰信号</span>
+        <span>“navi好像要滚了”“nani不配赢”等负面情绪，但无假赛/演员词 → §2</span>
+      </li>
+    </ul>
+    <div class="decision-box">
+      <strong>一句话决策落点：</strong>本局局中弹幕聚焦 NAVI 阵容质疑与 GX 剑魔支点，盘口讨论极稀薄；当前无足够信号形成方向性结论，建议观望至关键团战或官方数据回填。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <h3>比赛元数据</h3>
+        <table>
+          <tr><td>赛事</td><td>LoL 职业赛事（具体联赛待官方补充）</td></tr>
+          <tr><td>对阵</td><td>GIANTX vs Natus Vincere</td></tr>
+          <tr><td>日期</td><td>2026-09-11</td></tr>
+          <tr><td>小局</td><td>第5小局 (G5) · 局中</td></tr>
+          <tr><td>官方比分</td><td>GX 2 : 2 NAVI</td></tr>
+          <tr><td>数据节点</td><td>MID-GAME（局中）</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>状态核验</h3>
+        <table>
+          <tr><td>官方 gameWins</td><td>GX 2 · NAVI 2</td></tr>
+          <tr><td>本页状态</td><td><span class="badge warning">局中·非终局，结果待定</span></td></tr>
+          <tr><td>弹幕口径</td><td>进度以弹幕为准，结果待官方回填</td></tr>
+          <tr><td>阵容校准</td><td>Riot window 阵容，开局后1分钟校准</td></tr>
+          <tr><td>跨源一致性</td><td>弹幕提及队伍与官方对阵一致；比分未从弹幕推断</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="footnote">注：系列比分与结果一律以官方为准，禁止从弹幕推断比分。</div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <p style="font-size:14px;margin-bottom:8px;">基于词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）扫描本节点弹幕切片：<strong>未命中上述灰词</strong>。以下为观众质疑与负面情绪，非结论。</p>
+    <table>
+      <thead><tr><th>灰信号类型</th><th>弹幕原文（节选）</th><th>条数</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td>队伍负面评价</td><td>“navi好像要滚了”“navi滚了”“nani不配赢”</td><td>3</td><td>本场弹幕</td></tr>
+        <tr><td>BP质疑</td><td>“上个时代的阵容”“双AP不等死？”“全是后期？”“右边这阵容有毛病？”</td><td>4</td><td>本场弹幕</td></tr>
+        <tr><td>选手质疑</td><td>“poby为什么还能找到工作”“0熟练度船长”“相信波比会c，不如相信母猪会飞”</td><td>3</td><td>本场弹幕</td></tr>
+        <tr><td>主播/直播体验</td><td>“屏幕别挡着”“右下角地图挡住了”“别挡视线”</td><td>3</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>灰信号相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">navi好像要滚了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">navi滚了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">nani不配赢</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">上个时代的阵容</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">双AP不等死？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">全是后期？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">右边这阵容有毛病？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">poby为什么还能找到工作</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">0熟练度船长。。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">相信波比会c，不如相信母猪会飞（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">右下角地图挡住了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:55</span><span class="timeline-text">别挡视线</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:56</span><span class="timeline-text">屏幕别挡着（x2）</span></div>
+      </div>
+    </details>
+    <div class="footnote">灰信号漏检修正：已跑词表统计，确认无假赛/演员/菠菜等硬灰词。以上为观众质疑，非结论。</div>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>本局阵容（英雄+选手）</h3>
+        <table>
+          <thead><tr><th>位置</th><th>GX（左侧）</th><th>NAVI（右侧）</th></tr></thead>
+          <tbody>
+            <tr><td>上单</td><td>待官方回填</td><td>待官方回填</td></tr>
+            <tr><td>打野</td><td>剑魔（IC）*</td><td>待官方回填</td></tr>
+            <tr><td>中单</td><td>沙皇（JK）*</td><td>待官方回填</td></tr>
+            <tr><td>下路</td><td>待官方回填</td><td>待官方回填</td></tr>
+            <tr><td>辅助</td><td>待官方回填</td><td>待官方回填</td></tr>
+          </tbody>
+        </table>
+        <div class="footnote">* 基于弹幕提及推断，实际阵容以 Riot window 为准。弹幕提及“一抢沙皇”“剑魔打野”“船长”等。</div>
+      </div>
+      <div>
+        <h3>BP 锚点与讨论</h3>
+        <ul style="font-size:14px;padding-left:18px;margin-top:4px;">
+          <li><strong>GX 剑魔（IC）：</strong>弹幕多次提及“又拿绝活剑魔打野了”“ic的剑魔，无敌了”“剑魔带飞”，被视为核心支点。</li>
+          <li><strong>沙皇 pick：</strong>“一抢沙皇，让康特位啊”“右边中路不该拿沙皇的，吃经济的太多了”引发争议。</li>
+          <li><strong>NAVI 阵容质疑：</strong>“上个时代的阵容”“双AP不等死？”“全是后期？”指向阵容容错与节奏问题。</li>
+          <li><strong>船长：</strong>“0熟练度船长”“为什么要玩船长”表达对选人的不解。</li>
+        </ul>
+      </div>
+    </div>
+    <details>
+      <summary>BP 相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">上个时代的阵容</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">两弗雷</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">3恕瑞玛2极地（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">又拿绝活剑魔打野了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">一抢沙皇，让康特位啊</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">不是 他们不玩卡列的吗？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">剑魔进的去吗？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">双AP不等死？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">0熟练度船长。。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">为什么要玩船长</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">全是后期？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">剑魔是绝活吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">剑魔要是起来难死了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">ic的剑魔我记得很厉害</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">ic的剑魔，无敌了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">gx阵容好复古</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">jk的沙皇啥成分</span></div>
+      </div>
+    </details>
+    <div class="footnote">BP 后战绩情报：无战绩情报提及。</div>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p style="font-size:14px;">本节点弹幕中盘口相关讨论极少，仅出现零星询问，无有效市场共识。</p>
+    <table>
+      <thead><tr><th>弹幕原文</th><th>时间</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td>“28是胜还是输？”</td><td>02:52</td><td>疑似询问盘口赔率或比分，但无上下文</td></tr>
+        <tr><td>“今晚的赢家只有我，哈哈哈哈”</td><td>02:48</td><td>娱乐性发言，非有效盘口信号</td></tr>
+      </tbody>
+    </table>
+    <div class="footnote">盘口讨论样本不足，无法形成方向性判断。无“收米”“菠菜”等灰词。</div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚（利好信号）</h3>
+        <ul style="font-size:14px;padding-left:18px;">
+          <li>GX 剑魔（IC）被多次提及“绝活”“无敌”“带飞”，可能成为本局核心支点。</li>
+          <li>“右边赢了 小龙拿下”暗示右侧（NAVI）在小龙争夺中占优。</li>
+        </ul>
+      </div>
+      <div>
+        <h3>负锚（利空信号）</h3>
+        <ul style="font-size:14px;padding-left:18px;">
+          <li>NAVI 阵容被质疑“上个时代”“双AP不等死”“全是后期”，节奏可能被动。</li>
+          <li>“navi好像要滚了”“nani不配赢”反映观众对NAVI信心不足。</li>
+        </ul>
+      </div>
+    </div>
+    <h3>群体共识（+分歧+样本量）</h3>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+      <tbody>
+        <tr><td>NAVI 阵容质疑</td><td>负向</td><td>4</td><td>“上个时代的阵容”“双AP不等死？”</td><td>本场弹幕单源</td></tr>
+        <tr><td>GX 剑魔支点</td><td>正向</td><td>5</td><td>“ic的剑魔，无敌了”“剑魔带飞”</td><td>本场弹幕单源</td></tr>
+        <tr><td>沙皇 pick 争议</td><td>分歧</td><td>2</td><td>“一抢沙皇，让康特位啊”“右边中路不该拿沙皇”</td><td>本场弹幕单源</td></tr>
+        <tr><td>局势判断</td><td>分歧</td><td>2</td><td>“右边赢了 小龙拿下”“左边赢不了”</td><td>本场弹幕单源</td></tr>
+      </tbody>
+    </table>
+    <div class="decision-box">
+      <strong>共识→信号链：</strong>NAVI 阵容质疑与 GX 剑魔支点形成方向背离，当前无一致方向；沙皇 pick 与局势判断存在分歧，属于共识盲区，需等待关键团战验证。
+    </div>
+    <h3>灰信号条件预测</h3>
+    <p style="font-size:14px;">若后续弹幕出现“演员”“假赛”等硬灰词，需重新评估；当前无灰信号条件触发。</p>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>LONG 逻辑</h3>
+        <ul style="font-size:14px;padding-left:18px;">
+          <li>GX 剑魔（IC）被弹幕视为绝活，若发育良好可能主导团战。</li>
+          <li>“右边赢了 小龙拿下”暗示NAVI在小龙争夺中占优，可能积累资源。</li>
+        </ul>
+      </div>
+      <div>
+        <h3>SHORT 逻辑</h3>
+        <ul style="font-size:14px;padding-left:18px;">
+          <li>NAVI 阵容被质疑后期乏力，若前期未取得足够优势，可能被翻盘。</li>
+          <li>“navi好像要滚了”等负面情绪可能反映实际局势不利。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="decision-box">
+      <strong>决策落点：</strong>当前局中信号分歧较大，无足够证据形成明确 LONG/SHORT 方向。建议观望至关键团战或官方数据回填，重点关注剑魔发育与小龙归属。
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <p style="font-size:14px;margin-bottom:8px;">当前局（G5）已发生片段与时间线（北京时间）：</p>
+    <details>
+      <summary>G5 完整弹幕时间线（折叠）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">navi全家是吧</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">上个时代的阵容</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">两弗雷</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">为什么现在没什么人选猪了，大树蝎子更多</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:47</span><span class="timeline-text">凑羁绊呢</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">3恕瑞玛2极地（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">1</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">ig肯定暴打al</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">今晚的赢家只有我，哈哈哈哈</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:48</span><span class="timeline-text">又拿绝活剑魔打野了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">相信波比会c，不如相信母猪会飞（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">9月31号，老干爹有复活赛，赢得去入围赛</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">LGD不还要打德杯吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">一抢沙皇，让康特位啊</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:49</span><span class="timeline-text">不是 他们不玩卡列的吗？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">navi好像要滚了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">navi滚了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">三目弟的大哥来了吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">剑魔进的去吗？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:50</span><span class="timeline-text">双AP不等死？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">0熟练度船长。。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">poby为什么还能找到工作</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">不把对面当人</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">为什么要玩船长</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:51</span><span class="timeline-text">全是后期？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:52</span><span class="timeline-text">相信波比会c，不如相信母猪会飞（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:52</span><span class="timeline-text">28是胜还是输？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:52</span><span class="timeline-text">一个老谢一个兮夜，都不喜欢看比赛，喜欢自己玩</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:52</span><span class="timeline-text">一人一局还不会吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:52</span><span class="timeline-text">一句话不吭就溜了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">相信波比会c，不如相信母猪会飞（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">nani不配赢</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">剑魔是绝活吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">剑魔要是起来难死了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:53</span><span class="timeline-text">右边这阵容有毛病？</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">ic的剑魔我记得很厉害</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">ic的剑魔，无敌了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">今晚竟然有西餐 快睡了才刷到</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">剑魔带飞</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:54</span><span class="timeline-text">右下角地图挡住了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:55</span><span class="timeline-text">下龙坑剑魔怎么敢追</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:55</span><span class="timeline-text">不过猪头到3 女坦也不会追</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:55</span><span class="timeline-text">别挡视线</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:55</span><span class="timeline-text">后期左边怎么打</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:55</span><span class="timeline-text">左边赢不了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:56</span><span class="timeline-text">哦耶，老张使劲（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:56</span><span class="timeline-text">屏幕别挡着（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:56</span><span class="timeline-text">先攻是自信</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:56</span><span class="timeline-text">屏幕别当呀</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:56</span><span class="timeline-text">张÷，大主播了，飘了，天天挂个直播人不在</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:57</span><span class="timeline-text">哦耶，老张使劲（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:57</span><span class="timeline-text">1</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:57</span><span class="timeline-text">1点</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:57</span><span class="timeline-text">2点?</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:57</span><span class="timeline-text">你的面板</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">1点 看到了</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">gx阵容好复古</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">jk的沙皇啥成分</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">不看弹幕</span></div>
+        <div class="timeline-item"><span class="timeline-time">02:58</span><span class="timeline-text">右边</span></div>
+      </div>
+    </details>
+    <div class="footnote">未发生片段：待观察。本局结果待官方回填。</div>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP（真实）</h3>
+        <table>
+          <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>GX</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>Navi</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>IG</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>NAVI</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>IC</td><td>3</td><td>正2/负1</td></tr>
+            <tr><td>WBG</td><td>2</td><td>正0/负0</td></tr>
+            <tr><td>LGD</td><td>2</td><td>正0/负0</td></tr>
+            <tr><td>G2</td><td>1</td><td>正0/负0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>选手提及 TOP（真实）</h3>
+        <table>
+          <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>Oscar</td><td>1</td><td>正0/负0</td></tr>
+            <tr><td>Poby</td><td>1</td><td>正0/负0</td></tr>
+          </tbody>
+        </table>
+        <div class="footnote">选手特质统计：2条。长期库画像样本不足，暂不展开。</div>
+      </div>
+    </div>
+    <details>
+      <summary>队伍/人员长画像（折叠）</summary>
+      <div class="details-content">
+        <p><strong>GX：</strong>本场弹幕提及3次，无正负倾向。弹幕提及“gx阵容好复古”“又拿绝活剑魔打野了”，暗示GX可能依赖选手个人能力。</p>
+        <p><strong>NAVI：</strong>本场弹幕提及3次，无正负倾向。但负面评价如“navi好像要滚了”“nani不配赢”出现，反映观众信心不足。</p>
+        <p><strong>IC：</strong>提及3次，正2负1。弹幕多次称赞“ic的剑魔，无敌了”“ic的剑魔我记得很厉害”，同时有“剑魔进的去吗？”的质疑。</p>
+        <p><strong>Poby：</strong>提及1次，负面“poby为什么还能找到工作”。</p>
+        <p><strong>Oscar：</strong>提及1次，无正负倾向。</p>
+        <p class="muted">长期库画像样本不足，以上仅基于本场弹幕。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p style="font-size:14px;">本节点弹幕中涉及版本与联赛规律的讨论：</p>
+    <ul style="font-size:14px;padding-left:18px;">
+      <li>“为什么现在没什么人选猪了，大树蝎子更多” —— 反映当前版本打野选择趋势。</li>
+      <li>“上个时代的阵容” —— 观众认为NAVI阵容不符合版本。</li>
+      <li>“全是后期？” —— 质疑阵容节奏偏后期。</li>
+    </ul>
+    <div class="footnote">样本有限，无法形成系统性联赛规律结论。</div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p style="font-size:14px;">本节点为局中快照，无历史预测需回填。当前预测：</p>
+    <ul style="font-size:14px;padding-left:18px;">
+      <li>若GX剑魔发育良好，可能成为团战核心 → 待观察。</li>
+      <li>若NAVI阵容后期乏力，可能被翻盘 → 待观察。</li>
+    </ul>
+    <div class="footnote">结果待官方回填，局中·非终局。</div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div>
+        <h3>实际数据源</h3>
+        <ul style="font-size:13px;padding-left:16px;">
+          <li>规则层情报 JSON</li>
+          <li>弹幕切片（本节点）</li>
+          <li>官方 gameWins</li>
+        </ul>
+      </div>
+      <div>
+        <h3>预期数据源</h3>
+        <ul style="font-size:13px;padding-left:16px;">
+          <li>Riot window 阵容</li>
+          <li>官方实时数据</li>
+          <li>长期画像库</li>
+        </ul>
+      </div>
+      <div>
+        <h3>缺口</h3>
+        <ul style="font-size:13px;padding-left:16px;">
+          <li>完整阵容未回填</li>
+          <li>盘口数据缺失</li>
+          <li>长期画像样本不足</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footnote">
+      情报输出时间：2026-09-12 03:05 北京时间 · 数据节点：G5 MID-GAME · 弹幕总数264 · 活跃用户149 · 密度23.3条/分
+    </div>
+    <div class="footnote" style="margin-top:8px;">
+      <strong>本场长期沉淀点：</strong>NAVI 阵容选择引发“上个时代”质疑，GX 剑魔（IC）被反复提及为绝活支点，后续可跟踪该选手剑魔的长期表现与版本适配性。
+    </div>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
