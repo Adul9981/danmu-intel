@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报 · GIANTX vs NAVI · G3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.45;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: all 0.1s ease;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .badge {
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            white-space: nowrap;
+        }
+        .badge.warning {
+            background: #fff3e0;
+            color: #b85e00;
+        }
+        .badge.live {
+            background: #e3f2fd;
+            color: #0066cc;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0071e3;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .stat-item {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .stat-value.small {
+            font-size: 17px;
+        }
+        .stat-sub {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-top: 4px;
+        }
+        .signal-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .signal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 15px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .signal-item:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tag.risk {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .tag.anchor {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .tag.market {
+            background: #fff8e1;
+            color: #b26a00;
+        }
+        .tag.consensus {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        .tag.gray {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+        .tag.info {
+            background: #e0f2f1;
+            color: #00695c;
+        }
+        .tag.warn {
+            background: #fff3e0;
+            color: #b85e00;
+        }
+        .text-muted {
+            color: #6e6e73;
+            font-size: 14px;
+        }
+        .text-small {
+            font-size: 13px;
+            color: #6e6e73;
+        }
+        .divider {
+            height: 1px;
+            background: #f0f0f2;
+            margin: 18px 0;
+        }
+        details {
+            margin-top: 12px;
+        }
+        summary {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0071e3;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
+            user-select: none;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::before {
+            content: "▸";
+            font-size: 12px;
+            transition: transform 0.15s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .details-content {
+            padding: 12px 0 4px 20px;
+            font-size: 14px;
+            color: #3a3a3c;
+            line-height: 1.6;
+        }
+        .details-content p {
+            margin-bottom: 8px;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            padding: 4px 0;
+            border-bottom: 1px solid #f5f5f7;
+        }
+        .timeline-time {
+            color: #0071e3;
+            font-weight: 500;
+            white-space: nowrap;
+            min-width: 70px;
+        }
+        .timeline-text {
+            color: #1d1d1f;
+        }
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-mini th {
+            text-align: left;
+            font-weight: 500;
+            color: #6e6e73;
+            font-size: 12px;
+            padding: 6px 8px 6px 0;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .table-mini td {
+            padding: 8px 8px 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .table-mini tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight {
+            background: #f5f5f7;
+            border-radius: 8px;
+            padding: 2px 6px;
+            font-weight: 500;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-12 { margin-bottom: 12px; }
+        .gap-8 { gap: 8px; }
+        .flex-wrap { flex-wrap: wrap; }
+        .text-right { text-align: right; }
+        .opacity-70 { opacity: 0.7; }
+        .footer-note {
+            font-size: 12px;
+            color: #8e8e93;
+            text-align: center;
+            padding: 16px 0 8px;
+        }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 18px 16px; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">GIANTX-Natus Vincere 2026-09-11 g3 end</b></div>
+<div class="container">
+    <!-- 头部卡片 -->
+    <div class="card">
+        <div class="flex-between flex-wrap gap-8">
+            <div>
+                <h1>GIANTX vs Natus Vincere · G3</h1>
+                <div class="subhead">
+                    <span>2026-09-11 · 第3小局 · 局末/局间</span>
+                    <span class="badge warning">局中·非终局，结果待定</span>
+                    <span class="badge live">弹幕口径</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="stat-value small">GX 1 : 2 NAVI</div>
+                <div class="text-small">官方比分 · 系列赛</div>
+            </div>
+        </div>
+        <div class="grid-3 mt-12">
+            <div class="stat-item">
+                <div class="stat-label">弹幕总数</div>
+                <div class="stat-value">1,880</div>
+                <div class="stat-sub">活跃用户 657</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">弹幕密度</div>
+                <div class="stat-value">38.8</div>
+                <div class="stat-sub">条/分钟</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">灰信号</div>
+                <div class="stat-value">21</div>
+                <div class="stat-sub">条 · 观众质疑</div>
+            </div>
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="stat-item mb-12" style="background:#f0f7ff;">
+            <div class="flex-between flex-wrap gap-8">
+                <span style="font-weight:600;">比分/进度</span>
+                <span><span class="highlight">GX 1 : 2 NAVI</span> · 第3小局局末·待结算校准 · <span class="text-muted">弹幕口径·官方待回填</span></span>
+            </div>
+        </div>
+        <ul class="signal-list">
+            <li class="signal-item">
+                <span class="tag risk">风险</span>
+                <span>灰信号21条：观众质疑“假赛/买了/不打龙”，集中吐槽双方避战 → §2</span>
+            </li>
+            <li class="signal-item">
+                <span class="tag anchor">锚点</span>
+                <span>GX阵容被评“真挺好”，但梦魇飞谁存疑；NAVI阵容被指“真赢不了” → §3</span>
+            </li>
+            <li class="signal-item">
+                <span class="tag market">盘口</span>
+                <span>盘口13条：大人头难、小人头、互换人头、猝死风险讨论 → §4</span>
+            </li>
+            <li class="signal-item">
+                <span class="tag consensus">共识</span>
+                <span>“两边不打龙”成高频共识，30分钟仅2-3条龙，节奏拖沓 → §5</span>
+            </li>
+            <li class="signal-item">
+                <span class="tag info">决策落点</span>
+                <span>局末倾向NAVI拿下（弹幕“navi拿下了”），但灰信号提示谨慎 → §6</span>
+            </li>
+        </ul>
+        <div class="text-small mt-8" style="color:#0071e3;font-weight:500;">一句话决策落点：NAVI局末优势明显，但“假赛/不打龙”灰信号密集，建议观望结算。</div>
+    </div>
+    <!-- 1 比赛信息与结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-label">比赛</div>
+                <div style="font-weight:500;">GIANTX vs Natus Vincere</div>
+                <div class="text-small">2026-09-11 · 第3小局（G3）</div>
+                <div class="stat-label mt-8">节点</div>
+                <div>局末/局间（GAME-REVIEW）</div>
+                <div class="stat-label mt-8">官方系列比分</div>
+                <div><span class="highlight">GX 1 : 2 NAVI</span>（官方 gameWins）</div>
+            </div>
+            <div>
+                <div class="stat-label">本页状态</div>
+                <div><span class="badge warning">局中·非终局，结果待定</span></div>
+                <div class="stat-label mt-8">进度口径</div>
+                <div>弹幕口径 · 官方待回填</div>
+                <div class="stat-label mt-8">数据完整性</div>
+                <div class="text-small">规则层统计 + 弹幕切片（1880条）</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="text-small">
+            <span class="tag warn">核验提示</span> 本页为第3小局唯一页面，覆盖BP/选人、对线、关键团战、结局。系列比分以官方为准，禁止从弹幕推断比分。
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="flex-between mb-8">
+            <span class="text-muted">共21条灰信号 · 词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送</span>
+            <span class="badge gray">观众质疑，非结论</span>
+        </div>
+        <div class="grid-2">
+            <div class="stat-item">
+                <div class="stat-label">高频灰信号</div>
+                <div style="font-size:14px;margin-top:4px;">“两边都买了不打龙” ×3</div>
+                <div style="font-size:14px;">“都互相买了对面一龙？打龙犯法？” ×3</div>
+                <div style="font-size:14px;">“分析个毛，都是假赛”</div>
+                <div style="font-size:14px;">“kt二队全被买了 有什么用”</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">灰信号分布</div>
+                <div class="text-small">· 假赛/买了：8条</div>
+                <div class="text-small">· 不打龙/避战：9条</div>
+                <div class="text-small">· 送人头/故意送：4条</div>
+            </div>
+        </div>
+        <details>
+            <summary>灰信号原文样本（带时间戳）</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">kt二队全被买了 有什么用 买了的都在垫底</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:51</span><span class="timeline-text">分析个毛，都是假赛</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:11</span><span class="timeline-text">都互相买了对面一龙？打龙犯法？（x3）</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:11</span><span class="timeline-text">龙女阵容不拿小龙 有感觉吗 兄弟们（x2）</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:08</span><span class="timeline-text">一条龙都不打/</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:09</span><span class="timeline-text">14分钟了，，两边不打龙这把</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-label">GX 阵容（弹幕提及）</div>
+                <div style="font-size:14px;margin-top:4px;">· 梦魇（打野）— “GX这梦魇我都不知道飞谁”</div>
+                <div style="font-size:14px;">· 杰斯（x3）— “出杰斯吧”</div>
+                <div style="font-size:14px;">· 加里奥 — “中单能c选加里奥干嘛？”</div>
+                <div style="font-size:14px;">· 凯南 — “对莫德里奇的凯南保持质疑”</div>
+                <div class="text-small mt-8">弹幕评价：“GX这个阵容真挺好”</div>
+            </div>
+            <div>
+                <div class="stat-label">NAVI 阵容（弹幕提及）</div>
+                <div style="font-size:14px;margin-top:4px;">· 发条 — “这发条真的有伤害么？”</div>
+                <div style="font-size:14px;">· 烬 — “÷生烬，过来a人啊”</div>
+                <div style="font-size:14px;">· 鳄鱼 — “25分钟，一件半的鳄鱼”</div>
+                <div style="font-size:14px;">· 龙女 — “今年龙女要拿皮肤了”</div>
+                <div class="text-small mt-8">弹幕评价：“navi真赢不了吧，这阵容”</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="text-small">
+            <span class="tag info">BP后战绩情报</span> 无战绩情报提及。
+        </div>
+        <details>
+            <summary>BP相关弹幕时间线</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">兔子选就后悔</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:51</span><span class="timeline-text">杰斯（x3）</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:51</span><span class="timeline-text">中单能c选加里奥干嘛？</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:52</span><span class="timeline-text">出杰斯吧</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">GX玩的明白这个阵容吗</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">GX这梦魇我都不知道飞谁(｀⌒´メ)</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:55</span><span class="timeline-text">navi真赢不了吧，这阵容</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:56</span><span class="timeline-text">G X这个阵容真挺好</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:56</span><span class="timeline-text">tp不带吗右边</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:57</span><span class="timeline-text">lec是不是很少有人玩琪亚娜，最近琪亚娜胜率很高的</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="flex-between mb-8">
+            <span class="text-muted">盘口相关弹幕 13 条</span>
+            <span class="badge market">市场讨论</span>
+        </div>
+        <div class="grid-2">
+            <div class="stat-item">
+                <div class="stat-label">大人头/小人头</div>
+                <div style="font-size:14px;">“这盘铁铁的小人头”</div>
+                <div style="font-size:14px;">“这样搞 大人头有点难 感觉会猝死…”</div>
+                <div style="font-size:14px;">“还担心大人头？？？”</div>
+                <div style="font-size:14px;">“今晚全是大人头了”</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">人头互换/任务</div>
+                <div style="font-size:14px;">“继续接团互换人头”</div>
+                <div style="font-size:14px;">“人头任务还没结束，到了左边立马输看好了”</div>
+                <div style="font-size:14px;">“洛克前期那不到人头，后面就是发条玩具”</div>
+            </div>
+        </div>
+        <details>
+            <summary>盘口弹幕原文（带时间戳）</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">01:00</span><span class="timeline-text">嗦哪边</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:00</span><span class="timeline-text">噶右边，这还用想</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:35</span><span class="timeline-text">3把全中，500，变3500，睡觉了，你们慢慢欣赏</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:37</span><span class="timeline-text">lck才是主业，明天我说个数，T1 3-2韩华</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-label" style="color:#2e7d32;">正锚</div>
+                <div style="font-size:14px;">· GX阵容被评“真挺好”</div>
+                <div style="font-size:14px;">· NAVI拿下局末（弹幕“navi拿下了”）</div>
+                <div style="font-size:14px;">· 发条帽子出来那一刻就结束了</div>
+            </div>
+            <div>
+                <div class="stat-label" style="color:#c62828;">负锚</div>
+                <div style="font-size:14px;">· “navi真赢不了吧，这阵容”</div>
+                <div style="font-size:14px;">· “GX这梦魇我都不知道飞谁”</div>
+                <div style="font-size:14px;">· “这发条真的有伤害么？”</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-label">群体共识（+分歧+样本量）</div>
+        <div style="font-size:14px;margin-top:4px;">· 共识：两边不打龙，30分钟仅2-3条龙（样本：9条）</div>
+        <div style="font-size:14px;">· 共识：NAVI局末优势（样本：5条）</div>
+        <div style="font-size:14px;">· 分歧：GX阵容好坏（“真挺好” vs “玩不明白”）</div>
+        <div class="stat-label mt-8">灰信号条件预测</div>
+        <div style="font-size:14px;">· 若继续不打龙，观众质疑将进一步升级</div>
+        <div style="font-size:14px;">· 若NAVI拿下，灰信号可能转向“假赛实锤”</div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <div class="grid-2">
+            <div class="stat-item" style="background:#e8f5e9;">
+                <div class="stat-label" style="color:#2e7d32;">LONG 倾向</div>
+                <div style="font-size:14px;">· NAVI局末优势，弹幕“navi拿下了”</div>
+                <div style="font-size:14px;">· 发条装备成型，后期能力被认可</div>
+                <div style="font-size:14px;">· 官方比分NAVI领先，心理优势</div>
+            </div>
+            <div class="stat-item" style="background:#ffebee;">
+                <div class="stat-label" style="color:#c62828;">SHORT 风险</div>
+                <div style="font-size:14px;">· 灰信号密集，假赛/不打龙质疑</div>
+                <div style="font-size:14px;">· 阵容评价分歧，GX阵容被部分看好</div>
+                <div style="font-size:14px;">· 盘口“大人头难”暗示节奏拖沓</div>
+            </div>
+        </div>
+        <div class="text-small mt-8">
+            <span class="tag info">决策落点</span> 局末NAVI优势明显，但灰信号密集，建议观望结算，等待官方回填。
+        </div>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <div class="stat-label">G3 已发生片段 + 时间线</div>
+        <div class="text-small mb-8">基于弹幕时间戳（北京时间）</div>
+        <details open>
+            <summary>弹幕时间线（关键节点）</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">一人送一波大的</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">上把怎么赢的</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">GX这梦魇我都不知道飞谁(｀⌒´メ)</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:55</span><span class="timeline-text">navi真赢不了吧，这阵容</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:05</span><span class="timeline-text">3打2被杀完</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:08</span><span class="timeline-text">navi拿下了</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:08</span><span class="timeline-text">一条龙都不打/</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:09</span><span class="timeline-text">14分钟了，，两边不打龙这把</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:11</span><span class="timeline-text">都互相买了对面一龙？打龙犯法？（x3）</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:19</span><span class="timeline-text">25分钟，一件半的鳄鱼，打个蛋啊</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:25</span><span class="timeline-text">翻了（x4）</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:30</span><span class="timeline-text">这不一波（x2）</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:32</span><span class="timeline-text">3-1了，打野带飞了</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:34</span><span class="timeline-text">发条帽子出来那一刻就结束了</span></div>
+            </div>
+        </details>
+        <div class="text-small mt-8">未发生片段：待观察（局末结算后回填）。</div>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-label">队伍提及 TOP</div>
+                <div class="table-mini">
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>Navi / NAVI</span><span>16 (正0/负4)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>GX</span><span>15 (正1/负1)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>T1</span><span>14 (正0/负1)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>AL</span><span>8 (正0/负0)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>IC</span><span>7 (正0/负0)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>FNC</span><span>4 (正0/负2)</span></div>
+                    <div class="flex-between" style="padding:4px 0;"><span>KC</span><span>1 (正1/负0)</span></div>
+                </div>
+            </div>
+            <div>
+                <div class="stat-label">选手提及 TOP</div>
+                <div class="table-mini">
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>Poby</span><span>9 (正0/负4)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>Faker</span><span>7 (正0/负0)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>Oscar</span><span>4 (正0/负1)</span></div>
+                    <div class="flex-between" style="padding:4px 0;border-bottom:1px solid #f0f0f2;"><span>33</span><span>2 (正0/负0)</span></div>
+                    <div class="flex-between" style="padding:4px 0;"><span>donk</span><span>1 (正0/负0)</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-label">队伍特质统计（长期库）</div>
+        <div class="flex-wrap" style="display:flex;gap:12px;font-size:14px;margin-top:4px;">
+            <span>被翻守不住:3</span>
+            <span>韧性逆转:1</span>
+            <span>心态摆烂:2</span>
+            <span>慢热手热:3</span>
+            <span>打法风格:3</span>
+            <span>选手特质:2</span>
+        </div>
+        <details>
+            <summary>人员画像弹幕样本</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">00:52</span><span class="timeline-text">Poby 这条菜🐶 工资小偷</span></div>
+                <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">poby就是t1二队最菜战绩中单</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:32</span><span class="timeline-text">poby就是菜麻批</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:04</span><span class="timeline-text">samd可是把谢哥打退役的存在，相信samd！（x3）</span></div>
+                <div class="timeline-item"><span class="timeline-time">01:21</span><span class="timeline-text">这个打野待在navi 白瞎了，这两个韩援太垃圾了（x2）</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-label">版本/英雄讨论</div>
+                <div style="font-size:14px;">· 琪亚娜胜率高：“lec是不是很少有人玩琪亚娜，最近琪亚娜胜率很高的”</div>
+                <div style="font-size:14px;">· 龙女皮肤：“今年龙女要拿皮肤了”</div>
+                <div style="font-size:14px;">· 发条装备：“发条帽子出来那一刻就结束了”</div>
+            </div>
+            <div>
+                <div class="stat-label">联赛规律</div>
+                <div style="font-size:14px;">· LEC节奏拖沓：“lec的队伍都这么龟吗？看着打瞌睡”</div>
+                <div style="font-size:14px;">· 韩援争议：“Lec应该清算所有的韩援 这些人不厉害 还很奇怪”</div>
+                <div style="font-size:14px;">· 次级韩援投资：“基本没有战队会投资次级韩援了”</div>
+            </div>
+        </div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="text-muted">本节点为局末/局间，预测验证待官方结算后回填。</div>
+        <div class="stat-item mt-8" style="background:#f5f5f7;">
+            <div class="stat-label">当前预测（弹幕口径）</div>
+            <div style="font-size:14px;">· NAVI拿下G3（弹幕“navi拿下了”）</div>
+            <div style="font-size:14px;">· 系列赛NAVI 3-1 GX（弹幕“3-1了，打野带飞了”）</div>
+            <div class="text-small mt-4">待官方回填验证。</div>
+        </div>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div class="stat-item">
+                <div class="stat-label">实际数据源</div>
+                <div class="text-small">· 规则层情报JSON</div>
+                <div class="text-small">· 弹幕切片（1880条）</div>
+                <div class="text-small">· 官方比分（gameWins）</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">预期数据源</div>
+                <div class="text-small">· 官方结算数据</div>
+                <div class="text-small">· 完整BP记录</div>
+                <div class="text-small">· 经济曲线/龙团时间</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">缺口</div>
+                <div class="text-small">· 官方结算未回填</div>
+                <div class="text-small">· 本局经济/龙数精确值</div>
+                <div class="text-small">· 选手具体数据</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between flex-wrap gap-8">
+            <div class="text-small">
+                <span class="tag info">情报来源分层</span> 本场弹幕 / 前局弹幕 / 历史画像 / 盘口 / 推测·待验证
+            </div>
+            <div class="text-small">
+                <span class="tag warn">情报输出时间</span> 2026-09-12 01:45 北京时间
+            </div>
+        </div>
+        <div class="text-small mt-8 opacity-70">
+            页面显著标注「局中·非终局，结果待定」；进度以弹幕口径为准；内容聚焦本小局。
+        </div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background:#fafafc;">
+        <div class="flex-between">
+            <span style="font-weight:600;font-size:15px;">本场长期沉淀点</span>
+            <span class="badge">≥1条</span>
+        </div>
+        <div class="mt-8" style="font-size:14px;">
+            · 本局灰信号密集（21条），核心争议为“双方不打龙/假赛”，反映LEC赛区观众对节奏拖沓的敏感度极高，可作为后续同类赛事风险预警的参考锚点。
+        </div>
+    </div>
+    <div class="footer-note">
+        GIANTX vs Natus Vincere · G3 局中弹幕情报快照 · 数据基于真实弹幕样本 · 结果待官方回填
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
