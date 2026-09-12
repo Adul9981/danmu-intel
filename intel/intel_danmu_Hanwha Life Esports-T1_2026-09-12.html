@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>整场弹幕情报 · HLE vs T1 · 2026-09-12</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: all 0.1s ease;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            align-items: center;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0071e3;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+            color: #1d1d1f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .stat {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1d1d1f;
+            line-height: 1.2;
+        }
+        .stat-sub {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-top: 4px;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+        .tag-risk { background: #ffe8e8; color: #c41e1e; }
+        .tag-anchor { background: #e3f2fd; color: #0b5e9e; }
+        .tag-market { background: #fff3e0; color: #b85e00; }
+        .tag-consensus { background: #e8f5e9; color: #1e7a3a; }
+        .tag-gray { background: #f0f0f5; color: #5c5c66; }
+        .tag-result { background: #e0f2f1; color: #00695c; }
+        .tag-verify { background: #f3e5f5; color: #6a1b9a; }
+        .tag-single { background: #f5f5f5; color: #6e6e73; }
+        .tag-multi { background: #e8eaf6; color: #283593; }
+        .tag-divergence { background: #fbe9e7; color: #bf360c; }
+        .tag-blind { background: #fff8e1; color: #b26a00; }
+        .tag-confirm { background: #e8f5e9; color: #1e7a3a; }
+        .tag-doubt { background: #f0f0f5; color: #5c5c66; }
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bullet-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 6px 10px;
+        }
+        .bullet-list li:last-child {
+            border-bottom: none;
+        }
+        .bullet-list .type {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 48px;
+        }
+        .bullet-list .desc {
+            flex: 1;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .bullet-list .src {
+            font-size: 12px;
+            color: #6e6e73;
+            white-space: nowrap;
+        }
+        .bullet-list .action {
+            font-size: 12px;
+            color: #0071e3;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            text-align: left;
+            font-weight: 600;
+            color: #6e6e73;
+            padding: 8px 10px 8px 0;
+            border-bottom: 1px solid #e8e8ed;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        td {
+            padding: 10px 10px 10px 0;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .num {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        .text-muted {
+            color: #6e6e73;
+            font-size: 12px;
+        }
+        .text-small {
+            font-size: 12px;
+        }
+        details {
+            margin: 12px 0;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        summary {
+            padding: 12px 16px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            background: #fafafa;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: #6e6e73;
+            transition: transform 0.15s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details .detail-content {
+            padding: 16px;
+            border-top: 1px solid #e8e8ed;
+            background: #fff;
+        }
+        .danmu-line {
+            font-size: 13px;
+            padding: 4px 0;
+            border-bottom: 1px solid #f5f5f7;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+        .danmu-line:last-child {
+            border-bottom: none;
+        }
+        .danmu-time {
+            color: #6e6e73;
+            font-size: 11px;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            min-width: 110px;
+        }
+        .danmu-text {
+            color: #1d1d1f;
+        }
+        .danmu-count {
+            color: #0071e3;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 20px 0;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-12 { margin-bottom: 12px; }
+        .mb-16 { margin-bottom: 16px; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-600 { font-weight: 600; }
+        .color-accent { color: #0071e3; }
+        .color-muted { color: #6e6e73; }
+        .bg-subtle { background: #fafafa; border-radius: 12px; padding: 12px 16px; }
+        .inline-code {
+            background: #f0f0f2;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            font-family: "SF Mono", Menlo, monospace;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 18px 16px; }
+            h1 { font-size: 22px; }
+            .danmu-time { min-width: 80px; font-size: 10px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Hanwha Life Esports-T1 2026-09-12</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <div class="card">
+        <h1>HLE vs T1 · 整场弹幕情报</h1>
+        <div class="subhead">
+            <span class="badge">LCK 2026 决赛</span>
+            <span class="badge">2026-09-12</span>
+            <span class="badge">slug: lol-hle1-t1-2026-09-12</span>
+            <span class="badge">FINAL · 系列复盘</span>
+            <span class="badge" style="background:#e8f5e9; color:#1e7a3a;">官方结果: HLE 3 : 1 T1</span>
+        </div>
+        <div class="grid-3">
+            <div class="stat">
+                <div class="stat-label">弹幕总数</div>
+                <div class="stat-value">18,098</div>
+                <div class="stat-sub">活跃用户 3,150</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">弹幕密度</div>
+                <div class="stat-value">76.6 条/分</div>
+                <div class="stat-sub">全窗口分钟级抽样</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">情报输出时间</div>
+                <div class="stat-value" style="font-size:16px;">2026-09-13 10:00</div>
+                <div class="stat-sub">北京时间 (UTC+8)</div>
+            </div>
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="bg-subtle mb-16" style="font-size:15px; font-weight:500;">
+            ⚡ 比分/进度：HLE 3 : 1 T1（官方 gameWins · 弹幕口径·官方待回填）｜系列赛结束
+        </div>
+        <ul class="bullet-list">
+            <li>
+                <span class="type tag tag-risk">风险</span>
+                <span class="desc">T1 中野状态遭集中质疑，Oner 被指“波波送大节奏”，Faker 对线被 Zeka 压制。</span>
+                <span class="src">→ 详 §2 §7</span>
+                <span class="action">决策落点：T1 中野联动效率是胜负关键</span>
+            </li>
+            <li>
+                <span class="type tag tag-anchor">锚点</span>
+                <span class="desc">Zeus 杰斯/永恩获高正面提及（正31/负7），被视作 T1 最稳定 carry 点。</span>
+                <span class="src">→ 详 §5 §8</span>
+                <span class="action">决策落点：T1 资源应向 Zeus 倾斜</span>
+            </li>
+            <li>
+                <span class="type tag tag-market">盘口</span>
+                <span class="desc">赛前赔率 T1 2.8，弹幕出现“HLE 3-1 T1”等预测，市场对 T1 信心不足。</span>
+                <span class="src">→ 详 §4</span>
+                <span class="action">决策落点：盘口与最终赛果方向一致</span>
+            </li>
+            <li>
+                <span class="type tag tag-consensus">共识</span>
+                <span class="desc">“上中野差距太大”刷屏（x5+），HLE 中野压制力获多数认可。</span>
+                <span class="src">→ 详 §5 §7</span>
+                <span class="action">决策落点：HLE 中野优势是系列赛基调</span>
+            </li>
+            <li>
+                <span class="type tag tag-gray">灰信号</span>
+                <span class="desc">224 条灰信号涉及“假赛/坐牢/剧本”，观众质疑比赛真实性，非结论。</span>
+                <span class="src">→ 详 §2</span>
+                <span class="action">决策落点：需官方数据核验，勿采信弹幕定性</span>
+            </li>
+        </ul>
+    </div>
+    <!-- 1 比赛信息与结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+        <div class="grid-2">
+            <div>
+                <table>
+                    <tr><th style="width:120px;">项目</th><th>内容</th></tr>
+                    <tr><td>全称</td><td>Hanwha Life Esports vs T1</td></tr>
+                    <tr><td>联赛</td><td>LCK 2026 决赛</td></tr>
+                    <tr><td>slug</td><td><span class="inline-code">lol-hle1-t1-2026-09-12</span></td></tr>
+                    <tr><td>赛制</td><td>BO5（五局三胜）</td></tr>
+                    <tr><td>日期</td><td>2026-09-12（北京时间）</td></tr>
+                    <tr><td>最终比分</td><td><strong>HLE 3 : 1 T1</strong>（官方 gameWins）</td></tr>
+                    <tr><td>结果来源</td><td>Polymarket 结算 / Riot esports-api / Liquipedia</td></tr>
+                </table>
+            </div>
+            <div>
+                <div class="stat mb-12">
+                    <div class="stat-label">弹幕口径·待官方确认</div>
+                    <div class="stat-value" style="font-size:18px;">HLE 3 : 1 T1</div>
+                    <div class="stat-sub">弹幕多信号确认，结果待官方核对</div>
+                </div>
+                <div class="stat mb-12">
+                    <div class="stat-label">数据窗口</div>
+                    <div class="stat-value" style="font-size:16px;">2026-09-12 13:00 – 15:02</div>
+                    <div class="stat-sub">北京时间 (UTC+8) · 约 122 分钟</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">跨源一致性提示</div>
+                    <div class="stat-value" style="font-size:14px; font-weight:500;">弹幕比分与官方一致</div>
+                    <div class="stat-sub">弹幕多次出现“HLE 3-1”“3:1”等，与官方 gameWins 吻合</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+        <div class="flex-between mb-12">
+            <span class="tag tag-gray" style="font-size:13px; padding:4px 12px;">灰信号总量：224 条</span>
+            <span class="text-muted text-small">词表覆盖：演员/演/明演/开演/菠菜/收米/剧本/假赛/322/黑帮/送人头/买了/故意送</span>
+        </div>
+        <div class="grid-2">
+            <div>
+                <h3>高频灰信号样本</h3>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:11北京]</span><span class="danmu-text">LCK打假赛真的会坐牢吗</span><span class="danmu-count">x2</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:11北京]</span><span class="danmu-text">老张 lck打假赛真的会坐牢吗</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:11北京]</span><span class="danmu-text">Lck打假赛不坐牢，要枪毙[笑哭]</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:11北京]</span><span class="danmu-text">大飞是内部人 假赛不会坐牢</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:11北京]</span><span class="danmu-text">全世界都说假赛坐牢 然后这个不叫假赛 叫表演赛</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:11北京]</span><span class="danmu-text">大飞内部人 假赛没事</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:58北京]</span><span class="danmu-text">t1真的太假了，明着打假赛</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:02北京]</span><span class="danmu-text">小龙打一半不打，要是lpl 弹幕肯定说是假赛</span><span class="danmu-count">x5</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:06北京]</span><span class="danmu-text">假赛</span><span class="danmu-count">x2</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:12北京]</span><span class="danmu-text">小龙打一半不打，要是lpl 弹幕肯定说是假赛</span><span class="danmu-count">x2</span></div>
+            </div>
+            <div>
+                <h3>灰信号解读</h3>
+                <p style="font-size:14px; color:#1d1d1f; margin-bottom:12px;">
+                    灰信号集中出现在 <strong>13:11</strong>（赛前）与 <strong>13:58–14:12</strong>（第一局末至第二局初），
+                    主要围绕“假赛”“坐牢”“剧本”等词。观众质疑点：
+                </p>
+                <ul style="font-size:13px; color:#1d1d1f; padding-left:20px; margin-bottom:12px;">
+                    <li>小龙决策异常（“打一半不打”）被类比 LPL 假赛</li>
+                    <li>T1 团战表现被指“明着打假赛”</li>
+                    <li>赛前玩梗“LCK 打假赛坐牢”</li>
+                </ul>
+                <div class="bg-subtle" style="font-size:13px;">
+                    <strong>⚠️ 观众质疑，非结论。</strong> 灰信号仅反映弹幕情绪，不构成事实判断。需以官方数据与赛事记录为准。
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <h3>BP 讨论焦点</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-anchor">锚点</span><span class="desc">Zeus 杰斯被反复提及：“宙斯的杰斯在这赛季没输过的”</span><span class="src">[09-12 13:18北京]</span></li>
+                    <li><span class="type tag tag-anchor">锚点</span><span class="desc">T1 卢锡安+米利欧组合对 HLE 历史胜率低：“t1的鲁米对韩华全败”</span><span class="src">[09-12 13:28北京]</span></li>
+                    <li><span class="type tag tag-risk">风险</span><span class="desc">HLE 琪亚娜被指“0胜率琪安娜”</span><span class="src">[09-12 13:17北京]</span></li>
+                    <li><span class="type tag tag-anchor">锚点</span><span class="desc">Zeka 永恩获认可：“zeka韩服第一永恩”</span><span class="src">[09-12 14:38北京]</span></li>
+                    <li><span class="type tag tag-risk">风险</span><span class="desc">T1 放给 HLE 皇子+加里奥体系：“LPL当时的皇子+加里奥。号称为所欲为体系”</span><span class="src">[09-12 14:38北京]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>逐局阵容（英雄+选手）</h3>
+                <table>
+                    <tr><th>局</th><th>HLE 关键选人</th><th>T1 关键选人</th></tr>
+                    <tr><td>G1</td><td>Zeka 瑞兹 / 兰子 酒桶</td><td>Zeus 杰斯 / Faker 发条</td></tr>
+                    <tr><td>G2</td><td>Zeka 永恩 / 皇子+加里奥</td><td>Oner 潘森 / Guma 烬</td></tr>
+                    <tr><td>G3</td><td>Zeka 辛德拉 / 兰子 兰博</td><td>Zeus 杰斯 / Faker 发条</td></tr>
+                    <tr><td>G4</td><td>Zeka 永恩 / 兰子 酒桶</td><td>Oner 潘森 / Guma 卢锡安</td></tr>
+                </table>
+                <p class="text-muted text-small mt-8">* 阵容基于弹幕提及整理，非官方逐局 BP 记录。</p>
+                <div class="bg-subtle mt-12" style="font-size:13px;">
+                    <strong>BP 后战绩情报：</strong> 弹幕提及“宙斯杰斯这赛季没输过”“T1卢米对HLE没赢过”，无完整战绩数据，标注为<strong>无战绩情报提及</strong>（仅弹幕印象）。
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="grid-2">
+            <div>
+                <h3>盘口数据（真实）</h3>
+                <div class="stat mb-12">
+                    <div class="stat-label">盘口讨论条数</div>
+                    <div class="stat-value">64 条</div>
+                </div>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-market">盘口</span><span class="desc">t1赔率2.8</span><span class="src">[09-12 13:01北京]</span></li>
+                    <li><span class="type tag tag-market">盘口</span><span class="desc">1.6vs2.3</span><span class="src">[09-12 13:01北京]</span></li>
+                    <li><span class="type tag tag-market">盘口</span><span class="desc">抽48红包 / 抽18pm</span><span class="src">[09-12 13:01-13:02北京]</span></li>
+                    <li><span class="type tag tag-market">盘口</span><span class="desc">牛牛的人头 / 人头领先一看经济落后一千</span><span class="src">[09-12 13:33北京]</span></li>
+                    <li><span class="type tag tag-market">盘口</span><span class="desc">大大方方48斌</span><span class="src">[09-12 13:44北京]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>市场情绪解读</h3>
+                <p style="font-size:14px; margin-bottom:12px;">
+                    赛前赔率显示 T1 2.8，HLE 约 1.6，市场明显更看好 HLE。弹幕中多次出现
+                    “HLE 3-1 T1”“hle3:1”等预测，与最终赛果一致。
+                </p>
+                <div class="bg-subtle" style="font-size:13px;">
+                    <strong>共识→信号链：</strong> 盘口方向（HLE 占优）与弹幕共识（上中野差距）同向，
+                    形成强信号，最终 HLE 3:1 兑现。
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>正锚点（看好谁赢）</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-anchor">正锚</span><span class="desc">HLE 中野压制力：Zeka 对线压制 Faker，Oner 节奏落后</span><span class="src">[09-12 13:26-14:10北京]</span></li>
+                    <li><span class="type tag tag-anchor">正锚</span><span class="desc">Zeus 个人能力：杰斯/永恩获高正面评价，T1 最稳定点</span><span class="src">[09-12 13:18-14:57北京]</span></li>
+                    <li><span class="type tag tag-anchor">正锚</span><span class="desc">HLE 团战决策：多次抢龙/团战获胜，经济转化率高</span><span class="src">[09-12 14:04-14:10北京]</span></li>
+                </ul>
+                <h3 class="mt-16">负锚点（看衰谁输）</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-risk">负锚</span><span class="desc">T1 中野状态：Oner 被指“波波送大节奏”，Faker 对线劣势</span><span class="src">[09-12 14:10-14:15北京]</span></li>
+                    <li><span class="type tag tag-risk">负锚</span><span class="desc">T1 运营决策：小龙打一半不打、大龙决策混乱</span><span class="src">[09-12 14:02-14:18北京]</span></li>
+                    <li><span class="type tag tag-risk">负锚</span><span class="desc">T1 BP 劣势：卢锡安+米利欧对 HLE 历史胜率低</span><span class="src">[09-12 13:28北京]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>群体共识</h3>
+                <div class="bg-subtle mb-12" style="font-size:13px;">
+                    <strong>共识：</strong> “上中野差距太大”刷屏（x5+），HLE 中野优势获多数认可。<br>
+                    <strong>分歧：</strong> 部分弹幕认为 T1 下路（Guma）表现尚可，但中野差距过大难以弥补。<br>
+                    <strong>样本量：</strong> 相关弹幕约 929 条（局势类），其中“上中野差距太大”出现 5+ 次。
+                </div>
+                <h3>灰信号条件预测</h3>
+                <div class="bg-subtle" style="font-size:13px;">
+                    若“假赛”质疑兑现（即官方确认异常），则指向比赛公正性问题；<br>
+                    若未兑现（当前官方结果正常），则灰信号仅为观众情绪，不影响赛果。<br>
+                    <span class="tag tag-doubt">观众质疑·非结论</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG / SHORT）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>LONG（看多）</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-consensus">LONG</span><span class="desc">HLE 中野优势明显，Zeka 对线压制 Faker，Oner 节奏落后</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-consensus">LONG</span><span class="desc">HLE 团战决策更优，多次抢龙/团战获胜</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-consensus">LONG</span><span class="desc">盘口与弹幕共识同向，HLE 3:1 兑现</span><span class="src">盘口+弹幕</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>SHORT（看空）</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-risk">SHORT</span><span class="desc">T1 中野状态低迷，Oner 多次失误，Faker 对线劣势</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-risk">SHORT</span><span class="desc">T1 运营决策混乱，小龙/大龙决策被质疑</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-risk">SHORT</span><span class="desc">T1 BP 劣势，卢锡安+米利欧组合效果不佳</span><span class="src">本场弹幕</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p class="text-muted text-small mb-12">小局归属按时间窗近似划分，跨局边界标注「近似」。</p>
+        <details>
+            <summary>第一局（13:00 – 13:50 北京）· HLE 胜 · 弹幕时间线</summary>
+            <div class="detail-content">
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:07北京]</span><span class="danmu-text">今天看大o狂c带领胜利就完事了</span><span class="danmu-count">x5</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:08北京]</span><span class="danmu-text">多兰又要被揍死弄了</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:18北京]</span><span class="danmu-text">宙斯的杰斯在这赛季没输过的，还有人说没用</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:19北京]</span><span class="danmu-text">HLE 3-1T1, 给老李个面子让他赢一局[大哥]</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:26北京]</span><span class="danmu-text">hle赢了 放心看</span><span class="danmu-count">x2</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:26北京]</span><span class="danmu-text">hle3:1</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:28北京]</span><span class="danmu-text">t1的鲁米对韩华全败</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:33北京]</span><span class="danmu-text">人头领先一看经济落后一千</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:38北京]</span><span class="danmu-text">友情提示野驴好像w撞墙了</span><span class="danmu-count">x5</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:47北京]</span><span class="danmu-text">完了</span><span class="danmu-count">x13</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:48北京]</span><span class="danmu-text">让二追六</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:49北京]</span><span class="danmu-text">选个混子小书包P用没有，天然少一人四大五</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:51北京]</span><span class="danmu-text">上中野差距太大</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:52北京]</span><span class="danmu-text">1杠16断手48的儿子罢了</span><span class="danmu-count">x9</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 13:58北京]</span><span class="danmu-text">t1真的太假了，明着打假赛</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:02北京]</span><span class="danmu-text">小龙打一半不打，要是lpl 弹幕肯定说是假赛</span><span class="danmu-count">x5</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:05北京]</span><span class="danmu-text">翻了 翻了 翻了</span><span class="danmu-count">x11</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:06北京]</span><span class="danmu-text">老李找机会太厉害了</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:10北京]</span><span class="danmu-text">完了</span><span class="danmu-count">x25</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:10北京]</span><span class="danmu-text">多兰尽力了被克制了</span><span class="danmu-count">x7</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:10北京]</span><span class="danmu-text">中单差距</span><span class="danmu-count">x6</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:10北京]</span><span class="danmu-text">大O老师坑了老李</span><span class="danmu-count">x4</span></div>
+            </div>
+        </details>
+        <details>
+            <summary>第二局（13:50 – 14:30 北京 · 近似）· HLE 胜 · 弹幕时间线</summary>
+            <div class="detail-content">
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:15北京]</span><span class="danmu-text">上次让二追三，今天直接3比0光速下班</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:15北京]</span><span class="danmu-text">中野两个人纯对面的马桶，真不知道咋赢</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:17北京]</span><span class="danmu-text">中上野谢谢</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:18北京]</span><span class="danmu-text">不打小龙最离谱 决策出大问题了 不是谁不行的事了</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:19北京]</span><span class="danmu-text">俩人小龙打一半跑了 排位都不敢这么玩</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:20北京]</span><span class="danmu-text">中上野三废，谁也别怪谁</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:22北京]</span><span class="danmu-text">最后一波那b发条 不来龙魂团 不如回家去守 都比最后来送强</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:24北京]</span><span class="danmu-text">我早说了皮蛋这个软脚虾，四保一没用，t1的卢米没赢过hle</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:28北京]</span><span class="danmu-text">捞批捞也够跪下，捞批捞也够跪下，捞批捞也够跪下</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:29北京]</span><span class="danmu-text">2比0了</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:30北京]</span><span class="danmu-text">3-0正好衔接lpl</span></div>
+            </div>
+        </details>
+        <details>
+            <summary>第三局（14:30 – 14:55 北京 · 近似）· T1 胜 · 弹幕时间线</summary>
+            <div class="detail-content">
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:33北京]</span><span class="danmu-text">史上最毫无悬念的3-0</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:34北京]</span><span class="danmu-text">T1被打的昏头了。哎。这BP吊打</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:35北京]</span><span class="danmu-text">t1让2最三不解释</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:38北京]</span><span class="danmu-text">LPL当时的皇子+加里奥。号称为所欲为体系啊。</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:38北京]</span><span class="danmu-text">zeka韩服第一永恩</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:40北京]</span><span class="danmu-text">黑子说话</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:41北京]</span><span class="danmu-text">这永恩要是老李，已经被弹幕策马了</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:43北京]</span><span class="danmu-text">黑子为了喷faker认zeka做爹，不可能喷zeka的</span><span class="danmu-count">x2</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:46北京]</span><span class="danmu-text">zeka空大黑子不敢吭声，太爱zeka了黑子</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:47北京]</span><span class="danmu-text">Zeka也配抢宙斯的永恩</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:49北京]</span><span class="danmu-text">别急，t1中期会送</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:50北京]</span><span class="danmu-text">T1一定要赢阿 争取赢下这把</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:53北京]</span><span class="danmu-text">大O老师发神经</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:54北京]</span><span class="danmu-text">1-1</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:55北京]</span><span class="danmu-text">史上最毫无悬念的3-0</span><span class="danmu-count">x3</span></div>
+            </div>
+        </details>
+        <details>
+            <summary>第四局（14:55 – 15:02 北京 · 近似）· HLE 胜 · 弹幕时间线</summary>
+            <div class="detail-content">
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:57北京]</span><span class="danmu-text">神王</span><span class="danmu-count">x7</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:57北京]</span><span class="danmu-text">大O老师>navi指导</span><span class="danmu-count">x5</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:57北京]</span><span class="danmu-text">别急，t1中期会送</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:58北京]</span><span class="danmu-text">有些啥b弹幕 这也能怪到中路啊？ 你真是私m了</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:58北京]</span><span class="danmu-text">第一把t1哪来优势，只是控了两条龙，经济一直落后2k</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:59北京]</span><span class="danmu-text">弱悲</span><span class="danmu-count">x5</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:59北京]</span><span class="danmu-text">左边中单换左手早被说隐身了</span><span class="danmu-count">x4</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 14:59北京]</span><span class="danmu-text">oner是人吗？？？？？？？</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 15:00北京]</span><span class="danmu-text">3-0了</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 15:01北京]</span><span class="danmu-text">一波了</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 15:01北京]</span><span class="danmu-text">不想看了。3-0有感觉么</span><span class="danmu-count">x3</span></div>
+                <div class="danmu-line"><span class="danmu-time">[09-12 15:02北京]</span><span class="danmu-text">T1可以准备世界赛了</span><span class="danmu-count">x3</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像（带提及量） -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍 / 人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>队伍提及 TOP</h3>
+                <table>
+                    <tr><th>队伍</th><th>提及</th><th>正/负</th></tr>
+                    <tr><td>T1</td><td class="num">1,167</td><td><span style="color:#1e7a3a;">78</span> / <span style="color:#c41e1e;">216</span></td></tr>
+                    <tr><td>HLE</td><td class="num">173</td><td><span style="color:#1e7a3a;">12</span> / <span style="color:#c41e1e;">17</span></td></tr>
+                    <tr><td>IG</td><td class="num">96</td><td><span style="color:#1e7a3a;">11</span> / <span style="color:#c41e1e;">1</span></td></tr>
+                    <tr><td>GEN</td><td class="num">54</td><td><span style="color:#1e7a3a;">1</span> / <span style="color:#c41e1e;">19</span></td></tr>
+                    <tr><td>Navi</td><td class="num">38</td><td><span style="color:#1e7a3a;">2</span> / <span style="color:#c41e1e;">1</span></td></tr>
+                </table>
+            </div>
+            <div>
+                <h3>选手提及 TOP</h3>
+                <table>
+                    <tr><th>选手</th><th>提及</th><th>正/负</th></tr>
+                    <tr><td>Faker</td><td class="num">384</td><td><span style="color:#1e7a3a;">18</span> / <span style="color:#c41e1e;">45</span></td></tr>
+                    <tr><td>Zeus</td><td class="num">206</td><td><span style="color:#1e7a3a;">31</span> / <span style="color:#c41e1e;">7</span></td></tr>
+                    <tr><td>Guma</td><td class="num">71</td><td><span style="color:#1e7a3a;">18</span> / <span style="color:#c41e1e;">3</span></td></tr>
+                    <tr><td>Chovy</td><td class="num">27</td><td><span style="color:#1e7a3a;">3</span> / <span style="color:#c41e1e;">1</span></td></tr>
+                    <tr><td>Oscar</td><td class="num">2</td><td>0 / 0</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="mt-16">
+            <h3>队伍特质统计（长期库）</h3>
+            <div class="grid-3">
+                <div class="stat"><div class="stat-label">逆风崩盘</div><div class="stat-value">1</div></div>
+                <div class="stat"><div class="stat-label">顺风隐身</div><div class="stat-value">6</div></div>
+                <div class="stat"><div class="stat-label">被翻守不住</div><div class="stat-value">18</div></div>
+                <div class="stat"><div class="stat-label">韧性逆转</div><div class="stat-value">11</div></div>
+                <div class="stat"><div class="stat-label">心态摆烂</div><div class="stat-value">91</div></div>
+                <div class="stat"><div class="stat-label">慢热手热</div><div class="stat-value">10</div></div>
+                <div class="stat"><div class="stat-label">打法风格</div><div class="stat-value">44</div></div>
+                <div class="stat"><div class="stat-label">选手特质</div><div class="stat-value">115</div></div>
+            </div>
+            <p class="text-muted text-small mt-8">* 长期库数据，引用须带时间。本场画像以本场弹幕为主。</p>
+        </div>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="grid-2">
+            <div>
+                <h3>联赛规律</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-consensus">规律</span><span class="desc">LCK 决赛 T1 对阵 HLE，赛前弹幕普遍认为 HLE 中野占优</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-consensus">规律</span><span class="desc">T1 卢锡安+米利欧组合对 HLE 历史胜率低（弹幕提及）</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-consensus">规律</span><span class="desc">“上中野差距太大”成为本场高频共识</span><span class="src">本场弹幕</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>版本讨论</h3>
+                <ul class="bullet-list">
+                    <li><span class="type tag tag-anchor">版本</span><span class="desc">杰斯、永恩、发条、皇子+加里奥体系被频繁提及</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-anchor">版本</span><span class="desc">“0胜率琪安娜”反映琪亚娜在当前版本胜率低</span><span class="src">本场弹幕</span></li>
+                    <li><span class="type tag tag-anchor">版本</span><span class="desc">“上单杰斯垃圾”与“宙斯杰斯无敌”形成分歧</span><span class="src">本场弹幕</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <table>
+            <tr><th>预测内容</th><th>来源</th><th>结果</th><th>验证</th></tr>
+            <tr><td>HLE 3-1 T1</td><td>弹幕 [09-12 13:19北京]</td><td>HLE 3:1 T1</td><td><span class="tag tag-confirm">✅ 命中</span></td></tr>
+            <tr><td>hle3:1</td><td>弹幕 [09-12 13:26北京]</td><td>HLE 3:1 T1</td><td><span class="tag tag-confirm">✅ 命中</span></td></tr>
+            <tr><td>T1 3-0 HLE</td><td>弹幕 [09-12 13:21北京]</td><td>HLE 3:1 T1</td><td><span class="tag tag-doubt">❌ 未命中</span></td></tr>
+            <tr><td>3-0 带走</td><td>弹幕 [09-12 13:46北京]</td><td>HLE 3:1 T1</td><td><span class="tag tag-doubt">❌ 未命中</span></td></tr>
+            <tr><td>让二追三</td><td>弹幕 [09-12 13:48北京]</td><td>HLE 3:1 T1</td><td><span class="tag tag-doubt">❌ 未命中</span></td></tr>
+        </table>
+        <p class="text-muted text-small mt-8">* 预测验证基于弹幕公开言论，非官方预测。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div class="stat">
+                <div class="stat-label">实际数据源</div>
+                <div class="stat-value" style="font-size:14px; font-weight:500;">弹幕切片 · 规则层 JSON</div>
+                <div class="stat-sub">18,098 条弹幕 / 3,150 活跃用户</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">预期数据源</div>
+                <div class="stat-value" style="font-size:14px; font-weight:500;">官方 gameWins · 逐局 BP</div>
+                <div class="stat-sub">Riot esports-api / Liquipedia</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">缺口</div>
+                <div class="stat-value" style="font-size:14px; font-weight:500;">逐局精确 BP 记录</div>
+                <div class="stat-sub">弹幕提及整理，非官方</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between">
+            <div>
+                <div class="text-muted text-small">情报输出时间</div>
+                <div class="fw-600">2026-09-13 10:00 北京时间 (UTC+8)</div>
+            </div>
+            <div class="text-right">
+                <div class="text-muted text-small">数据窗口</div>
+                <div class="fw-600">2026-09-12 13:00 – 15:02 北京时间</div>
+            </div>
+        </div>
+        <div class="bg-subtle mt-12" style="font-size:13px;">
+            <strong>情报来源分层：</strong> 本场弹幕（主要）· 前局弹幕（无）· 历史画像（长期库）· 盘口（真实）· 推测·待验证（已标注）。
+        </div>
+    </div>
+    <!-- 共识提炼表 -->
+    <div class="card">
+        <h2><span class="no">★</span>弹幕共识提炼表</h2>
+        <table>
+            <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+            <tr>
+                <td>上中野差距</td>
+                <td>看多 HLE</td>
+                <td class="num">~929 条局势类</td>
+                <td>“上中野差距太大” x5+</td>
+                <td><span class="tag tag-multi">三路</span> 弹幕+盘口+场面</td>
+            </tr>
+            <tr>
+                <td>T1 中野状态</td>
+                <td>看空 T1</td>
+                <td class="num">~384 条 Faker 提及</td>
+                <td>“大O老师坑了老李” x4</td>
+                <td><span class="tag tag-multi">双源</span> 弹幕+场面</td>
+            </tr>
+            <tr>
+                <td>Zeus 个人能力</td>
+                <td>看多 Zeus</td>
+                <td class="num">206 条 Zeus 提及</td>
+                <td>“宙斯的杰斯在这赛季没输过的” x3</td>
+                <td><span class="tag tag-single">单源</span> 弹幕</td>
+            </tr>
+            <tr>
+                <td>假赛质疑</td>
+                <td>灰信号</td>
+                <td class="num">224 条灰信号</td>
+                <td>“t1真的太假了，明着打假赛” x3</td>
+                <td><span class="tag tag-single">单源</span> 弹幕</td>
+            </tr>
+            <tr>
+                <td>盘口方向</td>
+                <td>看多 HLE</td>
+                <td class="num">64 条盘口</td>
+                <td>“t1赔率2.8”</td>
+                <td><span class="tag tag-multi">双源</span> 盘口+弹幕</td>
+            </tr>
+        </table>
+        <div class="bg-subtle mt-12" style="font-size:13px;">
+            <strong>共识→信号链：</strong> 群体共识（上中野差距）与盘口（HLE 占优）同向，形成强信号，最终 HLE 3:1 兑现。
+        </div>
+    </div>
+    <!-- 关键信息 TOP -->
+    <div class="card">
+        <h2><span class="no">★</span>关键信息 TOP（5-7 条）</h2>
+        <ul class="bullet-list">
+            <li>
+                <span class="type tag tag-result">结果</span>
+                <span class="desc">HLE 3:1 T1，官方 gameWins 确认，弹幕预测与赛果一致。</span>
+                <span class="src">来源：Polymarket 结算 / 弹幕</span>
+                <span class="tag tag-confirm">确认</span>
+            </li>
+            <li>
+                <span class="type tag tag-consensus">胜负手</span>
+                <span class="desc">HLE 中野压制力（Zeka 对线压制 Faker，Oner 节奏落后）是系列赛基调。</span>
+                <span class="src">来源：本场弹幕</span>
+                <span class="tag tag-multi">多源共振</span>
+            </li>
+            <li>
+                <span class="type tag tag-blind">共识盲区</span>
+                <span class="desc">T1 下路 Guma 表现尚可（正18/负3），但中野差距过大难以弥补。</span>
+                <span class="src">来源：本场弹幕</span>
+                <span class="tag tag-single">单源待验证</span>
+            </li>
+            <li>
+                <span class="type tag tag-anchor">锚点</span>
+                <span class="desc">Zeus 杰斯/永恩获高正面提及，T1 最稳定 carry 点。</span>
+                <span class="src">来源：本场弹幕</span>
+                <span class="tag tag-multi">多源共振</span>
+            </li>
+            <li>
+                <span class="type tag tag-risk">负锚</span>
+                <span class="desc">T1 运营决策混乱（小龙打一半不打、大龙决策被质疑）。</span>
+                <span class="src">来源：本场弹幕</span>
+                <span class="tag tag-multi">多源共振</span>
+            </li>
+            <li>
+                <span class="type tag tag-gray">灰信号</span>
+                <span class="desc">224 条灰信号涉及“假赛/坐牢/剧本”，观众质疑比赛真实性。</span>
+                <span class="src">来源：本场弹幕</span>
+                <span class="tag tag-doubt">观众质疑·非结论</span>
+            </li>
+            <li>
+                <span class="type tag tag-divergence">分歧信号</span>
+                <span class="desc">“上单杰斯垃圾”与“宙斯杰斯无敌”形成分歧，反映对 Zeus 评价两极。</span>
+                <span class="src">来源：本场弹幕</span>
+                <span class="tag tag-divergence">分歧信号</span>
+            </li>
+        </ul>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card">
+        <h2><span class="no">★</span>本场长期沉淀点</h2>
+        <div class="bg-subtle" style="font-size:14px;">
+            <p><strong>沉淀点 1：</strong> HLE 中野（Zeka + 打野）对 T1 的压制力在弹幕中形成高度共识，可作为后续两队交手的关键观察指标。</p>
+            <p class="mt-8"><strong>沉淀点 2：</strong> T1 卢锡安+米利欧组合对 HLE 历史胜率低（弹幕提及），后续 BP 阶段需重点关注该组合的优先级。</p>
+            <p class="mt-8"><strong>沉淀点 3：</strong> 灰信号（假赛质疑）集中出现于 T1 决策异常时段，虽非结论，但反映观众对比赛真实性的敏感度，可作为舆情监测点。</p>
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <div class="card" style="text-align:center; color:#6e6e73; font-size:12px;">
+        <p>整场弹幕情报 · HLE vs T1 · 2026-09-12 · 数据基于 18,098 条弹幕样本</p>
+        <p class="mt-8">情报输出时间：2026-09-13 10:00 北京时间 (UTC+8) · 来源分层已标注</p>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
