@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · Team Vitality vs Movistar KOI · G1</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1d1d1f;
+    line-height: 1.5;
+    padding: 24px 16px;
+    font-size: 15px;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: box-shadow 0.2s ease;
+  }
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+    color: #1d1d1f;
+  }
+  .subhead {
+    font-size: 15px;
+    color: #6e6e73;
+    margin-bottom: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .badge {
+    display: inline-block;
+    background: #e8e8ed;
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1d1d1f;
+    letter-spacing: 0.01em;
+  }
+  .badge.warn {
+    background: #fff3e0;
+    color: #b25000;
+  }
+  .badge.live {
+    background: #e3f2fd;
+    color: #0b5e9e;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1d1d1f;
+  }
+  h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #0071e3;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 16px 0 8px 0;
+    color: #1d1d1f;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) {
+    .grid-2, .grid-3 {
+      grid-template-columns: 1fr;
+    }
+    .card {
+      padding: 18px 16px;
+    }
+    h1 {
+      font-size: 22px;
+    }
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f2;
+  }
+  .stat-row:last-child {
+    border-bottom: none;
+  }
+  .stat-label {
+    color: #6e6e73;
+    font-size: 14px;
+  }
+  .stat-value {
+    font-weight: 600;
+    font-size: 15px;
+    color: #1d1d1f;
+  }
+  .stat-value.blue {
+    color: #0071e3;
+  }
+  .stat-value.red {
+    color: #d70015;
+  }
+  .stat-value.green {
+    color: #1d8a4e;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .tag-risk {
+    background: #ffe5e5;
+    color: #b00020;
+  }
+  .tag-anchor {
+    background: #e5f0ff;
+    color: #0055b3;
+  }
+  .tag-market {
+    background: #fff4e0;
+    color: #9a5b00;
+  }
+  .tag-consensus {
+    background: #e8f5e9;
+    color: #1b5e20;
+  }
+  .tag-grey {
+    background: #f0f0f0;
+    color: #555;
+  }
+  .tag-predict {
+    background: #f3e5f5;
+    color: #6a1b9a;
+  }
+  .bullet-list {
+    list-style: none;
+    padding: 0;
+  }
+  .bullet-list li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    font-size: 14px;
+    color: #1d1d1f;
+    border-bottom: 1px solid #f5f5f7;
+  }
+  .bullet-list li:last-child {
+    border-bottom: none;
+  }
+  .bullet-list li::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    color: #0071e3;
+    font-weight: 700;
+  }
+  .bullet-list li .src {
+    font-size: 12px;
+    color: #8e8e93;
+    margin-left: 6px;
+  }
+  details {
+    margin-top: 12px;
+    border: 1px solid #e8e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fafafa;
+  }
+  details summary {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0071e3;
+    cursor: pointer;
+    user-select: none;
+    background: #ffffff;
+    border-bottom: 1px solid transparent;
+    transition: background 0.15s;
+  }
+  details summary:hover {
+    background: #f5f5f7;
+  }
+  details[open] summary {
+    border-bottom: 1px solid #e8e8ed;
+  }
+  details .details-content {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #3a3a3c;
+    line-height: 1.7;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  details .details-content p {
+    margin-bottom: 6px;
+  }
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f2;
+    font-size: 13px;
+  }
+  .timeline-item:last-child {
+    border-bottom: none;
+  }
+  .timeline-time {
+    flex-shrink: 0;
+    width: 80px;
+    color: #8e8e93;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .timeline-text {
+    color: #1d1d1f;
+  }
+  .timeline-count {
+    color: #0071e3;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .table-mini {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .table-mini th {
+    text-align: left;
+    padding: 6px 8px;
+    background: #f5f5f7;
+    color: #6e6e73;
+    font-weight: 600;
+    font-size: 12px;
+    border-bottom: 1px solid #e8e8ed;
+  }
+  .table-mini td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f2;
+    vertical-align: top;
+  }
+  .table-mini tr:last-child td {
+    border-bottom: none;
+  }
+  .highlight-box {
+    background: #f0f7ff;
+    border-left: 4px solid #0071e3;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .highlight-box.warn {
+    background: #fff8f0;
+    border-left-color: #ff9500;
+  }
+  .highlight-box.grey {
+    background: #f5f5f7;
+    border-left-color: #8e8e93;
+  }
+  .flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .text-small {
+    font-size: 12px;
+    color: #8e8e93;
+  }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-12 { margin-bottom: 12px; }
+  .opacity-60 { opacity: 0.6; }
+  .mono {
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 12px;
+  }
+  .divider {
+    height: 1px;
+    background: #e8e8ed;
+    margin: 16px 0;
+  }
+  .pill {
+    display: inline-block;
+    background: #f0f0f2;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 12px;
+    color: #3a3a3c;
+    margin: 2px 4px 2px 0;
+  }
+  .pill.blue {
+    background: #e5f0ff;
+    color: #0055b3;
+  }
+  .pill.red {
+    background: #ffe5e5;
+    color: #b00020;
+  }
+  .pill.green {
+    background: #e8f5e9;
+    color: #1b5e20;
+  }
+  .pill.orange {
+    background: #fff4e0;
+    color: #9a5b00;
+  }
+  .score-line {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .score-line .vs {
+    color: #8e8e93;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 0 8px;
+  }
+  .score-line .pending {
+    font-size: 13px;
+    font-weight: 500;
+    color: #b25000;
+    background: #fff3e0;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: #8e8e93;
+    padding: 16px 0 8px 0;
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Vitality-Movistar KOI 2026-09-12 g1 end</b></div>
+<div class="container">
+  <!-- 页面头部 -->
+  <div class="card" style="padding: 20px 28px;">
+    <div class="flex-between">
+      <div>
+        <h1>局中弹幕情报快照 · G1</h1>
+        <div class="subhead">
+          <span>Team Vitality vs Movistar KOI</span>
+          <span>·</span>
+          <span>2026-09-12</span>
+          <span>·</span>
+          <span>lol-vit-mkoi-2026-09-12</span>
+          <span class="badge live">局中·非终局</span>
+          <span class="badge warn">结果待定</span>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div class="text-small">弹幕口径 · 官方待回填</div>
+        <div class="score-line" style="font-size: 18px;">VIT 0 <span class="vs">—</span> MKOI 1 <span class="pending">官方 gameWins</span></div>
+      </div>
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="highlight-box" style="margin-top: 0;">
+      <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px;">比分/进度</div>
+      <div>VIT 0 — MKOI 1（官方 gameWins）· 第 1 小局已结束 · 弹幕口径·官方待回填 · 本页为 G1 局末/局间快照</div>
+    </div>
+    <div style="margin-top: 14px;">
+      <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">TOP 信号（风险→锚点→盘口→共识）</div>
+      <ul class="bullet-list">
+        <li><span class="tag tag-risk">风险</span> 灰信号 7 条，含「假赛」「买了」「剧本」等质疑，集中指向比赛真实性 <span class="src">→ 详 §2</span></li>
+        <li><span class="tag tag-anchor">锚点</span> 米人（MKOI 中单）被多次提及「到世界赛就正常了」「游龙」，正向锚点 <span class="src">→ 详 §3 §5</span></li>
+        <li><span class="tag tag-market">盘口</span> 人头领先经济落后、女警无人头领先 1.5k、supa 送人头等讨论，市场关注经济差 <span class="src">→ 详 §4</span></li>
+        <li><span class="tag tag-consensus">共识</span> 弹幕共识：VIT「季后赛一把不赢」「软脚虾」，MKOI「常规赛第六赢了才是爆冷」 <span class="src">→ 详 §5 §8</span></li>
+        <li><span class="tag tag-grey">灰信号</span> 「这个不一波是不是假赛」「打假赛了jojo」「lec的下限就是g2带的」等 7 条 <span class="src">→ 详 §2</span></li>
+      </ul>
+    </div>
+    <div class="highlight-box" style="margin-top: 14px; background: #f0f7ff; border-left-color: #0071e3;">
+      <strong>一句话决策落点：</strong>本局 MKOI 获胜，VIT 季后赛持续低迷；弹幕对 VIT 负向情绪显著（负 11 / 正 1），灰信号集中质疑比赛真实性，但均为观众主观质疑，非结论。方向性偏 MKOI 强势、VIT 信心不足，需关注后续局 BP 与心态调整。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-row"><span class="stat-label">赛事</span><span class="stat-value">LEC 2026 季后赛</span></div>
+        <div class="stat-row"><span class="stat-label">对阵</span><span class="stat-value">Team Vitality vs Movistar KOI</span></div>
+        <div class="stat-row"><span class="stat-label">日期</span><span class="stat-value">2026-09-12</span></div>
+        <div class="stat-row"><span class="stat-label">小局</span><span class="stat-value">G1（第 1 小局）</span></div>
+        <div class="stat-row"><span class="stat-label">节点</span><span class="stat-value">局末/局间（GAME-REVIEW）</span></div>
+      </div>
+      <div>
+        <div class="stat-row"><span class="stat-label">官方比分</span><span class="stat-value blue">VIT 0 — MKOI 1</span></div>
+        <div class="stat-row"><span class="stat-label">本局结果</span><span class="stat-value" style="color: #b25000;">局中·非终局，结果待定</span></div>
+        <div class="stat-row"><span class="stat-label">弹幕总数</span><span class="stat-value">1,444 条</span></div>
+        <div class="stat-row"><span class="stat-label">活跃用户</span><span class="stat-value">500</span></div>
+        <div class="stat-row"><span class="stat-label">密度</span><span class="stat-value">34.1 条/分</span></div>
+      </div>
+    </div>
+    <div class="highlight-box warn" style="margin-top: 12px;">
+      <strong>状态核验：</strong>本页为第 1 小局结束情报，系列比分与结果一律以官方为准，禁止从弹幕推断比分。当前官方 gameWins 显示 VIT 0 — MKOI 1，本局结果待官方最终核对。
+    </div>
+    <div class="text-small mt-8">比赛元数据：slug=lol-vit-mkoi-2026-09-12 · 页面唯一覆盖本局 BP/选人、对线、关键团战、结局。</div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="flex-between mb-8">
+      <span style="font-weight: 600; font-size: 14px;">灰信号 7 条 · 词表统计</span>
+      <span class="tag tag-grey">观众质疑，非结论</span>
+    </div>
+    <table class="table-mini">
+      <thead>
+        <tr><th>灰信号原文</th><th>类型</th><th>来源</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>这个不一波是不是假赛</td><td>假赛质疑</td><td>本场弹幕</td></tr>
+        <tr><td>那把zk买了</td><td>买赛质疑</td><td>本场弹幕</td></tr>
+        <tr><td>打假赛了jojo</td><td>假赛质疑</td><td>本场弹幕</td></tr>
+        <tr><td>你这赛果俩个字不知道以为搞菠菜的</td><td>菠菜关联</td><td>本场弹幕</td></tr>
+        <tr><td>今天lpl剧本放心看</td><td>剧本论</td><td>本场弹幕</td></tr>
+        <tr><td>故意的</td><td>故意送质疑</td><td>本场弹幕</td></tr>
+        <tr><td>lec的下限 就是 g2带的， 基本场场假赛</td><td>赛区假赛论</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box grey mt-12">
+      <strong>修正机制：</strong>已跑词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送），确认灰信号 7 条，非 0 条。以上均为观众主观质疑，不构成事实结论。
+    </div>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <p>「这个不一波是不是假赛」</p>
+        <p>「那把zk买了」</p>
+        <p>「打假赛了jojo」</p>
+        <p>「你这赛果俩个字不知道以为搞菠菜的」</p>
+        <p>「今天lpl剧本放心看」</p>
+        <p>「故意的」</p>
+        <p>「lec的下限 就是 g2带的， 基本场场假赛」</p>
+        <p class="text-small" style="margin-top: 8px;">以上 7 条为规则层灰信号统计结果，均来自本场弹幕，时间窗口覆盖 G1 局末/局间。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>本局阵容（英雄+选手）</h3>
+        <div class="stat-row"><span class="stat-label">VIT 上单</span><span class="stat-value">待官方回填</span></div>
+        <div class="stat-row"><span class="stat-label">VIT 打野</span><span class="stat-value">待官方回填</span></div>
+        <div class="stat-row"><span class="stat-label">VIT 中单</span><span class="stat-value">待官方回填</span></div>
+        <div class="stat-row"><span class="stat-label">VIT ADC</span><span class="stat-value">待官方回填</span></div>
+        <div class="stat-row"><span class="stat-label">VIT 辅助</span><span class="stat-value">待官方回填</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">MKOI 上单</span><span class="stat-value">待官方回填</span></div>
+        <div class="stat-row"><span class="stat-label">MKOI 打野</span><span class="stat-value">待官方回填</span></div>
+        <div class="stat-row"><span class="stat-label">MKOI 中单</span><span class="stat-value">JOJO（瑞兹）</span></div>
+        <div class="stat-row"><span class="stat-label">MKOI ADC</span><span class="stat-value">Supa（女警）</span></div>
+        <div class="stat-row"><span class="stat-label">MKOI 辅助</span><span class="stat-value">待官方回填</span></div>
+      </div>
+      <div>
+        <h3>BP 锚点与讨论</h3>
+        <ul class="bullet-list">
+          <li>「MK阵容不错啊」<span class="src">本场弹幕 · 正向</span></li>
+          <li>「JOJO的瑞兹还行」<span class="src">本场弹幕 · 中性偏正</span></li>
+          <li>「JOJO致敬zeka？不出眼泪」<span class="src">本场弹幕 · 装备讨论</span></li>
+          <li>「冰峰组合已经失去魔力了有感觉吗」<span class="src">本场弹幕 · 组合质疑</span></li>
+          <li>「4，5局这虫子太强势，不拿必须得ban了」<span class="src">本场弹幕 · BP建议</span></li>
+          <li>「一句梦魇关灯给我整愣住了，我赶紧看了一下两边阵容」<span class="src">本场弹幕 · 阵容反应</span></li>
+        </ul>
+        <div class="highlight-box" style="margin-top: 8px;">
+          <strong>BP 后战绩情报：</strong>无战绩情报提及。
+        </div>
+      </div>
+    </div>
+    <details>
+      <summary>BP 相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <p>「MK阵容不错啊」</p>
+        <p>「JOJO的瑞兹还行」</p>
+        <p>「JOJO致敬zeka？不出眼泪」</p>
+        <p>「冰峰组合已经失去魔力了有感觉吗」</p>
+        <p>「4，5局这虫子太强势，不拿必须得ban了」</p>
+        <p>「一句梦魇关灯给我整愣住了，我赶紧看了一下两边阵容」</p>
+        <p>「中单这两个长的好像」</p>
+        <p>「lec好像不玩卡列组合」</p>
+        <p class="text-small" style="margin-top: 8px;">以上摘录自本场弹幕，时间窗口覆盖 G1 局末/局间。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="flex-between mb-8">
+      <span style="font-weight: 600; font-size: 14px;">盘口相关 9 条 · 市场关注经济差与人头交换</span>
+      <span class="tag tag-market">盘口讨论</span>
+    </div>
+    <table class="table-mini">
+      <thead>
+        <tr><th>盘口讨论原文</th><th>指向</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>这人头也抢？</td><td>人头分配质疑</td></tr>
+        <tr><td>阿瓦罗吃人头再送</td><td>选手操作质疑</td></tr>
+        <tr><td>左边全是干人头 有感觉吗？什么资源都没拿到</td><td>资源置换失衡</td></tr>
+        <tr><td>女警没人头18分钟能领先1.5k</td><td>经济差关注</td></tr>
+        <tr><td>多换了1个人头而已 对面停牌了</td><td>人头交换评估</td></tr>
+        <tr><td>多换了1个人头而已 对面停牌了</td><td>重复提及</td></tr>
+        <tr><td>人头领先经济落后？</td><td>经济与人头背离</td></tr>
+        <tr><td>supa非送个人头</td><td>选手失误讨论</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top: 12px;">
+      <strong>市场共识：</strong>弹幕关注点集中在「人头领先但经济落后」「女警无人头却领先 1.5k」等经济差现象，反映观众对 VIT 资源转化效率的质疑。盘口讨论未形成明确方向性押注共识，更多为过程性质疑。
+    </div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-3">
+      <div>
+        <h3 style="color: #1d8a4e;">正锚</h3>
+        <ul class="bullet-list">
+          <li>米人（MKOI 中单）被多次提及「到世界赛就正常了」「游龙」<span class="src">本场弹幕</span></li>
+          <li>「相信米人能C」出现多次<span class="src">本场弹幕</span></li>
+          <li>「MK阵容不错啊」<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: #d70015;">负锚</h3>
+        <ul class="bullet-list">
+          <li>VIT「季后赛一把不赢」「软脚虾」<span class="src">本场弹幕</span></li>
+          <li>「小蜜蜂季后赛目前一场没赢」<span class="src">本场弹幕</span></li>
+          <li>「右边这个adc太菜了」<span class="src">本场弹幕</span></li>
+          <li>「supa太畜牲了」<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: #6a1b9a;">灰信号条件预测</h3>
+        <ul class="bullet-list">
+          <li>若后续局出现「不一波」「故意送」等弹幕密度上升，灰信号可能强化<span class="src">推测·待验证</span></li>
+          <li>当前灰信号 7 条，集中质疑比赛真实性，但无官方证据<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>群体共识（+分歧+样本量）</h3>
+    <table class="table-mini">
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>VIT 季后赛疲软</td><td>负向</td><td>≥5 条</td><td>「蜜蜂这个队，季后赛一把不赢的啊」</td><td>本场弹幕一致</td></tr>
+        <tr><td>米人正向评价</td><td>正向</td><td>≥6 条</td><td>「一到世界赛这段米人就正常了」</td><td>本场弹幕一致</td></tr>
+        <tr><td>灰信号质疑</td><td>风险</td><td>7 条</td><td>「这个不一波是不是假赛」</td><td>本场弹幕集中</td></tr>
+        <tr><td>盘口经济差讨论</td><td>中性</td><td>9 条</td><td>「人头领先经济落后？」</td><td>本场弹幕分散</td></tr>
+        <tr><td>MKOI 爆冷预期</td><td>中性偏正</td><td>≥3 条</td><td>「MKOI常规赛第六，赢了才是爆冷」</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top: 12px;">
+      <strong>共识→信号链：</strong>VIT 负向共识（季后赛疲软）与米人正向共识（世界赛正常）形成背离，指向 MKOI 本局优势；灰信号质疑为独立风险维度，需持续监测。
+    </div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div class="grid-2">
+      <div>
+        <h3 style="color: #1d8a4e;">LONG 方向</h3>
+        <ul class="bullet-list">
+          <li>MKOI 中单米人状态正向，弹幕多次提及「游龙」「正常了」<span class="src">本场弹幕</span></li>
+          <li>MKOI 阵容评价正向（「MK阵容不错啊」）<span class="src">本场弹幕</span></li>
+          <li>VIT 季后赛历史疲软，弹幕共识负向<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color: #d70015;">SHORT 方向</h3>
+        <ul class="bullet-list">
+          <li>VIT 被指「软脚虾」「季后赛一把不赢」，信心不足<span class="src">本场弹幕</span></li>
+          <li>灰信号 7 条质疑比赛真实性，风险维度<span class="src">本场弹幕</span></li>
+          <li>盘口讨论显示 VIT 经济转化效率受质疑<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top: 12px;">
+      <strong>决策落点：</strong>本局 MKOI 获胜，VIT 季后赛持续低迷。弹幕对 VIT 负向情绪显著（负 11 / 正 1），灰信号集中质疑比赛真实性，但均为观众主观质疑，非结论。方向性偏 MKOI 强势、VIT 信心不足，需关注后续局 BP 与心态调整。
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 已发生片段 + 时间线</h3>
+    <div class="grid-2">
+      <div>
+        <div class="stat-row"><span class="stat-label">对线期</span><span class="stat-value">15分钟1-3（弹幕提及）</span></div>
+        <div class="stat-row"><span class="stat-label">中期</span><span class="stat-value">女警18分钟领先1.5k（弹幕提及）</span></div>
+        <div class="stat-row"><span class="stat-label">团战</span><span class="stat-value">0换5？、一波一波一波（弹幕提及）</span></div>
+        <div class="stat-row"><span class="stat-label">结局</span><span class="stat-value">MKOI 获胜（官方 gameWins）</span></div>
+      </div>
+      <div>
+        <div class="stat-row"><span class="stat-label">关键团战</span><span class="stat-value">「左边打团都不知道打谁」</span></div>
+        <div class="stat-row"><span class="stat-label">灰信号</span><span class="stat-value">「这个不一波是不是假赛」</span></div>
+        <div class="stat-row"><span class="stat-label">盘口</span><span class="stat-value">「人头领先经济落后？」</span></div>
+      </div>
+    </div>
+    <details>
+      <summary>G1 完整弹幕时间线（折叠）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">23:08</span><span class="timeline-text">lec赛程对战表有吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:08</span><span class="timeline-text">一万说抢就抢，有实力</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:08</span><span class="timeline-text">右边也垃圾 一个supa 一个米人</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:09</span><span class="timeline-text">T1三号中种子</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:09</span><span class="timeline-text">ig现在还有机会吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:10</span><span class="timeline-text">MK阵容不错啊</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:11</span><span class="timeline-text">IG是不是还有两条命啊（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:12</span><span class="timeline-text">这个jojo是卫衣王（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:13</span><span class="timeline-text">好想让老张从背后狠狠的抱住我（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:14</span><span class="timeline-text">今年世界赛在哪里啊（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:15</span><span class="timeline-text">相信米人能c（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:15</span><span class="timeline-text">JOJO的瑞兹还行</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:16</span><span class="timeline-text">vit不是季后赛软脚虾吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:17</span><span class="timeline-text">MKOI常规赛第六，赢了才是爆冷</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:18</span><span class="timeline-text">小蜜蜂季后赛没赢过 等下就开送（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:20</span><span class="timeline-text">相信米人能C（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:21</span><span class="timeline-text">JOJO致敬zeka？不出眼泪</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:22</span><span class="timeline-text">小蜜蜂季后赛目前一场没赢（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:23</span><span class="timeline-text">冰峰组合已经失去魔力了有感觉吗（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:24</span><span class="timeline-text">JOJO瑞兹能赢我吃</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:25</span><span class="timeline-text">lec得韩援都是厨余</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:26</span><span class="timeline-text">IG今天赢了吗？（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:27</span><span class="timeline-text">15分钟1-3</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:28</span><span class="timeline-text">蜜蜂这个队，季后赛一把不赢的啊，你们不知道吗？（x5）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:29</span><span class="timeline-text">出水滴了啊 就是忘了（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:30</span><span class="timeline-text">一直给维克托送也是无敌了</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:31</span><span class="timeline-text">nako的确也是小心脏选手</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:32</span><span class="timeline-text">ig最后一把跟t1一个死法</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:33</span><span class="timeline-text">左边打团都不知道打谁 那个打一下这个打一下（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:33</span><span class="timeline-text">米人在游龙（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:34</span><span class="timeline-text">右边这个adc太菜了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:34</span><span class="timeline-text">多换了1个人头而已 对面停牌了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:35</span><span class="timeline-text">早说了到世界赛这段米人就正常了（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:35</span><span class="timeline-text">LEC经济有用？龙有用？</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:36</span><span class="timeline-text">为什么今天只有三个人看LEC</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:37</span><span class="timeline-text">风龙最没用（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:38</span><span class="timeline-text">人头领先经济落后？</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:39</span><span class="timeline-text">supa太畜牲了</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:40</span><span class="timeline-text">我以为米人已经不是人了。没想到这个女警更加不是人。（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:41</span><span class="timeline-text">欧洲厚皮野狗（x5）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:42</span><span class="timeline-text">欧洲厚皮野狗（x8）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:43</span><span class="timeline-text">14-12</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:44</span><span class="timeline-text">一波一波一波一波一波。（x5）</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:44</span><span class="timeline-text">0换5？</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:45</span><span class="timeline-text">一波就洗白？ 这ad谁上不行阿</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:46</span><span class="timeline-text">只会杀人不会推塔能推不推</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:47</span><span class="timeline-text">早说了这把米人能c</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:48</span><span class="timeline-text">32分钟差几秒</span></div>
+        <div class="timeline-item"><span class="timeline-time">23:50</span><span class="timeline-text">老张粉丝给你送外卖，你就这个态度？</span></div>
+        <p class="text-small" style="margin-top: 8px;">以上为 G1 局末/局间弹幕时间线抽样，真实时间戳已转换为北京时间（UTC+8）。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP</h3>
+        <div class="stat-row"><span class="stat-label">Vitality</span><span class="stat-value">提及 40（正 1 / 负 11）</span></div>
+        <div class="stat-row"><span class="stat-label">IG</span><span class="stat-value">提及 38（正 2 / 负 1）</span></div>
+        <div class="stat-row"><span class="stat-label">T1</span><span class="stat-value">提及 21（正 0 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">AL</span><span class="stat-value">提及 13（正 0 / 负 1）</span></div>
+        <div class="stat-row"><span class="stat-label">HLE</span><span class="stat-value">提及 10（正 1 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">TES</span><span class="stat-value">提及 9（正 0 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">G2</span><span class="stat-value">提及 9（正 0 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">BLG</span><span class="stat-value">提及 6（正 0 / 负 0）</span></div>
+      </div>
+      <div>
+        <h3>选手提及 TOP</h3>
+        <div class="stat-row"><span class="stat-label">Zeus</span><span class="stat-value">提及 6（正 0 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">Faker</span><span class="stat-value">提及 3（正 1 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">Zywoo</span><span class="stat-value">提及 2（正 0 / 负 0）</span></div>
+        <div class="stat-row"><span class="stat-label">Chovy</span><span class="stat-value">提及 1（正 0 / 负 0）</span></div>
+        <div class="divider"></div>
+        <h3>队伍特质统计</h3>
+        <div class="stat-row"><span class="stat-label">被翻守不住</span><span class="stat-value">1</span></div>
+        <div class="stat-row"><span class="stat-label">心态摆烂</span><span class="stat-value">1</span></div>
+        <div class="stat-row"><span class="stat-label">打法风格</span><span class="stat-value">5</span></div>
+        <div class="stat-row"><span class="stat-label">选手特质</span><span class="stat-value">3</span></div>
+      </div>
+    </div>
+    <details>
+      <summary>长期画像与弹幕评价（折叠）</summary>
+      <div class="details-content">
+        <p><strong>Vitality：</strong>弹幕多次提及「季后赛软脚虾」「小蜜蜂季后赛目前一场没赢」「vit不是季后赛软脚虾吗」，负向情绪显著（负 11 / 正 1）。</p>
+        <p><strong>Movistar KOI：</strong>弹幕提及「MKOI常规赛第六，赢了才是爆冷」「MKOI最近很菜的」，但本局获胜，存在预期差。</p>
+        <p><strong>米人（MKOI 中单）：</strong>弹幕正向评价集中，「一到世界赛这段米人就正常了」「米人在游龙」「相信米人能C」。</p>
+        <p><strong>Supa（MKOI ADC）：</strong>弹幕评价两极，「supa太畜牲了」「右边这个adc太菜了」与「supa我滴超人」并存。</p>
+        <p><strong>JOJO（MKOI 中单）：</strong>弹幕提及「JOJO的瑞兹还行」「JOJO致敬zeka？不出眼泪」「JOJO这个菜狗」。</p>
+        <p class="text-small" style="margin-top: 8px;">以上画像基于本场弹幕及规则层统计，提及量真实。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul class="bullet-list">
+      <li>LEC 赛区弹幕共识：「LEC现在就是菜鸡互啄啊」「lec 当野鸡看就可以了 假到没底线的」<span class="src">本场弹幕</span></li>
+      <li>「lec的常规赛是没用的」——弹幕认为 LEC 常规赛参考价值有限<span class="src">本场弹幕</span></li>
+      <li>「LEC经济有用？龙有用？」——弹幕对 LEC 资源转化效率存疑<span class="src">本场弹幕</span></li>
+      <li>「风龙最没用」「Lec的龙魂感觉优势不大」——版本龙魂价值讨论<span class="src">本场弹幕</span></li>
+      <li>「4，5局这虫子太强势，不拿必须得ban了」——版本强势英雄讨论<span class="src">本场弹幕</span></li>
+      <li>「冰峰组合已经失去魔力了有感觉吗」——组合强度讨论<span class="src">本场弹幕</span></li>
+    </ul>
+    <div class="highlight-box grey" style="margin-top: 12px;">
+      <strong>版本观察：</strong>弹幕对 LEC 赛区整体评价偏低，认为常规赛参考价值有限，且对龙魂、经济转化等版本要素存在质疑。本局 MKOI 获胜与「常规赛第六」的预期形成反差。
+    </div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="grid-2">
+      <div>
+        <h3>赛前/局前预测</h3>
+        <ul class="bullet-list">
+          <li>弹幕预期：「MKOI常规赛第六，赢了才是爆冷」<span class="src">本场弹幕</span></li>
+          <li>弹幕预期：「小蜜蜂季后赛没赢过 等下就开送」<span class="src">本场弹幕</span></li>
+          <li>弹幕预期：「vit不是季后赛软脚虾吗」<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>实际结果验证</h3>
+        <ul class="bullet-list">
+          <li>MKOI 获胜（官方 gameWins VIT 0 — MKOI 1）<span class="src">官方数据</span></li>
+          <li>VIT 季后赛疲软预期得到验证<span class="src">本场弹幕</span></li>
+          <li>米人正向预期得到验证（弹幕多次提及「游龙」）<span class="src">本场弹幕</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top: 12px;">
+      <strong>回填结论：</strong>弹幕对 VIT 季后赛疲软的负向预期与 MKOI 获胜结果一致；米人正向评价得到验证。灰信号质疑仍为观众主观判断，无官方结论。
+    </div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div>
+        <h3>实际数据源</h3>
+        <ul class="bullet-list">
+          <li>规则层情报 JSON：lol-vit-mkoi-2026-09-12_g1_end_intel.json</li>
+          <li>弹幕切片：lol-vit-mkoi-2026-09-12_g1_end.jsonl</li>
+          <li>官方数据：VIT 0 — MKOI 1（gameWins）</li>
+          <li>本场弹幕样本：208 条（覆盖 42 个有弹幕分钟段）</li>
+        </ul>
+      </div>
+      <div>
+        <h3>预期数据源</h3>
+        <ul class="bullet-list">
+          <li>官方 BP 阵容（待回填）</li>
+          <li>官方经济曲线（待回填）</li>
+          <li>官方团战时间线（待回填）</li>
+          <li>选手详细数据（待回填）</li>
+        </ul>
+      </div>
+      <div>
+        <h3>缺口</h3>
+        <ul class="bullet-list">
+          <li>本局完整阵容英雄+选手（部分待官方回填）</li>
+          <li>官方经济差精确数值</li>
+          <li>官方团战结果确认</li>
+          <li>BP 后战绩情报（无提及）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <div>
+        <span class="text-small">情报输出时间：2026-09-12 23:55（北京时间）</span>
+      </div>
+      <div>
+        <span class="text-small">数据完整性：部分缺口，缺源不交付完整结论</span>
+      </div>
+    </div>
+    <div class="highlight-box grey" style="margin-top: 12px;">
+      <strong>跨源一致性提示：</strong>弹幕口径与官方 gameWins 一致（MKOI 获胜），但本局详细数据（经济、团战）待官方回填。灰信号 7 条为观众质疑，非官方结论。
+    </div>
+  </div>
+  <!-- 本场长期沉淀点 -->
+  <div class="card" style="background: #fafafa;">
+    <h2 style="font-size: 16px;"><span class="no" style="background: #8e8e93;">★</span>本场长期沉淀点</h2>
+    <ul class="bullet-list">
+      <li>VIT 季后赛疲软标签强化：弹幕共识「季后赛一把不赢」「软脚虾」，负向提及 11 条，正向仅 1 条，长期画像需持续跟踪。</li>
+      <li>米人（MKOI 中单）世界赛/季后赛状态正向标签：弹幕多次提及「到世界赛就正常了」「游龙」，可作为后续局正向锚点。</li>
+      <li>LEC 赛区灰信号高频：本场灰信号 7 条，含「假赛」「买了」「剧本」等，反映观众对 LEC 比赛真实性存在系统性质疑，需在后续情报中持续监测。</li>
+    </ul>
+  </div>
+  <div class="footer-note">
+    局中弹幕情报快照 · G1 · 局中·非终局，结果待定 · 数据来源：弹幕切片 + 规则层统计 + 官方 gameWins<br>
+    情报输出时间：2026-09-12 23:55（北京时间）
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
