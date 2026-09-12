@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · VIT vs MKOI · G5 BP后</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        /* 卡片通用 */
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            transition: all 0.1s ease;
+        }
+        /* 标题 */
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 100px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        .badge.live {
+            background: #ff3b30;
+            color: white;
+        }
+        .badge.warning {
+            background: #ff9500;
+            color: white;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0071e3;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+            color: #1d1d1f;
+        }
+        /* 速览卡 */
+        .snapshot-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .snapshot-score {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .snapshot-score small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #6e6e73;
+            margin-left: 8px;
+        }
+        .signal-list {
+            list-style: none;
+            margin: 12px 0 16px 0;
+        }
+        .signal-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 15px;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #e8e8ed;
+            color: #1d1d1f;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tag.risk { background: #ff3b30; color: white; }
+        .tag.anchor { background: #0071e3; color: white; }
+        .tag.market { background: #34c759; color: white; }
+        .tag.consensus { background: #af52de; color: white; }
+        .tag.gray { background: #8e8e93; color: white; }
+        .tag.info { background: #ff9500; color: white; }
+        .decision-line {
+            background: #f2f2f7;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 8px;
+            border-left: 4px solid #0071e3;
+        }
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+        th {
+            text-align: left;
+            font-weight: 600;
+            color: #6e6e73;
+            padding: 8px 6px 8px 0;
+            border-bottom: 1px solid #e8e8ed;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        td {
+            padding: 10px 6px 10px 0;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .num {
+            font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+        /* 折叠区 */
+        details {
+            margin: 16px 0;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        summary {
+            padding: 12px 18px;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+            background: #ffffff;
+            border-bottom: 1px solid transparent;
+            transition: background 0.1s;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::before {
+            content: "▸";
+            font-size: 14px;
+            color: #0071e3;
+            transition: transform 0.15s;
+            display: inline-block;
+            width: 16px;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details[open] summary {
+            border-bottom: 1px solid #e8e8ed;
+        }
+        .details-content {
+            padding: 16px 20px;
+            background: #ffffff;
+            font-size: 14px;
+        }
+        .details-content p {
+            margin-bottom: 8px;
+        }
+        .details-content ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        .details-content li {
+            margin-bottom: 4px;
+        }
+        /* 弹幕原文样式 */
+        .danmu-quote {
+            color: #3a3a3c;
+            background: #f8f8fa;
+            border-radius: 8px;
+            padding: 2px 8px;
+            font-size: 13px;
+            display: inline-block;
+            margin: 2px 0;
+        }
+        .time-stamp {
+            color: #8e8e93;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+            margin-right: 6px;
+        }
+        /* 三栏数据完整性 */
+        .integrity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin: 12px 0;
+        }
+        .integrity-col {
+            background: #f8f8fa;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .integrity-col h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        .integrity-col ul {
+            list-style: none;
+            font-size: 13px;
+            color: #3a3a3c;
+        }
+        .integrity-col li {
+            margin-bottom: 6px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .integrity-col li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #0071e3;
+        }
+        /* 其他 */
+        .meta-line {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-top: 8px;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 20px 0;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 12px;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 12px;
+        }
+        .inline-code {
+            background: #f0f0f2;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 13px;
+            font-family: "SF Mono", monospace;
+        }
+        .text-muted {
+            color: #8e8e93;
+        }
+        .text-small {
+            font-size: 13px;
+        }
+        .mt-2 { margin-top: 8px; }
+        .mb-2 { margin-bottom: 8px; }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @media (max-width: 640px) {
+            .card { padding: 18px 16px; }
+            .integrity-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Vitality-Movistar KOI 2026-09-12 g5 bp</b></div>
+<div class="container">
+    <!-- 头部 -->
+    <div class="card" style="padding-bottom: 16px;">
+        <h1>Team Vitality vs Movistar KOI · 第5小局</h1>
+        <div class="subhead">
+            <span class="badge live">局中 · 非终局，结果待定</span>
+            <span class="badge">BP后 / 开局阶段 (EARLY-GAME)</span>
+            <span class="badge">弹幕口径 · 官方待回填</span>
+            <span>2026-09-12 · 北京时间</span>
+        </div>
+        <div class="meta-line">
+            slug: lol-vit-mkoi-2026-09-12 · 节点: G5｜BP后/开局 · 情报输出时间: 2026-09-13 02:46 北京
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="snapshot-row">
+            <div class="snapshot-score">VIT 2 : 2 MKOI <small>（官方 gameWins · 第5小局进行中）</small></div>
+            <span class="badge" style="background: #ff9500; color: white;">弹幕口径 · 官方待回填</span>
+        </div>
+        <ul class="signal-list">
+            <li>
+                <span class="tag risk">风险</span>
+                <span>弹幕出现「nako已经慌了」「nako这把必坑」等负面情绪，指向MKOI选手心理状态 → §2</span>
+            </li>
+            <li>
+                <span class="tag anchor">锚点</span>
+                <span>「亮剑卡莎」「亮剑蠢靶子」等讨论集中，卡莎/亮剑体系成BP焦点 → §3</span>
+            </li>
+            <li>
+                <span class="tag market">盘口</span>
+                <span>盘口讨论仅1条（数字48），样本不足，无有效方向 → §4</span>
+            </li>
+            <li>
+                <span class="tag consensus">共识</span>
+                <span>「大虫子」英雄讨论密集（4条），观众认为其需特定阵容搭配 → §5</span>
+            </li>
+            <li>
+                <span class="tag gray">灰信号</span>
+                <span>「这塞恩欠举报了」「这比赛真恶心啊」等质疑，非结论 → §2</span>
+            </li>
+        </ul>
+        <div class="decision-line">
+            ⚡ 决策落点：当前样本量低（93条/45人），盘口无有效信号，灰信号以情绪质疑为主，建议观望至对线期数据积累。
+        </div>
+        <div class="footnote">速览卡仅展示TOP信号，详细证据见各分节。所有结论基于本场弹幕样本，禁止无中生有。</div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+        <table>
+            <tr><th style="width: 30%;">项目</th><th>内容</th></tr>
+            <tr><td>赛事</td><td>LoL · Team Vitality vs Movistar KOI</td></tr>
+            <tr><td>系列赛比分</td><td><strong>VIT 2 : 2 MKOI</strong>（官方 gameWins，来源：官方数据）</td></tr>
+            <tr><td>当前小局</td><td>第5小局 · BP后/开局阶段</td></tr>
+            <tr><td>局中状态</td><td><span class="badge warning">局中 · 非终局，结果待定</span> 进度以弹幕口径为准</td></tr>
+            <tr><td>弹幕样本</td><td>93条 · 活跃用户45 · 密度6.0条/分（规则层统计）</td></tr>
+            <tr><td>数据源</td><td>规则层情报JSON + 弹幕切片（g5_bp.jsonl）</td></tr>
+        </table>
+        <p class="text-small text-muted mt-2">⚠️ 系列比分与结果一律以官方为准，禁止从弹幕推断比分。本页为第5小局BP后情报，开局后1分钟校准。</p>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <p class="text-small text-muted mb-2">基于词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）及情绪样本，本节点灰信号如下：</p>
+        <table>
+            <tr><th>类型</th><th>条数</th><th>关键样本（北京时间）</th><th>说明</th></tr>
+            <tr>
+                <td>选手状态质疑</td>
+                <td class="num">3</td>
+                <td><span class="danmu-quote">nako已经慌了</span> <span class="danmu-quote">nako这把必坑</span> <span class="danmu-quote">张神你看nako这表情像不像打g2第五把的uzi</span></td>
+                <td>观众质疑，非结论</td>
+            </tr>
+            <tr>
+                <td>比赛质量/情绪</td>
+                <td class="num">2</td>
+                <td><span class="danmu-quote">这比赛真恶心啊</span> <span class="danmu-quote">这塞恩欠举报了</span></td>
+                <td>观众质疑，非结论</td>
+            </tr>
+            <tr>
+                <td>操作批评</td>
+                <td class="num">2</td>
+                <td><span class="danmu-quote">你走到最里面不死才怪</span> <span class="danmu-quote">亮剑蠢靶子</span></td>
+                <td>观众质疑，非结论</td>
+            </tr>
+        </table>
+        <details>
+            <summary>📋 灰信号完整弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <ul>
+                    <li><span class="time-stamp">02:34</span> 这比赛真恶心啊</li>
+                    <li><span class="time-stamp">02:35</span> 你走到最里面不死才怪</li>
+                    <li><span class="time-stamp">02:36</span> 这塞恩欠举报了</li>
+                    <li><span class="time-stamp">02:38</span> 你纯在搞笑</li>
+                    <li><span class="time-stamp">02:39</span> 又是搞笑了</li>
+                    <li><span class="time-stamp">02:44</span> nako已经慌了</li>
+                    <li><span class="time-stamp">02:44</span> nako这把必坑</li>
+                    <li><span class="time-stamp">02:46</span> 张神你看nako这表情像不像打g2第五把的uzi</li>
+                </ul>
+                <p class="text-small text-muted">注：以上均为观众质疑，非结论。灰信号漏检修正机制已执行词表统计，未发现「演员/菠菜/假赛/322」等直接指控。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP锚点与选人情报</h2>
+        <p class="text-small text-muted mb-2">基于弹幕样本提炼，本局BP相关讨论聚焦以下英雄/体系：</p>
+        <table>
+            <tr><th>英雄/体系</th><th>提及方向</th><th>条数</th><th>关键样本</th></tr>
+            <tr>
+                <td>卡莎 / 亮剑</td>
+                <td>质疑/讨论</td>
+                <td class="num">4</td>
+                <td><span class="danmu-quote">亮剑卡莎你是人？</span> <span class="danmu-quote">你是人啊！卡莎也亮剑？</span> <span class="danmu-quote">亮剑蠢靶子</span></td>
+            </tr>
+            <tr>
+                <td>大虫子</td>
+                <td>战术讨论</td>
+                <td class="num">4</td>
+                <td><span class="danmu-quote">大虫子属于高手英雄 队友对线厉害的</span> <span class="danmu-quote">大虫子怎么没人玩</span> <span class="danmu-quote">大虫子只能打特定局，对对掘墓什么的</span></td>
+            </tr>
+            <tr>
+                <td>塞恩</td>
+                <td>负面评价</td>
+                <td class="num">1</td>
+                <td><span class="danmu-quote">这塞恩欠举报了</span></td>
+            </tr>
+            <tr>
+                <td>小炮 / 皮肤</td>
+                <td>消费讨论</td>
+                <td class="num">2</td>
+                <td><span class="danmu-quote">小炮名人堂皮肤好看是好看但是峡谷a人看着一般建议别买</span></td>
+            </tr>
+        </table>
+        <p class="text-small text-muted">本局阵容（英雄+选手）：官方Riot window阵容待回填，当前弹幕未提供完整阵容信息。</p>
+        <details>
+            <summary>🔍 BP相关弹幕原文（折叠）</summary>
+            <div class="details-content">
+                <ul>
+                    <li><span class="time-stamp">02:32</span> 亮剑卡莎你是人？</li>
+                    <li><span class="time-stamp">02:34</span> 你没位移没aoe，亮剑蠢靶子</li>
+                    <li><span class="time-stamp">02:36</span> 你是人啊！卡莎也亮剑？</li>
+                    <li><span class="time-stamp">02:36</span> 这么多近战换我还是双发快射抽陀螺</li>
+                    <li><span class="time-stamp">02:40</span> 亮剑公式装备死舞出个，不过应该没时间了</li>
+                    <li><span class="time-stamp">02:42</span> 不是亮剑感觉能抽陀螺</li>
+                    <li><span class="time-stamp">02:45</span> 大虫子属于高手英雄 队友对线厉害的</li>
+                    <li><span class="time-stamp">02:45</span> 大虫子怎么没人玩</li>
+                    <li><span class="time-stamp">02:46</span> 大虫子只能打特定局，对对掘墓什么的</li>
+                    <li><span class="time-stamp">02:46</span> 大虫子最近就塔赞和navi玩出效果了</li>
+                    <li><span class="time-stamp">02:46</span> 大虫子没几个玩的好的 大O都不敢选</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p>规则层盘口数据：<strong>1条</strong>，内容为数字「48」。样本严重不足，无法形成有效方向。</p>
+        <table>
+            <tr><th>盘口类型</th><th>条数</th><th>内容</th><th>信号</th></tr>
+            <tr><td>数字/赔率</td><td class="num">1</td><td>48</td><td>样本不足，无方向</td></tr>
+        </table>
+        <p class="text-small text-muted mt-2">⚠️ 盘口讨论样本不足，不硬造结论。建议等待更多弹幕或官方数据。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <h3>正锚（积极信号）</h3>
+        <ul style="list-style: none; padding-left: 0;">
+            <li style="padding: 6px 0;">✅ 大虫子体系讨论活跃（4条），观众认可其特定局价值 → 可能为BP博弈点</li>
+            <li style="padding: 6px 0;">✅ 部分观众关注皮肤/消费，氛围轻松（非比赛核心）</li>
+        </ul>
+        <h3>负锚（消极信号）</h3>
+        <ul style="list-style: none; padding-left: 0;">
+            <li style="padding: 6px 0;">⚠️ nako状态被质疑（3条），「慌了」「必坑」等负面评价</li>
+            <li style="padding: 6px 0;">⚠️ 亮剑卡莎被批「蠢靶子」，BP选择受质疑</li>
+            <li style="padding: 6px 0;">⚠️ 比赛质量负面情绪（「真恶心啊」）</li>
+        </ul>
+        <h3>群体共识</h3>
+        <table>
+            <tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr>
+            <tr>
+                <td>大虫子英雄讨论</td>
+                <td>战术探讨</td>
+                <td class="num">4</td>
+                <td>大虫子属于高手英雄 / 只能打特定局</td>
+                <td>单一来源（本场弹幕）</td>
+            </tr>
+            <tr>
+                <td>nako状态</td>
+                <td>负面质疑</td>
+                <td class="num">3</td>
+                <td>nako已经慌了 / nako这把必坑</td>
+                <td>单一来源（本场弹幕）</td>
+            </tr>
+            <tr>
+                <td>亮剑卡莎</td>
+                <td>质疑</td>
+                <td class="num">4</td>
+                <td>亮剑卡莎你是人？ / 亮剑蠢靶子</td>
+                <td>单一来源（本场弹幕）</td>
+            </tr>
+        </table>
+        <p class="text-small text-muted">共识→信号链：大虫子讨论同向（战术关注），nako质疑同向（风险信号），亮剑卡莎质疑同向（BP争议）。样本量均较小，置信度低。</p>
+        <h3>灰信号条件预测</h3>
+        <p>若nako在对线期出现失误，弹幕负面情绪可能放大；若大虫子体系奏效，则可能转为正面讨论。当前无明确条件触发。</p>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <table>
+            <tr><th>方向</th><th>依据</th><th>置信度</th></tr>
+            <tr>
+                <td><span class="tag risk">SHORT（风险）</span></td>
+                <td>nako状态质疑 + 亮剑卡莎BP争议 + 比赛质量负面情绪，短期情绪偏空</td>
+                <td>低（样本量小）</td>
+            </tr>
+            <tr>
+                <td><span class="tag anchor">LONG（机会）</span></td>
+                <td>大虫子体系讨论活跃，若BP成功可能形成战术优势</td>
+                <td>低（需验证）</td>
+            </tr>
+        </table>
+        <div class="decision-line" style="border-left-color: #ff9500;">
+            🎯 综合决策：当前局中样本不足，盘口无信号，灰信号以情绪为主。建议观望，等待对线期数据（补刀、击杀、资源）后再做判断。
+        </div>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p><strong>当前局（G5）已发生片段：</strong>BP后/开局阶段，弹幕集中在BP讨论与选手状态。</p>
+        <p><strong>时间线（北京时间）：</strong></p>
+        <details>
+            <summary>📅 G5 完整弹幕时间线（折叠）</summary>
+            <div class="details-content">
+                <ul style="list-style: none; padding-left: 0;">
+                    <li><span class="time-stamp">02:30</span> 张神不会英语吗？</li>
+                    <li><span class="time-stamp">02:30</span> 拉到床上了，不洗能睡吗</li>
+                    <li><span class="time-stamp">02:31</span> 10个虎粮不播</li>
+                    <li><span class="time-stamp">02:31</span> 34两把，直接送3条龙，一点反抗都没</li>
+                    <li><span class="time-stamp">02:31</span> cap皮肤买不买</li>
+                    <li><span class="time-stamp">02:31</span> 为什么他们有沙发</li>
+                    <li><span class="time-stamp">02:31</span> 公益直播不收礼物</li>
+                    <li><span class="time-stamp">02:32</span> 买全套要五千吧</li>
+                    <li><span class="time-stamp">02:32</span> 亮剑卡莎你是人？</li>
+                    <li><span class="time-stamp">02:32</span> 压缩确实买的人可能不少</li>
+                    <li><span class="time-stamp">02:32</span> 如果是亚索很难不买吧</li>
+                    <li><span class="time-stamp">02:33</span> 22】</li>
+                    <li><span class="time-stamp">02:33</span> 刚来，几比几了</li>
+                    <li><span class="time-stamp">02:33</span> 女警比你厉害多了</li>
+                    <li><span class="time-stamp">02:34</span> 主播偶尔看你海尔斯怎么老是一坨</li>
+                    <li><span class="time-stamp">02:34</span> 你没位移没aoe，亮剑蠢靶子</li>
+                    <li><span class="time-stamp">02:34</span> 这比赛真恶心啊</li>
+                    <li><span class="time-stamp">02:35</span> 你走到最里面不死才怪</li>
+                    <li><span class="time-stamp">02:36</span> 今天好冷清</li>
+                    <li><span class="time-stamp">02:36</span> 你是人啊！卡莎也亮剑？</li>
+                    <li><span class="time-stamp">02:36</span> 这么多近战换我还是双发快射抽陀螺</li>
+                    <li><span class="time-stamp">02:36</span> 这塞恩欠举报了</li>
+                    <li><span class="time-stamp">02:37</span> 开始了</li>
+                    <li><span class="time-stamp">02:38</span> 你纯在搞笑</li>
+                    <li><span class="time-stamp">02:38</span> 小炮名人堂皮肤好看是好看但是峡谷a人看着一般建议别买</li>
+                    <li><span class="time-stamp">02:38</span> 开始了</li>
+                    <li><span class="time-stamp">02:38</span> 张神一会儿可以看完基尼再下波吗</li>
+                    <li><span class="time-stamp">02:39</span> 又是搞笑了</li>
+                    <li><span class="time-stamp">02:40</span> 亮剑公式装备死舞出个，不过应该没时间了</li>
+                    <li><span class="time-stamp">02:40</span> 选3不就可以一直无限放w了</li>
+                    <li><span class="time-stamp">02:41</span> ？</li>
+                    <li><span class="time-stamp">02:42</span> 不是亮剑感觉能抽陀螺</li>
+                    <li><span class="time-stamp">02:42</span> 决胜局？</li>
+                    <li><span class="time-stamp">02:42</span> 幽默</li>
+                    <li><span class="time-stamp">02:42</span> 开了</li>
+                    <li><span class="time-stamp">02:42</span> 毛毛附体？</li>
+                    <li><span class="time-stamp">02:43</span> [吃瓜]</li>
+                    <li><span class="time-stamp">02:43</span> 元宝</li>
+                    <li><span class="time-stamp">02:43</span> 兄弟们众筹</li>
+                    <li><span class="time-stamp">02:43</span> 其他人呢</li>
+                    <li><span class="time-stamp">02:43</span> 刷的是双发不是连拨</li>
+                    <li><span class="time-stamp">02:44</span> nako已经慌了</li>
+                    <li><span class="time-stamp">02:44</span> nako这把必坑</li>
+                    <li><span class="time-stamp">02:44</span> 他两 睡一张床，床会塌吧</li>
+                    <li><span class="time-stamp">02:44</span> 和毛➗睡觉舒服吗</li>
+                    <li><span class="time-stamp">02:44</span> 和毛处睡觉舒服吗</li>
+                    <li><span class="time-stamp">02:45</span> 卤蛋白给</li>
+                    <li><span class="time-stamp">02:45</span> 只能这俩</li>
+                    <li><span class="time-stamp">02:45</span> 右边上单adc真的拉</li>
+                    <li><span class="time-stamp">02:45</span> 大虫子属于高手英雄 队友对线厉害的</li>
+                    <li><span class="time-stamp">02:45</span> 大虫子怎么没人玩</li>
+                    <li><span class="time-stamp">02:46</span> 主播今晚赚多少</li>
+                    <li><span class="time-stamp">02:46</span> 大虫子只能打特定局，对对掘墓什么的</li>
+                    <li><span class="time-stamp">02:46</span> 大虫子最近就塔赞和navi玩出效果了</li>
+                    <li><span class="time-stamp">02:46</span> 大虫子没几个玩的好的 大O都不敢选</li>
+                    <li><span class="time-stamp">02:46</span> 张神你看nako这表情像不像打g2第五把的uzi</li>
+                </ul>
+                <p class="text-small text-muted">共56条样本，覆盖17个有弹幕分钟段。未发生片段：对线期、团战、资源控制等 → 待观察。</p>
+            </div>
+        </details>
+        <p class="text-small text-muted mt-2">未发生内容：对线细节、关键团战、灰信号演变 → 待观察。</p>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <p class="text-small text-muted mb-2">基于规则层统计与长期库（提及量来自本场弹幕样本）：</p>
+        <table>
+            <tr><th>对象</th><th>提及量</th><th>正/负</th><th>画像/备注</th></tr>
+            <tr><td>Navi</td><td class="num">1</td><td>正0/负0</td><td>提及「大虫子最近就塔赞和navi玩出效果了」</td></tr>
+            <tr><td>G2</td><td class="num">1</td><td>正0/负0</td><td>提及「像不像打g2第五把的uzi」</td></tr>
+            <tr><td>NAVI</td><td class="num">1</td><td>正0/负0</td><td>同上，大小写差异</td></tr>
+            <tr><td>nako</td><td class="num">3</td><td>负3</td><td>「慌了」「必坑」「表情像uzi」</td></tr>
+            <tr><td>张神</td><td class="num">2</td><td>中性</td><td>主播相关，非选手</td></tr>
+        </table>
+        <details>
+            <summary>📊 完整人员画像与提及详情（折叠）</summary>
+            <div class="details-content">
+                <p><strong>Navi / NAVI：</strong>提及1次，关联大虫子英雄讨论，中性。</p>
+                <p><strong>G2：</strong>提及1次，用于对比nako表情，中性。</p>
+                <p><strong>nako：</strong>提及3次，全部为负面质疑，需关注后续表现。</p>
+                <p><strong>其他：</strong>「毛➗」「毛处」等指代不明，样本不足。</p>
+                <p class="text-small text-muted">长期库画像：暂无足够数据，样本不足。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <p>本场为 LoL 赛事，当前版本信息未在弹幕中明确提及。基于弹幕样本，大虫子、卡莎、塞恩等英雄出场，符合当前版本常规选择。</p>
+        <p class="text-small text-muted">联赛规律：无足够样本提炼。版本：待官方数据补充。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p>本节点为局中快照，无历史预测需回填。当前预测：</p>
+        <ul style="padding-left: 20px;">
+            <li>nako状态可能影响MKOI前期节奏 → 待观察</li>
+            <li>大虫子体系若选出可能成为战术支点 → 待观察</li>
+        </ul>
+        <p class="text-small text-muted">验证状态：未发生，待后续节点回填。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="integrity-grid">
+            <div class="integrity-col">
+                <h4>✅ 实际数据源</h4>
+                <ul>
+                    <li>规则层情报JSON（vps_intel/lol-vit-mkoi-2026-09-12_g5_bp_intel.json）</li>
+                    <li>弹幕切片（intel_slices/lol-vit-mkoi-2026-09-12_g5_bp.jsonl）</li>
+                    <li>官方比分：VIT 2 : 2 MKOI（gameWins）</li>
+                </ul>
+            </div>
+            <div class="integrity-col">
+                <h4>📋 预期数据源</h4>
+                <ul>
+                    <li>Riot window 阵容（开局后1分钟校准）</li>
+                    <li>官方实时数据（补刀、经济、击杀）</li>
+                    <li>盘口完整数据</li>
+                </ul>
+            </div>
+            <div class="integrity-col">
+                <h4>⚠️ 缺口</h4>
+                <ul>
+                    <li>本局阵容（英雄+选手）未回填</li>
+                    <li>盘口样本仅1条，不足</li>
+                    <li>对线期数据缺失</li>
+                </ul>
+            </div>
+        </div>
+        <p class="text-small text-muted mt-2">跨源一致性提示：弹幕提及队伍与官方比分一致（VIT/MKOI），无冲突。情报输出时间：2026-09-13 02:46 北京时间。</p>
+        <div class="footnote">
+            <strong>本场长期沉淀点：</strong>大虫子体系在特定对局中的讨论价值（提及4条），可作为后续BP分析参考；nako选手状态波动需持续跟踪。
+        </div>
+    </div>
+    <!-- 底部 -->
+    <div class="card" style="text-align: center; color: #8e8e93; font-size: 13px; padding: 16px;">
+        局中·非终局，结果待定 · 数据基于弹幕样本与规则层统计 · 禁止无中生有
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
