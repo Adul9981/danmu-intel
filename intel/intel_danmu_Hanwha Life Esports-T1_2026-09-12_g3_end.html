@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · HLE vs T1 · G3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 100px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1d1d1f;
+            letter-spacing: 0.01em;
+        }
+        .badge.warning {
+            background: #fff3e0;
+            color: #b25000;
+        }
+        .badge.live {
+            background: #e3f2fd;
+            color: #0066cc;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            background: #0071e3;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            color: #1d1d1f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-item {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6e6e73;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #1d1d1f;
+        }
+        .stat-sub {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-top: 2px;
+        }
+        .signal-list {
+            list-style: none;
+            margin: 8px 0 0;
+        }
+        .signal-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f2;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tag.risk { background: #ffebee; color: #c62828; }
+        .tag.anchor { background: #e8f5e9; color: #2e7d32; }
+        .tag.market { background: #fff8e1; color: #b26a00; }
+        .tag.consensus { background: #e3f2fd; color: #0d47a1; }
+        .tag.gray { background: #f3e5f5; color: #6a1b9a; }
+        .tag.info { background: #e0f2f1; color: #00695c; }
+        .tag.warn { background: #fff3e0; color: #e65100; }
+        .tag.neutral { background: #f5f5f7; color: #6e6e73; }
+        .text-muted {
+            color: #6e6e73;
+            font-size: 13px;
+        }
+        .text-small {
+            font-size: 13px;
+            color: #6e6e73;
+        }
+        .divider {
+            height: 1px;
+            background: #f0f0f2;
+            margin: 18px 0;
+        }
+        details {
+            margin-top: 12px;
+            border: 1px solid #f0f0f2;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        details summary {
+            padding: 12px 16px;
+            background: #fafafa;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: #6e6e73;
+            transition: transform 0.15s ease;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details .details-content {
+            padding: 16px;
+            border-top: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 8px 0;
+        }
+        th {
+            text-align: left;
+            padding: 8px 10px;
+            background: #f5f5f7;
+            font-weight: 600;
+            color: #1d1d1f;
+            border-bottom: 1px solid #e8e8ed;
+            font-size: 12px;
+            letter-spacing: 0.01em;
+        }
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bullet-list li {
+            padding: 6px 0 6px 18px;
+            position: relative;
+            font-size: 14px;
+        }
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 2px;
+            color: #0071e3;
+            font-weight: 700;
+        }
+        .decision-box {
+            background: #f0f7ff;
+            border-left: 4px solid #0071e3;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        .decision-box strong {
+            color: #0071e3;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-12 { margin-bottom: 12px; }
+        .text-right { text-align: right; }
+        .mono {
+            font-family: "SF Mono", "Menlo", "Monaco", monospace;
+            font-size: 12px;
+            background: #f5f5f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .quote {
+            color: #6e6e73;
+            font-style: italic;
+            font-size: 13px;
+        }
+        .highlight {
+            background: #fff9c4;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        .source-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: #f0f0f2;
+            color: #6e6e73;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+        .source-tag.live { background: #e3f2fd; color: #0066cc; }
+        .source-tag.history { background: #f3e5f5; color: #6a1b9a; }
+        .source-tag.market { background: #fff8e1; color: #b26a00; }
+        .source-tag.spec { background: #fff3e0; color: #e65100; }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 18px 16px; }
+            h1 { font-size: 22px; }
+            h2 { font-size: 17px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Hanwha Life Esports-T1 2026-09-12 g3 end</b></div>
+<div class="container">
+    <!-- 头部 -->
+    <div class="card">
+        <div class="flex-between">
+            <div>
+                <h1>局中弹幕情报快照 · G3</h1>
+                <div class="subhead">
+                    <span>Hanwha Life Esports vs T1</span>
+                    <span>2026-09-12</span>
+                    <span class="badge warning">局中·非终局，结果待定</span>
+                    <span class="badge live">弹幕口径·官方待回填</span>
+                </div>
+            </div>
+            <div class="text-right text-small">
+                <div>官方比分：HLE 2 : 1 T1</div>
+                <div class="text-muted">第3小局 · 局末/局间</div>
+            </div>
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="grid-3 mb-12">
+            <div class="stat-item">
+                <div class="stat-label">弹幕总数</div>
+                <div class="stat-value">5,417</div>
+                <div class="stat-sub">活跃用户 1,341</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">弹幕密度</div>
+                <div class="stat-value">113.4</div>
+                <div class="stat-sub">条/分钟</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">灰信号</div>
+                <div class="stat-value">109</div>
+                <div class="stat-sub">条 · 假赛/演员质疑</div>
+            </div>
+        </div>
+        <ul class="signal-list">
+            <li>
+                <span class="tag risk">风险</span>
+                <span>灰信号109条，集中质疑“假赛/收钱/故意送”，观众情绪激烈 <span class="source-tag live">本场弹幕</span> → 详 §2</span>
+            </li>
+            <li>
+                <span class="tag anchor">锚点</span>
+                <span>T1提及314次（负91），HLE仅47次，舆论一边倒批评T1打野与BP <span class="source-tag live">本场弹幕</span> → 详 §3</span>
+            </li>
+            <li>
+                <span class="tag market">盘口</span>
+                <span>12条盘口讨论，聚焦“盲僧/阿卡丽人头分配”与“多兰C不了” <span class="source-tag market">盘口</span> → 详 §4</span>
+            </li>
+            <li>
+                <span class="tag consensus">共识</span>
+                <span>“3-0”刷屏与“让二追三”并存，群体预期严重分裂 <span class="source-tag live">本场弹幕</span> → 详 §5</span>
+            </li>
+            <li>
+                <span class="tag gray">灰信号</span>
+                <span>“韩华不敢赢”“主办方不让3:0”等阴谋论高频出现 <span class="source-tag live">本场弹幕</span> → 详 §2</span>
+            </li>
+        </ul>
+        <div class="decision-box">
+            <strong>一句话决策落点：</strong>本局弹幕情绪极度悲观且灰信号密集，T1打野与BP遭集中质疑；盘口讨论指向资源分配争议，但官方结果待定，建议观望至官方结算，避免基于弹幕情绪做方向性重注。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+        <div class="grid-2">
+            <div>
+                <table>
+                    <tr><th style="width:40%">项目</th><th>内容</th></tr>
+                    <tr><td>赛事</td><td>LCK 2026 夏季赛 / 季后赛（推断）</td></tr>
+                    <tr><td>对阵</td><td>Hanwha Life Esports vs T1</td></tr>
+                    <tr><td>日期</td><td>2026-09-12</td></tr>
+                    <tr><td>小局</td><td>第3小局（G3）</td></tr>
+                    <tr><td>当前节点</td><td>局末/局间（GAME-REVIEW）</td></tr>
+                    <tr><td>官方比分</td><td>HLE 2 : 1 T1（gameWins）</td></tr>
+                    <tr><td>本局状态</td><td><span class="badge warning">局中·非终局，结果待定</span></td></tr>
+                </table>
+            </div>
+            <div>
+                <div class="stat-item mb-8">
+                    <div class="stat-label">弹幕口径进度</div>
+                    <div class="stat-value" style="font-size:18px;">局末·待结算校准</div>
+                    <div class="stat-sub">弹幕大量出现“3-0”“GG”“下班”等终局信号</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">官方数据校准</div>
+                    <div class="stat-value" style="font-size:18px;">Riot window 阵容</div>
+                    <div class="stat-sub">开局后1分钟校准，结果以官方为准</div>
+                </div>
+                <p class="text-small mt-8">⚠️ 禁止从弹幕推断比分，系列比分与结果一律以官方为准。</p>
+            </div>
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <p class="text-small mb-8">共 <strong>109</strong> 条灰信号，词表命中：假赛/演员/收钱/买了/故意送/剧本/322。以下为高频质疑方向，<strong>均为观众主观质疑，非事实结论</strong>。</p>
+        <table>
+            <tr><th>灰信号方向</th><th>典型样本（带量）</th><th>条数</th></tr>
+            <tr><td>假赛/收钱</td><td>“这T1能赢，肯定是HL收钱了”“假赛了”“买了就行了”</td><td>高频</td></tr>
+            <tr><td>教练/BP质疑</td><td>“丁真露露猫咪 教练是买了吗？一直给keria玩这种混子”</td><td>高频</td></tr>
+            <tr><td>选手故意送</td><td>“还不如买了真无语”“故意不给小32”</td><td>中频</td></tr>
+            <tr><td>阴谋论</td><td>“韩华不敢赢”“主办方不让3:0的，放心看”</td><td>高频</td></tr>
+        </table>
+        <details>
+            <summary>灰信号原始样本（部分，带量）</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>“这T1能赢，肯定是HL收钱了” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“丁真露露猫咪 教练是买了吗？一直给keria玩这种混子” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“别乱说 韩国打假赛坐牢的哦” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“假赛了” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“耶律是不是买了？” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“买了就行了” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“还不如买了真无语” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“故意不给小 32” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“韩华不敢赢” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“主办方不让3:0的，放心看” <span class="source-tag live">本场弹幕</span></li>
+                </ul>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <p class="text-small mb-8">基于弹幕提及与官方 window 阵容（开局后1分钟校准）。本局阵容（英雄+选手）如下：</p>
+        <div class="grid-2">
+            <div class="stat-item">
+                <div class="stat-label">HLE 阵容（弹幕推断）</div>
+                <ul class="bullet-list mt-8">
+                    <li>上单：多兰（巨魔/克烈？弹幕争议）</li>
+                    <li>打野：盲僧（弹幕高频提及）</li>
+                    <li>中单：阿卡丽（弹幕高频提及）</li>
+                    <li>下路：泽丽 + 软辅（露露/猫咪？）</li>
+                </ul>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">T1 阵容（弹幕推断）</div>
+                <ul class="bullet-list mt-8">
+                    <li>上单：Zeus（提及27次）</li>
+                    <li>打野：Oner（被集中批评）</li>
+                    <li>中单：Faker（塞拉斯/卡牌？提及67次）</li>
+                    <li>下路：Guma（提及9次，正4）</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-12">
+            <h3>BP 后战绩情报</h3>
+            <p class="text-small">无战绩情报提及（弹幕未提供该阵容历史胜率数据）。</p>
+        </div>
+        <details>
+            <summary>BP 相关弹幕样本（带量）</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>“5ban打野” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“多兰不会玩巨魔？多兰不会玩巨魔？多兰不会玩巨魔？”（x2） <span class="source-tag live">本场弹幕</span></li>
+                    <li>“多兰巨魔啊”（x3） <span class="source-tag live">本场弹幕</span></li>
+                    <li>“阿卡丽”（x3） <span class="source-tag live">本场弹幕</span></li>
+                    <li>“faker 的塞拉斯”（x2） <span class="source-tag live">本场弹幕</span></li>
+                    <li>“T1下路选的什么鬼啊” <span class="source-tag live">本场弹幕</span></li>
+                    <li>“逆天了，给真大哥小k玩三把软辅”（x2） <span class="source-tag live">本场弹幕</span></li>
+                    <li>“克烈巨魔一个不选”（x2） <span class="source-tag live">本场弹幕</span></li>
+                </ul>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p class="text-small mb-8">共 <strong>12</strong> 条盘口相关讨论，聚焦人头分配与经济分配。</p>
+        <table>
+            <tr><th>盘口主题</th><th>方向</th><th>条数</th><th>关键样本</th></tr>
+            <tr><td>盲僧人头</td><td>质疑</td><td>4</td><td>“还是给盲僧让的人头”“都说了，人头都给瞎子K完了，瞎子打团有什么用啊”</td></tr>
+            <tr><td>阿卡丽人头</td><td>质疑</td><td>2</td><td>“k阿卡丽人头无敌了”</td></tr>
+            <tr><td>多兰经济</td><td>负面</td><td>3</td><td>“多兰C不了还拿人头”“喂了最多的经济，把把送人头”（x3）</td></tr>
+            <tr><td>不让人头</td><td>中性</td><td>1</td><td>“不让人头是明智的”</td></tr>
+        </table>
+        <div class="decision-box mt-12">
+            <strong>盘口信号链：</strong>弹幕普遍认为资源过度倾斜给盲僧/阿卡丽，但团战效果差，形成“经济黑洞”共识 → 若该局HLE失利，盘口讨论可能进一步发酵为“假赛”质疑。
+        </div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>正锚（利好信号）</h3>
+                <ul class="bullet-list">
+                    <li>“T1翻了”（x3）、“翻了”（x2）——部分观众认为T1有翻盘可能 <span class="source-tag live">本场弹幕</span></li>
+                    <li>“后期胚子无敌，这把稳了”（x3）——对HLE后期能力仍有期待 <span class="source-tag live">本场弹幕</span></li>
+                    <li>“说实话！兰子真立功了！！！MVP是兰子吧！！！！”（x4）——对多兰正面评价 <span class="source-tag live">本场弹幕</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>负锚（利空信号）</h3>
+                <ul class="bullet-list">
+                    <li>“3-0”刷屏（高频）——多数观众认为HLE将轻松取胜或T1被横扫 <span class="source-tag live">本场弹幕</span></li>
+                    <li>“oner至少三局不是人类”（x2）、“O畜3把都抽象”——打野被集中批评 <span class="source-tag live">本场弹幕</span></li>
+                    <li>“喂了最多的经济，把把送人头”（x4）——经济分配质疑 <span class="source-tag live">本场弹幕</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-16">
+            <h3>群体共识（+分歧+样本量）</h3>
+            <table>
+                <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+                <tr><td>比赛结果预期</td><td>分裂</td><td>“3-0”高频 vs “让二追三”高频</td><td>“3-0了有没有感觉”“史上最无悬念的让2追3”</td><td>背离信号</td></tr>
+                <tr><td>T1打野表现</td><td>负面</td><td>“oner”相关≥15条</td><td>“oner是人吗？？？？？？？”“O野驴 真他妈的能带头送”</td><td>强共识</td></tr>
+                <tr><td>BP/教练</td><td>负面</td><td>“软辅”相关≥8条</td><td>“逆天了，给真大哥小k玩三把软辅”“给keria玩这种混子就等着输”</td><td>强共识</td></tr>
+                <tr><td>假赛质疑</td><td>负面</td><td>109条灰信号</td><td>“韩华不敢赢”“主办方不让3:0的”</td><td>强共识（灰）</td></tr>
+                <tr><td>多兰评价</td><td>分裂</td><td>正负均有</td><td>“多兰C不了” vs “兰子真立功了”</td><td>分歧信号</td></tr>
+            </table>
+            <p class="text-small mt-8"><strong>共识→信号链：</strong>同向=强信号（打野/BP负面共识）；背离=分歧信号（比赛结果预期分裂，灰信号与正锚并存）。</p>
+        </div>
+        <div class="mt-16">
+            <h3>灰信号条件预测</h3>
+            <ul class="bullet-list">
+                <li>若HLE最终取胜：灰信号可能转向“T1故意输/假赛” <span class="source-tag spec">推测·待验证</span></li>
+                <li>若T1翻盘：灰信号可能转向“HLE收钱/让分” <span class="source-tag spec">推测·待验证</span></li>
+                <li>无论结果，打野Oner与BP质疑将持续发酵 <span class="source-tag live">本场弹幕</span></li>
+            </ul>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <div class="grid-2">
+            <div class="stat-item">
+                <div class="stat-label">LONG 方向（潜在机会）</div>
+                <ul class="bullet-list mt-8">
+                    <li>若官方确认HLE取胜，且灰信号未进一步升级，可关注HLE后续小局信心 <span class="source-tag spec">推测·待验证</span></li>
+                    <li>“后期胚子无敌”共识若被验证，HLE后期阵容价值可能被低估 <span class="source-tag live">本场弹幕</span></li>
+                </ul>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">SHORT 方向（风险规避）</div>
+                <ul class="bullet-list mt-8">
+                    <li>灰信号密集，任何基于弹幕情绪的追涨杀跌风险极高 <span class="source-tag live">本场弹幕</span></li>
+                    <li>T1打野与BP负面共识强烈，若T1继续失利，相关舆情可能进一步恶化 <span class="source-tag live">本场弹幕</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="decision-box mt-12">
+            <strong>决策落点：</strong>当前局中·非终局，结果待官方回填。弹幕情绪极端且灰信号密集，建议以官方数据为准，暂不基于弹幕做方向性重注；可关注官方结算后灰信号是否转向，作为后续小局情绪指标。
+        </div>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <p class="text-small mb-8">本局（G3）已发生片段与时间线（北京时间），未发生部分标注“待观察”。</p>
+        <details open>
+            <summary>G3 弹幕时间线（真实时间戳+原文带量）</summary>
+            <div class="details-content">
+                <table>
+                    <tr><th style="width:110px">时间（北京）</th><th>弹幕原文（带量）</th></tr>
+                    <tr><td>15:19</td><td>大0那波听牌龙 飞双人组不要龙就离谱（x4）</td></tr>
+                    <tr><td>15:20</td><td>3比0就3比0吧太恶心了大0快退役吧</td></tr>
+                    <tr><td>15:21</td><td>3号种子就3号吧，至少遇不到BLG了（x2）</td></tr>
+                    <tr><td>15:22</td><td>皮蛋不喂他200%的经济他根本白搭，本质菜逼（x2）</td></tr>
+                    <tr><td>15:23</td><td>3-0（x3）｜打野做个人吧（x2）</td></tr>
+                    <tr><td>15:24</td><td>史上最无悬念的让2追3（x4）</td></tr>
+                    <tr><td>15:25</td><td>史上最无悬念的让2追3（x7）｜阿卡丽（x3）</td></tr>
+                    <tr><td>15:26</td><td>多兰巨魔啊（x3）｜塞拉斯（x2）</td></tr>
+                    <tr><td>15:27</td><td>史上最无悬念的让2追3（x5）｜0封了</td></tr>
+                    <tr><td>15:28</td><td>我说三叔目前是lck第一打野有人反对吗（x4）</td></tr>
+                    <tr><td>15:29</td><td>哈哈，每把总是他，每把都是他，恶心（x4）</td></tr>
+                    <tr><td>15:30</td><td>多兰养boss环节（x2）｜2分钟落后1K啊？？？</td></tr>
+                    <tr><td>15:31</td><td>3:0了，有这上中野</td></tr>
+                    <tr><td>15:32</td><td>捞杂寄生hle咯（x2）｜4点结束的话还有一个多小时怎么办。</td></tr>
+                    <tr><td>15:33</td><td>点了吧 看的恶心...（x5）｜让二追六（x5）</td></tr>
+                    <tr><td>15:34</td><td>张永伥 支持谁谁遭（x4）｜五分钟两千 还玩儿个屁啊（x3）</td></tr>
+                    <tr><td>15:35</td><td>t1赢一把吧撑到5点谢谢（x4）｜3/1吧，刚好看ig</td></tr>
+                    <tr><td>15:36</td><td>这么大优势又搞这种穿甲盲僧等着被翻盘？（x7）</td></tr>
+                    <tr><td>15:37</td><td>史上最毫无悬念的3-0（x2）｜T1翻了</td></tr>
+                    <tr><td>15:38</td><td>韩华把把放一龙（x2）｜T1也想让二追三这一套吗</td></tr>
+                    <tr><td>15:39</td><td>别急，t1中期会送（x2）｜坯子要C了（x2）</td></tr>
+                    <tr><td>15:40</td><td>早说了早说了早说了早说了早说了早说了早说了早说了早说了早说了（x3）</td></tr>
+                    <tr><td>15:41</td><td>别急，t1中期会送（x3）｜又是oner（x2）</td></tr>
+                    <tr><td>15:42</td><td>又是这俩（x5）｜大O老师搞笑来的（x4）</td></tr>
+                    <tr><td>15:43</td><td>这又是老李的锅？这又是老李的锅？这又是老李的锅？（x4）</td></tr>
+                    <tr><td>15:44</td><td>这野驴不去替补，天理能容啊？（x2）</td></tr>
+                    <tr><td>15:45</td><td>这个打野是不是也交了投名状了（x6）｜翻了（x3）</td></tr>
+                    <tr><td>15:46</td><td>3：0韩华走不出场馆的，没必要3：0（x4）｜韩华不敢赢（x3）</td></tr>
+                    <tr><td>15:47</td><td>主办方不让3:0的，放心看（x4）｜赌狗只要输了就是假赛 有感觉吗（x2）</td></tr>
+                    <tr><td>15:48</td><td>后期胚子无敌，这把稳了（x3）｜3 7开</td></tr>
+                    <tr><td>15:49</td><td>你都认为是假赛了，还看？贱不贱啊（x5）｜t1今天要还韩华一个让2追3（x3）</td></tr>
+                    <tr><td>15:50</td><td>哥哥（x10）｜别急，t1中期会送（x4）</td></tr>
+                    <tr><td>15:51</td><td>喂了最多的经济，把把送人头（x4）｜连续两波E脸 死了木了（x4）</td></tr>
+                    <tr><td>15:52</td><td>完了，汉化被T1越带越菜了（x4）｜神人大战，菜鸡互啄（x4）</td></tr>
+                    <tr><td>15:53</td><td>是的都怪阿卡丽 是飞科下的死命令让胚子E脸的！！（x4）</td></tr>
+                    <tr><td>15:54</td><td>老张你怎么了？？（x5）｜3-0（x4）</td></tr>
+                    <tr><td>15:55</td><td>完了（x13）｜大李狗牛逼大李狗牛逼大李狗牛逼（x2）</td></tr>
+                    <tr><td>15:56</td><td>这两队的状态，gen放心了（x7）｜韩华不敢赢，放心看（x5）</td></tr>
+                    <tr><td>15:57</td><td>导播压抑了（x10）｜不叫少爷了，闹麻了（x8）</td></tr>
+                    <tr><td>15:58</td><td>不叫少爷了，闹麻了（x6）｜张老奴（x5）</td></tr>
+                    <tr><td>15:59</td><td>老奴（x9）｜让二追六！（x4）</td></tr>
+                    <tr><td>16:00</td><td>史上最毫无悬念的让二追三（x9）｜主办方不让3:0的，放心看（x4）</td></tr>
+                    <tr><td>16:01</td><td>第一二把也是T1不想赢，不然早3比0带走韩华了！！（x6）</td></tr>
+                    <tr><td>16:02</td><td>oner至少三局不是人类（x2）｜peyz高风险高收益打法（x2）</td></tr>
+                    <tr><td>16:03</td><td>第一二把也是T1不想赢，不然早3比0带走韩华了！！（x4）</td></tr>
+                    <tr><td>16:04</td><td>韩华不也靠T1送，不然能赢？（x2）｜O➗现在没人能管住他了，开送</td></tr>
+                    <tr><td>16:05</td><td>真的全靠多兰，兰神王（x2）｜T1今天BP好点了 但是状态烂完了</td></tr>
+                    <tr><td>16:06</td><td>下巴给多兰来吧奥恩开团肉起来｜不知道多兰会玩啥了</td></tr>
+                    <tr><td>16:07</td><td>下吧出塞恩｜谁教你副w的</td></tr>
+                </table>
+                <p class="text-small mt-8">注：以上为抽样样本，完整时间线见切片文件。未发生片段（如最终团战、结算画面）待观察。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>队伍提及 TOP</h3>
+                <table>
+                    <tr><th>队伍</th><th>提及</th><th>正/负</th></tr>
+                    <tr><td>T1</td><td>314</td><td>正14 / 负91</td></tr>
+                    <tr><td>HLE</td><td>47</td><td>正5 / 负7</td></tr>
+                    <tr><td>GEN</td><td>30</td><td>正0 / 负19</td></tr>
+                    <tr><td>IG</td><td>24</td><td>正5 / 负0</td></tr>
+                    <tr><td>BLG</td><td>8</td><td>正1 / 负0</td></tr>
+                </table>
+            </div>
+            <div>
+                <h3>选手提及 TOP</h3>
+                <table>
+                    <tr><th>选手</th><th>提及</th><th>正/负</th></tr>
+                    <tr><td>Faker</td><td>67</td><td>正1 / 负4</td></tr>
+                    <tr><td>Zeus</td><td>27</td><td>正2 / 负3</td></tr>
+                    <tr><td>Guma</td><td>9</td><td>正4 / 负0</td></tr>
+                    <tr><td>Oscar</td><td>2</td><td>正0 / 负0</td></tr>
+                    <tr><td>Chovy</td><td>1</td><td>正0 / 负0</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="mt-12">
+            <h3>队伍特质统计（长期库）</h3>
+            <div class="grid-3">
+                <div class="stat-item"><div class="stat-label">逆风崩盘</div><div class="stat-value">1</div></div>
+                <div class="stat-item"><div class="stat-label">顺风隐身</div><div class="stat-value">1</div></div>
+                <div class="stat-item"><div class="stat-label">被翻守不住</div><div class="stat-value">14</div></div>
+                <div class="stat-item"><div class="stat-label">韧性逆转</div><div class="stat-value">3</div></div>
+                <div class="stat-item"><div class="stat-label">心态摆烂</div><div class="stat-value">47</div></div>
+                <div class="stat-item"><div class="stat-label">慢热手热</div><div class="stat-value">2</div></div>
+                <div class="stat-item"><div class="stat-label">打法风格</div><div class="stat-value">13</div></div>
+                <div class="stat-item"><div class="stat-label">选手特质</div><div class="stat-value">43</div></div>
+            </div>
+        </div>
+        <details class="mt-12">
+            <summary>长期画像补充（历史库）</summary>
+            <div class="details-content">
+                <p class="text-small">T1 长期被翻盘/守不住特质显著（14条），心态摆烂相关47条，反映观众对T1逆风局信任度低。HLE 提及量虽少，但负面占比不低（负7/正5），需结合后续小局观察。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <ul class="bullet-list">
+            <li>LCK 2026 夏季赛版本倾向：软辅/硬辅选择争议大，弹幕多次提及“给Keria玩软辅”导致游走受限 <span class="source-tag live">本场弹幕</span></li>
+            <li>“让二追三”在LCK历史上并非罕见，但本场弹幕将其与“假赛”关联，反映观众对赛果的极端不信任 <span class="source-tag live">本场弹幕</span></li>
+            <li>打野盲僧/阿卡丽等刺客英雄在中期团战中的容错率被弹幕反复讨论，版本节奏偏向资源团 <span class="source-tag live">本场弹幕</span></li>
+            <li>无官方版本数据接入，以上为弹幕共识提炼，非版本结论 <span class="source-tag spec">推测·待验证</span></li>
+        </ul>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <p class="text-small mb-8">本局为局中快照，预测验证待官方结算后回填。</p>
+        <table>
+            <tr><th>预测项</th><th>当前状态</th><th>回填结果</th></tr>
+            <tr><td>HLE 3-0 取胜</td><td>弹幕高频预期</td><td>待官方结算</td></tr>
+            <tr><td>T1 让二追三</td><td>弹幕部分预期</td><td>待官方结算</td></tr>
+            <tr><td>灰信号升级为假赛结论</td><td>109条质疑</td><td>待观察</td></tr>
+            <tr><td>打野Oner持续被批评</td><td>强共识</td><td>已发生，待后续验证</td></tr>
+        </table>
+        <p class="text-small mt-8">⚠️ 局中·非终局，所有预测均待官方数据回填。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div class="stat-item">
+                <div class="stat-label">实际数据源</div>
+                <ul class="bullet-list mt-8 text-small">
+                    <li>规则层情报 JSON</li>
+                    <li>弹幕切片（本节点）</li>
+                    <li>官方比分（gameWins）</li>
+                    <li>Riot window 阵容</li>
+                </ul>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">预期数据源</div>
+                <ul class="bullet-list mt-8 text-small">
+                    <li>官方结算数据</li>
+                    <li>完整BP记录</li>
+                    <li>经济曲线/团战数据</li>
+                    <li>赛后采访</li>
+                </ul>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">缺口</div>
+                <ul class="bullet-list mt-8 text-small">
+                    <li>官方终局结果未回填</li>
+                    <li>BP后战绩情报缺失</li>
+                    <li>经济/视野数据未接入</li>
+                    <li>灰信号需官方核实</li>
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between text-small">
+            <div>
+                <span>情报输出时间：2026-09-12 16:10（北京时间）</span>
+            </div>
+            <div>
+                <span class="source-tag live">本场弹幕</span>
+                <span class="source-tag history">历史画像</span>
+                <span class="source-tag market">盘口</span>
+                <span class="source-tag spec">推测·待验证</span>
+            </div>
+        </div>
+        <p class="text-small mt-8">数据完整性提示：缺源不交付完整结论，本页所有结论均基于现有弹幕与规则层数据，官方结果待回填。</p>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card">
+        <h2><span class="no">★</span>本场长期沉淀点</h2>
+        <ul class="bullet-list">
+            <li><strong>灰信号密集度异常：</strong>109条假赛/收钱质疑，远超常规局，反映观众对T1表现极度不信任，后续小局需持续监控灰信号转向。 <span class="source-tag live">本场弹幕</span></li>
+            <li><strong>打野Oner负面共识：</strong>“oner至少三局不是人类”“O畜3把都抽象”等高频出现，可能影响T1后续BP与团队心态。 <span class="source-tag live">本场弹幕</span></li>
+            <li><strong>“让二追三”与“3-0”预期分裂：</strong>群体共识严重背离，任何赛果都可能引发新一轮情绪极化。 <span class="source-tag live">本场弹幕</span></li>
+        </ul>
+        <p class="text-small mt-8">无样本不足情况，以上均基于本场弹幕真实数据提炼。</p>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
