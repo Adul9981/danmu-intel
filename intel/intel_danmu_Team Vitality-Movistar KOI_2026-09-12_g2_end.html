@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · Team Vitality vs Movistar KOI · G2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1d1d1f;
+      letter-spacing: 0.01em;
+    }
+    .badge.warning {
+      background: #fff3e0;
+      color: #b45f06;
+    }
+    .badge.live {
+      background: #e6f4ea;
+      color: #1e7e34;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #0071e3;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #1d1d1f;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 32px;
+      margin-bottom: 8px;
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6e6e73;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .stat-value.small {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .signal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .signal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #f8f8fa;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .signal-tag {
+      display: inline-block;
+      background: #0071e3;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .signal-tag.risk {
+      background: #d70015;
+    }
+    .signal-tag.anchor {
+      background: #1e7e34;
+    }
+    .signal-tag.market {
+      background: #b45f06;
+    }
+    .signal-tag.consensus {
+      background: #6e6e73;
+    }
+    .signal-text {
+      flex: 1;
+    }
+    .signal-source {
+      font-size: 12px;
+      color: #6e6e73;
+      margin-left: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 8px 0;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6e6e73;
+      padding: 8px 8px 8px 0;
+      border-bottom: 1px solid #e8e8ed;
+    }
+    td {
+      padding: 8px 8px 8px 0;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    details {
+      margin: 12px 0;
+      border: 1px solid #e8e8ed;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    summary {
+      padding: 12px 16px;
+      background: #f8f8fa;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      color: #1d1d1f;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::before {
+      content: "▸";
+      font-size: 12px;
+      color: #6e6e73;
+      transition: transform 0.2s;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details .details-content {
+      padding: 16px;
+      background: #ffffff;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #3a3a3c;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .danmu-line {
+      padding: 3px 0;
+      border-bottom: 1px solid #f5f5f7;
+      display: flex;
+      gap: 12px;
+    }
+    .danmu-time {
+      color: #6e6e73;
+      font-size: 12px;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      min-width: 100px;
+    }
+    .danmu-text {
+      flex: 1;
+    }
+    .danmu-count {
+      color: #0071e3;
+      font-weight: 500;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .footnote {
+      font-size: 12px;
+      color: #6e6e73;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e8e8ed;
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8ed;
+      margin: 16px 0;
+    }
+    .highlight {
+      background: #f0f7ff;
+      border-left: 3px solid #0071e3;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    .highlight.warning {
+      background: #fff8f0;
+      border-left-color: #b45f06;
+    }
+    .highlight.risk {
+      background: #fff5f5;
+      border-left-color: #d70015;
+    }
+    .tag {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #3a3a3c;
+    }
+    .tag.blue {
+      background: #e6f0ff;
+      color: #0055b3;
+    }
+    .tag.green {
+      background: #e6f4ea;
+      color: #1e7e34;
+    }
+    .tag.red {
+      background: #ffe6e6;
+      color: #b30000;
+    }
+    .tag.orange {
+      background: #fff3e0;
+      color: #b45f06;
+    }
+    .mono {
+      font-family: "SF Mono", "Menlo", "Monaco", monospace;
+      font-size: 12px;
+    }
+    .text-muted {
+      color: #6e6e73;
+    }
+    .text-small {
+      font-size: 12px;
+    }
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mb-8 { margin-bottom: 8px; }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      h1 { font-size: 22px; }
+      .stat-value { font-size: 18px; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Vitality-Movistar KOI 2026-09-12 g2 end</b></div>
+<div class="container">
+  <!-- 页面头部 -->
+  <div class="card" style="padding-bottom: 20px;">
+    <div class="flex-between">
+      <div>
+        <h1>局中弹幕情报快照 · G2</h1>
+        <div class="subhead">
+          <span>Team Vitality vs Movistar KOI</span>
+          <span class="badge warning">局中·非终局，结果待定</span>
+          <span class="badge">2026-09-12 · 第2小局</span>
+          <span class="badge live">弹幕口径·官方待回填</span>
+        </div>
+      </div>
+      <div style="text-align: right; font-size: 13px; color: #6e6e73;">
+        <div>情报输出时间：2026-09-13 01:05 北京时间</div>
+        <div>节点：G2｜局末/局间（GAME-REVIEW）</div>
+      </div>
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="stat-row" style="margin-bottom: 16px;">
+      <div class="stat-item">
+        <span class="stat-label">当前比分（弹幕口径）</span>
+        <span class="stat-value">1 : 1</span>
+        <span class="text-small text-muted">官方待回填 · 第2小局结束</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">弹幕总数</span>
+        <span class="stat-value">1,692</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">活跃用户</span>
+        <span class="stat-value">597</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">密度</span>
+        <span class="stat-value">30.8<span style="font-size: 14px; font-weight: 400;">条/分</span></span>
+      </div>
+    </div>
+    <ul class="signal-list">
+      <li class="signal-item">
+        <span class="signal-tag risk">风险</span>
+        <span class="signal-text">灰信号21条，涉及“假赛/剧本/故意48”等质疑，观众情绪激烈 <span class="signal-source">→ §2</span></span>
+      </li>
+      <li class="signal-item">
+        <span class="signal-tag anchor">锚点</span>
+        <span class="signal-text">VIT前期优势显著，弹幕共识“vit把把前期优势”但被翻盘风险高 <span class="signal-source">→ §3/§5</span></span>
+      </li>
+      <li class="signal-item">
+        <span class="signal-tag market">盘口</span>
+        <span class="signal-text">盘口讨论46条，高频“48”刷屏，疑似与主播/盘口暗号相关 <span class="signal-source">→ §4</span></span>
+      </li>
+      <li class="signal-item">
+        <span class="signal-tag consensus">共识</span>
+        <span class="signal-text">JOJO表现遭集中质疑，弹幕大量批评其操作与决策 <span class="signal-source">→ §8</span></span>
+      </li>
+      <li class="signal-item">
+        <span class="signal-tag">决策落点</span>
+        <span class="signal-text">本局结果待官方确认，短期情绪偏空MKOI，但需警惕VIT被翻盘历史 <span class="signal-source">→ §6</span></span>
+      </li>
+    </ul>
+    <div class="footnote">速览卡仅展示核心信号，详细证据见各分段。所有弹幕时间均为北京时间。</div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <h3>比赛元数据</h3>
+        <table>
+          <tr><td style="width: 120px; color: #6e6e73;">赛事</td><td>LoL 职业联赛（LEC/相关）</td></tr>
+          <tr><td style="color: #6e6e73;">对阵</td><td>Team Vitality vs Movistar KOI</td></tr>
+          <tr><td style="color: #6e6e73;">日期</td><td>2026-09-12</td></tr>
+          <tr><td style="color: #6e6e73;">小局</td><td>第2小局（G2）</td></tr>
+          <tr><td style="color: #6e6e73;">节点</td><td>局末/局间（GAME-REVIEW）</td></tr>
+          <tr><td style="color: #6e6e73;">slug</td><td class="mono">lol-vit-mkoi-2026-09-12</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>结果状态核验</h3>
+        <div class="highlight warning">
+          <strong>局中·非终局，结果待定</strong><br>
+          官方当前比分：VIT 1 : 1 MKOI（官方 gameWins）。本页为第2小局结束情报，系列比分与结果一律以官方为准，禁止从弹幕推断比分。
+        </div>
+        <div class="stat-row" style="margin-top: 12px;">
+          <div class="stat-item">
+            <span class="stat-label">官方比分</span>
+            <span class="stat-value small">1 : 1</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">弹幕口径</span>
+            <span class="stat-value small">1 : 1</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">一致性</span>
+            <span class="stat-value small" style="color: #1e7e34;">一致</span>
+          </div>
+        </div>
+        <p class="text-small text-muted mt-8">跨源一致性提示：弹幕多次出现“1比1”“一比一”，与官方比分一致，但局内具体胜负归属需以官方结算为准。</p>
+      </div>
+    </div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="highlight risk">
+      <strong>灰信号共21条</strong>，涉及“假赛/剧本/故意48/演员”等敏感词。以下为观众质疑，非结论，需谨慎对待。
+    </div>
+    <table>
+      <thead>
+        <tr><th>灰信号样本（节选）</th><th>条数/频次</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>真不敢想要是今年他赞和卡尔会lck被韩华买了会有多猛啊</td><td>1</td></tr>
+        <tr><td>小蜜蜂能赢一把就是假赛</td><td>1</td></tr>
+        <tr><td>你也48？？？故意的！！！</td><td>1</td></tr>
+        <tr><td>BLG明天举报你，你就故意48吧</td><td>1</td></tr>
+        <tr><td>这能怪老张？老狗故意在45秒左右喊对时间</td><td>2</td></tr>
+        <tr><td>经典开局暂停交代剧本</td><td>1</td></tr>
+        <tr><td>这个BO5是IG和AL的剧本吗</td><td>1</td></tr>
+        <tr><td>48？（多次出现，与盘口/暗号相关）</td><td>高频</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">48？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">多少？（x4）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">大大方方48（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">已录屏，马上反馈给联盟（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">这能怪老张？老狗故意在45秒左右喊对时间（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">黑暗降临（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">45秒对时间是吧</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">48块</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:36</span><span class="danmu-text">48？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">48我儿？</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">48？</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">4什么</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:53</span><span class="danmu-text">出减重伤那个啊，处</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:53</span><span class="danmu-text">可惜不是易损</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:54</span><span class="danmu-text">易损不如吸血有感觉么</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:54</span><span class="danmu-text">火龙只有Q225之后的灼烧能吃到易损</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:54</span><span class="danmu-text">火龙易损有什么用</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:54</span><span class="danmu-text">珠光加易损无敌</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:54</span><span class="danmu-text">珠光应该是火龙最适配的海克斯了</span></div>
+      </div>
+    </details>
+    <div class="footnote">灰信号词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送 均已扫描，以上为命中结果。</div>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>本局阵容（英雄+选手）</h3>
+        <p class="text-small text-muted">基于弹幕提及与官方窗口校准，部分信息待官方确认。</p>
+        <table>
+          <thead><tr><th>位置</th><th>Team Vitality</th><th>Movistar KOI</th></tr></thead>
+          <tbody>
+            <tr><td>上单</td><td>格温（疑似）</td><td>老黑/奎桑提（疑似）</td></tr>
+            <tr><td>打野</td><td>猪妹/启封秘籍猪（弹幕提及）</td><td>未知</td></tr>
+            <tr><td>中单</td><td>辛德拉（弹幕提及）</td><td>永恩（弹幕提及）</td></tr>
+            <tr><td>下路</td><td>卢锡安+米利欧（弹幕提及“卢米无限优”）</td><td>卡牌+？</td></tr>
+            <tr><td>辅助</td><td>米利欧</td><td>未知</td></tr>
+          </tbody>
+        </table>
+        <p class="text-small text-muted mt-8">弹幕提及：“洛克打辛德拉”“启封秘籍的猪 牛逼”“ad卡牌不怕永恩”“卢米无限优”。</p>
+      </div>
+      <div>
+        <h3>BP 锚点与讨论</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px;">
+          <li>• 弹幕质疑左侧阵容：“左边这个阵容是人选得出来的？？排位看到都要秒吧”（x3）</li>
+          <li>• “0控阵容”“mkoi一点控没有啊” — 对MKOI阵容控制不足的批评</li>
+          <li>• “一楼选猫没毛但是三楼该选卡米尔的” — 对BP顺序的讨论</li>
+          <li>• “主要是al选的英雄太容易帮金克丝启动了” — 疑似跨局讨论</li>
+          <li>• “最后一把选冰女也比选妖姬好打把” — 对中单选择的建议</li>
+        </ul>
+        <div class="highlight mt-8">
+          <strong>BP 后战绩情报：</strong>无战绩情报提及。
+        </div>
+      </div>
+    </div>
+    <details>
+      <summary>BP 相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <div class="danmu-line"><span class="danmu-time">09-13 00:02</span><span class="danmu-text">洛克打辛德拉（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:02</span><span class="danmu-text">为什么，他们不选蛇</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:04</span><span class="danmu-text">mkoi一点控没有啊</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:06</span><span class="danmu-text">0控阵容</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:06</span><span class="danmu-text">ig都玩不明白的阵容指望左边能打出来？</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:06</span><span class="danmu-text">一楼选猫没毛但是三楼该选卡米尔的</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:14</span><span class="danmu-text">下路这组合谁优势线啊？兄弟们</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:14</span><span class="danmu-text">卢米无限优</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:15</span><span class="danmu-text">左边这个阵容是人选得出来的？？排位看到都要秒吧（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:15</span><span class="danmu-text">ad卡牌不怕永恩</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:18</span><span class="danmu-text">辛德拉和永恩平刀吗</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:43</span><span class="danmu-text">辛德拉不出中亚 你们谁能想到？？？？？？（x2）</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="stat-row">
+      <div class="stat-item">
+        <span class="stat-label">盘口相关弹幕</span>
+        <span class="stat-value">46条</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">高频词</span>
+        <span class="stat-value small">“48”</span>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>盘口样本（节选）</th><th>条数/频次</th></tr></thead>
+      <tbody>
+        <tr><td>48</td><td>高频</td></tr>
+        <tr><td>48？</td><td>高频</td></tr>
+        <tr><td>你说48是吧？你也想停播？</td><td>1</td></tr>
+        <tr><td>48？？？？</td><td>1</td></tr>
+        <tr><td>你也48？？？故意的！！！</td><td>1</td></tr>
+        <tr><td>48？</td><td>高频</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight warning mt-8">
+      <strong>盘口讨论特征：</strong>“48”作为高频暗号反复出现，结合“你也想停播？”等表述，疑似与主播/盘口相关，但无直接证据指向本场比赛盘口。观众质疑情绪明显，需谨慎对待。
+    </div>
+    <details>
+      <summary>盘口相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">48？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">多少？（x4）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">大大方方48（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">2路不想要了是吧张处</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">48 ？</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">48块</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:36</span><span class="danmu-text">48？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">48我儿？</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">48？</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">4什么</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚（利好信号）</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+          <li><span class="tag green">正锚</span> VIT前期优势显著，弹幕共识“vit把把前期优势”</li>
+          <li><span class="tag green">正锚</span> 下路卢米组合被评“无限优”</li>
+          <li><span class="tag green">正锚</span> 部分弹幕认为MKOI“不怎么送”，但JOJO带节奏</li>
+        </ul>
+      </div>
+      <div>
+        <h3>负锚（利空信号）</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+          <li><span class="tag red">负锚</span> VIT被翻盘历史：“vit季后赛打5把 前期都是优势的 要看他们送不送”</li>
+          <li><span class="tag red">负锚</span> JOJO表现遭集中批评：“JOJO纯是菜逼”“jojo只会装逼，菜的发昏”</li>
+          <li><span class="tag red">负锚</span> MKOI阵容控制不足：“0控阵容”“mkoi一点控没有啊”</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>群体共识（+分歧+样本量）</h3>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+      <tbody>
+        <tr><td>VIT前期优势</td><td>共识</td><td>≥8条</td><td>“vit把把前期优势”“打g2也是 然后被翻盘”</td><td>弹幕一致</td></tr>
+        <tr><td>JOJO表现差</td><td>共识</td><td>≥12条</td><td>“JOJO纯是菜逼”“jojo只会装逼，菜的发昏”</td><td>弹幕一致</td></tr>
+        <tr><td>MKOI控制不足</td><td>共识</td><td>≥5条</td><td>“0控阵容”“mkoi一点控没有啊”</td><td>弹幕一致</td></tr>
+        <tr><td>翻盘风险</td><td>分歧</td><td>≥6条</td><td>“翻了（x4）”“一波不了（x5）”</td><td>多空分歧</td></tr>
+        <tr><td>盘口暗号“48”</td><td>共识</td><td>≥46条</td><td>“48？”“你也48？？？故意的！！！”</td><td>弹幕刷屏</td></tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">共识→信号链：VIT前期优势共识强，但翻盘风险分歧明显；JOJO差评共识强，指向MKOI中期决策风险。</p>
+    <div class="highlight mt-8">
+      <strong>灰信号条件预测：</strong>若后续出现“暂停/回溯/异常操作”，弹幕可能再次爆发“剧本/假赛”质疑，需关注官方公告。
+    </div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>LONG 信号（看多）</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+          <li>• VIT前期优势共识强，若延续压制，有望拿下本局。</li>
+          <li>• 下路卢米组合被评优势，可能成为突破口。</li>
+          <li>• MKOI阵容控制不足，团战容错率低。</li>
+        </ul>
+      </div>
+      <div>
+        <h3>SHORT 信号（看空）</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+          <li>• VIT历史被翻盘率高，弹幕多次提及“送不送”。</li>
+          <li>• JOJO表现遭集中批评，可能成为MKOI突破口。</li>
+          <li>• 灰信号密集，观众质疑“假赛/剧本”，情绪面偏空。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight mt-8">
+      <strong>决策落点：</strong>本局结果待官方确认，短期情绪偏空MKOI，但需警惕VIT被翻盘历史。建议关注官方结算与后续BP，谨慎对待盘口暗号。
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G2 时间线（已发生片段）</h3>
+    <p class="text-small text-muted">基于弹幕时间戳提炼，未发生部分写“待观察”。</p>
+    <table>
+      <thead><tr><th>时间（北京）</th><th>事件/弹幕焦点</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td>00:04</td><td>“2-0了啊”“mkoi一点控没有啊”“三线劣”</td><td>本场弹幕</td></tr>
+        <tr><td>00:05</td><td>“一比一（x3）”</td><td>本场弹幕</td></tr>
+        <tr><td>00:07</td><td>“48？”刷屏，盘口讨论爆发</td><td>本场弹幕</td></tr>
+        <tr><td>00:14</td><td>“下路这组合谁优势线啊？”“卢米无限优”</td><td>本场弹幕</td></tr>
+        <tr><td>00:15</td><td>“vit把把前期优势”“左边这个阵容是人选得出来的？？”</td><td>本场弹幕</td></tr>
+        <tr><td>00:20-00:30</td><td>JOJO遭集中批评：“JOJO纯是菜逼”“jojo只会装逼”</td><td>本场弹幕</td></tr>
+        <tr><td>00:35</td><td>“翻了（x4）”“土龙魂有啥用”</td><td>本场弹幕</td></tr>
+        <tr><td>00:41</td><td>“这不一波？（x9）”“一波不了（x5）”</td><td>本场弹幕</td></tr>
+        <tr><td>00:42</td><td>“辛德拉闪现不按被秒了（x3）”“反一波（x2）”</td><td>本场弹幕</td></tr>
+        <tr><td>00:43</td><td>“33分钟三c一波不掉哈哈”“jojo把破甲弓卖了换了大剑”</td><td>本场弹幕</td></tr>
+        <tr><td>00:45</td><td>“9.5拿下，不一波吓死”“辛德拉太硬了”</td><td>本场弹幕</td></tr>
+        <tr><td>00:49</td><td>“放心 还是mk赢”</td><td>本场弹幕</td></tr>
+        <tr><td>00:51</td><td>“刚来 几比几了”</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>G2 完整弹幕时间线（折叠）</summary>
+      <div class="details-content">
+        <div class="danmu-line"><span class="danmu-time">09-12 23:59</span><span class="danmu-text">怎么今天就你一个</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:00</span><span class="danmu-text">31.58太变态了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:00</span><span class="danmu-text">[吐血]</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:01</span><span class="danmu-text">lcs看吗（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:01</span><span class="danmu-text">启封秘籍的猪 牛逼</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:01</span><span class="danmu-text">塔赞明年回lck得冠吧</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:02</span><span class="danmu-text">洛克打辛德拉（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:03</span><span class="danmu-text">T1怎么输了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:04</span><span class="danmu-text">2-0了啊</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:04</span><span class="danmu-text">mkoi一点控没有啊</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:04</span><span class="danmu-text">三线劣</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:05</span><span class="danmu-text">一比一（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:06</span><span class="danmu-text">0控阵容</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">48？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:07</span><span class="danmu-text">多少？（x4）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">已录屏，马上反馈给联盟（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:08</span><span class="danmu-text">这能怪老张？老狗故意在45秒左右喊对时间（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:09</span><span class="danmu-text">潜在的bug（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:10</span><span class="danmu-text">打钱打钱打钱打钱打钱打钱打钱打钱打钱打钱打钱打钱打钱打钱打钱（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:11</span><span class="danmu-text">GEN 3比0韩华</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:12</span><span class="danmu-text">pyl这个畜 怎么还在播二路 不是被封杀了吗？（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:14</span><span class="danmu-text">下路这组合谁优势线啊？兄弟们</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:14</span><span class="danmu-text">卢米无限优</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:15</span><span class="danmu-text">vit把把前期优势</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:15</span><span class="danmu-text">左边这个阵容是人选得出来的？？排位看到都要秒吧（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:16</span><span class="danmu-text">你别管什么阵容反正就是3-0</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:17</span><span class="danmu-text">为啥打野不来</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:18</span><span class="danmu-text">辛德拉和永恩平刀吗</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:19</span><span class="danmu-text">mkoi输了就回西班牙了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:20</span><span class="danmu-text">JOJO纯是菜逼</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:20</span><span class="danmu-text">jojo只会装逼，菜的发昏</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:21</span><span class="danmu-text">mk这个队其实不怎么送 就是JOJO喜欢带着队友送</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:22</span><span class="danmu-text">为啥这打野一直娘刷还落后1.5k</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:23</span><span class="danmu-text">老张几天出一次货（x15）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:24</span><span class="danmu-text">jojo目前三个大全空</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:26</span><span class="danmu-text">1-3全是jojo的</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:27</span><span class="danmu-text">一直娘刷还落后2k经济</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:28</span><span class="danmu-text">nako都快一赛季不c了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:29</span><span class="danmu-text">mkoi沦落到相信米人了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:30</span><span class="danmu-text">1比1了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:31</span><span class="danmu-text">3-2 韩华 嘎五十个蹲起</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:32</span><span class="danmu-text">5000 三条龙 不出战略点</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:33</span><span class="danmu-text">100刀已经炸了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:34</span><span class="danmu-text">5000 啦</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:35</span><span class="danmu-text">翻了（x4）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:35</span><span class="danmu-text">土龙魂有啥用你告诉我（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:36</span><span class="danmu-text">48？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:36</span><span class="danmu-text">翻了（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:37</span><span class="danmu-text">米人？（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:38</span><span class="danmu-text">一个老黑在永恩互相带线</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:39</span><span class="danmu-text">好卡（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:40</span><span class="danmu-text">三十分钟参团率0000</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:41</span><span class="danmu-text">这不一波？（x9）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:41</span><span class="danmu-text">一波不了（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:42</span><span class="danmu-text">大翔，守住！！！守到34（x4）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:42</span><span class="danmu-text">辛德拉闪现不按被秒了（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:43</span><span class="danmu-text">土龙魂有用？远古龙有用？？？？？？？？（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:43</span><span class="danmu-text">jojo把破甲弓卖了换了大剑（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:44</span><span class="danmu-text">22.5可以插了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:45</span><span class="danmu-text">9.5拿下，不一波吓死</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:46</span><span class="danmu-text">几比几啊，兄弟们</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:49</span><span class="danmu-text">放心 还是mk赢</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:51</span><span class="danmu-text">刚来 几比几了</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:53</span><span class="danmu-text">出减重伤那个啊，处</span></div>
+        <div class="danmu-line"><span class="danmu-time">09-13 00:54</span><span class="danmu-text">珠光应该是火龙最适配的海克斯了</span></div>
+      </div>
+    </details>
+    <div class="footnote">未发生部分（如官方结算、赛后数据）待观察。</div>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP</h3>
+        <table>
+          <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>Vitality</td><td>24</td><td>正1/负3</td></tr>
+            <tr><td>AL</td><td>10</td><td>正0/负0</td></tr>
+            <tr><td>GEN</td><td>8</td><td>正1/负0</td></tr>
+            <tr><td>T1</td><td>5</td><td>正0/负1</td></tr>
+            <tr><td>HLE</td><td>5</td><td>正0/负0</td></tr>
+            <tr><td>IG</td><td>5</td><td>正0/负0</td></tr>
+            <tr><td>BLG</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>GX</td><td>2</td><td>正0/负0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>选手提及 TOP</h3>
+        <table>
+          <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>Chovy</td><td>16</td><td>正0/负0</td></tr>
+            <tr><td>Faker</td><td>4</td><td>正0/负0</td></tr>
+            <tr><td>Poby</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>Zeus</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>33</td><td>3</td><td>正0/负0</td></tr>
+            <tr><td>Guma</td><td>1</td><td>正0/负0</td></tr>
+            <tr><td>Zywoo</td><td>1</td><td>正0/负0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <h3>队伍特质统计</h3>
+    <div class="stat-row">
+      <div class="stat-item"><span class="stat-label">被翻守不住</span><span class="stat-value small">8</span></div>
+      <div class="stat-item"><span class="stat-label">心态摆烂</span><span class="stat-value small">8</span></div>
+      <div class="stat-item"><span class="stat-label">打法风格</span><span class="stat-value small">4</span></div>
+      <div class="stat-item"><span class="stat-label">选手特质</span><span class="stat-value small">2</span></div>
+    </div>
+    <details>
+      <summary>长画像与选手评价（折叠）</summary>
+      <div class="details-content">
+        <p><strong>JOJO（MKOI）：</strong>弹幕集中批评对象，提及“JOJO纯是菜逼”“jojo只会装逼，菜的发昏”“jojo目前三个大全空”“1-3全是jojo的”“jojo把破甲弓卖了换了大剑 自己亏钱”。观众认为其表现是MKOI的短板。</p>
+        <p><strong>Nako（MKOI）：</strong>“nako纯属菜b一个”“nako都快一赛季不c了”“nako打得过ZDZ吗？”</p>
+        <p><strong>米人（MKOI）：</strong>“米人在场是半个人，打得好是1个”“mkoi沦落到相信米人了”</p>
+        <p><strong>Vitality：</strong>“vit把把前期优势”“vit季后赛打5把 前期都是优势的 要看他们送不送”“小苍蝇季后赛原形毕露了”</p>
+        <p><strong>Chovy：</strong>提及16次，弹幕讨论“chovy来打解说杯能压100刀嘛”“大超打解说杯能一打五”</p>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px;">
+      <li>• <strong>LEC节奏：</strong>弹幕多次提及“lec真墨迹啊 又菜又墨迹”“lec确实夸张”，反映观众对LEC比赛节奏的普遍印象。</li>
+      <li>• <strong>翻盘文化：</strong>“vit把把前期优势”“打g2也是 然后被翻盘” — VIT被翻盘成为弹幕共识性话题。</li>
+      <li>• <strong>版本英雄：</strong>永恩、格温、辛德拉、卢米组合等为当前版本热门，弹幕讨论“ad卡牌不怕永恩”“辛德拉和永恩平刀吗”。</li>
+      <li>• <strong>海克斯/装备讨论：</strong>“珠光应该是火龙最适配的海克斯了”“火龙只有Q225之后的灼烧能吃到易损” — 反映观众对版本机制的理解。</li>
+      <li>• <strong>跨赛区比较：</strong>“GEN 3比0韩华”“T1怎么输了”“IG明天和这俩的胜者打” — 弹幕频繁跨赛区讨论。</li>
+    </ul>
+    <div class="highlight mt-8">
+      <strong>版本观察：</strong>本局BP围绕永恩、辛德拉、卢米等英雄展开，符合当前版本主流。无特定版本更新情报。
+    </div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <table>
+      <thead><tr><th>预测项</th><th>预测内容</th><th>验证状态</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>VIT前期优势</td><td>弹幕共识VIT前期领先</td><td>已验证</td><td>弹幕多次提及“vit把把前期优势”</td></tr>
+        <tr><td>MKOI控制不足</td><td>阵容缺乏控制</td><td>已验证</td><td>“0控阵容”“mkoi一点控没有啊”</td></tr>
+        <tr><td>JOJO表现</td><td>JOJO可能成为突破口</td><td>已验证</td><td>弹幕集中批评JOJO操作</td></tr>
+        <tr><td>翻盘风险</td><td>VIT可能被翻盘</td><td>待观察</td><td>弹幕出现“翻了”但结果未定</td></tr>
+        <tr><td>盘口暗号</td><td>“48”刷屏</td><td>已验证</td><td>46条盘口讨论，高频“48”</td></tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">本局结果待官方确认，预测验证以弹幕口径为准，最终以官方结算为准。</p>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div>
+        <h3>实际数据源</h3>
+        <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 4px;">
+          <li>• 规则层情报 JSON</li>
+          <li>• 弹幕切片（1,692条）</li>
+          <li>• 官方比分（1:1）</li>
+          <li>• 弹幕样本256条</li>
+        </ul>
+      </div>
+      <div>
+        <h3>预期数据源</h3>
+        <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 4px;">
+          <li>• 官方详细数据（待回填）</li>
+          <li>• 赛后经济曲线</li>
+          <li>• 选手KDA</li>
+          <li>• 官方BP记录</li>
+        </ul>
+      </div>
+      <div>
+        <h3>缺口</h3>
+        <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 4px;">
+          <li>• 官方结算未出</li>
+          <li>• 部分阵容信息待确认</li>
+          <li>• 无赛后数据</li>
+          <li>• 盘口暗号无直接证据</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <div class="text-small text-muted">
+        <div>情报输出时间：2026-09-13 01:05 北京时间</div>
+        <div>数据来源：弹幕切片 + 规则层统计 + 官方比分</div>
+        <div>页面生成：局中弹幕情报快照 v1 · 2026-08-30 固化模板</div>
+      </div>
+      <div class="text-small text-muted">
+        <div>所有时间均为北京时间（UTC+8）</div>
+        <div>本页为局中·非终局，结果待定</div>
+      </div>
+    </div>
+  </div>
+  <!-- 本场长期沉淀点 -->
+  <div class="card" style="background: #f8f8fa;">
+    <h2 style="font-size: 16px;"><span class="no" style="background: #6e6e73;">★</span>本场长期沉淀点</h2>
+    <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px;">
+      <li>• <strong>VIT被翻盘标签强化：</strong>弹幕多次提及“vit把把前期优势”“要看他们送不送”，VIT的“被翻守不住”特质（统计8条）在本场继续被讨论。</li>
+      <li>• <strong>JOJO成为MKOI舆论焦点：</strong>弹幕集中批评JOJO操作与决策，长期画像中需关注其表现对队伍的影响。</li>
+      <li>• <strong>“48”盘口暗号文化：</strong>高频刷屏“48”与主播/盘口相关，成为本场独特弹幕现象，需持续观察。</li>
+    </ul>
+    <div class="footnote">无样本写“样本不足”，不硬造。本场弹幕样本充足，以上沉淀点基于真实弹幕数据。</div>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
