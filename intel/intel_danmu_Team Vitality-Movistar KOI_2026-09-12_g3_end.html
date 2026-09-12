@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · VIT vs MKOI G3</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      transition: all 0.1s ease;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1d1d1f;
+      letter-spacing: 0.01em;
+    }
+    .badge.warning {
+      background: #fff3e0;
+      color: #b85e00;
+    }
+    .badge.live {
+      background: #e3f2fd;
+      color: #0066cc;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #0071e3;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .stat-item {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6e6e73;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .stat-sub {
+      font-size: 13px;
+      color: #6e6e73;
+      margin-top: 4px;
+    }
+    .signal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .signal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+    }
+    .signal-tag {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #1d1d1f;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .signal-tag.risk {
+      background: #ffe5e5;
+      color: #c41e1e;
+    }
+    .signal-tag.anchor {
+      background: #e5f0ff;
+      color: #0066cc;
+    }
+    .signal-tag.market {
+      background: #fff0d9;
+      color: #b85e00;
+    }
+    .signal-tag.consensus {
+      background: #e5f7e5;
+      color: #1e7a1e;
+    }
+    .signal-text {
+      flex: 1;
+    }
+    .signal-source {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-left: 4px;
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8ed;
+      margin: 18px 0;
+    }
+    details {
+      margin-top: 12px;
+      border: 1px solid #e8e8ed;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    details summary {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: #fafafa;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary::before {
+      content: "▸";
+      font-size: 12px;
+      color: #8e8e93;
+      transition: transform 0.15s;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details .details-content {
+      padding: 16px;
+      border-top: 1px solid #e8e8ed;
+      font-size: 14px;
+      color: #3a3a3c;
+      background: #fff;
+    }
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bullet-list li {
+      display: flex;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .bullet-list li::before {
+      content: "•";
+      color: #0071e3;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      background: #f5f5f7;
+      font-weight: 600;
+      color: #1d1d1f;
+      border-bottom: 1px solid #e8e8ed;
+      white-space: nowrap;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    .text-muted {
+      color: #8e8e93;
+      font-size: 13px;
+    }
+    .text-small {
+      font-size: 12px;
+      color: #8e8e93;
+    }
+    .mt-2 {
+      margin-top: 8px;
+    }
+    .mt-3 {
+      margin-top: 12px;
+    }
+    .mb-2 {
+      margin-bottom: 8px;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      display: inline-block;
+      background: #f0f0f2;
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 12px;
+      color: #3a3a3c;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+    .highlight {
+      background: #fff3e0;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-weight: 500;
+    }
+    .quote {
+      border-left: 3px solid #0071e3;
+      padding-left: 12px;
+      margin: 8px 0;
+      color: #3a3a3c;
+      font-size: 14px;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Vitality-Movistar KOI 2026-09-12 g3 end</b></div>
+<div class="container">
+  <!-- 标题区 -->
+  <div class="card" style="padding-bottom: 20px;">
+    <h1>Team Vitality vs Movistar KOI · 第3小局</h1>
+    <div class="subhead">
+      <span class="badge warning">局中·非终局，结果待定</span>
+      <span class="badge live">弹幕口径·官方待回填</span>
+      <span class="badge">2026-09-12 · GAME-REVIEW</span>
+      <span class="badge">北京时间 UTC+8</span>
+    </div>
+    <div class="text-small" style="margin-top: 4px;">情报输出时间：2026-09-13 01:46 北京时间 · 数据源：本场弹幕切片 + 规则层统计</div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="grid-2" style="margin-bottom: 16px;">
+      <div class="stat-item">
+        <div class="stat-label">当前比分（官方）</div>
+        <div class="stat-value">VIT 2 : 1 MKOI</div>
+        <div class="stat-sub">第3小局进行中 · 弹幕口径·官方待回填</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">弹幕密度</div>
+        <div class="stat-value">37.5 条/分</div>
+        <div class="stat-sub">总弹幕 1552 · 活跃用户 501</div>
+      </div>
+    </div>
+    <div class="signal-list">
+      <div class="signal-item">
+        <span class="signal-tag risk">风险</span>
+        <span class="signal-text">灰信号16条，集中质疑牛头/盲僧“假赛”“送人头” <span class="signal-source">→ 详 §2</span></span>
+      </div>
+      <div class="signal-item">
+        <span class="signal-tag anchor">锚点</span>
+        <span class="signal-text">VIT经济领先但弹幕质疑“越打越亏”，MKOI阵容后期被看衰 <span class="signal-source">→ 详 §3/§5</span></span>
+      </div>
+      <div class="signal-item">
+        <span class="signal-tag market">盘口</span>
+        <span class="signal-text">“48”“大人头”等盘口讨论12条，质疑人头价值与双招 <span class="signal-source">→ 详 §4</span></span>
+      </div>
+      <div class="signal-item">
+        <span class="signal-tag consensus">共识</span>
+        <span class="signal-text">弹幕普遍认为“瞎子牛头阿卡丽会送”，对VIT决策不信任 <span class="signal-source">→ 详 §5</span></span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size: 15px; font-weight: 500;">
+      决策落点：<span class="highlight">局中信号偏空VIT（SHORT），但需警惕灰信号噪音；MKOI后期阵容被看衰，若拖后期VIT胜率更高。</span>
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-label">赛事</div>
+        <div style="font-weight: 500;">LEC / 2026-09-12</div>
+        <div class="stat-label mt-3">对阵</div>
+        <div style="font-weight: 500;">Team Vitality vs Movistar KOI</div>
+        <div class="stat-label mt-3">当前小局</div>
+        <div style="font-weight: 500;">第3小局 · GAME-REVIEW</div>
+      </div>
+      <div>
+        <div class="stat-label">官方大比分</div>
+        <div style="font-weight: 500;">VIT 2 : 1 MKOI</div>
+        <div class="stat-label mt-3">本局状态</div>
+        <div><span class="badge warning">局中·非终局，结果待定</span></div>
+        <div class="stat-label mt-3">进度口径</div>
+        <div class="text-muted">弹幕口径·官方待回填</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="text-small">
+      ⚠️ 本页为第3小局唯一页面，覆盖BP/选人、对线、关键团战、结局。系列比分与结果一律以官方为准，禁止从弹幕推断比分。
+    </div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="flex-between mb-2">
+      <span><span class="badge warning">16条灰信号</span></span>
+      <span class="text-small">词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>灰信号原文（节选）</th><th>指向</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>这不是打假赛？？ / 这不是假赛？？</td><td>整体比赛真实性</td></tr>
+          <tr><td>扫描扫到了，故意的</td><td>操作故意性</td></tr>
+          <tr><td>哈哈哈哈，我他妈笑死了这畜生假赛</td><td>情绪化质疑</td></tr>
+          <tr><td>这牛头买了多少输</td><td>牛头选手</td></tr>
+          <tr><td>福利shy假赛专业户</td><td>选手历史</td></tr>
+          <tr><td>牛牛决定买了</td><td>牛头决策</td></tr>
+          <tr><td>感觉俩个对在演戏，越是绝活就输，越是不熟练就赢,NB了</td><td>双方行为</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-small mt-2">观众质疑，非结论。灰信号集中指向牛头、盲僧等选手操作，需结合官方数据核验。</div>
+    <details>
+      <summary>灰信号完整原文摘录（16条·折叠）</summary>
+      <div class="details-content">
+        <ul class="bullet-list">
+          <li>这不是打假赛？？</li>
+          <li>这不是假赛？？</li>
+          <li>扫描扫到了，故意的</li>
+          <li>哈哈哈哈，我他妈笑死了这畜生假赛</li>
+          <li>这牛头买了多少输</li>
+          <li>福利shy假赛专业户</li>
+          <li>牛牛决定买了</li>
+          <li>感觉俩个对在演戏，越是绝活就输，越是不熟练就赢,NB了</li>
+          <li>这个牛头真的铁畜牲。（x3）</li>
+          <li>这个牛头全程不做人。（x3）</li>
+          <li>害人精牛头去到哪里害到哪里。（x2）</li>
+          <li>阿卡丽牛头加瞎子铁了心送。（x2）</li>
+          <li>k了送 太合理辣</li>
+          <li>R上去送</li>
+          <li>左边一直在送</li>
+          <li>因为这把接到任务了，必须输</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <!-- 3 BP锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-label">本局阵容（弹幕提及）</div>
+        <div class="mt-2">
+          <span class="chip">杰斯</span><span class="chip">盲僧</span><span class="chip">阿卡丽</span><span class="chip">牛头</span><span class="chip">希维尔</span><span class="chip">加里奥</span><span class="chip">蝎子</span><span class="chip">韦鲁斯</span><span class="chip">洛</span>
+        </div>
+        <div class="text-small mt-2">弹幕提及英雄：杰斯、盲僧、阿卡丽、牛头、希维尔、加里奥、蝎子、韦鲁斯、洛等。选手对应：Jojo加里奥、牛头辅助、盲僧打野。</div>
+      </div>
+      <div>
+        <div class="stat-label">BP后战绩情报</div>
+        <div class="text-muted">无战绩情报提及</div>
+        <div class="stat-label mt-3">关键BP讨论</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>“IG的BP是人类吗？”（跨队讨论）</li>
+          <li>“右边这阵容前期优势 怎么输”</li>
+          <li>“左边后期阵容还是垃圾 右边别再犯病还是能赢”</li>
+        </ul>
+      </div>
+    </div>
+    <details>
+      <summary>BP相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <ul class="bullet-list">
+          <li>右边希维尔，什么会伤害不够</li>
+          <li>伤害不是问题 杰斯能不能赢?</li>
+          <li>Jojo的加里奥巨臭，你就看吧</li>
+          <li>中野两坨大肉吗</li>
+          <li>加里奥被单杀真牛逼</li>
+          <li>右边这阵容前期优势 怎么输</li>
+          <li>左边后期阵容还是垃圾 右边别再犯病还是能赢（x4）</li>
+          <li>右边希维尔一死就寄</li>
+          <li>阵容是保着希维尔a人，这洛上去开团谁能跟</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="flex-between mb-2">
+      <span><span class="badge">12条盘口讨论</span></span>
+      <span class="text-small">关键词：48 / 大人头 / 双招 / 经济</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>盘口原文</th><th>指向</th></tr></thead>
+        <tbody>
+          <tr><td>不敢48</td><td>盘口赔率讨论</td></tr>
+          <tr><td>牛头这颗人头根本不值得双招</td><td>人头价值质疑</td></tr>
+          <tr><td>48</td><td>盘口术语</td></tr>
+          <tr><td>大人头等于插入</td><td>盘口术语</td></tr>
+          <tr><td>这是大人头？任务[大哭]</td><td>盘口任务</td></tr>
+          <tr><td>48上单</td><td>选手盘口</td></tr>
+          <tr><td>这么明显的送人头[大哭]</td><td>送人头质疑</td></tr>
+          <tr><td>右边人头领先这么多就领先一点点经济</td><td>经济与人头对比</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-small mt-2">盘口讨论多与牛头、上单相关，观众质疑人头价值与双招使用，非结论。</div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-label">正锚</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>VIT经济领先，弹幕提及“1000经济说炸了 弹幕幽默”</li>
+          <li>MKOI后期阵容被看衰：“左边后期阵容还是垃圾”</li>
+          <li>“右边别再犯病还是能赢”</li>
+        </ul>
+      </div>
+      <div>
+        <div class="stat-label">负锚</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>“vit谁指挥的，越打越亏”</li>
+          <li>“这个瞎子是我最近看比赛操作最差最差的没有之一”</li>
+          <li>“这个牛头真的铁畜牲”</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-label">群体共识（样本量：206条弹幕，43个分钟段）</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr></thead>
+        <tbody>
+          <tr><td>牛头/盲僧操作质疑</td><td>负向</td><td>≥12</td><td>“这个牛头真的铁畜牲”“瞎子啥事不干还害人”</td><td>本场弹幕</td></tr>
+          <tr><td>VIT指挥/决策</td><td>负向</td><td>≥6</td><td>“vit谁指挥的，越打越亏”</td><td>本场弹幕</td></tr>
+          <tr><td>MKOI后期阵容</td><td>正向</td><td>≥8</td><td>“右边别再犯病还是能赢”</td><td>本场弹幕</td></tr>
+          <tr><td>翻盘预期</td><td>分歧</td><td>≥10</td><td>“翻了”“假翻”“这把能翻我吃啥都行”</td><td>本场弹幕</td></tr>
+          <tr><td>盘口/假赛质疑</td><td>负向</td><td>≥16</td><td>“这不是打假赛？？”</td><td>本场弹幕</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-small mt-2">共识→信号链：牛头/盲僧负向共识强，但灰信号噪音大；MKOI后期被看衰，若拖后期VIT胜率更高。</div>
+    <div class="stat-label mt-3">灰信号条件预测</div>
+    <div class="text-muted">若牛头/盲僧继续失误，弹幕灰信号将加剧，可能影响市场情绪；但官方数据未出，暂不构成结论。</div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div class="grid-2">
+      <div class="stat-item">
+        <div class="stat-label">LONG 方向</div>
+        <div style="font-weight: 500;">MKOI后期阵容被看衰，若拖后期VIT胜率更高</div>
+        <div class="text-small mt-2">依据：弹幕“左边后期阵容还是垃圾”“右边希维尔一死就寄”</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">SHORT 方向</div>
+        <div style="font-weight: 500;">VIT局中决策被质疑，牛头/盲僧操作差，短期风险高</div>
+        <div class="text-small mt-2">依据：弹幕“vit谁指挥的，越打越亏”“这个瞎子是我最近看比赛操作最差最差的”</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size: 15px; font-weight: 500;">
+      综合落点：<span class="highlight">局中信号偏空VIT（SHORT），但灰信号噪音大，需结合官方数据；MKOI后期阵容被看衰，若拖后期VIT胜率更高。</span>
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <div class="stat-label">当前局已发生片段 + 时间线</div>
+    <div class="text-small mb-2">时间戳均为北京时间（UTC+8），弹幕原文带量。</div>
+    <details>
+      <summary>G3 完整弹幕时间线（折叠）</summary>
+      <div class="details-content">
+        <div style="max-height: 400px; overflow-y: auto; font-size: 13px;">
+          <div>[01:04] 100还不够</div>
+          <div>[01:04] 右边希维尔，什么会伤害不够</div>
+          <div>[01:05] 伤害不是问题 杰斯能不能赢?</div>
+          <div>[01:05] 你到底看不看北美</div>
+          <div>[01:05] 左边拿下了啊</div>
+          <div>[01:05] 开什么车</div>
+          <div>[01:05] 最谨慎的人还能画符</div>
+          <div>[01:06] Jojo的加里奥巨臭，你就看吧</div>
+          <div>[01:06] [戳脸]</div>
+          <div>[01:06] 一人一把到第五局</div>
+          <div>[01:06] 不插眼是不是不会死</div>
+          <div>[01:06] 你让老张把你这条弹幕念出来，小迷弟</div>
+          <div>[01:07] 就是E闪（x2）</div>
+          <div>[01:07] IG的BP是人类吗？有没有人主持公道</div>
+          <div>[01:07] 不敢48</div>
+          <div>[01:07] 中野两坨大肉吗</div>
+          <div>[01:07] 加里奥被单杀真牛逼</div>
+          <div>[01:08] 你个云子（x3）</div>
+          <div>[01:08] 问豆包（x3）</div>
+          <div>[01:08] 可以（x2）</div>
+          <div>[01:08] 就是e闪（x2）</div>
+          <div>[01:08] e闪肯定可以啊。。</div>
+          <div>[01:09] 学学王老二好嘛，不知道的立马打开训练场（x2）</div>
+          <div>[01:09] 最怕空气突然安静（x2）</div>
+          <div>[01:09] 问豆包（x2）</div>
+          <div>[01:09] 不能e闪</div>
+          <div>[01:09] 业余解说</div>
+          <div>[01:10] 老张我谢哥呢？老张我谢哥呢？老张我谢哥呢？（x3）</div>
+          <div>[01:10] jojo要来区王杯了</div>
+          <div>[01:10] 不是jojo怎么玩个加里奥无限被单吃啊</div>
+          <div>[01:10] 二哥毛毛上班去了</div>
+          <div>[01:10] 今天怎么就你一个在</div>
+          <div>[01:11] 豆包说，E闪太简单了，还有教程！！！！！！！！！！！！！！！（x8）</div>
+          <div>[01:11] 看到四点刚好C9 然后六点结束，睡七个小时lck，然后lpl（x2）</div>
+          <div>[01:11] Doinb阿卡丽咋样</div>
+          <div>[01:11] e闪没有后腰</div>
+          <div>[01:11] e闪现失误概率特别高，但是可以取消第一段后退</div>
+          <div>[01:12] 太好了主播看好红色方我们有救了（x3）</div>
+          <div>[01:12] 老硕 管哥S赛能不能播（x3）</div>
+          <div>[01:12] E闪不行 试过了，e的距离不够</div>
+          <div>[01:12] es闪</div>
+          <div>[01:12] 不能E闪那个 那是你菜</div>
+          <div>[01:13] 他这个是穿梭E闪，直接绕过了中间小兵！！（x3）</div>
+          <div>[01:13] 牛来（x3）</div>
+          <div>[01:13] 疯牛病（x2）</div>
+          <div>[01:13] NAKO都摇头了</div>
+          <div>[01:13] Nako被打摇头</div>
+          <div>[01:14] 这个牛头真的铁畜牲。（x3）</div>
+          <div>[01:14] 6</div>
+          <div>[01:14] shy哥的巅峰代表作还是他的派克</div>
+          <div>[01:14] 不信杰斯能赢</div>
+          <div>[01:14] 人家都要回城了</div>
+          <div>[01:15] 不是这个牛送，这个杰斯已经兵都补不了了。（x2）</div>
+          <div>[01:15] 这个牛头真的铁畜牲。反应还不如我一个钻石的（x2）</div>
+          <div>[01:15] @只记得你的好 我看见了 所以我弄了vit</div>
+          <div>[01:15] jojo哪个英雄不是区？</div>
+          <div>[01:15] k了送 太合理辣</div>
+          <div>[01:16] bfx（x4）</div>
+          <div>[01:16] NS一队打了一年（x2）</div>
+          <div>[01:16] faker（x2）</div>
+          <div>[01:16] ns（x2）</div>
+          <div>[01:16] 农心（x2）</div>
+          <div>[01:17] 这个牛头全程不做人。（x3）</div>
+          <div>[01:17] 嗨乐送附体了这牛头（x2）</div>
+          <div>[01:17] ？？？你说清楚哪个shy（x2）</div>
+          <div>[01:17] 11分钟5级的牛。变态</div>
+          <div>[01:17] VIT居然还在，还以为解散了</div>
+          <div>[01:18] 盲僧在等谁！？？？？（x3）</div>
+          <div>[01:18] 害人精牛头去到哪里害到哪里。（x2）</div>
+          <div>[01:18] 盲僧啥事不干还害人（x2）</div>
+          <div>[01:18] 1000 经济说炸了 弹幕幽默</div>
+          <div>[01:18] ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿</div>
+          <div>[01:19] 疯牛病（x2）</div>
+          <div>[01:19] 一点事情都不做的垃圾</div>
+          <div>[01:19] 不播滚</div>
+          <div>[01:19] 不能播就滚</div>
+          <div>[01:19] 他在干嘛</div>
+          <div>[01:20] vit谁指挥的，越打越亏</div>
+          <div>[01:20] 一会再来个土龙或者水龙 蝎子肉的爆炸</div>
+          <div>[01:20] 上把你不会玩</div>
+          <div>[01:20] 不去你你就会玩了？</div>
+          <div>[01:20] 哈哈除了右边中野没有正常人了</div>
+          <div>[01:21] 48上单</div>
+          <div>[01:21] 两个懒鬼</div>
+          <div>[01:21] 右边这阵容前期优势 怎么输</div>
+          <div>[01:21] 因为这把接到任务了，必须输</div>
+          <div>[01:21] 在哪看呀</div>
+          <div>[01:22] 这个瞎子是我最近看比赛操作最差最差的没有之一（x3）</div>
+          <div>[01:22] 二哥的安全感</div>
+          <div>[01:22] 你这业务能力</div>
+          <div>[01:22] 好垃圾啊瞎子</div>
+          <div>[01:22] 左边一直在送</div>
+          <div>[01:23] 9-5啊，你是猪吗</div>
+          <div>[01:23] @Betking 哥们在哪查呀</div>
+          <div>[01:23] 不习惯</div>
+          <div>[01:23] 中上送只是单人送 但野辅送是带全队送</div>
+          <div>[01:23] 今天怎么就你俩</div>
+          <div>[01:24] clear（x6）</div>
+          <div>[01:24] 这个小蜜蜂是怎么做到年年常规赛第二第三，季后赛拉完（x3）</div>
+          <div>[01:24] cube（x2）</div>
+          <div>[01:24] 这个瞎子是我最近看比赛操作最差最差的没有之一（x2）</div>
+          <div>[01:24] 10级瞎子</div>
+          <div>[01:25] Clear也不是鱼吧</div>
+          <div>[01:25] R上去送</div>
+          <div>[01:25] clear也还可以</div>
+          <div>[01:25] kt，bfx还有那个</div>
+          <div>[01:25] 下一把吧真菜</div>
+          <div>[01:26] erh二哥怎么不播</div>
+          <div>[01:26] 反驳型人格</div>
+          <div>[01:26] 大司是吧</div>
+          <div>[01:26] 大司马是吧</div>
+          <div>[01:26] 大狗死去的回忆</div>
+          <div>[01:27] 翻（x2）</div>
+          <div>[01:27] 翻了（x2）</div>
+          <div>[01:27] 翻了翻了（x2）</div>
+          <div>[01:27] 阿卡丽牛头加瞎子铁了心送。（x2）</div>
+          <div>[01:27] 28-24</div>
+          <div>[01:28] supa这波可以放博尔特那个了 老张（x2）</div>
+          <div>[01:28] 这不敢上？？？还有闪现！这不敢上？！？@（x2）</div>
+          <div>[01:28] 这把能翻我吃啥都行（x2）</div>
+          <div>[01:28] ad都没状态了，moki还在打</div>
+          <div>[01:28] jojo犯病了 落地a了一下 然后嘲讽空了</div>
+          <div>[01:29] R99男的女的</div>
+          <div>[01:29] r99男的女的</div>
+          <div>[01:29] r99送给张哥一个四强</div>
+          <div>[01:29] 刚刚这波jojo太变态了。大招落地砸两个 但是w空了</div>
+          <div>[01:29] 可以五杀的 为什么不操作</div>
+          <div>[01:30] 二哥等你呢</div>
+          <div>[01:30] 你不想摸毛哥的大肚腩？</div>
+          <div>[01:30] 你们是在那个城市啊</div>
+          <div>[01:30] 你张神是二路解说</div>
+          <div>[01:30] 后期除了霞全是后期垃圾英雄 到现在还是劣势后期想翻不可能</div>
+          <div>[01:31] pyl去干嘛</div>
+          <div>[01:31] 张处不是官方解说，一个月只能去解说一次</div>
+          <div>[01:31] 我咋记得毛哥是有女朋友的 还是个解说来着</div>
+          <div>[01:31] 毛处pyl明天要解说blg吧</div>
+          <div>[01:31] 毛处在成都也是个白袜体育生</div>
+          <div>[01:32] 翻了（x2）</div>
+          <div>[01:32] 这波大龙必出事（x2）</div>
+          <div>[01:32] 1个不死哈哈哈</div>
+          <div>[01:32] K了送</div>
+          <div>[01:32] 一个不死</div>
+          <div>[01:33] 翻了（x5）</div>
+          <div>[01:33] 呵呵 叫米人的能有几个好东西（x2）</div>
+          <div>[01:33] 相信米润！！！！！！！！！！！相信米润！！！！！！！！！！！（x2）</div>
+          <div>[01:33] 翻了！（x2）</div>
+          <div>[01:33] 这米人（x2）</div>
+          <div>[01:34] 没事没事瞎子牛头阿卡丽会送的。（x3）</div>
+          <div>[01:34] t中线打赢了你负责吗！？？？（x2）</div>
+          <div>[01:34] T中线不就包完了</div>
+          <div>[01:34] lpl这种场面还少吗</div>
+          <div>[01:34] mkoi之前不是把二队上单提上来了吗</div>
+          <div>[01:35] 没事没事瞎子牛头阿卡丽会送的。（x2）</div>
+          <div>[01:35] lec大舞台 有米你就来</div>
+          <div>[01:35] pyl还画吗</div>
+          <div>[01:35] 什么叫能玩 明显还是优势</div>
+          <div>[01:35] 保住轮子妈还是好打</div>
+          <div>[01:36] 左边后期阵容还是垃圾 右边别再犯病还是能赢（x4）</div>
+          <div>[01:36] 没事没事瞎子牛头阿卡丽会送的。（x2）</div>
+          <div>[01:36] 内战会直播妈</div>
+          <div>[01:36] 别打 让条龙 没事</div>
+          <div>[01:36] 右边打野惩戒拼不过</div>
+          <div>[01:37] 一边看米人一边看疯牛</div>
+          <div>[01:37] 不开团，去拼惩</div>
+          <div>[01:37] 倒钩惩确实抢不过</div>
+          <div>[01:37] 假翻</div>
+          <div>[01:37] 再拖下去 左边这输出</div>
+          <div>[01:38] 左边有啥输出啊 小丑阿卡丽和肉装韦鲁斯吗 笑死（x4）</div>
+          <div>[01:38] 连麦的在任家庄（x2）</div>
+          <div>[01:38] cuzz</div>
+          <div>[01:38] kt 滑板鞋加潘森一直被抢龙</div>
+          <div>[01:38] lec还没决出3号种子吗</div>
+          <div>[01:39] 什么声音（x4）</div>
+          <div>[01:39] 什么声音？女人呻吟声？？（x3）</div>
+          <div>[01:39] 谁在叫（x3）</div>
+          <div>[01:39] 这比赛的质量，不如看60岁老奶奶打排位！！！（x2）</div>
+          <div>[01:39] 369打米人咋样</div>
+          <div>[01:40] 1.68m 48kg的猫（x2）</div>
+          <div>[01:40] 49kg的猫（x2）</div>
+          <div>[01:40] 性感小野猫？（x2）</div>
+          <div>[01:40] 没人了（x2）</div>
+          <div>[01:40] 90斤的猫</div>
+          <div>[01:41] 一波了（x7）</div>
+          <div>[01:41] 漂漂漂漂漂漂漂漂漂（x5）</div>
+          <div>[01:41] 这不一波？（x5）</div>
+          <div>[01:41] 一波（x4）</div>
+          <div>[01:41] 在画符（x4）</div>
+          <div>[01:42] 好开 好开 开肉装韦鲁斯（x3）</div>
+          <div>[01:42] 米人（x3）</div>
+          <div>[01:42] 杰补（x2）</div>
+          <div>[01:42] 3比1结束</div>
+          <div>[01:42] 6层楼舒服啊领先才2k</div>
+          <div>[01:43] 老张我转到一区能加你好友吗（x2）</div>
+          <div>[01:43] 老张我转到一区能加你好友吗老张我转到一区能加你好友吗（x2）</div>
+          <div>[01:43] 3打5，辅助的锅</div>
+          <div>[01:43] 一切的一切还是杰斯开始</div>
+          <div>[01:43] 不看看回放吗</div>
+          <div>[01:44] JOJO的加里奥其实也玩的一坨</div>
+          <div>[01:44] 右边前面是因为有个肥的蟹子左边打不动，后期右边拿头打</div>
+          <div>[01:44] 右边希维尔一死就寄</div>
+          <div>[01:44] 就算秒掉了韦鲁斯又能怎么样？</div>
+          <div>[01:44] 希维尔没那么好输出的</div>
+          <div>[01:45] 太变态了</div>
+          <div>[01:45] 说个吓人的，可能要打满</div>
+          <div>[01:45] 阵容是保着希维尔a人，这洛上去开团谁能跟</div>
+          <div>[01:46] 看到单核加杰斯就想笑</div>
+        </div>
+      </div>
+    </details>
+    <div class="text-small mt-2">未发生片段：待观察（局末/局间，结果待官方核对）。</div>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-label">队伍提及 TOP</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>BFX: 提及9 (正0/负0)</li>
+          <li>Vitality: 提及8 (正1/负0)</li>
+          <li>NS: 提及8 (正0/负0)</li>
+          <li>KT: 提及3 (正0/负0)</li>
+          <li>BLG: 提及2 (正0/负0)</li>
+          <li>IG: 提及2 (正0/负0)</li>
+          <li>LGD: 提及1 (正0/负0)</li>
+        </ul>
+      </div>
+      <div>
+        <div class="stat-label">选手提及 TOP</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>Zeus: 提及9 (正0/负1)</li>
+          <li>Chovy: 提及3 (正0/负0)</li>
+          <li>Faker: 提及2 (正0/负0)</li>
+          <li>Zywoo: 提及1 (正0/负0)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-label">队伍特质统计（长期库）</div>
+    <div class="grid-3 mt-2">
+      <div class="stat-item"><div class="stat-label">被翻守不住</div><div class="stat-value">4</div></div>
+      <div class="stat-item"><div class="stat-label">韧性逆转</div><div class="stat-value">1</div></div>
+      <div class="stat-item"><div class="stat-label">心态摆烂</div><div class="stat-value">7</div></div>
+      <div class="stat-item"><div class="stat-label">打法风格</div><div class="stat-value">2</div></div>
+      <div class="stat-item"><div class="stat-label">选手特质</div><div class="stat-value">3</div></div>
+    </div>
+    <details>
+      <summary>长画像与历史提及（折叠）</summary>
+      <div class="details-content">
+        <p><strong>Vitality：</strong>弹幕提及“VIT居然还在，还以为解散了”“这个小蜜蜂是怎么做到年年常规赛第二第三，季后赛拉完”，反映队伍长期存在“常规赛强、季后赛弱”的刻板印象。</p>
+        <p><strong>Movistar KOI：</strong>弹幕提及“mkoi之前不是把二队上单提上来了吗”，关注其阵容调整。</p>
+        <p><strong>选手：</strong>Jojo加里奥被多次批评“巨臭”“无限被单吃”；牛头辅助被集中质疑“铁畜牲”“不做人”；盲僧打野被评“操作最差”。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul class="bullet-list">
+      <li>LEC赛区弹幕提及“lec大舞台 有米你就来”“lec还没决出3号种子吗”，反映赛区竞争格局。</li>
+      <li>版本英雄讨论：杰斯、希维尔、蝎子、韦鲁斯等，弹幕认为“后期除了霞全是后期垃圾英雄”。</li>
+      <li>跨赛区对比：弹幕提及“lpl这种场面还少吗”“kt 滑板鞋加潘森一直被抢龙”，关联其他赛区。</li>
+      <li>联赛规律：VIT“年年常规赛第二第三，季后赛拉完”被弹幕反复提及，属长期画像。</li>
+    </ul>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="text-muted">本局尚未结束，预测验证待官方结果回填。</div>
+    <div class="mt-2">
+      <div class="stat-label">当前预测（基于弹幕）</div>
+      <ul class="bullet-list" style="font-size: 13px;">
+        <li>弹幕“翻了”出现多次，但“假翻”亦存，翻盘预期分歧。</li>
+        <li>“3比1结束”出现1次，指向VIT可能赢下本局。</li>
+        <li>“说个吓人的，可能要打满”出现1次，指向系列赛可能打满。</li>
+      </ul>
+    </div>
+    <div class="text-small mt-2">待官方结果回填后验证。</div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-label">实际数据源</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>规则层情报 JSON：lol-vit-mkoi-2026-09-12_g3_end_intel.json</li>
+          <li>弹幕切片：lol-vit-mkoi-2026-09-12_g3_end.jsonl</li>
+          <li>官方当前比分：VIT 2 MKOI 1（官方 gameWins）</li>
+        </ul>
+      </div>
+      <div>
+        <div class="stat-label">预期数据源</div>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>官方实时数据（待回填）</li>
+          <li>Riot window 阵容（开局后1分钟校准）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-label">缺口</div>
+    <div class="text-muted">官方本局结果未出，局中数据待官方核对；弹幕样本覆盖43个分钟段，全窗口分钟级抽样。</div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <span class="text-small">情报输出时间：2026-09-13 01:46 北京时间</span>
+      <span class="text-small">数据完整性：三栏已列，缺源不交付完整结论</span>
+    </div>
+  </div>
+  <!-- 长期沉淀点 -->
+  <div class="card" style="background: #fafafa;">
+    <div style="font-size: 14px; font-weight: 500; margin-bottom: 6px;">本场长期沉淀点</div>
+    <ul class="bullet-list" style="font-size: 13px;">
+      <li>VIT“常规赛强、季后赛弱”的刻板印象在弹幕中反复出现，可作为长期画像标签。</li>
+      <li>牛头/盲僧操作质疑集中，若持续出现，可能影响选手市场评价。</li>
+      <li>MKOI后期阵容被看衰，但弹幕翻盘预期分歧，需结合官方数据验证。</li>
+    </ul>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
