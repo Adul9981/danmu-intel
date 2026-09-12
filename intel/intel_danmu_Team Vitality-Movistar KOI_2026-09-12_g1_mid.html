@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报 · Team Vitality vs Movistar KOI · G1</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 980px;
+      width: 100%;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: all 0.1s ease;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      color: #1d1d1f;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.01em;
+    }
+    .badge.live {
+      background: #ff3b30;
+      color: #fff;
+    }
+    .badge.warning {
+      background: #ff9f0a;
+      color: #1d1d1f;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      background: #0071e3;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #1d1d1f;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f2;
+      font-size: 14px;
+    }
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+    .stat-label {
+      color: #6e6e73;
+    }
+    .stat-value {
+      font-weight: 500;
+      color: #1d1d1f;
+    }
+    .signal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+      font-size: 14px;
+    }
+    .signal-item:last-child {
+      border-bottom: none;
+    }
+    .signal-tag {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: #e8e8ed;
+      color: #1d1d1f;
+      letter-spacing: 0.01em;
+      margin-top: 1px;
+    }
+    .signal-tag.risk {
+      background: #ffe5e5;
+      color: #c41e1e;
+    }
+    .signal-tag.anchor {
+      background: #e5f0ff;
+      color: #0066cc;
+    }
+    .signal-tag.market {
+      background: #fff4e5;
+      color: #b25e00;
+    }
+    .signal-tag.consensus {
+      background: #e5f7e5;
+      color: #1e7a1e;
+    }
+    .signal-tag.gray {
+      background: #f0f0f2;
+      color: #6e6e73;
+    }
+    .signal-text {
+      flex: 1;
+      color: #1d1d1f;
+    }
+    .signal-source {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-left: 4px;
+      white-space: nowrap;
+    }
+    .decision-box {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 12px;
+      font-size: 14px;
+      border-left: 4px solid #0071e3;
+    }
+    .decision-box strong {
+      color: #0071e3;
+    }
+    details {
+      margin-top: 12px;
+      border: 1px solid #e8e8ed;
+      border-radius: 12px;
+      padding: 0 16px;
+      background: #fafafa;
+    }
+    details summary {
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      padding: 12px 0;
+      color: #0071e3;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary::before {
+      content: "▸";
+      font-size: 12px;
+      transition: transform 0.15s;
+      display: inline-block;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details .detail-content {
+      padding: 0 0 16px 0;
+      font-size: 13px;
+      color: #3a3a3c;
+      line-height: 1.6;
+    }
+    .danmu-line {
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f2;
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .danmu-time {
+      color: #8e8e93;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+      min-width: 110px;
+    }
+    .danmu-text {
+      color: #1d1d1f;
+    }
+    .danmu-count {
+      color: #0071e3;
+      font-weight: 500;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: #6e6e73;
+      padding: 8px 6px 8px 0;
+      border-bottom: 1px solid #e8e8ed;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    td {
+      padding: 8px 6px 8px 0;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: #e8e8ed;
+      color: #1d1d1f;
+      margin-right: 4px;
+    }
+    .tag.blue {
+      background: #e5f0ff;
+      color: #0066cc;
+    }
+    .tag.green {
+      background: #e5f7e5;
+      color: #1e7a1e;
+    }
+    .tag.red {
+      background: #ffe5e5;
+      color: #c41e1e;
+    }
+    .tag.orange {
+      background: #fff4e5;
+      color: #b25e00;
+    }
+    .muted {
+      color: #8e8e93;
+      font-size: 12px;
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8ed;
+      margin: 16px 0;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .source-tag {
+      font-size: 11px;
+      color: #8e8e93;
+      background: #f5f5f7;
+      padding: 2px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+    .highlight {
+      background: #fff9e6;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .danmu-time {
+        min-width: 80px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Vitality-Movistar KOI 2026-09-12 g1 mid</b></div>
+<div class="container">
+  <!-- 头部 -->
+  <div class="card">
+    <h1>Team Vitality vs Movistar KOI · G1 局中弹幕情报</h1>
+    <div class="subhead">
+      <span class="badge live">局中 · 非终局</span>
+      <span class="badge">2026-09-12</span>
+      <span class="badge">G1 · MID-GAME</span>
+      <span class="badge warning">结果待定</span>
+      <span class="muted" style="margin-left:auto;">情报输出时间：2026-09-12 23:20 北京时间</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">官方当前比分（gameWins）</span>
+      <span class="stat-value">VIT 0 : 0 MKOI</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">弹幕口径进度</span>
+      <span class="stat-value">第 1 小局 · 局中（弹幕密度 26.2 条/分）</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">本节点弹幕样本</span>
+      <span class="stat-value">263 条 · 活跃用户 140 · 覆盖 11 个分钟段</span>
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="signal-item">
+      <span class="signal-tag risk">风险</span>
+      <span class="signal-text">VIT 被指“季后赛软脚虾”“没赢过，等下就开送”，负面提及 2 条 <span class="signal-source">→ §2</span></span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag anchor">锚点</span>
+      <span class="signal-text">MKOI 阵容获认可“MK阵容不错啊”，但常规赛第六、近期“很菜” <span class="signal-source">→ §3</span></span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag market">盘口</span>
+      <span class="signal-text">“MKOI常规赛第六，赢了才是爆冷”暗示市场看低 MKOI <span class="signal-source">→ §4</span></span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag consensus">共识</span>
+      <span class="signal-text">弹幕大量讨论 IG/LCK 等场外话题，本场焦点分散，共识度低 <span class="signal-source">→ §5</span></span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag gray">灰信号</span>
+      <span class="signal-text">“不是有眼吗，这都没反应过来啊”指向本局操作质疑，非假赛指控 <span class="signal-source">→ §2</span></span>
+    </div>
+    <div class="decision-box">
+      <strong>一句话决策落点：</strong>本局弹幕共识分散，VIT 负面标签与 MKOI 阵容认可并存，市场倾向 VIT 但灰信号提示操作风险，建议观望至 BP 后 10 分钟再评估。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览/状态核验 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="grid-2">
+      <div>
+        <div class="stat-row"><span class="stat-label">赛事</span><span class="stat-value">LEC / 2026 赛季</span></div>
+        <div class="stat-row"><span class="stat-label">对阵</span><span class="stat-value">Team Vitality vs Movistar KOI</span></div>
+        <div class="stat-row"><span class="stat-label">小局</span><span class="stat-value">G1 · 局中</span></div>
+        <div class="stat-row"><span class="stat-label">官方比分</span><span class="stat-value">VIT 0 : 0 MKOI（gameWins）</span></div>
+      </div>
+      <div>
+        <div class="stat-row"><span class="stat-label">状态</span><span class="stat-value"><span class="badge warning" style="font-size:11px;">局中·非终局，结果待定</span></span></div>
+        <div class="stat-row"><span class="stat-label">进度口径</span><span class="stat-value">弹幕口径（非官方计时）</span></div>
+        <div class="stat-row"><span class="stat-label">数据窗口</span><span class="stat-value">23:08 – 23:18 北京时间</span></div>
+        <div class="stat-row"><span class="stat-label">跨源一致性</span><span class="stat-value">官方比分与弹幕无冲突，阵容待官方回填</span></div>
+      </div>
+    </div>
+    <div class="muted" style="margin-top:12px;">⚠️ 本页为第 1 小局局中情报，系列比分与结果一律以官方为准，禁止从弹幕推断比分。</div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <table>
+      <thead>
+        <tr><th>灰信号类型</th><th>条数</th><th>关键样本</th><th>来源</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>操作质疑</td>
+          <td>1</td>
+          <td>“不是有眼吗，这都没反应过来啊”</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>队伍负面标签</td>
+          <td>2</td>
+          <td>“vit不是季后赛软脚虾吗”“小蜜蜂季后赛没赢过 等下就开送”</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>选手负面评价</td>
+          <td>1</td>
+          <td>“右边也垃圾 一个supa 一个米人”</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>假赛/演员词表</td>
+          <td>0</td>
+          <td>未检出“演员/演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送”</td>
+          <td>词表统计</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="muted" style="margin-top:8px;">观众质疑，非结论。灰信号需结合后续比赛进程验证。</div>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>本局阵容（英雄+选手）</h3>
+        <div class="stat-row"><span class="stat-label">Team Vitality</span><span class="stat-value">待官方回填（Riot window 阵容，开局后 1 分钟校准）</span></div>
+        <div class="stat-row"><span class="stat-label">Movistar KOI</span><span class="stat-value">待官方回填</span></div>
+        <div class="muted" style="margin-top:8px;">弹幕提及“MK阵容不错啊”（1 条），但未给出具体英雄。</div>
+      </div>
+      <div>
+        <h3>BP 后战绩情报</h3>
+        <div class="stat-row"><span class="stat-label">VIT 季后赛历史</span><span class="stat-value">“季后赛没赢过”（弹幕提及，非官方）</span></div>
+        <div class="stat-row"><span class="stat-label">MKOI 常规赛排名</span><span class="stat-value">常规赛第六（弹幕提及）</span></div>
+        <div class="stat-row"><span class="stat-label">BP 后战绩情报</span><span class="stat-value">无战绩情报提及</span></div>
+      </div>
+    </div>
+    <details>
+      <summary>弹幕 BP 相关原文（3 条）</summary>
+      <div class="detail-content">
+        <div class="danmu-line"><span class="danmu-time">23:10</span><span class="danmu-text">MK阵容不错啊</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:16</span><span class="danmu-text">vit不是季后赛软脚虾吗</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:17</span><span class="danmu-text">MKOI常规赛第六，赢了才是爆冷</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="signal-item">
+      <span class="signal-tag market">盘口</span>
+      <span class="signal-text">“MKOI常规赛第六，赢了才是爆冷” —— 暗示市场预期 VIT 胜率更高，MKOI 赢属冷门。</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag market">盘口</span>
+      <span class="signal-text">“小蜜蜂季后赛没赢过 等下就开送” —— 对 VIT 季后赛稳定性的质疑，可能影响盘口信心。</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag market">盘口</span>
+      <span class="signal-text">“相信米人能c 不如相信rice会飞” —— 对 MKOI 选手“米人”的负面评价，间接看低 MKOI 胜率。</span>
+    </div>
+    <div class="muted" style="margin-top:8px;">盘口讨论样本较少（3 条），且多为间接推断，无直接赔率数据。</div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚</h3>
+        <div class="signal-item"><span class="signal-tag anchor">正锚</span><span class="signal-text">MKOI 阵容获认可：“MK阵容不错啊”（1 条）</span></div>
+        <div class="signal-item"><span class="signal-tag anchor">正锚</span><span class="signal-text">“JOJO的瑞兹还行”（1 条）—— 对 MKOI 选手 JOJO 的正面评价</span></div>
+        <div class="signal-item"><span class="signal-tag anchor">正锚</span><span class="signal-text">“相信米人能c”（2 条）—— 对 MKOI 选手的期待</span></div>
+      </div>
+      <div>
+        <h3>负锚</h3>
+        <div class="signal-item"><span class="signal-tag risk">负锚</span><span class="signal-text">“vit不是季后赛软脚虾吗”（1 条）</span></div>
+        <div class="signal-item"><span class="signal-tag risk">负锚</span><span class="signal-text">“小蜜蜂季后赛没赢过 等下就开送”（1 条）</span></div>
+        <div class="signal-item"><span class="signal-tag risk">负锚</span><span class="signal-text">“右边也垃圾 一个supa 一个米人”（1 条）</span></div>
+        <div class="signal-item"><span class="signal-tag risk">负锚</span><span class="signal-text">“MKOI最近很菜的”（1 条）</span></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>群体共识（+分歧+样本量）</h3>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr></thead>
+      <tbody>
+        <tr><td>VIT 季后赛能力</td><td>负面</td><td>2</td><td>“季后赛软脚虾”“没赢过”</td><td>仅本场弹幕，无历史画像交叉</td></tr>
+        <tr><td>MKOI 阵容/选手</td><td>正面</td><td>3</td><td>“MK阵容不错”“JOJO瑞兹还行”</td><td>仅本场弹幕，样本少</td></tr>
+        <tr><td>MKOI 整体实力</td><td>负面</td><td>2</td><td>“MKOI最近很菜”“常规赛第六”</td><td>与正面评价背离，分歧信号</td></tr>
+        <tr><td>场外话题（IG/LCK等）</td><td>中性</td><td>18+</td><td>“IG还有机会吗”“HLE机会比AL大”</td><td>多源，但与本场无关</td></tr>
+      </tbody>
+    </table>
+    <div class="muted" style="margin-top:8px;">共识→信号链：本场弹幕焦点分散，VIT 负面标签与 MKOI 阵容认可并存，未形成强共识，属分歧信号/共识盲区。</div>
+    <div class="divider"></div>
+    <h3>灰信号条件预测</h3>
+    <div class="signal-item"><span class="signal-tag gray">条件预测</span><span class="signal-text">若 VIT 前期失误，弹幕可能放大“软脚虾”标签，负锚增强。</span></div>
+    <div class="signal-item"><span class="signal-tag gray">条件预测</span><span class="signal-text">若 MKOI 取得优势，“MK阵容不错”可能被重新提及，正锚增强。</span></div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>LONG 信号</h3>
+        <div class="signal-item"><span class="signal-tag anchor">LONG</span><span class="signal-text">MKOI 阵容获认可 + 选手正面评价（JOJO、米人），若前期稳住，存在爆冷可能。</span></div>
+        <div class="signal-item"><span class="signal-tag anchor">LONG</span><span class="signal-text">市场看低 MKOI（“赢了才是爆冷”），若 MKOI 领先，赔率价值高。</span></div>
+      </div>
+      <div>
+        <h3>SHORT 信号</h3>
+        <div class="signal-item"><span class="signal-tag risk">SHORT</span><span class="signal-text">VIT 季后赛负面标签 + 操作质疑，若前期劣势，可能崩盘。</span></div>
+        <div class="signal-item"><span class="signal-tag risk">SHORT</span><span class="signal-text">MKOI 整体实力被看低（“最近很菜”），若无法转化阵容优势，可能被翻。</span></div>
+      </div>
+    </div>
+    <div class="decision-box">
+      <strong>决策落点：</strong>当前局中信号分歧，建议观望。若 MKOI 前期取得 2k 以上经济领先，可考虑 LONG MKOI；若 VIT 稳住并反超，SHORT MKOI 更优。灰信号提示操作风险，需结合实时战况。
+    </div>
+  </div>
+  <!-- 7 逐局复盘（证据层） -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 · 局中已发生片段</h3>
+    <div class="muted">时间线基于弹幕时间戳（北京时间），非官方游戏时间。</div>
+    <details open>
+      <summary>弹幕时间线（23:08 – 23:18）</summary>
+      <div class="detail-content">
+        <div class="danmu-line"><span class="danmu-time">23:08</span><span class="danmu-text">lec赛程对战表有吗</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:08</span><span class="danmu-text">一万说抢就抢，有实力</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:08</span><span class="danmu-text">右边也垃圾 一个supa 一个米人</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:09</span><span class="danmu-text">T1三号中种子</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:09</span><span class="danmu-text">ig现在还有机会吗</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:10</span><span class="danmu-text">MK阵容不错啊</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:10</span><span class="danmu-text">ig是不是彻底凉了</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:11</span><span class="danmu-text">IG是不是还有两条命啊（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:11</span><span class="danmu-text">要不是LPL为了保流量，网红队早滚了。就是为了给机会冒泡赛（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:12</span><span class="danmu-text">这个jojo是卫衣王（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:12</span><span class="danmu-text">HLE机会比AL稍微大一点</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:13</span><span class="danmu-text">好想让老张从背后狠狠的抱住我（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:13</span><span class="danmu-text">AL赢一把就算赢了</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:14</span><span class="danmu-text">今年世界赛在哪里啊（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:15</span><span class="danmu-text">相信米人能c（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:15</span><span class="danmu-text">相信米人能c 不如相信rice会飞（x2）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:15</span><span class="danmu-text">JOJO的瑞兹还行</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:16</span><span class="danmu-text">Koi 还能去世界赛吗？</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:16</span><span class="danmu-text">张张肚肚打宝宝（x3）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:16</span><span class="danmu-text">vit不是季后赛软脚虾吗</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:17</span><span class="danmu-text">好想掰开老张的双腿，先品尝黑色海苔丝，再吃双蛋炒火腿肠（x5）</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:17</span><span class="danmu-text">MKOI常规赛第六，赢了才是爆冷</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:17</span><span class="danmu-text">MKOI最近很菜的</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:18</span><span class="danmu-text">不是有眼吗，这都没反应过来啊</span></div>
+        <div class="danmu-line"><span class="danmu-time">23:18</span><span class="danmu-text">小蜜蜂季后赛没赢过 等下就开送</span></div>
+      </div>
+    </details>
+    <div class="muted" style="margin-top:8px;">未发生片段：待观察（后续团战、资源控制、胜负）。</div>
+  </div>
+  <!-- 8 队伍/人员画像（带提及量） -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（本场弹幕）</h3>
+    <table>
+      <thead><tr><th>队伍</th><th>提及</th><th>正/负</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td>IG</td><td>18</td><td>正0 / 负1</td><td>本场弹幕</td></tr>
+        <tr><td>HLE</td><td>10</td><td>正1 / 负0</td><td>本场弹幕</td></tr>
+        <tr><td>AL</td><td>9</td><td>正0 / 负1</td><td>本场弹幕</td></tr>
+        <tr><td>BLG</td><td>6</td><td>正0 / 负0</td><td>本场弹幕</td></tr>
+        <tr><td>TES</td><td>6</td><td>正0 / 负0</td><td>本场弹幕</td></tr>
+        <tr><td>Vitality</td><td>6</td><td>正0 / 负2</td><td>本场弹幕</td></tr>
+        <tr><td>KC</td><td>4</td><td>正0 / 负0</td><td>本场弹幕</td></tr>
+        <tr><td>GEN</td><td>4</td><td>正0 / 负0</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <h3>选手提及 TOP（本场弹幕）</h3>
+    <table>
+      <thead><tr><th>选手</th><th>提及</th><th>正/负</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td>Faker</td><td>3</td><td>正1 / 负0</td><td>本场弹幕</td></tr>
+        <tr><td>Zeus</td><td>1</td><td>正0 / 负0</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <div class="muted" style="margin-top:8px;">注：本场弹幕焦点大量外溢至 IG/LCK 等场外话题，VIT/MKOI 直接提及量较低。</div>
+    <details>
+      <summary>长期画像引用（历史库）</summary>
+      <div class="detail-content">
+        <p>Vitality：LEC 季后赛历史表现不稳定，常被观众贴上“软脚虾”标签（历史弹幕共识，非本场独有）。</p>
+        <p>Movistar KOI：常规赛排名中游，阵容偶有亮点，但整体实力被看低。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="signal-item"><span class="signal-tag consensus">规律</span><span class="signal-text">LEC 季后赛常出现“下克上”，常规赛排名靠后的队伍爆冷概率不低（弹幕提及“赢了才是爆冷”）。</span></div>
+    <div class="signal-item"><span class="signal-tag consensus">规律</span><span class="signal-text">VIT 在季后赛关键局中容易操作变形，历史弹幕多次提及“开送”。</span></div>
+    <div class="signal-item"><span class="signal-tag consensus">版本</span><span class="signal-text">当前版本瑞兹等英雄有出场，JOJO 的瑞兹被提及“还行”。</span></div>
+    <div class="muted">样本有限，规律仅供参考。</div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="stat-row"><span class="stat-label">赛前预测</span><span class="stat-value">暂无赛前预测数据</span></div>
+    <div class="stat-row"><span class="stat-label">局中验证</span><span class="stat-value">待终局回填</span></div>
+    <div class="stat-row"><span class="stat-label">当前状态</span><span class="stat-value">局中·非终局，结果待定</span></div>
+    <div class="muted" style="margin-top:8px;">本节点无预测验证样本，待比赛结束后回填。</div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div>
+        <h3>实际数据源</h3>
+        <div class="stat-row"><span class="stat-label">规则层情报 JSON</span><span class="stat-value">已读取</span></div>
+        <div class="stat-row"><span class="stat-label">弹幕切片</span><span class="stat-value">263 条 / 140 用户</span></div>
+        <div class="stat-row"><span class="stat-label">官方数据</span><span class="stat-value">比分 0:0（gameWins）</span></div>
+      </div>
+      <div>
+        <h3>预期数据源</h3>
+        <div class="stat-row"><span class="stat-label">Riot 阵容</span><span class="stat-value">待回填</span></div>
+        <div class="stat-row"><span class="stat-label">官方时间线</span><span class="stat-value">待回填</span></div>
+        <div class="stat-row"><span class="stat-label">盘口赔率</span><span class="stat-value">未提供</span></div>
+      </div>
+      <div>
+        <h3>缺口</h3>
+        <div class="stat-row"><span class="stat-label">本局阵容</span><span class="stat-value">缺失</span></div>
+        <div class="stat-row"><span class="stat-label">官方经济/击杀</span><span class="stat-value">缺失</span></div>
+        <div class="stat-row"><span class="stat-label">盘口直接数据</span><span class="stat-value">缺失</span></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <span class="muted">情报输出时间：2026-09-12 23:20 北京时间</span>
+      <span class="muted">数据窗口：23:08 – 23:18 北京时间</span>
+    </div>
+    <div class="muted" style="margin-top:8px;">本页所有时间均为北京时间（UTC+8）。弹幕原文仅用于证据层，速览卡未出现裸弹幕原文。</div>
+  </div>
+  <!-- 长期沉淀点 -->
+  <div class="card" style="background: #fafafa;">
+    <h2 style="font-size:16px;"><span class="no" style="background:#6e6e73;">★</span>本场长期沉淀点</h2>
+    <div class="signal-item">
+      <span class="signal-tag consensus">沉淀</span>
+      <span class="signal-text">Vitality 在 LEC 季后赛中持续被观众贴上“软脚虾”标签，该负面共识可能影响后续盘口与弹幕情绪，需长期跟踪。</span>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag consensus">沉淀</span>
+      <span class="signal-text">Movistar KOI 的阵容选择偶获认可，但整体实力评价偏低，形成“阵容不错但赢不了”的认知分歧，值得关注其转化率。</span>
+    </div>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
