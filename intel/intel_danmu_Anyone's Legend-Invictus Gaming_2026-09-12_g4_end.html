@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · AL vs IG · G4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            padding: 28px 32px 40px;
+            margin-bottom: 24px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #ff9500;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 40px;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+        .badge.secondary {
+            background: #e8e8ed;
+            color: #1d1d1f;
+        }
+        .meta-line {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 1px solid #e8e8ed;
+            padding-bottom: 16px;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 32px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #0071e3;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            border: 1px solid #f0f0f2;
+        }
+        .card-white {
+            background: #ffffff;
+            border: 1px solid #e8e8ed;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+        .stat-value {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: #e8e8ed;
+            color: #1d1d1f;
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+        .tag.risk {
+            background: #ffe8e8;
+            color: #c41e1e;
+        }
+        .tag.anchor {
+            background: #e3f2fd;
+            color: #005bb5;
+        }
+        .tag.market {
+            background: #fff3e0;
+            color: #b85e00;
+        }
+        .tag.consensus {
+            background: #e8f5e9;
+            color: #1e7b2b;
+        }
+        .tag.gray {
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        .tag.positive {
+            background: #e8f5e9;
+            color: #1e7b2b;
+        }
+        .tag.negative {
+            background: #ffe8e8;
+            color: #c41e1e;
+        }
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bullet-list li {
+            padding: 8px 0 8px 20px;
+            position: relative;
+            font-size: 15px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .bullet-list li:last-child {
+            border-bottom: none;
+        }
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: #0071e3;
+            font-weight: 700;
+        }
+        .source-tag {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-left: 8px;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+        details {
+            margin-top: 12px;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            padding: 8px 16px;
+            background: #ffffff;
+        }
+        details summary {
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            color: #0071e3;
+            padding: 6px 0;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary::before {
+            content: "▸";
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .danmu-sample {
+            font-size: 13px;
+            color: #3a3a3c;
+            background: #f9f9fb;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-left: 3px solid #0071e3;
+            word-break: break-word;
+        }
+        .danmu-sample .time {
+            color: #8e8e93;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .danmu-sample .count {
+            color: #0071e3;
+            font-weight: 600;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+        .table-consensus {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        .table-consensus th {
+            text-align: left;
+            padding: 10px 8px;
+            background: #f5f5f7;
+            font-weight: 600;
+            color: #1d1d1f;
+            border-bottom: 1px solid #e8e8ed;
+            font-size: 13px;
+        }
+        .table-consensus td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .table-consensus tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight {
+            background: #fff9e6;
+            border-radius: 4px;
+            padding: 0 4px;
+        }
+        .footer-note {
+            margin-top: 32px;
+            font-size: 13px;
+            color: #8e8e93;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .decision-box {
+            background: #f0f7ff;
+            border-left: 4px solid #0071e3;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-size: 15px;
+        }
+        .decision-box strong {
+            color: #005bb5;
+        }
+        .small-note {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 4px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .mt-8 { margin-top: 8px; }
+        .mt-16 { margin-top: 16px; }
+        .mb-8 { margin-bottom: 8px; }
+        .text-muted { color: #6e6e73; }
+        .text-small { font-size: 13px; }
+        .fw-600 { font-weight: 600; }
+        @media (max-width: 700px) {
+            .container { padding: 20px 16px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Anyone's Legend-Invictus Gaming 2026-09-12 g4 end</b></div>
+<div class="container">
+    <h1>
+        AL vs IG · 第4小局 · 局中弹幕情报快照
+        <span class="badge">局中·非终局，结果待定</span>
+    </h1>
+    <div class="meta-line">
+        <span>📅 2026-09-12 · 北京时间</span>
+        <span>🏷️ slug: lol-al-ig1-2026-09-12</span>
+        <span>🎮 节点: G4｜局末/局间 (GAME-REVIEW)</span>
+        <span>📊 官方当前比分: IG 2 : 2 AL</span>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="card" style="background: #f0f7ff; border: 1px solid #cce4ff;">
+        <div class="flex-between" style="margin-bottom: 12px;">
+            <span style="font-size: 18px; font-weight: 600;">IG 2 : 2 AL</span>
+            <span class="tag" style="background: #fff3e0; color: #b85e00;">弹幕口径·官方待回填</span>
+        </div>
+        <div style="font-size: 14px; color: #6e6e73; margin-bottom: 16px;">第4小局已结束（局末·待结算校准），结果待官方核对。本页聚焦本局BP/对线/团战/弹幕信号。</div>
+        <ul class="bullet-list" style="margin-bottom: 12px;">
+            <li><span class="tag risk">风险</span> 灰信号94条，集中质疑“IG故意输/剧本/演员”，观众质疑非结论 <span class="source-tag">→ §2</span></li>
+            <li><span class="tag anchor">锚点</span> 本局阵容：格温、剑魔、永恩、阿卡丽等英雄被高频提及；上单格温被老黑单杀成焦点 <span class="source-tag">→ §3</span></li>
+            <li><span class="tag market">盘口</span> 63条盘口讨论，沙皇人头、7000伤害、卢锡安等成争议点 <span class="source-tag">→ §4</span></li>
+            <li><span class="tag consensus">共识</span> “涅槃打野差距太大”刷屏，野辅差距成主要批评方向；同时“黑子说话”爆发 <span class="source-tag">→ §5</span></li>
+        </ul>
+        <div class="decision-box" style="margin: 0; background: #ffffff; border-left-color: #0071e3;">
+            <strong>一句话决策落点：</strong> 本局IG上野辅表现引发大规模质疑，灰信号与盘口讨论交织，短期情绪偏空；但“黑子说话”与“战歌起”显示仍有逆转期待，需结合官方结算校准。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览/状态核验 -->
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="grid-2">
+        <div class="card card-white">
+            <div class="stat-row"><span class="stat-label">比赛</span><span class="stat-value">Anyone's Legend vs Invictus Gaming</span></div>
+            <div class="stat-row"><span class="stat-label">小局</span><span class="stat-value">第4小局 (G4)</span></div>
+            <div class="stat-row"><span class="stat-label">节点</span><span class="stat-value">局末/局间 (GAME-REVIEW)</span></div>
+            <div class="stat-row"><span class="stat-label">官方比分</span><span class="stat-value">IG 2 : 2 AL</span></div>
+            <div class="stat-row"><span class="stat-label">本页状态</span><span class="stat-value" style="color: #b85e00;">局中·非终局，结果待定</span></div>
+        </div>
+        <div class="card card-white">
+            <div class="stat-row"><span class="stat-label">弹幕总数</span><span class="stat-value">28,230</span></div>
+            <div class="stat-row"><span class="stat-label">活跃用户</span><span class="stat-value">12,283</span></div>
+            <div class="stat-row"><span class="stat-label">密度</span><span class="stat-value">596.3 条/分</span></div>
+            <div class="stat-row"><span class="stat-label">灰信号</span><span class="stat-value">94 条</span></div>
+            <div class="stat-row"><span class="stat-label">盘口讨论</span><span class="stat-value">63 条</span></div>
+        </div>
+    </div>
+    <div class="card card-white mt-8">
+        <div class="fw-600 mb-8">📌 跨源一致性提示</div>
+        <div class="text-small">官方比分 IG 2:2 AL 与弹幕中“2-1了？”“3:1带走”等讨论存在时间差，弹幕口径反映局中情绪，最终以官方结算为准。本局为第4小局，系列赛大比分2:2，决胜局待定。</div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="card" style="background: #fff9f0; border: 1px solid #ffe0b2;">
+        <div class="flex-between mb-8">
+            <span class="fw-600">⚠️ 灰信号 94 条 · 观众质疑，非结论</span>
+            <span class="tag gray">词表命中：演/剧本/故意输/演员</span>
+        </div>
+        <ul class="bullet-list">
+            <li>“对的，IG是故意输的”“IG是在故意输嘛” <span class="source-tag">本场弹幕</span></li>
+            <li>“今天ig绝对赢不了，没赢的剧本”“第一局就开始演了” <span class="source-tag">本场弹幕</span></li>
+            <li>“这两把阵容，感觉ig没想赢啊，故意输吗”“今天这肯定是剧本呀” <span class="source-tag">本场弹幕</span></li>
+            <li>“票都卖了，还想ig赢？那回还没有冒泡赛资格故意保送的” <span class="source-tag">本场弹幕</span></li>
+        </ul>
+        <div class="small-note mt-8">* 以上均为观众质疑，非事实结论。灰信号高发与IG本局表现相关，需结合官方数据判断。</div>
+    </div>
+    <!-- 3 BP锚点与选人情报 -->
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+        <div class="card card-white">
+            <div class="fw-600 mb-8">🎯 本局阵容（英雄+选手）</div>
+            <div class="text-small" style="line-height: 1.8;">
+                <span class="tag anchor">格温</span> 上单 · 被老黑单杀 <br>
+                <span class="tag anchor">剑魔</span> 上单/中单 · 弹幕高频 <br>
+                <span class="tag anchor">永恩</span> 中单 · 弹幕提及 <br>
+                <span class="tag anchor">阿卡丽</span> 中单 · 弹幕提及 <br>
+                <span class="tag anchor">沙皇</span> 中单 · 盘口焦点 <br>
+                <span class="tag anchor">盲僧</span> 打野 · 被喷 <br>
+                <span class="tag anchor">女枪</span> AD · 大招争议 <br>
+                <span class="tag anchor">奎桑提</span> 上单 · 魔抗出装
+            </div>
+            <div class="small-note mt-8">* 基于弹幕高频英雄提及与盘口讨论提炼，具体分路以官方为准。</div>
+        </div>
+        <div class="card card-white">
+            <div class="fw-600 mb-8">📋 BP 后战绩情报</div>
+            <div class="text-small">无战绩情报提及。弹幕中“bp问题突然就乱选一些完全没机会的英雄，好假”反映观众对BP的质疑。</div>
+            <div class="mt-8">
+                <span class="tag">云露</span> <span class="tag">卡列</span> <span class="tag">冰芬</span> 组合未选，弹幕质疑“一个组合都不选啊？”
+            </div>
+        </div>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="card card-white">
+        <div class="flex-between mb-8">
+            <span class="fw-600">💰 盘口讨论 63 条</span>
+            <span class="tag market">沙皇人头 / 7000伤害 / 卢锡安</span>
+        </div>
+        <ul class="bullet-list">
+            <li>“给沙皇人头？给沙皇人头？” 重复刷屏，沙皇拿人头引发盘口担忧 <span class="source-tag">本场弹幕</span></li>
+            <li>“7000伤害，咋回事啊roke”“不能滑起来的卢都差点意思 这个1.2比 7.5K夸张” <span class="source-tag">本场弹幕</span></li>
+            <li>“人头越塔杀，。ig看到有人就跑” <span class="source-tag">本场弹幕</span></li>
+            <li>“上路纯混子罢了优势各种上嘴脸掠食隐身送人头不粘锅” <span class="source-tag">本场弹幕</span></li>
+        </ul>
+        <div class="small-note mt-8">* 盘口讨论反映观众对经济/伤害数据的敏感，非投注建议。</div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="grid-2">
+        <div class="card card-white">
+            <div class="fw-600" style="color: #1e7b2b;">✅ 正锚</div>
+            <ul class="bullet-list">
+                <li>“IG加油”刷屏，大量粉丝持续助威 <span class="source-tag">本场弹幕</span></li>
+                <li>“黑子说话”爆发（x890），显示部分观众认为IG有翻盘表现 <span class="source-tag">本场弹幕</span></li>
+                <li>“战歌起”出现，期待决胜局 <span class="source-tag">本场弹幕</span></li>
+            </ul>
+        </div>
+        <div class="card card-white">
+            <div class="fw-600" style="color: #c41e1e;">❌ 负锚</div>
+            <ul class="bullet-list">
+                <li>“涅槃打野差距太大了”反复刷屏，野辅差距成主要批评 <span class="source-tag">本场弹幕</span></li>
+                <li>“上路差距”“格温被老黑单杀第一人”上单表现遭质疑 <span class="source-tag">本场弹幕</span></li>
+                <li>“及时雨”刷屏（x67），嘲讽送人头 <span class="source-tag">本场弹幕</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card card-white mt-8">
+        <div class="fw-600 mb-8">📊 群体共识（+分歧+样本量）</div>
+        <table class="table-consensus">
+            <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+            <tbody>
+                <tr><td>打野差距</td><td>负</td><td>“涅槃打野差距太大了”x10+</td><td>涅槃打野差距太大了</td><td>本场弹幕，高一致</td></tr>
+                <tr><td>上单表现</td><td>负</td><td>“格温被老黑单杀第一人”x11</td><td>及时雨x67</td><td>本场弹幕，高一致</td></tr>
+                <tr><td>IG加油</td><td>正</td><td>“IG加油”x15+</td><td>IG加油！！</td><td>本场弹幕，高一致</td></tr>
+                <tr><td>黑子说话</td><td>正</td><td>“黑子说话”x890</td><td>黑子说话</td><td>本场弹幕，爆发</td></tr>
+                <tr><td>灰信号（剧本/演员）</td><td>负</td><td>94条</td><td>IG是故意输的</td><td>本场弹幕，中等一致</td></tr>
+            </tbody>
+        </table>
+        <div class="small-note mt-8">共识→信号链：野辅差距与上单表现形成强负信号；IG加油与黑子说话形成正信号，但被负向情绪部分抵消。灰信号独立存在，需警惕。</div>
+    </div>
+    <div class="card card-white mt-8">
+        <div class="fw-600 mb-8">🔮 灰信号条件预测</div>
+        <div class="text-small">若官方结算确认IG失利，灰信号可能进一步发酵；若IG逆转，则“黑子说话”将成主流。当前样本不足以预测最终结果。</div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="decision-box">
+        <strong>LONG（正向）：</strong> “IG加油”与“黑子说话”显示粉丝基本盘仍在，若决胜局IG调整野辅节奏，情绪可能反转。<br>
+        <strong>SHORT（负向）：</strong> 野辅差距、上单被单杀、灰信号“故意输”形成短期压力，若官方确认失利，舆论将进一步恶化。<br>
+        <strong>决策落点：</strong> 本局结果待官方校准，当前弹幕情绪偏负，但存在正向抵抗。建议等待官方结算后再做方向性判断。
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <div class="card card-white">
+        <div class="fw-600 mb-8">📽️ 第4小局时间线（弹幕口径）</div>
+        <details>
+            <summary>19:53 - 20:00 开局与BP讨论</summary>
+            <div class="danmu-sample"><span class="time">19:53</span> 这几天ig粉丝 闹麻了 就这 <span class="count">x5</span></div>
+            <div class="danmu-sample"><span class="time">19:53</span> AL定制亚军，IG不敢赢 <span class="count">x3</span></div>
+            <div class="danmu-sample"><span class="time">19:53</span> bp 问题突然就乱选一些完全没机会的英雄，好假 <span class="count">x3</span></div>
+            <div class="danmu-sample"><span class="time">19:57</span> 大势已去了 <span class="count">x6</span></div>
+            <div class="danmu-sample"><span class="time">19:57</span> 让二追三了 <span class="count">x6</span></div>
+            <div class="danmu-sample"><span class="time">20:00</span> 云露，卡列，冰芬一个组合都不选啊？ <span class="count">x6</span></div>
+        </details>
+        <details>
+            <summary>20:01 - 20:10 对线期与早期节奏</summary>
+            <div class="danmu-sample"><span class="time">20:03</span> 8驱兄弟演我[感动] <span class="count">x11</span></div>
+            <div class="danmu-sample"><span class="time">20:05</span> 逆天 <span class="count">x10</span></div>
+            <div class="danmu-sample"><span class="time">20:06</span> IG加油 <span class="count">x17</span></div>
+            <div class="danmu-sample"><span class="time">20:07</span> 图书馆 <span class="count">x15</span></div>
+            <div class="danmu-sample"><span class="time">20:09</span> 打野差距 <span class="count">x13</span></div>
+            <div class="danmu-sample"><span class="time">20:10</span> 看似1-3实质0-4！ <span class="count">x3</span></div>
+        </details>
+        <details>
+            <summary>20:11 - 20:20 关键团战与单杀</summary>
+            <div class="danmu-sample"><span class="time">20:13</span> 单杀 <span class="count">x53</span></div>
+            <div class="danmu-sample"><span class="time">20:13</span> 及时雨 <span class="count">x41</span></div>
+            <div class="danmu-sample"><span class="time">20:14</span> 格温被老黑单杀第一人 <span class="count">x11</span></div>
+            <div class="danmu-sample"><span class="time">20:15</span> 绝望 <span class="count">x28</span></div>
+            <div class="danmu-sample"><span class="time">20:18</span> 涅槃 <span class="count">x51</span></div>
+            <div class="danmu-sample"><span class="time">20:20</span> 皮克斯 <span class="count">x14</span></div>
+        </details>
+        <details>
+            <summary>20:21 - 20:30 中后期与团战</summary>
+            <div class="danmu-sample"><span class="time">20:21</span> 害人精 <span class="count">x40</span></div>
+            <div class="danmu-sample"><span class="time">20:24</span> 野辅差距太大 <span class="count">x9</span></div>
+            <div class="danmu-sample"><span class="time">20:25</span> 涅槃打野差距太大了 <span class="count">x10</span></div>
+            <div class="danmu-sample"><span class="time">20:27</span> 黑子说话 <span class="count">x11</span></div>
+            <div class="danmu-sample"><span class="time">20:28</span> 涅槃打野差距太大了 <span class="count">x10</span></div>
+            <div class="danmu-sample"><span class="time">20:30</span> 不愧是涅槃打野 <span class="count">x7</span></div>
+        </details>
+        <details>
+            <summary>20:31 - 20:40 局末与战歌</summary>
+            <div class="danmu-sample"><span class="time">20:34</span> 及时雨 <span class="count">x67</span></div>
+            <div class="danmu-sample"><span class="time">20:35</span> 黑子说话 <span class="count">x890</span></div>
+            <div class="danmu-sample"><span class="time">20:36</span> 4 <span class="count">x386</span></div>
+            <div class="danmu-sample"><span class="time">20:36</span> 帅 <span class="count">x330</span></div>
+            <div class="danmu-sample"><span class="time">20:38</span> 战歌起 <span class="count">x218</span></div>
+            <div class="danmu-sample"><span class="time">20:39</span> 下一把希维尔就赢了 <span class="count">x5</span></div>
+        </details>
+        <div class="small-note mt-8">* 以上为真实弹幕时间戳（北京时间）与原文带量，覆盖本局主要节点。</div>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+        <div class="card card-white">
+            <div class="fw-600 mb-8">🏆 队伍提及 TOP</div>
+            <div class="stat-row"><span class="stat-label">IG</span><span class="stat-value">1983 (正75/负136)</span></div>
+            <div class="stat-row"><span class="stat-label">AL</span><span class="stat-value">788 (正24/负58)</span></div>
+            <div class="stat-row"><span class="stat-label">BLG</span><span class="stat-value">383 (正14/负9)</span></div>
+            <div class="stat-row"><span class="stat-label">T1</span><span class="stat-value">26 (正1/负3)</span></div>
+            <div class="stat-row"><span class="stat-label">LGD</span><span class="stat-value">14 (正0/负11)</span></div>
+        </div>
+        <div class="card card-white">
+            <div class="fw-600 mb-8">👤 选手提及 TOP</div>
+            <div class="stat-row"><span class="stat-label">Faker</span><span class="stat-value">157 (正6/负15)</span></div>
+            <div class="stat-row"><span class="stat-label">Oscar</span><span class="stat-value">10 (正0/负0)</span></div>
+            <div class="stat-row"><span class="stat-label">Niko</span><span class="stat-value">6 (正0/负0)</span></div>
+            <div class="stat-row"><span class="stat-label">Chovy</span><span class="stat-value">4 (正0/负0)</span></div>
+            <div class="stat-row"><span class="stat-label">Zeus</span><span class="stat-value">2 (正0/负1)</span></div>
+        </div>
+    </div>
+    <div class="card card-white mt-8">
+        <div class="fw-600 mb-8">📈 队伍特质统计（长期库）</div>
+        <div class="grid-3">
+            <div class="stat-row"><span class="stat-label">逆风崩盘</span><span class="stat-value">2</span></div>
+            <div class="stat-row"><span class="stat-label">顺风隐身</span><span class="stat-value">1</span></div>
+            <div class="stat-row"><span class="stat-label">被翻守不住</span><span class="stat-value">2</span></div>
+            <div class="stat-row"><span class="stat-label">韧性逆转</span><span class="stat-value">27</span></div>
+            <div class="stat-row"><span class="stat-label">心态摆烂</span><span class="stat-value">64</span></div>
+            <div class="stat-row"><span class="stat-label">慢热手热</span><span class="stat-value">13</span></div>
+            <div class="stat-row"><span class="stat-label">打法风格</span><span class="stat-value">42</span></div>
+            <div class="stat-row"><span class="stat-label">选手特质</span><span class="stat-value">79</span></div>
+        </div>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <div class="card card-white">
+        <div class="text-small">本场为LPL系列赛，版本英雄如格温、剑魔、永恩、阿卡丽等活跃。弹幕中“打AL办5个打野就行”反映对AL打野的针对思路。当前版本上单影响力较大，格温被单杀成为焦点。</div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <div class="card card-white">
+        <div class="text-small">本页为局中快照，暂无历史预测需回填。待官方结算后，可验证“灰信号是否成真”“黑子说话是否逆转”等信号。</div>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+        <div class="card card-white">
+            <div class="fw-600 mb-8">✅ 实际数据源</div>
+            <ul class="bullet-list text-small">
+                <li>规则层情报 JSON（vps_intel）</li>
+                <li>弹幕切片（intel_slices）</li>
+                <li>官方比分（IG 2:2 AL）</li>
+                <li>本场弹幕样本 240 条</li>
+            </ul>
+        </div>
+        <div class="card card-white">
+            <div class="fw-600 mb-8">📋 预期数据源</div>
+            <ul class="bullet-list text-small">
+                <li>官方结算数据（待回填）</li>
+                <li>完整BP顺序（待补充）</li>
+                <li>经济/伤害面板（待补充）</li>
+            </ul>
+        </div>
+        <div class="card card-white">
+            <div class="fw-600 mb-8">⚠️ 缺口</div>
+            <ul class="bullet-list text-small">
+                <li>官方最终结果未出</li>
+                <li>具体分路与选手对应待确认</li>
+                <li>无战绩情报提及</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-note">
+        <span>情报输出时间：2026-09-12 20:45 北京时间</span>
+        <span>数据来源：弹幕切片 + 规则层统计 · 局中·非终局</span>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background: #f5f5f7; margin-top: 24px;">
+        <div class="fw-600 mb-8">📌 本场长期沉淀点</div>
+        <div class="text-small">IG在系列赛2:2后，弹幕中“涅槃打野差距太大”与“黑子说话”形成强烈对立，反映粉丝对野辅表现的高度敏感。灰信号“故意输”集中出现，需关注后续官方调查与舆论走向。本局上单格温被单杀成为标志性事件，可能影响后续BP策略。</div>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
