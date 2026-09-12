@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>局中弹幕情报快照 · AL vs IG · G1 BP后</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.45;
+      padding: 20px 16px 40px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    /* 卡片通用 */
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      padding: 20px 22px;
+      margin-bottom: 18px;
+      transition: all 0.1s ease;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #0071e3;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      width: 22px;
+      height: 22px;
+      border-radius: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 30px;
+      background: #f0f0f2;
+      color: #6e6e73;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .badge.live {
+      background: #ff3b3010;
+      color: #ff3b30;
+      border: 1px solid #ff3b3030;
+    }
+    .badge.official {
+      background: #0071e310;
+      color: #0071e3;
+      border: 1px solid #0071e330;
+    }
+    .badge.warn {
+      background: #ff950010;
+      color: #b25e00;
+      border: 1px solid #ff950030;
+    }
+    .text-muted {
+      color: #6e6e73;
+      font-size: 0.85rem;
+    }
+    .text-small {
+      font-size: 0.8rem;
+    }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mb-2 { margin-bottom: 8px; }
+    .flex { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .card { padding: 16px; }
+    }
+    /* 速览卡 */
+    .snapshot-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .score-line {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-line .vs {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #6e6e73;
+      margin: 0 4px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 30px;
+      background: #e8e8ed;
+      color: #1d1d1f;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .tag.risk { background: #ff3b3015; color: #c62828; }
+    .tag.anchor { background: #0071e315; color: #0071e3; }
+    .tag.market { background: #ff950015; color: #b25e00; }
+    .tag.consensus { background: #34c75915; color: #1e7e34; }
+    .tag.gray { background: #8e8e9315; color: #5a5a5e; }
+    .signal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f2;
+      font-size: 0.9rem;
+    }
+    .signal-item:last-child { border-bottom: none; }
+    .signal-item .tag { flex-shrink: 0; margin-top: 2px; }
+    .signal-item .desc { flex: 1; }
+    .signal-item .src {
+      font-size: 0.7rem;
+      color: #8e8e93;
+      white-space: nowrap;
+      margin-left: 6px;
+    }
+    .decision-line {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-left: 4px solid #0071e3;
+    }
+    /* 表格 */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 8px 0 4px;
+      border-radius: 12px;
+      border: 1px solid #f0f0f2;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      min-width: 500px;
+    }
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      background: #fafafc;
+      font-weight: 600;
+      color: #1d1d1f;
+      border-bottom: 1px solid #e8e8ed;
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    .num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+    /* 折叠 */
+    details {
+      margin-top: 12px;
+      border: 1px solid #f0f0f2;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fafafc;
+    }
+    summary {
+      padding: 12px 16px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #0071e3;
+      background: #ffffff;
+      border-bottom: 1px solid transparent;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before {
+      content: "▶";
+      font-size: 0.6rem;
+      color: #0071e3;
+      transition: transform 0.15s;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details[open] summary {
+      border-bottom: 1px solid #f0f0f2;
+    }
+    .details-content {
+      padding: 14px 16px;
+      background: #ffffff;
+      font-size: 0.85rem;
+    }
+    /* 时间线 */
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f5f5f7;
+      font-size: 0.85rem;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-time {
+      font-weight: 500;
+      color: #0071e3;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      min-width: 70px;
+    }
+    .timeline-text {
+      flex: 1;
+      color: #1d1d1f;
+    }
+    .timeline-count {
+      color: #8e8e93;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+    /* 数据完整性三栏 */
+    .integrity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .integrity-col {
+      background: #fafafc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      border: 1px solid #f0f0f2;
+    }
+    .integrity-col h4 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .integrity-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .integrity-col li {
+      padding: 3px 0;
+      color: #3a3a3c;
+      display: flex;
+      gap: 6px;
+    }
+    .integrity-col li::before {
+      content: "•";
+      color: #0071e3;
+      font-weight: 700;
+    }
+    .integrity-col.gap li::before {
+      color: #ff9500;
+    }
+    /* 其他 */
+    .divider {
+      height: 1px;
+      background: #f0f0f2;
+      margin: 16px 0;
+    }
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .pill {
+      background: #f5f5f7;
+      border-radius: 30px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      color: #1d1d1f;
+      border: 1px solid #e8e8ed;
+    }
+    .pill strong {
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .footnote {
+      font-size: 0.7rem;
+      color: #8e8e93;
+      margin-top: 8px;
+      border-top: 1px solid #f0f0f2;
+      padding-top: 10px;
+    }
+    .highlight {
+      background: #fff9e6;
+      border-radius: 6px;
+      padding: 0 4px;
+    }
+    .mono {
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Anyone's Legend-Invictus Gaming 2026-09-12 g1 bp</b></div>
+<div class="container">
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">0</span>核心情报速览</h2>
+      <span class="badge live">局中·非终局</span>
+    </div>
+    <div class="snapshot-row">
+      <div class="score-line">
+        AL <span class="vs">vs</span> IG
+        <span style="font-size:1rem; font-weight:400; color:#6e6e73; margin-left:6px;">0 : 0</span>
+      </div>
+      <span class="badge official">官方 gameWins 0-0</span>
+      <span class="badge">弹幕口径·官方待回填</span>
+    </div>
+    <div class="text-muted text-small mb-2">G1 · BP后/开局 · 北京时间 2026-09-12 17:00-17:08</div>
+    <!-- TOP 信号 3-5 条 -->
+    <div class="signal-item">
+      <span class="tag risk">风险</span>
+      <span class="desc">「绝望」刷屏167条，灰信号「窒息」11条，观众情绪悲观</span>
+      <span class="src">→ §2</span>
+    </div>
+    <div class="signal-item">
+      <span class="tag anchor">锚点</span>
+      <span class="desc">IG提及174（正7/负11），AL提及123（正4/负7），负向主导</span>
+      <span class="src">→ §3 §8</span>
+    </div>
+    <div class="signal-item">
+      <span class="tag market">盘口</span>
+      <span class="desc">2条盘口讨论：人头换龙不亏；资源没拿到干人头后期AL赢</span>
+      <span class="src">→ §4</span>
+    </div>
+    <div class="signal-item">
+      <span class="tag consensus">共识</span>
+      <span class="desc">「三路开花」×5，「BLG玩具选拔赛」×5，跨队玩梗共识</span>
+      <span class="src">→ §5 §7</span>
+    </div>
+    <div class="signal-item">
+      <span class="tag gray">灰信号</span>
+      <span class="desc">「绝望已经表演了 该窒息了」1条，观众质疑非结论</span>
+      <span class="src">→ §2</span>
+    </div>
+    <div class="decision-line">
+      ⚡ 决策落点：本局BP后弹幕情绪偏悲观（IG负向11 vs 正向7），盘口讨论倾向AL后期，但样本有限，建议观望至对线期数据回填。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览/状态核验 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+      <span class="badge warn">局中·非终局，结果待定</span>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="text-small text-muted">比赛</div>
+        <div style="font-weight:600;">Anyone's Legend vs Invictus Gaming</div>
+        <div class="text-small text-muted mt-2">小局</div>
+        <div>第 1 小局 · BP后/开局</div>
+        <div class="text-small text-muted mt-2">系列比分（官方）</div>
+        <div>IG 0 : 0 AL（gameWins）</div>
+      </div>
+      <div>
+        <div class="text-small text-muted">节点</div>
+        <div>G1｜BP 后/开局（EARLY-GAME）</div>
+        <div class="text-small text-muted mt-2">弹幕时间窗</div>
+        <div>2026-09-12 17:00 ~ 17:08 北京时间</div>
+        <div class="text-small text-muted mt-2">数据源</div>
+        <div>规则层JSON + 弹幕切片（2938条）</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <span class="text-small"><span class="tag" style="background:#0071e315;color:#0071e3;">官方</span> 当前比分以官方为准，禁止从弹幕推断</span>
+      <span class="text-small text-muted">阵容：Riot window 开局后1分钟校准</span>
+    </div>
+    <div class="footnote">⚠️ 本页为局中快照，所有结论基于弹幕样本与规则层统计，结果待终局回填。</div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <span class="badge">1条灰信号</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>灰信号原文</th><th>条数</th><th>来源</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td>绝望已经表演了 该窒息了</td><td class="num">1</td><td>本场弹幕</td><td>观众质疑，非结论</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-small text-muted mt-2">词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送 — 本切片未命中，仅1条情绪化灰信号。</div>
+    <div class="mt-2 text-small" style="color:#b25e00;">⚠️ 灰信号仅代表观众情绪，不构成事实判断，请结合官方数据核验。</div>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+      <span class="badge">阵容待官方校准</span>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="text-small text-muted">AL 阵容</div>
+        <div class="pill-list">
+          <span class="pill"><strong>上单</strong> 待回填</span>
+          <span class="pill"><strong>打野</strong> 待回填</span>
+          <span class="pill"><strong>中单</strong> 待回填</span>
+          <span class="pill"><strong>下路</strong> 待回填</span>
+          <span class="pill"><strong>辅助</strong> 待回填</span>
+        </div>
+      </div>
+      <div>
+        <div class="text-small text-muted">IG 阵容</div>
+        <div class="pill-list">
+          <span class="pill"><strong>上单</strong> 待回填</span>
+          <span class="pill"><strong>打野</strong> 待回填</span>
+          <span class="pill"><strong>中单</strong> 待回填</span>
+          <span class="pill"><strong>下路</strong> 待回填</span>
+          <span class="pill"><strong>辅助</strong> 待回填</span>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3 text-small text-muted">BP后战绩情报：无战绩情报提及</div>
+    <div class="mt-2 text-small">弹幕提及英雄/选手：兰博（空大讨论）、meiko（“不是meiko？”）、皮克斯、乡克丝（玩梗）。</div>
+    <details>
+      <summary>BP相关弹幕原文（带量）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">17:05</span><span class="timeline-text">码头明明空大 解说只敢说兰博交闪了</span><span class="timeline-count">x5</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:07</span><span class="timeline-text">兰博这是啥大</span><span class="timeline-count">x3</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:08</span><span class="timeline-text">不是meiko？</span><span class="timeline-count">x1</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:04</span><span class="timeline-text">皮克斯</span><span class="timeline-count">x6</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">4</span>盘口与市场讨论</h2>
+      <span class="badge">2条盘口</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>盘口讨论原文</th><th>条数</th><th>倾向</th></tr></thead>
+        <tbody>
+          <tr><td>人头换龙不亏啊。会解说吗</td><td class="num">1</td><td>资源交换争议</td></tr>
+          <tr><td>资源没拿到 干人头 后期还是AL赢</td><td class="num">1</td><td>AL后期</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-small text-muted mt-2">盘口讨论样本极少（2条），不足以形成市场共识，仅作情绪参考。</div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="tag anchor" style="margin-bottom:6px;">正锚</div>
+        <ul style="list-style:none;padding:0;font-size:0.85rem;">
+          <li>• IG加油（x7）</li>
+          <li>• 下路有希望，上路能呼吸！（x5）</li>
+          <li>• IG总冠军（x5）</li>
+          <li>• 爱鸡王朝了！（x4）</li>
+        </ul>
+      </div>
+      <div>
+        <div class="tag risk" style="margin-bottom:6px;">负锚</div>
+        <ul style="list-style:none;padding:0;font-size:0.85rem;">
+          <li>• 绝望（x167）</li>
+          <li>• 窒息（x11）</li>
+          <li>• 没赢过（x7）</li>
+          <li>• 中下被压爆，gg（x1）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="tag consensus" style="margin-bottom:6px;">群体共识</div>
+      <div class="text-small">「三路开花」×5、「BLG玩具选拔赛」×5、「还有人类吗」×6、「显示人数」×6。样本量：2938条弹幕，活跃1657人。</div>
+      <div class="text-small text-muted mt-1">分歧点：IG正向加油 vs 负向绝望刷屏，情绪两极。</div>
+    </div>
+    <div class="mt-3">
+      <div class="tag gray" style="margin-bottom:6px;">灰信号条件预测</div>
+      <div class="text-small">若「绝望」持续刷屏且官方经济落后，可能触发观众进一步负面情绪；反之若IG取得资源，正向弹幕可能回升。当前样本不足，待观察。</div>
+    </div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    </div>
+    <div class="grid-2">
+      <div style="background:#e8f5e9;border-radius:12px;padding:14px;">
+        <div style="font-weight:600;color:#1e7e34;">LONG 信号</div>
+        <ul style="list-style:none;padding:0;margin-top:6px;font-size:0.85rem;">
+          <li>• IG正向提及7条（加油/总冠军/王朝）</li>
+          <li>• 盘口有1条倾向AL后期，但非直接LONG</li>
+        </ul>
+      </div>
+      <div style="background:#ffebee;border-radius:12px;padding:14px;">
+        <div style="font-weight:600;color:#c62828;">SHORT 信号</div>
+        <ul style="list-style:none;padding:0;margin-top:6px;font-size:0.85rem;">
+          <li>• IG负向提及11条（绝望/窒息/没赢过）</li>
+          <li>• 灰信号「绝望已经表演了 该窒息了」</li>
+          <li>• 局势弹幕「中下被压爆，gg」</li>
+        </ul>
+      </div>
+    </div>
+    <div class="decision-line mt-3" style="border-left-color:#ff9500;">
+      ⚖️ 综合：负向信号强于正向，但样本集中在BP后情绪宣泄，建议等待对线期数据再决策。当前倾向SHORT（谨慎）。
+    </div>
+  </div>
+  <!-- 7 逐局复盘（证据层） -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+      <span class="badge">G1 已发生片段</span>
+    </div>
+    <div class="text-small text-muted mb-2">当前局：BP后/开局，时间线（北京时间）</div>
+    <details open>
+      <summary>弹幕时间线（真实时间戳+原文带量）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">17:00</span><span class="timeline-text">IG加油</span><span class="timeline-count">x7</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:00</span><span class="timeline-text">显示人数</span><span class="timeline-count">x6</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:00</span><span class="timeline-text">还有人类吗</span><span class="timeline-count">x6</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:00</span><span class="timeline-text">😂BLG玩具选拔赛😂</span><span class="timeline-count">x5</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:01</span><span class="timeline-text">绝望</span><span class="timeline-count">x167</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:01</span><span class="timeline-text">厚皮</span><span class="timeline-count">x9</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:01</span><span class="timeline-text">漂亮</span><span class="timeline-count">x7</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:02</span><span class="timeline-text">绝望</span><span class="timeline-count">x29</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:02</span><span class="timeline-text">没赢过</span><span class="timeline-count">x7</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:03</span><span class="timeline-text">al 不敢赢</span><span class="timeline-count">x6</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:04</span><span class="timeline-text">窒息</span><span class="timeline-count">x11</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:05</span><span class="timeline-text">Bin哥强势归来 BLG重启黄金之路 其他的都是垃圾！！</span><span class="timeline-count">x6</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:05</span><span class="timeline-text">码头明明空大 解说只敢说兰博交闪了</span><span class="timeline-count">x5</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:07</span><span class="timeline-text">塔赞的队友不行啊。都跟不上吗？</span><span class="timeline-count">x5</span></div>
+        <div class="timeline-item"><span class="timeline-time">17:08</span><span class="timeline-text">不是meiko？</span><span class="timeline-count">x1</span></div>
+      </div>
+    </details>
+    <div class="text-small text-muted mt-2">未发生：对线细节、团战、资源控制 → 待观察</div>
+  </div>
+  <!-- 8 队伍/人员画像（带提及量） -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="text-small text-muted">队伍提及 TOP</div>
+        <div class="table-wrap" style="margin-top:6px;">
+          <table>
+            <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+            <tbody>
+              <tr><td>IG</td><td class="num">174</td><td>正7 / 负11</td></tr>
+              <tr><td>AL</td><td class="num">123</td><td>正4 / 负7</td></tr>
+              <tr><td>BLG</td><td class="num">66</td><td>正22 / 负0</td></tr>
+              <tr><td>T1</td><td class="num">14</td><td>正1 / 负1</td></tr>
+              <tr><td>WE</td><td class="num">4</td><td>正0 / 负2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="text-small text-muted">选手提及 TOP</div>
+        <div class="table-wrap" style="margin-top:6px;">
+          <table>
+            <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+            <tbody>
+              <tr><td>Faker</td><td class="num">8</td><td>正0 / 负1</td></tr>
+              <tr><td>Zeus</td><td class="num">1</td><td>正0 / 负0</td></tr>
+              <tr><td>donk</td><td class="num">1</td><td>正0 / 负0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="text-small text-muted mt-2">队伍特质统计：心态摆烂4；慢热手热2；打法风格5；选手特质4</div>
+      </div>
+    </div>
+    <details>
+      <summary>长期画像参考（历史库）</summary>
+      <div class="details-content">
+        <div>IG：近期状态波动，弹幕常出现“绝望”“窒息”等情绪词，但亦有“IG总冠军”等正向口号。</div>
+        <div>AL：被提及“不敢赢”“后期还是AL赢”，慢热特质被讨论。</div>
+        <div>BLG：作为跨队玩梗对象，提及量高且正向（22正/0负），与“玩具选拔赛”梗相关。</div>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">9</span>联赛规律与版本</h2>
+    </div>
+    <div class="text-small">本场为 LPL 2026 赛季常规赛，版本基于当前官方补丁。弹幕中提及“兰博”“皮克斯”等英雄，但无具体版本强度讨论。跨队玩梗“BLG玩具选拔赛”反映社区对联赛竞争格局的调侃。</div>
+    <div class="text-small text-muted mt-2">规律：BP后弹幕情绪易受阵容选择影响，但本样本以情绪宣泄为主，缺乏战术分析。</div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">10</span>预测验证回填</h2>
+    </div>
+    <div class="text-small text-muted">当前节点为BP后，尚无预测可验证。待终局后回填。</div>
+    <div class="mt-2 text-small">历史预测记录：无（本场首次快照）。</div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span class="no">11</span>数据与溯源</h2>
+    </div>
+    <div class="integrity-grid">
+      <div class="integrity-col">
+        <h4>实际数据源</h4>
+        <ul>
+          <li>规则层JSON（vps_intel）</li>
+          <li>弹幕切片（2938条）</li>
+          <li>官方 gameWins 0-0</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <h4>预期数据源</h4>
+        <ul>
+          <li>Riot window 阵容</li>
+          <li>官方经济/击杀数据</li>
+          <li>实时盘口</li>
+        </ul>
+      </div>
+      <div class="integrity-col gap">
+        <h4>缺口</h4>
+        <ul>
+          <li>阵容未校准</li>
+          <li>对线期数据缺失</li>
+          <li>盘口样本仅2条</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between text-small">
+      <span>情报输出时间：2026-09-12 17:10 北京时间</span>
+      <span class="text-muted">数据版本：v1 · 2026-08-30 固化</span>
+    </div>
+    <div class="footnote">本快照基于弹幕样本与规则层统计，所有结论仅供参考，不构成投注建议。局中·非终局，结果待定。</div>
+  </div>
+  <!-- 本场长期沉淀点 -->
+  <div class="card" style="background:#fafafc;">
+    <div class="flex-between">
+      <span style="font-weight:600;">📌 本场长期沉淀点</span>
+      <span class="badge">1条</span>
+    </div>
+    <div class="mt-2 text-small">IG vs AL 的弹幕情绪呈现“绝望刷屏”与“加油口号”两极分化，灰信号“窒息”与“绝望”高频出现，可作为后续局中情绪监测的基线。跨队玩梗“BLG玩具选拔赛”持续发酵，反映社区对联赛竞争格局的调侃文化。</div>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
