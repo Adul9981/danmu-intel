@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · Gen.G vs HLE · G2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.1s ease;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .badge {
+            background: #e8e8ed;
+            color: #1d1d1f;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 100px;
+            letter-spacing: 0.01em;
+        }
+        .badge.accent {
+            background: #0071e3;
+            color: white;
+        }
+        .badge.warning {
+            background: #ff9f0a;
+            color: #1d1d1f;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            background: #0071e3;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            color: #1d1d1f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            color: #6e6e73;
+        }
+        .stat-value {
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        .signal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .signal-item:last-child {
+            border-bottom: none;
+        }
+        .signal-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 100px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .tag-risk {
+            background: #ffe8e8;
+            color: #c41e1e;
+        }
+        .tag-anchor {
+            background: #e8f0fe;
+            color: #0055b3;
+        }
+        .tag-market {
+            background: #fff4e5;
+            color: #b85e00;
+        }
+        .tag-consensus {
+            background: #e8f5e9;
+            color: #1e7e34;
+        }
+        .tag-gray {
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        .tag-pred {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+        .tag-data {
+            background: #e8e8ed;
+            color: #1d1d1f;
+        }
+        .signal-text {
+            flex: 1;
+            color: #1d1d1f;
+        }
+        .signal-source {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+        .decision-box {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 15px;
+            border-left: 4px solid #0071e3;
+        }
+        .decision-box strong {
+            color: #0071e3;
+        }
+        details {
+            margin-top: 12px;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        summary {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background: #fafafa;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: #0071e3;
+            transition: transform 0.15s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .details-content {
+            padding: 16px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 13px;
+            color: #1d1d1f;
+            background: #ffffff;
+        }
+        .danmu-line {
+            padding: 4px 0;
+            border-bottom: 1px solid #f5f5f7;
+            display: flex;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .danmu-time {
+            color: #8e8e93;
+            font-size: 12px;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+        .danmu-text {
+            color: #1d1d1f;
+        }
+        .danmu-count {
+            color: #0071e3;
+            font-weight: 500;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+        .table-consensus {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        .table-consensus th {
+            text-align: left;
+            padding: 8px 6px;
+            border-bottom: 1px solid #e8e8ed;
+            color: #6e6e73;
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .table-consensus td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .table-consensus tr:last-child td {
+            border-bottom: none;
+        }
+        .table-top {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .table-top td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .table-top tr:last-child td {
+            border-bottom: none;
+        }
+        .table-top .tag-cell {
+            width: 90px;
+        }
+        .table-top .source-cell {
+            width: 120px;
+            color: #8e8e93;
+            font-size: 12px;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 16px;
+            border-top: 1px solid #e8e8ed;
+            padding-top: 12px;
+        }
+        .highlight {
+            background: #f5f5f7;
+            border-radius: 8px;
+            padding: 2px 6px;
+            font-weight: 500;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .subhead {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Gen.G-Hanwha Life Esports 2026-09-13 g2 mid</b></div>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="card" style="padding-bottom: 16px;">
+            <h1>Gen.G vs Hanwha Life Esports · 第2小局 局中情报</h1>
+            <div class="subhead">
+                <span class="badge accent">局中·非终局，结果待定</span>
+                <span class="badge">2026-09-13</span>
+                <span class="badge">弹幕口径·官方待回填</span>
+                <span class="badge">G2 · MID-GAME</span>
+                <span class="badge">北京时间 UTC+8</span>
+            </div>
+            <div style="font-size: 14px; color: #6e6e73; margin-top: 4px;">
+                官方当前比分：GEN 0 : 1 HLE（官方 gameWins）｜本页为第2小局局中情报，系列比分与结果以官方为准
+            </div>
+        </div>
+        <!-- 0 核心情报速览 -->
+        <div class="card">
+            <h2><span class="no">0</span>核心情报速览</h2>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 12px; padding: 10px 14px; background: #f5f5f7; border-radius: 10px;">
+                ⏱️ 比分/进度：<span class="highlight">弹幕口径 GEN 0-1 HLE（局中）</span> · 官方待回填 · 第2小局进行中
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-risk">风险</span>
+                <span class="signal-text">灰信号1条：涉及“演员/挑剧本”等质疑，观众对比赛真实性存疑 <span class="signal-source">→ §2</span></span>
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-anchor">锚点</span>
+                <span class="signal-text">Zeus提及25次（正2/负0），Chovy提及10次（正1/负0），选手热度集中 <span class="signal-source">→ §3 §8</span></span>
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-market">盘口</span>
+                <span class="signal-text">弹幕讨论“让二追三”“明牌1-1”“3:0”等比分预期，方向分歧 <span class="signal-source">→ §4 §5</span></span>
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-consensus">共识</span>
+                <span class="signal-text">“1:1”出现多次，群体预期本局GEN扳平，但存在“3:0”“GG没了”反向声音 <span class="signal-source">→ §5 §7</span></span>
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-pred">条件预测</span>
+                <span class="signal-text">若GEN维持当前BP节奏，弹幕共识倾向1-1；若HLE再拿一局，则“3:0”声量可能上升 <span class="signal-source">→ §5</span></span>
+            </div>
+            <div class="decision-box">
+                <strong>一句话决策落点：</strong>局中信号偏震荡，GEN让一追一预期与HLE零封预期并存，建议观望至BP结束/首条小龙团，再确认方向。
+            </div>
+        </div>
+        <!-- 1 比赛信息与结果总览/状态核验 -->
+        <div class="card">
+            <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+            <div class="grid-2">
+                <div>
+                    <div class="stat-row"><span class="stat-label">比赛</span><span class="stat-value">Gen.G vs Hanwha Life Esports</span></div>
+                    <div class="stat-row"><span class="stat-label">小局</span><span class="stat-value">第2小局（G2）</span></div>
+                    <div class="stat-row"><span class="stat-label">节点</span><span class="stat-value">局中 · MID-GAME</span></div>
+                    <div class="stat-row"><span class="stat-label">日期</span><span class="stat-value">2026-09-13</span></div>
+                </div>
+                <div>
+                    <div class="stat-row"><span class="stat-label">官方比分</span><span class="stat-value">GEN 0 : 1 HLE（gameWins）</span></div>
+                    <div class="stat-row"><span class="stat-label">弹幕口径</span><span class="stat-value">局中·非终局，结果待定</span></div>
+                    <div class="stat-row"><span class="stat-label">进度</span><span class="stat-value">以弹幕口径为准，官方待回填</span></div>
+                    <div class="stat-row"><span class="stat-label">数据源</span><span class="stat-value">规则层统计 + 弹幕切片</span></div>
+                </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 13px; color: #6e6e73;">
+                ⚠️ 本页为局中快照，不构成终局结论。系列比分与结果一律以官方为准，禁止从弹幕推断比分。
+            </div>
+        </div>
+        <!-- 2 灰信号汇总 -->
+        <div class="card">
+            <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+            <div class="signal-item">
+                <span class="signal-tag tag-gray">灰信号</span>
+                <span class="signal-text">“一个演员，想要有演技首先要会挑剧本，选导演指导自己，王俊凯没” —— 观众质疑比赛真实性/剧本论，<strong>非结论</strong>，仅代表个别弹幕观点。</span>
+            </div>
+            <div style="font-size: 13px; color: #6e6e73; margin-top: 8px;">
+                词表扫描：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送 —— 命中1条（“演员”），其余未检出。灰信号总量低，但需关注后续是否发酵。
+            </div>
+            <details>
+                <summary>灰信号原文与时间</summary>
+                <div class="details-content">
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:24</span><span class="danmu-text">一个王俊凯给了足足三分钟镜头饭圈联盟了已经</span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:29</span><span class="danmu-text">我们是观众，有资格评价演员 <span class="danmu-count">(x4)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:35</span><span class="danmu-text">举报了 <span class="danmu-count">(x2)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:35</span><span class="danmu-text">又在引导 <span class="danmu-count">(x2)</span></span></div>
+                </div>
+            </details>
+        </div>
+        <!-- 3 BP锚点与选人情报 -->
+        <div class="card">
+            <h2><span class="no">3</span>BP锚点与选人情报</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top: 0;">本局阵容（英雄+选手）</h3>
+                    <div class="stat-row"><span class="stat-label">GEN</span><span class="stat-value">待官方回填（弹幕提及：狗头、小炮、奎、卡列）</span></div>
+                    <div class="stat-row"><span class="stat-label">HLE</span><span class="stat-value">待官方回填（弹幕提及：龙女、纳威、皇子）</span></div>
+                    <div style="font-size: 12px; color: #8e8e93; margin-top: 6px;">* 阵容以Riot官方window为准，开局后1分钟校准，当前为弹幕线索。</div>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0;">BP讨论热点</h3>
+                    <div class="stat-row"><span class="stat-label">BP质疑</span><span class="stat-value">“就这BP怎么这么怕？” “ryu的bp” “tom进来学bp”</span></div>
+                    <div class="stat-row"><span class="stat-label">英雄提及</span><span class="stat-value">狗头(x8)、小炮(x2)、奎(x2)、卡列(x3)、龙女(x2)、皇子</span></div>
+                    <div class="stat-row"><span class="stat-label">BP后战绩情报</span><span class="stat-value">无战绩情报提及</span></div>
+                </div>
+            </div>
+            <details>
+                <summary>BP相关弹幕原文（带量）</summary>
+                <div class="details-content">
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:26</span><span class="danmu-text">龙女来了，纳威 <span class="danmu-count">(x2)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:29</span><span class="danmu-text">卡列 <span class="danmu-count">(x3)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:31</span><span class="danmu-text">奎 <span class="danmu-count">(x2)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:31</span><span class="danmu-text">小炮 <span class="danmu-count">(x2)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:31</span><span class="danmu-text">ryu的bp</span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:31</span><span class="danmu-text">tom进来学bp</span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:33</span><span class="danmu-text">狗头 <span class="danmu-count">(x8)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:34</span><span class="danmu-text">宙斯的冰鸟不如zdz说实话 <span class="danmu-count">(x2)</span></span></div>
+                    <div class="danmu-line"><span class="danmu-time">09-13 14:35</span><span class="danmu-text">bin鸟 <span class="danmu-count">(x2)</span></span></div>
+                </div>
+            </details>
+        </div>
+        <!-- 4 盘口与市场讨论 -->
+        <div class="card">
+            <h2><span class="no">4</span>盘口与市场讨论</h2>
+            <div class="signal-item">
+                <span class="signal-tag tag-market">比分预期</span>
+                <span class="signal-text">“明牌1-1了”“明牌1-1啊”“1：1了”“1:1” —— 群体预期本局GEN扳平，出现多次。</span>
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-market">反向预期</span>
+                <span class="signal-text">“3:0 了”“3:0了”“2-0了”“Gg没了”“gg输了又” —— 部分弹幕认为HLE将碾压或GEN已崩。</span>
+            </div>
+            <div class="signal-item">
+                <span class="signal-tag tag-market">让二追三</span>
+                <span class="signal-text">“gg要让二追三了”“gen还能让1追3吗”“上一次bo5也是hle先赢一把 然后被追三了” —— 历史剧本讨论。</span>
+            </div>
+            <div style="font-size: 13px; color: #6e6e73; margin-top: 8px;">
+                盘口讨论以弹幕主观预期为主，无实际赔率数据接入。方向分歧明显：1-1共识 vs 3-0/2-0反向。
+            </div>
+        </div>
+        <!-- 5 方向性情报板 -->
+        <div class="card">
+            <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top: 0; color: #1e7e34;">正锚</h3>
+                    <div class="stat-row"><span class="stat-label">Zeus</span><span class="stat-value">提及25次（正2/负0）</span></div>
+                    <div class="stat-row"><span class="stat-label">Chovy</span><span class="stat-value">提及10次（正1/负0）</span></div>
+                    <div class="stat-row"><span class="stat-label">HLE</span><span class="stat-value">提及5次（正2/负0）</span></div>
+                    <div class="stat-row"><span class="stat-label">BLG</span><span class="stat-value">提及1次（正1/负0）</span></div>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0; color: #c41e1e;">负锚</h3>
+                    <div class="stat-row"><span class="stat-label">T1</span><span class="stat-value">提及5次（正1/负1）</span></div>
+                    <div class="stat-row"><span class="stat-label">GEN</span><span class="stat-value">提及5次（正0/负0）</span></div>
+                    <div class="stat-row"><span class="stat-label">灰信号</span><span class="stat-value">1条（演员质疑）</span></div>
+                </div>
+            </div>
+            <div style="margin-top: 16px;">
+                <h3>群体共识（+分歧+样本量）</h3>
+                <div class="stat-row"><span class="stat-label">共识方向</span><span class="stat-value">“1:1”出现≥5次，预期GEN扳平</span></div>
+                <div class="stat-row"><span class="stat-label">分歧方向</span><span class="stat-value">“3:0”“2-0”“GG没了”出现≥4次，预期HLE碾压</span></div>
+                <div class="stat-row"><span class="stat-label">样本量</span><span class="stat-value">本场弹幕样本64条，覆盖13个分钟段</span></div>
+            </div>
+            <div style="margin-top: 16px;">
+                <h3>灰信号条件预测</h3>
+                <div style="font-size: 14px; color: #1d1d1f; background: #f5f5f7; padding: 12px 16px; border-radius: 10px;">
+                    若后续出现更多“演员/剧本”类弹幕，可能引发对比赛真实性的集中质疑；当前仅1条，暂不构成趋势。
+                </div>
+            </div>
+            <div style="margin-top: 16px;">
+                <h3>弹幕共识提炼表</h3>
+                <table class="table-consensus">
+                    <thead>
+                        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>本局比分</td><td>1-1</td><td>≥5条</td><td>“明牌1-1了”“1：1了”“1:1”</td><td>同向=强信号</td></tr>
+                        <tr><td>本局比分</td><td>3-0/2-0</td><td>≥4条</td><td>“3:0 了”“2-0了”“Gg没了”</td><td>背离=分歧信号</td></tr>
+                        <tr><td>让二追三</td><td>GEN逆转</td><td>≥3条</td><td>“gg要让二追三了”“gen还能让1追3吗”</td><td>历史剧本讨论</td></tr>
+                        <tr><td>BP</td><td>质疑</td><td>≥3条</td><td>“就这BP怎么这么怕？”“ryu的bp”</td><td>共识盲区</td></tr>
+                        <tr><td>选手</td><td>Zeus/Chovy</td><td>35条提及</td><td>“宙斯的冰鸟不如zdz”“我超威”</td><td>热度集中</td></tr>
+                    </tbody>
+                </table>
+                <div style="font-size: 13px; color: #6e6e73; margin-top: 8px;">
+                    共识→信号链：1-1预期与3-0预期背离，形成分歧信号；BP质疑为共识盲区，需关注后续BP调整。
+                </div>
+            </div>
+        </div>
+        <!-- 6 情报含义与决策落点 -->
+        <div class="card">
+            <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+            <div class="grid-2">
+                <div style="background: #e8f5e9; border-radius: 12px; padding: 16px;">
+                    <h3 style="margin-top: 0; color: #1e7e34;">LONG 信号</h3>
+                    <ul style="font-size: 14px; padding-left: 18px; color: #1d1d1f;">
+                        <li>弹幕“1-1”共识较强，GEN扳平预期存在</li>
+                        <li>Zeus/Chovy正向提及，选手状态被认可</li>
+                        <li>HLE正2/负0，但样本量小</li>
+                    </ul>
+                </div>
+                <div style="background: #ffe8e8; border-radius: 12px; padding: 16px;">
+                    <h3 style="margin-top: 0; color: #c41e1e;">SHORT 信号</h3>
+                    <ul style="font-size: 14px; padding-left: 18px; color: #1d1d1f;">
+                        <li>“3:0”“2-0”反向声量不可忽视</li>
+                        <li>灰信号“演员”质疑，风险情绪</li>
+                        <li>BP被质疑，GEN阵容选择存疑</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="decision-box" style="margin-top: 16px;">
+                <strong>决策落点：</strong>局中信号多空交织，建议等待BP结束/首条小龙团后再做方向判断。若GEN拿下首条小龙且弹幕“1-1”声量上升，可考虑LONG；若HLE连续控图且“3:0”声量放大，则SHORT。
+            </div>
+        </div>
+        <!-- 7 逐局复盘（证据层） -->
+        <div class="card">
+            <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+            <h3 style="margin-top: 0;">第2小局 · 局中已发生片段</h3>
+            <div style="font-size: 14px; color: #1d1d1f; margin-bottom: 8px;">
+                当前局进行中，弹幕覆盖14:24-14:36北京时间。BP阶段讨论热烈，比分预期分歧，选手提及集中。
+            </div>
+            <details>
+                <summary>弹幕时间线（真实时间戳+原文带量）</summary>
+                <div class="details-content">
+                    <div class="danmu-line"><span class="danmu-time">14:24</span><span class="danmu-text">鸡蛋来了全杀了 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:24</span><span class="danmu-text">一个王俊凯给了足足三分钟镜头饭圈联盟了已经</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:25</span><span class="danmu-text">说实话王俊凯还没ELK帅，明星也就这样了 (x4)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:25</span><span class="danmu-text">lck今天一局中场休息这么久？</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:26</span><span class="danmu-text">龙女来了，纳威 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:26</span><span class="danmu-text">gen还能让1追3吗</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:26</span><span class="danmu-text">hle要拿冠军了！</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:26</span><span class="danmu-text">今天韩华零封gen</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:27</span><span class="danmu-text">gg要让二追三了</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:27</span><span class="danmu-text">上一次bo5也是hle先赢一把 然后被追三了</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:28</span><span class="danmu-text">hle世界赛最多四强</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:29</span><span class="danmu-text">我们是观众，有资格评价演员 (x4)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:29</span><span class="danmu-text">卡列 (x3)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:29</span><span class="danmu-text">一比一</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:30</span><span class="danmu-text">三板斧 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:30</span><span class="danmu-text">我超威 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:30</span><span class="danmu-text">胖尺vs瘦尺你们知道吗 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:31</span><span class="danmu-text">奎 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:31</span><span class="danmu-text">小炮 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:31</span><span class="danmu-text">ryu的bp</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:31</span><span class="danmu-text">tom进来学bp</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:32</span><span class="danmu-text">gg输了又</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:32</span><span class="danmu-text">navi的世界第一皇子</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:32</span><span class="danmu-text">zeka昨晚排位被亚索乱杀惨了啊</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:33</span><span class="danmu-text">狗头 (x8)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:33</span><span class="danmu-text">1：1了</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:33</span><span class="danmu-text">3:0 了</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:33</span><span class="danmu-text">Gg没了</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:34</span><span class="danmu-text">宙斯的冰鸟不如zdz说实话 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:34</span><span class="danmu-text">1:1</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:34</span><span class="danmu-text">2-0了</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:35</span><span class="danmu-text">bin鸟 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:35</span><span class="danmu-text">举报了 (x2)</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:36</span><span class="danmu-text">根打不过韩华</span></div>
+                    <div class="danmu-line"><span class="danmu-time">14:36</span><span class="danmu-text">烂了</span></div>
+                </div>
+            </details>
+            <div style="font-size: 13px; color: #8e8e93; margin-top: 8px;">
+                未发生片段：后续团战、资源控制、胜负结果 —— 待观察。
+            </div>
+        </div>
+        <!-- 8 队伍/人员画像 -->
+        <div class="card">
+            <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top: 0;">队伍提及 TOP</h3>
+                    <div class="stat-row"><span class="stat-label">T1</span><span class="stat-value">提及5 (正1/负1)</span></div>
+                    <div class="stat-row"><span class="stat-label">HLE</span><span class="stat-value">提及5 (正2/负0)</span></div>
+                    <div class="stat-row"><span class="stat-label">GEN</span><span class="stat-value">提及5 (正0/负0)</span></div>
+                    <div class="stat-row"><span class="stat-label">IG</span><span class="stat-value">提及2 (正0/负0)</span></div>
+                    <div class="stat-row"><span class="stat-label">Navi</span><span class="stat-value">提及1 (正0/负0)</span></div>
+                    <div class="stat-row"><span class="stat-label">BLG</span><span class="stat-value">提及1 (正1/负0)</span></div>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0;">选手提及 TOP</h3>
+                    <div class="stat-row"><span class="stat-label">Zeus</span><span class="stat-value">提及25 (正2/负0)</span></div>
+                    <div class="stat-row"><span class="stat-label">Chovy</span><span class="stat-value">提及10 (正1/负0)</span></div>
+                    <div style="font-size: 12px; color: #8e8e93; margin-top: 6px;">* 长期库画像，带提及量。</div>
+                </div>
+            </div>
+            <div style="margin-top: 12px;">
+                <h3>队伍特质统计</h3>
+                <div class="stat-row"><span class="stat-label">被翻守不住</span><span class="stat-value">2</span></div>
+                <div class="stat-row"><span class="stat-label">韧性逆转</span><span class="stat-value">1</span></div>
+                <div class="stat-row"><span class="stat-label">慢热手热</span><span class="stat-value">1</span></div>
+                <div class="stat-row"><span class="stat-label">打法风格</span><span class="stat-value">1</span></div>
+                <div class="stat-row"><span class="stat-label">选手特质</span><span class="stat-value">1</span></div>
+            </div>
+        </div>
+        <!-- 9 联赛规律与版本 -->
+        <div class="card">
+            <h2><span class="no">9</span>联赛规律与版本</h2>
+            <div style="font-size: 14px; color: #1d1d1f;">
+                <p>• 弹幕提及“上一次bo5也是hle先赢一把 然后被追三了”，暗示LCK BO5中存在让一追三的历史规律。</p>
+                <p>• “hle世界赛最多四强” —— 观众对HLE世界赛上限的刻板印象。</p>
+                <p>• 版本英雄讨论：狗头、小炮、奎、龙女、皇子等，当前版本BP多样性较高。</p>
+                <p>• 无实际版本胜率数据接入，以上为弹幕主观提及。</p>
+            </div>
+        </div>
+        <!-- 10 预测验证回填 -->
+        <div class="card">
+            <h2><span class="no">10</span>预测验证回填</h2>
+            <div style="font-size: 14px; color: #6e6e73;">
+                当前为局中节点，无终局结果可回填。待本小局结束后，将根据实际比分验证“1-1”与“3-0”预期。
+            </div>
+            <div style="margin-top: 8px; font-size: 13px; color: #8e8e93;">
+                预测验证状态：待观察（局中·非终局）
+            </div>
+        </div>
+        <!-- 11 数据与溯源 -->
+        <div class="card">
+            <h2><span class="no">11</span>数据与溯源</h2>
+            <div class="grid-3">
+                <div>
+                    <h3 style="margin-top: 0; font-size: 14px;">实际数据源</h3>
+                    <ul style="font-size: 13px; padding-left: 16px; color: #1d1d1f;">
+                        <li>规则层情报 JSON</li>
+                        <li>弹幕切片（64条样本）</li>
+                        <li>官方 gameWins 比分</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0; font-size: 14px;">预期数据源</h3>
+                    <ul style="font-size: 13px; padding-left: 16px; color: #1d1d1f;">
+                        <li>Riot 官方阵容 window</li>
+                        <li>实时经济/击杀面板</li>
+                        <li>盘口赔率数据</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0; font-size: 14px;">缺口</h3>
+                    <ul style="font-size: 13px; padding-left: 16px; color: #c41e1e;">
+                        <li>官方阵容未回填</li>
+                        <li>无实时经济数据</li>
+                        <li>无盘口赔率接入</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div style="font-size: 13px; color: #6e6e73;">
+                <div><strong>情报输出时间：</strong>2026-09-13 14:40 北京时间（UTC+8）</div>
+                <div><strong>数据完整性提示：</strong>缺源不交付完整结论。当前结论基于弹幕样本与规则层统计，官方数据待回填。</div>
+                <div><strong>跨源一致性提示：</strong>弹幕口径与官方比分一致（GEN 0-1 HLE），局中结果待定。</div>
+                <div><strong>比赛元数据：</strong>Gen.G vs Hanwha Life Esports · 2026-09-13 · 第2小局 · 局中</div>
+            </div>
+        </div>
+        <!-- 本场长期沉淀点 -->
+        <div class="card" style="background: #fafafa;">
+            <h2 style="font-size: 16px;"><span class="no" style="background: #6e6e73;">★</span>本场长期沉淀点</h2>
+            <div style="font-size: 14px; color: #1d1d1f;">
+                <p>• <strong>灰信号词表命中“演员”</strong>：本场出现1条涉及比赛真实性质疑的弹幕，虽为个别观点，但需纳入长期灰信号监控，观察是否在后续局中发酵。</p>
+                <p>• <strong>“让一追三”历史剧本讨论</strong>：弹幕多次提及HLE先赢后被追三的历史，可作为LCK BO5心理博弈的长期观察点。</p>
+                <p>• <strong>Zeus/Chovy高提及量</strong>：选手个人热度集中，后续可追踪其表现与弹幕情绪关联。</p>
+            </div>
+        </div>
+        <!-- 关键信息 TOP -->
+        <div class="card">
+            <h2 style="font-size: 16px;"><span class="no" style="background: #0071e3;">TOP</span>关键信息 TOP 5-7</h2>
+            <table class="table-top">
+                <tr><td class="tag-cell"><span class="signal-tag tag-risk">风险</span></td><td>灰信号1条：“演员”质疑，观众对比赛真实性存疑</td><td class="source-cell">本场弹幕/置信中</td></tr>
+                <tr><td class="tag-cell"><span class="signal-tag tag-anchor">锚点</span></td><td>Zeus提及25次（正2/负0），Chovy提及10次（正1/负0）</td><td class="source-cell">规则层统计/置信高</td></tr>
+                <tr><td class="tag-cell"><span class="signal-tag tag-market">盘口</span></td><td>“1-1”共识 vs “3-0/2-0”反向，方向分歧</td><td class="source-cell">本场弹幕/置信中</td></tr>
+                <tr><td class="tag-cell"><span class="signal-tag tag-consensus">共识</span></td><td>“明牌1-1了”出现多次，群体预期GEN扳平</td><td class="source-cell">本场弹幕/置信中</td></tr>
+                <tr><td class="tag-cell"><span class="signal-tag tag-pred">预测</span></td><td>若GEN控下首条小龙，1-1声量或上升；反之3-0声量放大</td><td class="source-cell">推测·待验证</td></tr>
+                <tr><td class="tag-cell"><span class="signal-tag tag-data">数据</span></td><td>弹幕总数509，活跃用户233，密度43.8条/分</td><td class="source-cell">规则层统计/置信高</td></tr>
+                <tr><td class="tag-cell"><span class="signal-tag tag-gray">灰信号</span></td><td>词表扫描命中1条，其余未检出，灰信号总量低</td><td class="source-cell">本场弹幕/置信高</td></tr>
+            </table>
+        </div>
+        <!-- 页脚 -->
+        <div class="footnote">
+            <p>本页面为局中弹幕情报快照，所有结论基于弹幕样本与规则层统计，不构成终局判断。官方数据待回填，请以官方为准。</p>
+            <p>情报来源分层：本场弹幕 / 前局弹幕 / 历史画像 / 盘口 / 推测·待验证。核心情报来自本场弹幕，推测已显式标注。</p>
+            <p>生成时间：2026-09-13 14:40 北京时间（UTC+8）｜模板版本 v1 · 2026-08-30 固化</p>
+        </div>
+    </div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
