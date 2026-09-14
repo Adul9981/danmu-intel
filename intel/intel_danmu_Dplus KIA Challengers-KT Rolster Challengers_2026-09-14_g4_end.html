@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · DKC vs KTC · G4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: all 0.1s ease;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 100px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            white-space: nowrap;
+        }
+        .badge.warning {
+            background: #fff3e0;
+            color: #b25e00;
+        }
+        .badge.live {
+            background: #e6f4ea;
+            color: #1e7b4c;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #1d1d1f;
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+            color: #1d1d1f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            color: #6e6e73;
+        }
+        .stat-value {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        .signal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .signal-item:last-child {
+            border-bottom: none;
+        }
+        .signal-tag {
+            display: inline-block;
+            background: #f0f0f2;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1d1d1f;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .signal-tag.risk {
+            background: #ffe8e8;
+            color: #c41e1e;
+        }
+        .signal-tag.anchor {
+            background: #e6f4ea;
+            color: #1e7b4c;
+        }
+        .signal-tag.market {
+            background: #e8e0ff;
+            color: #5e3c9e;
+        }
+        .signal-tag.consensus {
+            background: #e0f0ff;
+            color: #1a5c9e;
+        }
+        .signal-text {
+            flex: 1;
+            color: #1d1d1f;
+        }
+        .signal-source {
+            font-size: 12px;
+            color: #8e8e93;
+            white-space: nowrap;
+        }
+        .decision-box {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1d1f;
+            border-left: 4px solid #1d1d1f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        th {
+            text-align: left;
+            padding: 8px 6px;
+            border-bottom: 1px solid #e8e8ed;
+            font-weight: 600;
+            color: #6e6e73;
+            font-size: 13px;
+        }
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        details {
+            margin: 8px 0;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        summary {
+            padding: 12px 16px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            background: #fafafa;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: #8e8e93;
+            transition: transform 0.15s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .details-content {
+            padding: 12px 16px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 14px;
+            color: #1d1d1f;
+            background: #fff;
+        }
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bullet-list li {
+            padding: 4px 0 4px 20px;
+            position: relative;
+            font-size: 14px;
+        }
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: #8e8e93;
+        }
+        .tag {
+            display: inline-block;
+            background: #f0f0f2;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-right: 4px;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .text-muted {
+            color: #8e8e93;
+            font-size: 13px;
+        }
+        .text-small {
+            font-size: 13px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .mono {
+            font-family: "SF Mono", "Menlo", monospace;
+            font-size: 13px;
+        }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            .signal-item {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Dplus KIA Challengers-KT Rolster Challengers 2026-09-14 g4 end</b></div>
+<div class="container">
+    <!-- 标题区 -->
+    <div class="card" style="padding-bottom: 16px;">
+        <div class="flex-between" style="flex-wrap: wrap; gap: 8px;">
+            <div>
+                <h1>Dplus KIA Challengers vs KT Rolster Challengers</h1>
+                <div class="subhead">
+                    <span>2026-09-14 · 第 4 小局 · GAME-REVIEW</span>
+                    <span class="badge warning">局中·非终局，结果待定</span>
+                    <span class="badge live">弹幕口径·官方待回填</span>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em;">DK 2 : 2 KT</div>
+                <div class="text-muted" style="font-size: 12px;">官方 gameWins · 系列比分以官方为准</div>
+            </div>
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">
+            📍 比分/进度：DK 2-2 KT（弹幕口径·官方待回填）｜第4小局局末·待结算校准
+        </div>
+        <div class="signal-item">
+            <span class="signal-tag risk">风险</span>
+            <span class="signal-text">DK优势局频现“开送”质疑，灰信号38条含“打满剧本”“凯南买了”</span>
+            <span class="signal-source">→ §2</span>
+        </div>
+        <div class="signal-item">
+            <span class="signal-tag anchor">锚点</span>
+            <span class="signal-text">女警四件套一枪一个，KT后期阵容翻盘叙事成弹幕焦点</span>
+            <span class="signal-source">→ §3 §5</span>
+        </div>
+        <div class="signal-item">
+            <span class="signal-tag market">盘口</span>
+            <span class="signal-text">狗头层数讨论17条（“20分钟700层”），赵信让人头争议</span>
+            <span class="signal-source">→ §4</span>
+        </div>
+        <div class="signal-item">
+            <span class="signal-tag consensus">共识</span>
+            <span class="signal-text">“DK前期优势是假的，总有人送”成高频共识，KT团战被评“好垃圾”</span>
+            <span class="signal-source">→ §5 §7</span>
+        </div>
+        <div class="decision-box">
+            ⚡ 决策落点：本局弹幕共识偏向“DK优势不可靠、KT后期翻盘”，但灰信号密集指向剧本/假赛质疑，建议观望至官方结算，不追短期盘口。
+        </div>
+        <div class="footnote">* 速览卡仅展示核心信号，详细证据见各分节。所有时间均为北京时间。</div>
+    </div>
+    <!-- 1 比赛信息与结果总览/状态核验 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-row"><span class="stat-label">赛事</span><span class="stat-value">LCK Challengers League</span></div>
+                <div class="stat-row"><span class="stat-label">对阵</span><span class="stat-value">Dplus KIA Challengers vs KT Rolster Challengers</span></div>
+                <div class="stat-row"><span class="stat-label">日期</span><span class="stat-value">2026-09-14</span></div>
+                <div class="stat-row"><span class="stat-label">小局</span><span class="stat-value">第 4 小局（G4）</span></div>
+                <div class="stat-row"><span class="stat-label">节点</span><span class="stat-value">局末/局间（GAME-REVIEW）</span></div>
+            </div>
+            <div>
+                <div class="stat-row"><span class="stat-label">官方当前比分</span><span class="stat-value">DK 2 : 2 KT</span></div>
+                <div class="stat-row"><span class="stat-label">本页状态</span><span class="stat-value" style="color: #b25e00;">局中·非终局，结果待定</span></div>
+                <div class="stat-row"><span class="stat-label">弹幕口径</span><span class="stat-value">第4小局已结束（待结算校准）</span></div>
+                <div class="stat-row"><span class="stat-label">弹幕总数</span><span class="stat-value">3,541 条</span></div>
+                <div class="stat-row"><span class="stat-label">活跃用户</span><span class="stat-value">978 人</span></div>
+                <div class="stat-row"><span class="stat-label">密度</span><span class="stat-value">67.5 条/分</span></div>
+            </div>
+        </div>
+        <div class="footnote">⚠️ 系列比分与结果一律以官方为准，禁止从弹幕推断比分。本页为第4小局唯一页面，覆盖BP/选人、对线、关键团战、结局。</div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="flex-between mb-8">
+            <span style="font-weight: 600;">灰信号总数：38 条</span>
+            <span class="text-muted">词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送</span>
+        </div>
+        <table>
+            <thead>
+                <tr><th>灰信号原文（节选）</th><th>类型</th><th>出现次数</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>打满剧本不解释</td><td>剧本</td><td>2</td></tr>
+                <tr><td>谢区故意拖延你的状态和手感啊</td><td>故意送</td><td>1</td></tr>
+                <tr><td>BLG是永远不可能拿冠军的，因为他们要假赛收米</td><td>假赛/收米</td><td>1</td></tr>
+                <tr><td>凯南买了</td><td>买了</td><td>1</td></tr>
+                <tr><td>这韦鲁斯明明直接闪现出塔就走了，故意送还送闪现</td><td>故意送</td><td>1</td></tr>
+                <tr><td>剧本写好了 打满</td><td>剧本</td><td>1</td></tr>
+                <tr><td>大狼这个B太坏了 故意的</td><td>故意送</td><td>1</td></tr>
+                <tr><td>假赛（x2）</td><td>假赛</td><td>2</td></tr>
+                <tr><td>太假了（x2）</td><td>假赛</td><td>2</td></tr>
+                <tr><td>1-3结束，就是为了+分盘口</td><td>盘口/剧本</td><td>1</td></tr>
+                <tr><td>这中单 真能演 闪现 金身 这么送（x3）</td><td>演员</td><td>3</td></tr>
+                <tr><td>不公平（x6）</td><td>质疑</td><td>6</td></tr>
+            </tbody>
+        </table>
+        <div class="footnote">⚠️ 以上均为观众质疑，非结论。灰信号密集出现于DK优势被翻/团战失利节点，需结合官方数据交叉验证。</div>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <h3>本局阵容（弹幕提及）</h3>
+                <ul class="bullet-list">
+                    <li><span class="tag">DK</span> 上单：掘墓（牧魂人）｜打野：皇子｜中单：？｜AD：女警｜辅助：？</li>
+                    <li><span class="tag">KT</span> 上单：凯南｜打野：赵信｜中单：？｜AD：洛克（？）｜辅助：？</li>
+                </ul>
+                <div class="footnote">* 阵容基于弹幕提及拼合，非官方BP顺序，选手对应待官方回填。</div>
+            </div>
+            <div>
+                <h3>BP 讨论焦点</h3>
+                <ul class="bullet-list">
+                    <li>“掘墓打团鸟用没有，对线你又打不出优势” — 掘墓选取遭质疑</li>
+                    <li>“纠结半天还是已选掘墓” — 选人犹豫被捕捉</li>
+                    <li>“上路玩马尔扎哈吧 和掘墓一样” — 观众建议替代</li>
+                    <li>“dk没人带虚弱会不会有伏笔” — 召唤师技能讨论</li>
+                    <li>“为什么他们女警都不出荒野剑” — 出装争议</li>
+                    <li>“凯南这把就站女警旁边当保镖” — 战术定位讨论</li>
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>BP 后战绩情报</h3>
+        <div class="text-muted">无战绩情报提及（本场弹幕未出现BP后胜率/历史对阵数据）。</div>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="flex-between mb-8">
+            <span style="font-weight: 600;">盘口相关弹幕：17 条</span>
+            <span class="text-muted">关键词：狗头/层数/人头/盘口</span>
+        </div>
+        <table>
+            <thead>
+                <tr><th>盘口讨论原文</th><th>方向</th><th>条数</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>狗头，装备和符文都减CD，20分钟最少700层</td><td>狗头层数</td><td>2</td></tr>
+                <tr><td>玩狗头，装备和符文都减CD，20分钟最少700层</td><td>狗头层数</td><td>1</td></tr>
+                <tr><td>玩纯肉狗头，装备和符文都减CD，20分最少700层</td><td>狗头层数</td><td>2</td></tr>
+                <tr><td>赵信让人头干嘛</td><td>人头分配</td><td>1</td></tr>
+                <tr><td>赵信让人头让出事了</td><td>人头分配</td><td>1</td></tr>
+                <tr><td>大人头</td><td>人头盘</td><td>1</td></tr>
+                <tr><td>1-3结束，就是为了+分盘口</td><td>盘口剧本</td><td>1</td></tr>
+                <tr><td>谁去了右边低保啊（x3）</td><td>低保/盘口</td><td>3</td></tr>
+                <tr><td>主播买的什么（x2）</td><td>主播盘口</td><td>2</td></tr>
+                <tr><td>6神了，留买活</td><td>买活/盘口</td><td>1</td></tr>
+            </tbody>
+        </table>
+        <div class="footnote">盘口讨论集中于狗头层数（非本局英雄，可能为串场讨论）及赵信让人头争议，另有“+分盘口”“低保”等博彩术语出现。</div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>✅ 正锚（利好）</h3>
+                <ul class="bullet-list">
+                    <li>女警四件套后“一枪一个”，KT后期阵容翻盘叙事强化</li>
+                    <li>“翻了（x3）”“真翻了（x2）”“追三了（x5）” — 翻盘情绪高涨</li>
+                    <li>“KT现在不打没毛病 就拖女警复活甲” — 战术执行认可</li>
+                    <li>“5个头的女警我不信翻不了” — 核心C位信任</li>
+                </ul>
+            </div>
+            <div>
+                <h3>❌ 负锚（利空）</h3>
+                <ul class="bullet-list">
+                    <li>“DK把把前期装模作样然后开送” — DK优势不可靠</li>
+                    <li>“DK经典优势开送” — 重复性失误质疑</li>
+                    <li>“DK团战喜欢乱冲 被凯南好点随便打” — 团战纪律差</li>
+                    <li>“dk五个人凑不出一个脑子” — 团队决策负面评价</li>
+                    <li>“DK打野太菜了，第三条龙丢的太伤” — 打野节奏批评</li>
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>📊 群体共识（带量）</h3>
+        <table>
+            <thead>
+                <tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>DK优势不可靠</td><td>负向</td><td>≥12</td><td>“DK优势是假的 有人会送”“DK总有人送”</td><td>本场弹幕+历史画像（被翻守不住:8）</td></tr>
+                <tr><td>KT后期翻盘</td><td>正向</td><td>≥15</td><td>“翻了”“追三了”“女警一枪一个”</td><td>本场弹幕+局势统计（157条）</td></tr>
+                <tr><td>掘墓选人质疑</td><td>负向</td><td>≥6</td><td>“掘墓打团鸟用没有”“纠结半天还是已选掘墓”</td><td>本场弹幕</td></tr>
+                <tr><td>打满/剧本</td><td>灰信号</td><td>≥8</td><td>“打满剧本不解释”“剧本写好了 打满”</td><td>本场弹幕+灰信号38条</td></tr>
+                <tr><td>KT团战差</td><td>负向</td><td>≥4</td><td>“kt这团战好垃圾”“KT追过头了”</td><td>本场弹幕</td></tr>
+            </tbody>
+        </table>
+        <div class="footnote">共识→信号链：DK优势不可靠（负锚）与KT翻盘（正锚）形成背离，叠加灰信号“打满剧本”，指向高波动、结果不确定，建议观望。</div>
+        <div class="mt-8">
+            <h3>🔮 灰信号条件预测</h3>
+            <ul class="bullet-list">
+                <li>若DK再次在优势团战中出现“乱冲/送人头”行为，灰信号“假赛/剧本”将集中爆发。</li>
+                <li>若KT女警持续无解输出并拿下关键龙魂，弹幕共识将快速转向“KT翻盘/追三”。</li>
+                <li>若比赛拖入35分钟后，盘口“打满”预期将强化，需警惕博彩讨论升温。</li>
+            </ul>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>📈 LONG 逻辑</h3>
+                <ul class="bullet-list">
+                    <li>KT后期阵容（女警+凯南）在弹幕中被反复确认“一枪一个”，翻盘叙事强。</li>
+                    <li>DK历史画像“被翻守不住:8”与本场“DK优势开送”共识共振，KT翻盘概率被弹幕高估。</li>
+                    <li>灰信号“打满剧本”暗示系列赛可能拖入决胜局，KT士气占优。</li>
+                </ul>
+            </div>
+            <div>
+                <h3>📉 SHORT 逻辑</h3>
+                <ul class="bullet-list">
+                    <li>DK前期经济领先（弹幕提及“4k经济”“3000优势”），若稳住节奏可终结比赛。</li>
+                    <li>“KT这纯人机AD”“kt的ad好菜啊” — KT下路被质疑，翻盘基础不牢。</li>
+                    <li>灰信号密集可能引发官方调查/重赛风险，短期盘口波动大。</li>
+                </ul>
+            </div>
+        </div>
+        <div class="decision-box" style="border-left-color: #b25e00;">
+            ⚖️ 综合决策：本局弹幕共识分裂（DK优势不可靠 vs KT翻盘），灰信号38条构成显著风险。建议不追短期盘口，等待官方结算与下一局BP确认。
+        </div>
+    </div>
+    <!-- 7 逐局复盘（证据层） -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <h3>第 4 小局 · 弹幕时间线（北京时间）</h3>
+        <details>
+            <summary>18:49 - 19:10 对线期 & 早期节奏</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>[18:49] 太强了，啥也不干｜有猫咪的声音？</li>
+                    <li>[18:50] 开了（x3）｜25/0/7｜买无穷饥渴啊 100cd</li>
+                    <li>[18:51] 米神的大橘观强的可怕 现在（x2）｜GG｜Uzi來全殺了</li>
+                    <li>[18:52] 韩服第一皇子来了（x2）｜3-1了｜dk打野皇子绝活</li>
+                    <li>[18:53] 优质死亡（x2）｜戏耍（x2）｜2-2了</li>
+                    <li>[18:54] b掘墓打团没用，选个团队一点的英雄吧｜dk打野的皇子够大家享受的</li>
+                    <li>[18:55] 洛克赢过吗？（x2）｜ez吓人</li>
+                    <li>[18:56] wls 这英雄胜率也低｜不够打说是</li>
+                    <li>[18:57] 25分钟右边不劣势直接赢了</li>
+                    <li>[18:58] solo｜内战好看｜单排不如内战</li>
+                    <li>[18:59] 2个（x3）｜骗骗自己就得了，弹幕不信的（x2）｜1板斧到2板斧</li>
+                    <li>[19:00] 你先把波比练会就行了（x2）｜1-5楼奎，1-5楼牧魂，还有吗？</li>
+                    <li>[19:01] 上路玩马尔扎哈吧 和掘墓一样（x3）｜大虫子（x2）｜练一个奥拉夫吧（x2）</li>
+                    <li>[19:02] VN呗，只用两个技能简单吧你为什么不玩？（x3）｜100万头牛</li>
+                    <li>[19:03] 那为什么不玩薇恩，按的技能少（x3）｜+18武器｜1-3｜1-3结束了，左边怎么打</li>
+                    <li>[19:04] 在沙石镇上游泳（x2）｜我早说了（x2）｜打满了（x2）｜1-3结束｜2-2第五把真打</li>
+                    <li>[19:05] 狗头20分钟800层才算及格（x2）｜KT这个AD还不埋了培养个啥｜dk没人带虚弱会不会有伏笔</li>
+                    <li>[19:06] 狗头，装备和符文都减CD，20分钟最少700层（x2）｜3000经济以内，KT随便翻｜5-0的杰斯区了</li>
+                    <li>[19:07] 玩纯肉狗头，装备和符文都减CD，20分最少700层（x2）｜KT这纯人机AD</li>
+                    <li>[19:08] 米神还有一手奥恩（x2）｜BLG是永远不可能拿冠军的，因为他们要假赛收米｜DK开始了</li>
+                    <li>[19:09] 漂亮（x2）｜这凯南（x2）｜DK把把前期装模作样然后开送｜DK经典优势开送｜KT追过头了</li>
+                    <li>[19:10] KT打野突然跟不会玩了一样｜kt这个死啊吗上中野又开始啦</li>
+                </ul>
+            </div>
+        </details>
+        <details>
+            <summary>19:11 - 19:25 中期团战 & 翻盘叙事</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>[19:11] 35分钟后见，才能翻吧｜KT打野突然跟不会玩了一样牛逼的｜S家族的凯南 不应该这么菜啊</li>
+                    <li>[19:12] blg被3:1管神大仇得报啊｜kt加油｜woc管</li>
+                    <li>[19:13] 759个怂包 来了也是打中路的｜zhuo？</li>
+                    <li>[19:14] 贵州职业技术学院（x5）｜blg昨天bp真看不懂｜二哥操作好点就是下一个卡纳维了</li>
+                    <li>[19:15] 女警吃饱了（x2）｜一枪一个</li>
+                    <li>[19:16] 翻了（x3）｜BDD怎么说能不能包赢｜DK打得太糙了｜一个女警太难</li>
+                    <li>[19:17] 一会女警就被洛克秒了（x2）｜3000优势没啥用｜DK得优势都是假的 总有人莫名其妙送</li>
+                    <li>[19:18] 纠结半天还是已选掘墓（x2）｜乌龟岩雀｜今年T1四连冠有感觉吗主播</li>
+                    <li>[19:19] 5个头的女警我不信翻不了｜DK团战喜欢乱冲 被凯南好点随便打｜kt稳赢</li>
+                    <li>[19:20] 4k经济在这赛区和没有差不多，右边还是后期阵容｜DK想办法了</li>
+                    <li>[19:21] 18分钟的3K 和 30分钟的3K两回事了｜DK优势是假的 有人会送｜DK这阵容毫无容错率</li>
+                    <li>[19:22] 兰博（x2）｜我早说了翻了（x2）｜真翻了（x2）｜翻（x2）</li>
+                    <li>[19:23] 一枪一个不敢直视｜一枪打了ad半血 一枪打了皇子半血｜一枪给哥们眼神打清澈了</li>
+                    <li>[19:24] 左边经济领先的，随便翻左边经济领先的，随便翻（x3）｜女警四件套了（x2）｜洛克不绕 鳄鱼绕锤子（x2）</li>
+                    <li>[19:25] 凯南这把就站女警旁边当保镖（x2）｜名牌了（x2）｜0-10开了 不用看了 已经是0-10开了 除非女警主动</li>
+                </ul>
+            </div>
+        </details>
+        <details>
+            <summary>19:26 - 19:42 后期决战 & 灰信号爆发</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>[19:26] 这比赛没这么简单，你以为右边翻了，其实战歌起了（x2）｜CK基地爆炸前什么都有可能｜dk五个人凑不出一个脑子</li>
+                    <li>[19:27] 一枪一个（x3）｜GG｜gg｜kt怎么输呵，女警一枪一个</li>
+                    <li>[19:28] 这中单 真能演 闪现 金身 这么送（x3）｜皇子太他妈菜了（x2）</li>
+                    <li>[19:29] 不公平（x3）｜放了（x2）｜3:1 抓紧带走｜DK12队都是一样恶心｜DK打野太菜了，第三条龙丢的太伤</li>
+                    <li>[19:30] dk一对现在来了都翻不了（x3）｜10-0开就是中路那波｜DK1队2队都是这样 怂比对</li>
+                    <li>[19:31] 666大发大发大发（x4）｜一波（x2）｜翻了翻了（x2）｜NS剧本来了</li>
+                    <li>[19:32] 追三了（x5）｜干燥（x3）｜这不一波？（x2）</li>
+                    <li>[19:33] 打满打满（x2）｜追三了（x2）｜1-3结束，就是为了+分盘口｜KT现在不打没毛病 就拖女警复活甲</li>
+                    <li>[19:34] 不公平（x6）｜谁去了右边低保啊（x3）｜fk马铁，这还叫打野（x2）｜gg（x2）</li>
+                    <li>[19:35] 666大发大发大发（x2）｜G（x2）｜一波（x2）｜主播买的什么（x2）｜拿下（x2）</li>
+                    <li>[19:36] 东北话不会说不要说（x5）｜一个人的逆风（x2）｜假赛（x2）｜说了你猜不到（x2）</li>
+                    <li>[19:37] 管哥游龙了 把老俊按在地上摩擦（x3）｜上野联动（x2）｜坏了（x2）｜太假了（x2）｜炸了（x2）</li>
+                    <li>[19:38] 这波米人好变态 全空（x3）｜0-3（x2）｜上野联动 一死一送（x2）｜去就崩（x2）</li>
+                    <li>[19:39] 管哥这把战绩4杠8我不敢想哦（x3）｜毛神，想念你的大虫子了（x2）｜0-3 游戏刚开始</li>
+                    <li>[19:40] 这把有亚恒大人毛神（x2）｜040了｜040比排位还菜</li>
+                    <li>[19:41] 40-0孤独carry吗？（x3）｜0-4-0吗米神｜12-9，然而米人0-4</li>
+                    <li>[19:42] 上单之道你们懂什么｜不要假团队啊｜先示敌以弱， 等降费去强者多的队伍。｜再吃一波啊</li>
+                </ul>
+            </div>
+        </details>
+        <div class="footnote">* 时间线基于弹幕切片抽样，覆盖54个有弹幕分钟段。未发生片段标注“待观察”。</div>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>队伍提及 TOP</h3>
+                <table>
+                    <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+                    <tbody>
+                        <tr><td>DK</td><td>85</td><td>正4 / 负18</td></tr>
+                        <tr><td>KT</td><td>33</td><td>正3 / 负4</td></tr>
+                        <tr><td>BLG</td><td>8</td><td>正0 / 负0</td></tr>
+                        <tr><td>MongolZ</td><td>4</td><td>正0 / 负0</td></tr>
+                        <tr><td>T1</td><td>3</td><td>正0 / 负0</td></tr>
+                        <tr><td>HLE</td><td>2</td><td>正0 / 负0</td></tr>
+                        <tr><td>IG</td><td>2</td><td>正0 / 负0</td></tr>
+                        <tr><td>WE</td><td>1</td><td>正0 / 负0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3>选手提及 TOP</h3>
+                <table>
+                    <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+                    <tbody>
+                        <tr><td>Zeus</td><td>2</td><td>正0 / 负0</td></tr>
+                        <tr><td>Faker</td><td>1</td><td>正0 / 负0</td></tr>
+                        <tr><td>Chovy</td><td>1</td><td>正0 / 负0</td></tr>
+                        <tr><td>Zywoo</td><td>1</td><td>正0 / 负0</td></tr>
+                    </tbody>
+                </table>
+                <div class="footnote">* 选手提及量极低，本场弹幕聚焦队伍整体表现，无个体选手高光/低谷讨论。</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>队伍特质统计（长期库）</h3>
+        <div class="grid-3">
+            <div class="stat-row"><span class="stat-label">被翻守不住</span><span class="stat-value">8</span></div>
+            <div class="stat-row"><span class="stat-label">韧性逆转</span><span class="stat-value">3</span></div>
+            <div class="stat-row"><span class="stat-label">心态摆烂</span><span class="stat-value">9</span></div>
+            <div class="stat-row"><span class="stat-label">慢热手热</span><span class="stat-value">2</span></div>
+            <div class="stat-row"><span class="stat-label">打法风格</span><span class="stat-value">4</span></div>
+            <div class="stat-row"><span class="stat-label">选手特质</span><span class="stat-value">2</span></div>
+        </div>
+        <div class="footnote">DK“被翻守不住”与“心态摆烂”特质在本场弹幕中得到印证（“DK优势是假的 有人会送”）。</div>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <ul class="bullet-list">
+            <li><strong>LCK CL 赛区特性：</strong>弹幕提及“4k经济在这赛区和没有差不多，右边还是后期阵容”，反映次级联赛经济优势转化率低、后期阵容翻盘常见。</li>
+            <li><strong>版本英雄讨论：</strong>狗头（内瑟斯）层数机制被反复讨论（“20分钟700层”），但本局未选取，可能为跨场讨论或版本热点。</li>
+            <li><strong>BP 倾向：</strong>掘墓、凯南、女警、皇子、赵信等英雄登场，弹幕对掘墓打团能力普遍质疑。</li>
+            <li><strong>赛程关联：</strong>弹幕提及“15号是冒泡赛吗”“世界赛是10月15号？”，观众关注后续赛程。</li>
+            <li><strong>解说/二路文化：</strong>“解说杯”“内战”“管哥”等讨论穿插，反映二路流观众生态。</li>
+        </ul>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="text-muted">本节点为局末/局间，暂无前序预测需回填。待官方结算后，可验证：</div>
+        <ul class="bullet-list">
+            <li>DK是否再次“优势开送”导致被翻盘？</li>
+            <li>KT女警是否成为决定性输出点？</li>
+            <li>系列赛是否如灰信号预测“打满”进入决胜局？</li>
+        </ul>
+        <div class="footnote">回填状态：待官方数据接入。</div>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div>
+                <h3>实际数据源</h3>
+                <ul class="bullet-list text-small">
+                    <li>规则层情报 JSON（vps_intel）</li>
+                    <li>弹幕切片（intel_slices）</li>
+                    <li>官方 gameWins 比分</li>
+                    <li>本场弹幕样本 268 条</li>
+                </ul>
+            </div>
+            <div>
+                <h3>预期数据源</h3>
+                <ul class="bullet-list text-small">
+                    <li>官方 BP 顺序与选手对应</li>
+                    <li>官方经济曲线/团战数据</li>
+                    <li>官方赛后结算</li>
+                    <li>长期队伍画像库</li>
+                </ul>
+            </div>
+            <div>
+                <h3>缺口</h3>
+                <ul class="bullet-list text-small">
+                    <li>本局精确阵容（选手-英雄对应）</li>
+                    <li>官方经济差/龙魂/推塔数据</li>
+                    <li>BP 后胜率情报</li>
+                    <li>灰信号官方验证</li>
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between">
+            <span class="text-muted">情报输出时间：2026-09-14 19:45（北京时间）</span>
+            <span class="text-muted">数据版本：v1 · 2026-08-30 固化</span>
+        </div>
+        <div class="footnote">* 本页所有时间均为北京时间（UTC+8）。弹幕原文保留原始表述，带量数据来自规则层统计。</div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background: #fafafa;">
+        <h2 style="font-size: 16px;"><span class="no" style="background: #6e6e73;">★</span>本场长期沉淀点</h2>
+        <ul class="bullet-list">
+            <li><strong>DK 优势局心理素质：</strong>本场弹幕高频出现“DK优势是假的 有人会送”，与长期画像“被翻守不住:8”“心态摆烂:9”高度吻合，建议后续DK领先局重点关注团战决策与灰信号密度。</li>
+            <li><strong>灰信号与盘口联动：</strong>“打满剧本”“+分盘口”“低保”等博彩术语在局末集中出现，提示次级联赛弹幕环境对盘口敏感，可作为风险预警指标。</li>
+            <li><strong>女警体系在LCK CL的统治力：</strong>“一枪一个”成为本局弹幕最高频描述，女警四件套后的输出能力被反复确认，后续BP可关注女警优先级。</li>
+        </ul>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
