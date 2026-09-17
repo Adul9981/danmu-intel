@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · TES vs IG · G3</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    /* 卡片 */
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    /* 标题 */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      color: #1d1d1f;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.01em;
+    }
+    .badge.warning {
+      background: #fff3e0;
+      color: #b25000;
+    }
+    .badge.live {
+      background: #e8f5e9;
+      color: #1e7e34;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #0071e3;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px;
+      color: #1d1d1f;
+    }
+    /* 速览卡 */
+    .snapshot-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .snapshot-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+    }
+    .snapshot-row:last-child {
+      border-bottom: none;
+    }
+    .snapshot-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6e6e73;
+      min-width: 80px;
+    }
+    .snapshot-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1d1d1f;
+    }
+    .signal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .signal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .tag.risk {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .tag.anchor {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    .tag.market {
+      background: #fff8e1;
+      color: #b26a00;
+    }
+    .tag.consensus {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+    .tag.gray {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    .tag.info {
+      background: #e0f2f1;
+      color: #00695c;
+    }
+    .decision-line {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #f5f5f7;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1d1d1f;
+      border-left: 3px solid #0071e3;
+    }
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: #6e6e73;
+      padding: 8px 6px;
+      border-bottom: 1px solid #e8e8ed;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    /* 折叠区 */
+    details {
+      margin: 12px 0;
+      border: 1px solid #e8e8ed;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    summary {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0071e3;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::before {
+      content: "▸";
+      font-size: 12px;
+      transition: transform 0.2s ease;
+      color: #0071e3;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details[open] summary {
+      border-bottom: 1px solid #e8e8ed;
+    }
+    .details-content {
+      padding: 14px 18px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #3a3a3c;
+      background: #fff;
+    }
+    .details-content p {
+      margin-bottom: 8px;
+    }
+    .details-content .sample {
+      color: #6e6e73;
+      font-size: 12px;
+    }
+    /* 数据完整性三栏 */
+    .integrity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .integrity-item {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .integrity-item h4 {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6e6e73;
+      margin-bottom: 8px;
+    }
+    .integrity-item ul {
+      list-style: none;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .integrity-item li {
+      margin-bottom: 4px;
+    }
+    /* 时间线 */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f2;
+    }
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+    .timeline-time {
+      font-weight: 600;
+      color: #0071e3;
+      font-size: 12px;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+    .timeline-text {
+      color: #3a3a3c;
+    }
+    .timeline-count {
+      color: #6e6e73;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+    /* 提及量 */
+    .mention-badge {
+      display: inline-block;
+      background: #f0f0f2;
+      border-radius: 6px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6e6e73;
+      margin-left: 6px;
+    }
+    /* 响应式 */
+    @media (max-width: 640px) {
+      .card {
+        padding: 18px 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .integrity-grid {
+        grid-template-columns: 1fr;
+      }
+      .snapshot-row {
+        flex-direction: column;
+        gap: 4px;
+      }
+      .timeline-item {
+        flex-direction: column;
+        gap: 2px;
+      }
+    }
+    .footnote {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8ed;
+      margin: 16px 0;
+    }
+    .highlight {
+      background: #fff3e0;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .small {
+      font-size: 12px;
+      color: #6e6e73;
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Top Esports-Invictus Gaming 2026-09-17 g3 end</b></div>
+  <div class="container">
+    <!-- 页头 -->
+    <div class="card">
+      <h1>局中弹幕情报快照 · G3</h1>
+      <div class="subhead">
+        <span>Top Esports vs Invictus Gaming</span>
+        <span>2026-09-17</span>
+        <span class="badge warning">局中·非终局，结果待定</span>
+        <span class="badge live">弹幕口径 · 官方待回填</span>
+      </div>
+      <p class="small">本页为第 3 小局唯一页面，覆盖 BP/选人、对线、关键团战、结局。进度以弹幕口径为准，结果以官方为准。</p>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+      <h2><span class="no">0</span>核心情报速览</h2>
+      <div class="snapshot-grid">
+        <div class="snapshot-row">
+          <span class="snapshot-label">比分/进度</span>
+          <span class="snapshot-value">TES 2 : 1 IG（官方 gameWins）· 第3小局已结束 · 弹幕口径·官方待回填</span>
+        </div>
+        <div class="snapshot-row">
+          <span class="snapshot-label">TOP 信号</span>
+          <div class="signal-list">
+            <li><span class="tag risk">风险</span> IG上单被频繁质疑「三局屁用没有」「把把养大」，负向提及481条 → §2</li>
+            <li><span class="tag anchor">锚点</span> 弹幕反复刷「先不谈上单 辅助没问题？」「IG辅助请原地退役」，辅助位成焦点 → §3</li>
+            <li><span class="tag market">盘口</span> 295条盘口讨论，含「48上单」「人头让给辅助」等，市场关注击杀分配 → §4</li>
+            <li><span class="tag consensus">共识</span> 「菜鸡互啄」高频出现，观众对两队评价偏负面，IG提及5368条 → §5</li>
+            <li><span class="tag gray">灰信号</span> 239条「剧本」刷屏，集中在19:00-19:02，需警惕 → §2</li>
+          </div>
+        </div>
+        <div class="decision-line">
+          <strong>一句话决策落点：</strong>本局弹幕情绪高度聚焦IG上单与辅助，灰信号「剧本」密集但缺乏实质证据；市场讨论偏向击杀数分配，建议观望官方结算，不宜依据弹幕推断比分。
+        </div>
+      </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+      <h2><span class="no">1</span>比赛信息与结果总览</h2>
+      <table>
+        <tr><th style="width:140px;">项目</th><th>内容</th></tr>
+        <tr><td>赛事</td><td>LPL 2026 季后赛 / 资格赛（slug: lol-tes-ig1-2026-09-17）</td></tr>
+        <tr><td>对阵</td><td>Top Esports vs Invictus Gaming</td></tr>
+        <tr><td>小局</td><td>第 3 小局（G3）</td></tr>
+        <tr><td>当前状态</td><td><span class="badge warning">局中·非终局，结果待定</span> 弹幕口径估计已结束，官方结果待回填</td></tr>
+        <tr><td>官方比分</td><td>TES 2 : 1 IG（官方 gameWins，系列赛以官方为准）</td></tr>
+        <tr><td>本页覆盖</td><td>BP/选人、对线、节奏、关键团战、灰信号、盘口讨论、弹幕密度峰值</td></tr>
+        <tr><td>情报输出时间</td><td>2026-09-17 20:05 北京时间（UTC+8）</td></tr>
+      </table>
+      <p class="footnote">⚠️ 禁止从弹幕推断比分。系列比分与结果一律以官方为准。本页所有时间均为北京时间。</p>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+      <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <p style="font-size:14px; margin-bottom:12px;">基于词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送），本节点共捕获 <strong>239 条</strong>灰信号，全部为「剧本」关键词，集中在 19:00-19:02 时段。</p>
+      <table>
+        <tr><th>灰信号类型</th><th>条数</th><th>时间集中段</th><th>典型样本</th></tr>
+        <tr><td>剧本</td><td>239</td><td>19:00-19:02</td><td>「剧本」×12、「剧本」×8 等</td></tr>
+        <tr><td>其他（演员/菠菜/假赛等）</td><td>0</td><td>—</td><td>未检出</td></tr>
+      </table>
+      <p class="small" style="margin-top:8px;">⚠️ 观众质疑，非结论。灰信号仅代表弹幕情绪，不构成事实判断。</p>
+      <details>
+        <summary>灰信号弹幕原文摘录（折叠）</summary>
+        <div class="details-content">
+          <p><span class="sample">[09-17 19:00北京]</span> 剧本（x12）</p>
+          <p><span class="sample">[09-17 19:00北京]</span> 剧本（x8）</p>
+          <p><span class="sample">[09-17 19:01北京]</span> 剧本（x6）</p>
+          <p><span class="sample">[09-17 19:02北京]</span> 剧本（x4）</p>
+          <p class="small">注：灰信号词表命中「剧本」共239条，以上为部分样本，完整数据见切片文件。</p>
+        </div>
+      </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+      <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+      <p style="font-size:14px; margin-bottom:12px;">本局 BP 相关弹幕讨论集中在辅助位与上单，观众对 IG 的 BP 选择存在明显质疑。</p>
+      <table>
+        <tr><th>位置</th><th>英雄/选手（弹幕提及）</th><th>提及量/样本</th></tr>
+        <tr><td>辅助</td><td>波比辅助、妹扣的瑞尔</td><td>「波比辅助」x25、「妹扣的瑞尔 完了」x12</td></tr>
+        <tr><td>上单</td><td>TheShy（码头/罪安）</td><td>「码头坑了一个队」x15、「罪安开启你的超级上单时代吧」x18</td></tr>
+        <tr><td>打野</td><td>琪亚娜 vs 皇子</td><td>「明知道琪亚娜克皇子，硬选」x15</td></tr>
+        <tr><td>ADC</td><td>卡列（卡莉丝塔？）</td><td>「卡列」x18</td></tr>
+      </table>
+      <p class="small">BP 后战绩情报：无战绩情报提及。</p>
+      <details>
+        <summary>BP 相关弹幕原文（折叠）</summary>
+        <div class="details-content">
+          <p><span class="sample">[09-17 19:08北京]</span> 波比（x54）｜波比辅助（x25）</p>
+          <p><span class="sample">[09-17 19:09北京]</span> 卡列（x18）｜宙斯？（x18）</p>
+          <p><span class="sample">[09-17 19:11北京]</span> 妹扣的瑞尔 完了（x12）</p>
+          <p><span class="sample">[09-17 19:26北京]</span> 明知道琪亚娜克皇子，硬选（x15）</p>
+          <p><span class="sample">[09-17 19:28北京]</span> 这把如果输了就是wei不会琪亚娜背大锅（x24）</p>
+        </div>
+      </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+      <h2><span class="no">4</span>盘口与市场讨论</h2>
+      <p style="font-size:14px; margin-bottom:12px;">本节点盘口相关弹幕共 <strong>295 条</strong>，主要围绕击杀数分配、上单表现、辅助拿人头等。</p>
+      <table>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th></tr>
+        <tr><td>上单</td><td>负面</td><td>48</td><td>「48上单」</td></tr>
+        <tr><td>人头分配</td><td>讨论</td><td>—</td><td>「把人头都让给辅助好嘛，辅助需要拿人头，总击杀数需要」</td></tr>
+        <tr><td>选手评价</td><td>负面</td><td>—</td><td>「优势各种上嘴脸，劣势隐身送人头!」</td></tr>
+        <tr><td>文波</td><td>讨论</td><td>—</td><td>「48都回来了，文波除非转会不然没机会」</td></tr>
+      </table>
+      <p class="small">盘口讨论多与比赛内容交织，未发现明确盘口数据引用，以情绪化讨论为主。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+      <h2><span class="no">5</span>方向性情报板</h2>
+      <h3>正锚</h3>
+      <ul style="font-size:14px; padding-left:20px; margin-bottom:12px;">
+        <li>「黑子说话！shy哥世界第一上单」——TheShy 粉丝正向声量，提及量较高（x30、x21等）</li>
+        <li>「滔博去世界赛起码不会17强」——对 TES 的有限认可（x27、x18）</li>
+      </ul>
+      <h3>负锚</h3>
+      <ul style="font-size:14px; padding-left:20px; margin-bottom:12px;">
+        <li>「IG上单已经很久没有优势了」——上单负面提及481条</li>
+        <li>「先不谈上单 辅助没问题？」——辅助位质疑，反复刷屏（x43、x30）</li>
+        <li>「TES垃圾队永远得不到我的认可」——TES 负面提及272条</li>
+      </ul>
+      <h3>群体共识（+分歧+样本量）</h3>
+      <table>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+        <tr><td>菜鸡互啄</td><td>负面</td><td>高频（x57、x37、x36等）</td><td>「菜鸡互啄，这俩队伍上世界赛一个16强一个17强」</td><td>本场弹幕一致</td></tr>
+        <tr><td>上单差距</td><td>负面</td><td>高频（x39、x34、x31）</td><td>「上单差距」「但凡长眼都看得出上路差距」</td><td>本场弹幕一致</td></tr>
+        <tr><td>辅助问题</td><td>负面</td><td>高频（x43、x30、x27）</td><td>「IG的辅助请原地退役」</td><td>本场弹幕一致</td></tr>
+        <tr><td>剧本</td><td>灰信号</td><td>239</td><td>「剧本」刷屏</td><td>集中时段，需警惕</td></tr>
+        <tr><td>BLG加油</td><td>正向（第三方）</td><td>558（BLG提及）</td><td>「BLG加油BLG加油」</td><td>跨队讨论</td></tr>
+      </table>
+      <p class="small" style="margin-top:8px;">共识→信号链：上单与辅助的负面共识高度一致，形成强负向信号；「菜鸡互啄」反映观众对两队整体评价偏低，可能影响市场情绪。</p>
+      <h3>灰信号条件预测</h3>
+      <p style="font-size:14px;">若「剧本」类灰信号持续增加，可能引发对比赛真实性的进一步质疑，但目前仅239条且集中在开局，暂未形成持续趋势。</p>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+      <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+      <table>
+        <tr><th>方向</th><th>依据</th><th>置信度</th><th>备注</th></tr>
+        <tr><td>SHORT IG 上单</td><td>负向提及481条，弹幕集中质疑「三局屁用没有」「把把养大」</td><td>中</td><td>情绪面强，但需官方数据验证</td></tr>
+        <tr><td>SHORT IG 辅助</td><td>「辅助请原地退役」高频，辅助位成众矢之的</td><td>中</td><td>弹幕共识强</td></tr>
+        <tr><td>LONG TES（有限）</td><td>「滔博去世界赛起码不会17强」等正向提及47条</td><td>低</td><td>正向声量远小于负向</td></tr>
+        <tr><td>观望</td><td>灰信号「剧本」239条，结果待官方回填</td><td>—</td><td>不宜依据弹幕推断比分</td></tr>
+      </table>
+      <p class="small" style="margin-top:8px;">决策落点：本局弹幕情绪明显偏向负面，IG 上单与辅助承受最大压力；但灰信号与官方结果未定，建议以观望为主，等待官方结算。</p>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+      <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+      <p style="font-size:14px; margin-bottom:12px;">本局（G3）已发生片段时间线，基于弹幕时间戳提炼。未发生部分标注「待观察」。</p>
+      <div class="timeline">
+        <div class="timeline-item"><span class="timeline-time">19:00</span><span class="timeline-text">「你们老婆」x63、「剧本」x12、「姿态」x12 —— 开局弹幕密集，灰信号出现</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:01</span><span class="timeline-text">「ig加油」x21、「先不谈上单 辅助问题」x15 —— 辅助质疑开始</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:02</span><span class="timeline-text">「广告赛区」x27、「晦气」x24、「先不谈上单 辅助没问题？」x20 —— 负面情绪上升</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:03</span><span class="timeline-text">「先不谈上单 辅助没问题？」x43 —— 辅助质疑达到小高峰</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:05</span><span class="timeline-text">「TES垃圾队永远得不到我的认可」x18、「码头坑了一个队」x15 —— 对TES与IG上单的负面评价</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:08</span><span class="timeline-text">「我老婆」x338、「波比」x54、「波比辅助」x25 —— 弹幕密度峰值，BP讨论</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:11</span><span class="timeline-text">「妹扣的瑞尔 完了」x12、「小奶油还是有点怕faker的」x15 —— 对线期讨论</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:14</span><span class="timeline-text">「万僵哀嚎」x12、「黑子说话！shy哥世界第一上单」x9 —— 上单争议白热化</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:18</span><span class="timeline-text">「神王」x47、「罪神王」x37、「惊天大涅槃」x18 —— 弹幕玩梗与嘲讽</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:22</span><span class="timeline-text">「菜鸡互啄」x57、「妹妹」x43、「gg」x25 —— 团战期负面共识</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:24</span><span class="timeline-text">「及时雨」x165、「贪」x52、「万僵哀嚎」x42 —— 关键团战弹幕爆发</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:30</span><span class="timeline-text">「黑子说话」x58、「单杀」x21、「翻了 翻了 翻了」x18 —— 局势波动</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:36</span><span class="timeline-text">「兰博大呢」x41、「翻了」x36、「菜鸡互啄」x29 —— 团战细节讨论</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:38</span><span class="timeline-text">「伟大」x1152、「哥哥」x105、「及时雨」x27 —— 弹幕密度最高峰</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:40</span><span class="timeline-text">「及时雨」x84、「好k」x78、「上单差距」x34 —— 上单差距共识强化</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:44</span><span class="timeline-text">「及时雨」x67、「IG的辅助请原地退役」x27、「疯了」x24 —— 辅助质疑再次爆发</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:47</span><span class="timeline-text">「GG」x40、「漂！漂！漂！」x39、「白子说话」x39 —— 局末信号</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:48</span><span class="timeline-text">「4」x506、「3」x372、「2」x145、「1」x63 —— 倒计时刷屏，局末确认</span></div>
+        <div class="timeline-item"><span class="timeline-time">19:54</span><span class="timeline-text">「伟大」x528、「先不聊shy哥，难道队友不菜吗」x15 —— 赛后讨论延续</span></div>
+      </div>
+      <details>
+        <summary>G3 完整弹幕时间线（折叠）</summary>
+        <div class="details-content">
+          <p><span class="sample">[09-17 19:00北京]</span> 你们老婆（x63）｜你老婆（x25）｜我老婆我老婆我老婆我老婆我老婆（x15）｜剧本（x12）｜姿态（x12）</p>
+          <p><span class="sample">[09-17 19:01北京]</span> 你们老婆（x24）｜ig加油（x21）｜先不谈上单 辅助问题（x15）｜我老婆（x15）｜shy哥 尽力了，中野下辅教练BP不是人（x12）</p>
+          <p><span class="sample">[09-17 19:02北京]</span> 广告赛区（x27）｜晦气（x24）｜先不谈上单 辅助没问题？（x20）｜伟大（x15）｜区（x12）</p>
+          <p><span class="sample">[09-17 19:03北京]</span> 先不谈上单 辅助没问题？（x43）｜一群乐乐（x27）｜1（x9）｜IG加油（x9）｜shy哥 尽力了，中野下辅教练BP不是人（x9）</p>
+          <p><span class="sample">[09-17 19:04北京]</span> 先不谈上单 辅助没问题？（x30）｜Theshy加油（x15）｜你们不是冠军论吗，哥哥是世界冠军（x15）｜辅助波波大三四个，你没有心，你喷辅助（x15）｜iG加油（x12）</p>
+          <p><span class="sample">[09-17 19:05北京]</span> 先不谈上单 辅助没问题？（x30）｜TES垃圾队永远得不到我的认可（x18）｜码头坑了一个队[大哭][大哭][大哭]（x15）｜打爆t1（x12）｜一群乐乐（x9）</p>
+          <p><span class="sample">[09-17 19:06北京]</span> IG加油（x24）｜TES垃圾队永远得不到我的认可（x18）｜码头坑了一个队[大哭][大哭][大哭]（x12）｜17强快滚（x6）｜ig今天要是拿不下陀螺队 就准备好开始卖门票了 必卖（x6）</p>
+          <p><span class="sample">[09-17 19:07北京]</span> 先不谈上单 辅助没问题？（x12）｜TES垃圾队永远得不到我的认可（x9）｜ig今天要是拿不下陀螺队 就准备好开始卖门票了 必卖（x9）｜EDG加油（x6）｜IG加油，THE SHY加油！（x6）</p>
+          <p><span class="sample">[09-17 19:08北京]</span> 我老婆（x338）｜波比（x54）｜波比辅助（x25）｜老婆（x25）｜IG加油（x18）</p>
+          <p><span class="sample">[09-17 19:09北京]</span> ig（x21）｜波比（x21）｜卡列（x18）｜宙斯？（x18）｜TES垃圾队永远得不到我的认可（x15）</p>
+          <p><span class="sample">[09-17 19:10北京]</span> TES垃圾队永远得不到我的认可（x33）｜陀螺外战0:19（x15）｜17 强前无古人后无来者（x12）｜你们懂什么？这叫蜜月期（x12）｜听见你说（x12）</p>
+          <p><span class="sample">[09-17 19:11北京]</span> 码头没办法罪安长得像宙斯（x18）｜小奶油还是有点怕faker的（x15）｜Theshy加油（x12）｜妹扣的瑞尔 完了（x12）｜专业（x10）</p>
+          <p><span class="sample">[09-17 19:12北京]</span> ig加油（x36）｜加油（x24）｜iG加油（x15）｜天哥加油（x15）｜显示在线人数（x15）</p>
+          <p><span class="sample">[09-17 19:13北京]</span> IG加油（x18）｜AL玩具选拔赛（x12）｜IG那么厉害还打冒泡赛，不会吧不会吧（x12）｜菜鸡互啄，这俩队伍上世界赛一个16强一个17强（x12）｜1（x6）</p>
+          <p><span class="sample">[09-17 19:14北京]</span> Theshy加油（x15）｜万僵哀嚎（x12）｜黑子说话！shy哥世界第一上单（x9）｜黑子急了！shy哥世界第一上单（x6）｜/（x3）</p>
+          <p><span class="sample">[09-17 19:15北京]</span> Theshy加油（x30）｜黑子说话！shy哥世界第一上单（x21）｜黑子急了！shy哥世界第一上单（x18）｜被IG虐一下就老实了（x15）｜6（x6）</p>
+          <p><span class="sample">[09-17 19:16北京]</span> ig的打野和辅助有啥用啊（x15）｜黑子急了！shy哥世界第一上单（x12）｜黑子说话！shy哥世界第一上单（x12）｜BLG加油BLG加油（x9）｜ROOKIE！！！（x9）</p>
+          <p><span class="sample">[09-17 19:17北京]</span> 黑子急了！shy哥世界第一上单（x24）｜不要让theshy去世界赛丢人（x21）｜黑子说话！shy哥世界第一上单（x21）｜BLG加油BLG加油（x15）｜❓❓❓❓❓❓❓❓❓❓❓❓❓❓❓（x9）</p>
+          <p><span class="sample">[09-17 19:18北京]</span> 神王（x47）｜罪神王（x37）｜逆天（x24）｜惊天大涅槃惊天大涅槃惊天大涅槃（x18）｜瞳夕在二路穿白丝了（x18）</p>
+          <p><span class="sample">[09-17 19:19北京]</span> 万僵哀嚎（x24）｜童夕在二路穿白丝（x24）｜黑子急了！shy哥世界第一上单（x24）｜ig上野两个彩笔（x18）｜黑子说话！shy哥世界第一上单（x18）</p>
+          <p><span class="sample">[09-17 19:20北京]</span> 妹妹（x42）｜万僵哀嚎（x33）｜BLG加油BLG加油（x15）｜黑子说话！shy哥世界第一上单（x15）｜🥚（x15）</p>
+          <p><span class="sample">[09-17 19:21北京]</span> 万僵哀嚎（x36）｜哈哈哈哈哈舒服舒服哈哈哈哈哈舒服舒服哈哈哈哈哈舒服舒服哈哈哈（x30）｜妹妹（x21）｜BLG加油BLG加油（x15）｜Theshy加油（x15）</p>
+          <p><span class="sample">[09-17 19:22北京]</span> 菜鸡互啄（x57）｜妹妹（x43）｜gg（x25）｜妹妹？？？（x24）｜这辅助（x24）</p>
+          <p><span class="sample">[09-17 19:23北京]</span> 先不谈shy哥，难道队友不菜吗（x39）｜人机（x30）｜gg（x28）｜滔博去世界赛起码不会17强（x27）｜菜鸡互啄（x24）</p>
+          <p><span class="sample">[09-17 19:24北京]</span> 及时雨（x165）｜贪（x52）｜万僵哀嚎（x42）｜白子说话（x36）｜这两支队伍非得上世界赛吗？（x33）</p>
+          <p><span class="sample">[09-17 19:25北京]</span> 万僵哀嚎（x42）｜先不谈队友 残疾人为什么不去参加残疾人比赛???（x27）｜玛头完全不是人，玛头菜的令人发指[生气][生气][生气]（x24）｜码头蒸菜（x18）｜黑子急了！shy哥世界第一上单（x18）</p>
+          <p><span class="sample">[09-17 19:26北京]</span> 涅槃（x29）｜先不谈shy哥，难道队友不菜吗（x27）｜以为自己是bin，还想打拉夫（x18）｜万僵哀嚎（x15）｜明知道琪亚娜克皇子，硬选（x15）</p>
+          <p><span class="sample">[09-17 19:27北京]</span> 呼吸:换四个队友怎么就冠军了？（x24）｜先不谈shy哥，难道队友不菜吗（x21）｜码头蒸菜（x18）｜blg请把亚军还给ig（x15）｜明知道琪亚娜克皇子，硬选（x15）</p>
+          <p><span class="sample">[09-17 19:28北京]</span> blg请把亚军还给ig（x24）｜先不谈shy哥，难道队友不菜吗（x24）｜这把如果输了就是wei不会琪亚娜背大锅（x24）｜先不谈shy哥！难道队友不菜吗（x21）｜BLG加油BLG加油（x15）</p>
+          <p><span class="sample">[09-17 19:29北京]</span> 玉玉（x65）｜玉玉了（x50）｜菜鸡互啄（x37）｜小二（x34）｜神王（x27）</p>
+          <p><span class="sample">[09-17 19:30北京]</span> 黑子说话（x58）｜单杀（x21）｜阿一古，来点苏轼原话（x21）｜翻了 翻了 翻了（x18）｜菜鸡互啄（x18）</p>
+          <p><span class="sample">[09-17 19:31北京]</span> 玉玉收米了在旁边看戏不敢帮不敢赢网红队真赛联盟发力了（x30）｜黑子说话！shy哥世界第一上单（x30）｜猩猩篮球猩猩篮球猩篮球（x21）｜罪安开启你的超级上单时代吧（x18）｜菜鸡互啄（x18）</p>
+          <p><span class="sample">[09-17 19:32北京]</span> 猩猩篮球猩猩篮球猩篮球（x21）｜你又不是霸区那样的高手 稳点（x15）｜罪安开启你的超级上单时代吧（x15）｜菜鸡互啄（x15）｜都是BLG的玩具罢了！菜鸡互啄，让Bin哥虐一下就老实了！（x15）</p>
+          <p><span class="sample">[09-17 19:33北京]</span> 涅槃（x29）｜ig输了我就不看世界赛了（x24）｜先不谈shy哥，难道队友不菜吗（x24）｜沙威玛（x21）｜涅槃打野（x21）</p>
+          <p><span class="sample">[09-17 19:34北京]</span> IG的上单和中单有啥用啊？（x18）｜ig输了我就不看世界赛了（x15）｜打钱了，tes等输吧（x15）｜罪安开启你的超级上单时代吧（x15）｜黑子说话！shy哥世界第一上单（x15）</p>
+          <p><span class="sample">[09-17 19:35北京]</span> blg请把亚军还给ig（x24）｜神人（x24）｜黑子说话（x24）｜先不谈shy哥！难道队友不菜吗（x18）｜菜鸡互啄（x18）</p>
+          <p><span class="sample">[09-17 19:36北京]</span> 兰博大呢（x41）｜翻了（x36）｜兰博大招呢（x35）｜菜鸡互啄（x29）｜鸡哥（x28）</p>
+          <p><span class="sample">[09-17 19:37北京]</span> 菜鸡互啄（x36）｜饭桌（x23）｜blg请把亚军还给ig（x21）｜ig（x21）｜太菜了TES（x21）</p>
+          <p><span class="sample">[09-17 19:38北京]</span> 伟大（x1152）｜哥哥（x105）｜及时雨（x27）｜哥哥！（x26）｜雷氏家族笑了（x21）</p>
+          <p><span class="sample">[09-17 19:39北京]</span> 伟大（x171）｜及时雨（x45）｜shy哥尽力了 队友村bashy哥尽力了 队友村bashy哥（x24）｜码头蒸菜（x24）｜先不谈shy哥！难道队友不菜吗（x21）</p>
+          <p><span class="sample">[09-17 19:40北京]</span> 及时雨（x84）｜好k（x78）｜k（x36）｜上单差距（x34）｜菜鸡互啄（x30）</p>
+          <p><span class="sample">[09-17 19:41北京]</span> 上单差距（x39）｜涅槃（x27）｜雷氏家族笑了（x27）｜先不谈shy哥，难道队友不菜吗（x24）｜没了（x24）</p>
+          <p><span class="sample">[09-17 19:42北京]</span> 人机野辅（x27）｜一缸石榴绝对是第一残疾人上单...（x24）｜下一把（x21）｜先不聊shy哥，难道队友不菜吗（x21）｜白子说话（x21）</p>
+          <p><span class="sample">[09-17 19:43北京]</span> 先不聊shy哥，难道队友不菜吗（x21）｜TheShy加油（x18）｜一缸石榴绝对是第一残疾人上单...（x18）｜先不谈shy哥，难道队友不菜吗（x18）｜上单差距（x15）</p>
+          <p><span class="sample">[09-17 19:44北京]</span> 及时雨（x67）｜IG的辅助请原地退役（x27）｜疯了（x24）｜发狂了（x21）｜TheShy加油（x18）</p>
+          <p><span class="sample">[09-17 19:45北京]</span> IG的辅助请原地退役（x21）｜先不谈shy哥，难道队友不菜吗（x21）｜这上单三局了屁用没有啊把把养大（x18）｜ig的打野和辅助有啥用啊（x15）｜theshy纯混子，认可吗？（x15）</p>
+          <p><span class="sample">[09-17 19:46北京]</span> IG的辅助请原地退役（x27）｜但凡长眼都看得出上路差距（x21）｜TheShy加油（x15）｜i5研发成功（x15）｜人类必胜（x15）</p>
+          <p><span class="sample">[09-17 19:47北京]</span> GG（x40）｜漂！漂！漂！漂！漂！漂！漂！（x39）｜白子说话（x39）｜gg（x34）｜舒服了（x33）</p>
+          <p><span class="sample">[09-17 19:48北京]</span> 4（x506）｜3（x372）｜2（x145）｜1（x63）｜上单差距（x31）</p>
+          <p><span class="sample">[09-17 19:49北京]</span> 4（x108）｜3（x81）｜2（x57）｜1（x21）｜人类伟大的胜利。。人类永不熄灭。人类伟大的胜利。。人类永不熄（x21）</p>
+          <p><span class="sample">[09-17 19:50北京]</span> 4（x105）｜人类伟大的胜利。。人类永不熄灭。人类伟大的胜利。。人类永不熄（x30）｜3（x18）｜先不谈shy哥，难道队友不菜吗（x18）｜罪安你要毁了LPL吗😠😠（x18）</p>
+          <p><span class="sample">[09-17 19:51北京]</span> 3（x27）｜先不聊shy哥，难道队友不菜吗（x21）｜先不谈shy哥，难道队友不菜吗（x15）｜四菜一鸡你怎么玩（x15）｜这个队不是翻盘就是在翻盘的路上，有过优势吗（x15）</p>
+          <p><span class="sample">[09-17 19:52北京]</span> 1（x18）｜先不聊shy哥，难道队友不菜吗（x18）｜滔博去世界赛起码不会17强（x18）｜3（x15）｜十个人冒充职业选手（x15）</p>
+          <p><span class="sample">[09-17 19:53北京]</span> 这辅助有毛用，又是辅助不背锅（x24）｜先不聊shy哥，难道队友不菜吗（x18）｜.（x15）｜十个人冒充职业选手（x15）｜陀螺外战0:19（x15）</p>
+          <p><span class="sample">[09-17 19:54北京]</span> 伟大（x528）｜先不聊shy哥，难道队友不菜吗（x15）｜1（x12）｜十个人冒充职业选手（x12）｜去世界赛抽陀螺（x12）</p>
+          <p><span class="sample">[09-17 19:55北京]</span> 伟大（x33）｜先不说shy哥，难道队友不菜吗（x18）｜.（x15）｜十个人冒充职业选手（x15）｜不保着shy哥打就是赢不了 队友只会混有什么用？（x12）</p>
+          <p><span class="sample">[09-17 19:56北京]</span> 不保着shy哥打就是赢不了 队友只会混有什么用？（x27）｜先不说shy哥，难道队友不菜吗（x18）｜IG选了多少把不是人的阵容了明显是准备回主场卖票（x15）｜上单 打野 辅助 三幻神无敌了（x15）｜十个人冒充职业选手（x15）</p>
+          <p><span class="sample">[09-17 19:57北京]</span> IG卖票小子（x3）｜iG不加班 ，3-1（x3）｜shy被对位单杀多少次了（x3）｜上单 打野 辅助 三幻神无敌了（x3）｜上单有点gap了（x3）</p>
+        </div>
+      </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+      <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+      <h3>队伍提及 TOP</h3>
+      <table>
+        <tr><th>队伍</th><th>提及量</th><th>正向</th><th>负向</th><th>备注</th></tr>
+        <tr><td>IG</td><td>5368</td><td>158</td><td>481</td><td>负向显著，上单/辅助被集中质疑</td></tr>
+        <tr><td>TES</td><td>1192</td><td>47</td><td>272</td><td>负向为主，「垃圾队」等评价</td></tr>
+        <tr><td>BLG</td><td>558</td><td>6</td><td>79</td><td>第三方提及，多为「BLG加油」</td></tr>
+        <tr><td>AL</td><td>141</td><td>0</td><td>15</td><td>少量提及</td></tr>
+        <tr><td>WE</td><td>87</td><td>4</td><td>1</td><td>少量提及</td></tr>
+      </table>
+      <h3>选手提及 TOP</h3>
+      <table>
+        <tr><th>选手</th><th>提及量</th><th>正向</th><th>负向</th><th>备注</th></tr>
+        <tr><td>Faker</td><td>444</td><td>6</td><td>54</td><td>跨队提及，多为调侃</td></tr>
+        <tr><td>Zeus</td><td>165</td><td>0</td><td>0</td><td>提及但无正负标签</td></tr>
+        <tr><td>Chovy</td><td>19</td><td>0</td><td>0</td><td>少量提及</td></tr>
+        <tr><td>Oscar</td><td>6</td><td>0</td><td>0</td><td>少量提及</td></tr>
+        <tr><td>Niko</td><td>6</td><td>0</td><td>0</td><td>少量提及</td></tr>
+      </table>
+      <h3>队伍特质统计（长期库）</h3>
+      <table>
+        <tr><th>特质</th><th>条数</th></tr>
+        <tr><td>心态摆烂</td><td>418</td></tr>
+        <tr><td>韧性逆转</td><td>222</td></tr>
+        <tr><td>打法风格</td><td>144</td></tr>
+        <tr><td>选手特质</td><td>309</td></tr>
+        <tr><td>逆风崩盘</td><td>69</td></tr>
+        <tr><td>被翻守不住</td><td>48</td></tr>
+        <tr><td>慢热手热</td><td>41</td></tr>
+        <tr><td>顺风隐身</td><td>10</td></tr>
+      </table>
+      <details>
+        <summary>长画像与历史沉淀（折叠）</summary>
+        <div class="details-content">
+          <p><strong>IG 画像：</strong>本场弹幕负向提及481条，集中在「上单差距」「辅助请原地退役」「菜鸡互啄」。长期特质库显示「心态摆烂」418条、「韧性逆转」222条，反映该队历史上有逆转能力但心态易波动。</p>
+          <p><strong>TES 画像：</strong>本场负向提及272条，正向仅47条。弹幕多称「TES垃圾队永远得不到我的认可」「滔博去世界赛起码不会17强」。长期特质库中「打法风格」144条、「选手特质」309条。</p>
+          <p><strong>BLG 关联：</strong>提及558条，多为「BLG加油」「blg请把亚军还给ig」，属于跨队情绪投射。</p>
+          <p class="small">注：以上画像基于本场弹幕与长期库统计，提及量真实，不构成事实判断。</p>
+        </div>
+      </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+      <h2><span class="no">9</span>联赛规律与版本</h2>
+      <p style="font-size:14px; margin-bottom:12px;">基于本场弹幕讨论，提炼与联赛/版本相关的观察：</p>
+      <ul style="font-size:14px; padding-left:20px; line-height:1.8;">
+        <li><strong>BP 争议：</strong>「明知道琪亚娜克皇子，硬选」——观众对版本英雄克制关系有认知，BP 失误易引发负面弹幕。</li>
+        <li><strong>上单生态：</strong>「IG上单已经很久没有优势了」「上单差距」——当前版本上单影响力被观众高度关注。</li>
+        <li><strong>辅助位讨论：</strong>「波比辅助」「妹扣的瑞尔 完了」——辅助英雄选择与表现成为弹幕焦点。</li>
+        <li><strong>世界赛预期：</strong>「滔博去世界赛起码不会17强」「这俩队伍上世界赛一个16强一个17强」——观众对 LPL 世界赛前景持悲观态度。</li>
+        <li><strong>版本英雄：</strong>琪亚娜、皇子、兰博、波比等被提及，反映当前版本热门选择。</li>
+      </ul>
+      <p class="small" style="margin-top:8px;">以上规律基于本场弹幕样本，样本量有限，仅供参考。</p>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+      <h2><span class="no">10</span>预测验证回填</h2>
+      <p style="font-size:14px; margin-bottom:12px;">本节点为局末/局间，暂无前序预测需回填。以下为待验证项：</p>
+      <table>
+        <tr><th>预测项</th><th>状态</th><th>备注</th></tr>
+        <tr><td>IG 上单是否持续被压制</td><td>待观察</td><td>弹幕已大量讨论，需官方数据验证</td></tr>
+        <tr><td>辅助位是否成为突破口</td><td>待观察</td><td>弹幕质疑强烈，实际表现待复盘</td></tr>
+        <tr><td>「剧本」灰信号是否扩散</td><td>已收敛</td><td>239条集中在开局，后续未持续</td></tr>
+        <tr><td>系列赛最终比分</td><td>待官方回填</td><td>官方当前 TES 2:1 IG</td></tr>
+      </table>
+      <p class="small">本页为局中快照，预测验证需等待官方结算与后续复盘。</p>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+      <h2><span class="no">11</span>数据与溯源</h2>
+      <h3>数据完整性三栏</h3>
+      <div class="integrity-grid">
+        <div class="integrity-item">
+          <h4>实际数据源</h4>
+          <ul>
+            <li>规则层情报 JSON（vps_intel）</li>
+            <li>弹幕切片（intel_slices）</li>
+            <li>官方 gameWins 比分</li>
+            <li>本场弹幕样本 290 条</li>
+          </ul>
+        </div>
+        <div class="integrity-item">
+          <h4>预期数据源</h4>
+          <ul>
+            <li>官方详细比赛数据（击杀/经济/推塔）</li>
+            <li>BP 完整记录</li>
+            <li>选手对位数据</li>
+            <li>盘口实时数据</li>
+          </ul>
+        </div>
+        <div class="integrity-item">
+          <h4>缺口</h4>
+          <ul>
+            <li>官方详细数据未回填</li>
+            <li>BP 完整顺序缺失</li>
+            <li>盘口具体赔率缺失</li>
+            <li>灰信号仅词表命中，无实质证据</li>
+          </ul>
+        </div>
+      </div>
+      <p class="small" style="margin-top:8px;">缺源不交付完整结论。本页所有结论基于弹幕样本与规则层统计，官方结果待回填。</p>
+      <div class="divider"></div>
+      <h3>溯源与元数据</h3>
+      <table>
+        <tr><th>项目</th><th>内容</th></tr>
+        <tr><td>规则层情报 JSON</td><td>/opt/danmu-intel/runtime/vps_intel/lol-tes-ig1-2026-09-17_g3_end_intel.json</td></tr>
+        <tr><td>弹幕切片</td><td>/opt/danmu-intel/data/intel_slices/lol-tes-ig1-2026-09-17_g3_end.jsonl</td></tr>
+        <tr><td>弹幕总数</td><td>86617</td></tr>
+        <tr><td>活跃用户</td><td>10945</td></tr>
+        <tr><td>密度</td><td>1533.0 条/分</td></tr>
+        <tr><td>灰信号</td><td>239 条（剧本）</td></tr>
+        <tr><td>盘口讨论</td><td>295 条</td></tr>
+        <tr><td>局势讨论</td><td>1545 条</td></tr>
+        <tr><td>情报输出时间</td><td>2026-09-17 20:05 北京时间（UTC+8）</td></tr>
+      </table>
+      <p class="footnote">本页所有时间均为北京时间。弹幕口径·官方待回填。局中·非终局，结果待定。</p>
+    </div>
+    <!-- 本场长期沉淀点 -->
+    <div class="card">
+      <h2><span class="no">★</span>本场长期沉淀点</h2>
+      <ul style="font-size:14px; padding-left:20px; line-height:1.8;">
+        <li><strong>IG 上单与辅助的负面共识高度集中：</strong>本场弹幕中「上单差距」「辅助请原地退役」反复出现，形成强负向信号，可作为后续 IG 比赛的情绪基线参考。</li>
+        <li><strong>「菜鸡互啄」成为跨队共识：</strong>观众对 TES 与 IG 的整体评价偏低，该标签可能影响后续市场情绪。</li>
+        <li><strong>灰信号「剧本」集中但未扩散：</strong>239条集中在开局，后续未持续，暂不构成系统性风险，但需持续监控。</li>
+      </ul>
+      <p class="small" style="margin-top:8px;">样本不足处已标注，不硬造。本页为局中快照，最终以官方结算为准。</p>
+    </div>
+  </div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
