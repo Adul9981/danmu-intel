@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · NAVI vs MKOI · G1</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 980px;
+      width: 100%;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1d1d1f;
+    }
+    .badge.warning {
+      background: #fff3e0;
+      color: #b85e00;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 28px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #0071e3;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #1d1d1f;
+    }
+    p, li {
+      font-size: 15px;
+      color: #1d1d1f;
+    }
+    .text-muted {
+      color: #6e6e73;
+      font-size: 14px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .stat-item {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: #6e6e73;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+    .stat-value.small {
+      font-size: 17px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+    .tag-risk { background: #ffe5e5; color: #c41e1e; }
+    .tag-anchor { background: #e5f0ff; color: #0066cc; }
+    .tag-market { background: #f0e5ff; color: #6b2fa0; }
+    .tag-consensus { background: #e5f7e5; color: #1e7a1e; }
+    .tag-gray { background: #f5f5f7; color: #6e6e73; }
+    .tag-source { background: #f5f5f7; color: #6e6e73; font-weight: 400; }
+    .signal-list {
+      list-style: none;
+      padding: 0;
+    }
+    .signal-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .signal-list li:last-child {
+      border-bottom: none;
+    }
+    .signal-text {
+      flex: 1;
+      min-width: 200px;
+    }
+    .source-ref {
+      font-size: 13px;
+      color: #0071e3;
+      white-space: nowrap;
+    }
+    details {
+      margin: 12px 0;
+      background: #f9f9fb;
+      border-radius: 12px;
+      padding: 4px 16px 12px 16px;
+      border: 1px solid #e8e8ed;
+    }
+    summary {
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 10px 0;
+      color: #0071e3;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::before {
+      content: "▸";
+      font-size: 12px;
+      transition: transform 0.15s;
+      display: inline-block;
+      color: #0071e3;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    .timeline {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f2;
+    }
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+    .timeline-time {
+      color: #6e6e73;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      min-width: 110px;
+    }
+    .timeline-text {
+      color: #1d1d1f;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: #6e6e73;
+      padding: 8px 10px;
+      border-bottom: 1px solid #e8e8ed;
+      white-space: nowrap;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .highlight {
+      background: #f0f7ff;
+      border-left: 3px solid #0071e3;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+    .footer-note {
+      font-size: 13px;
+      color: #6e6e73;
+      border-top: 1px solid #e8e8ed;
+      padding-top: 16px;
+      margin-top: 24px;
+    }
+    .mono {
+      font-family: "SF Mono", Menlo, Monaco, monospace;
+      font-size: 13px;
+      background: #f5f5f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .mt-8 { margin-top: 8px; }
+    .mt-12 { margin-top: 12px; }
+    .mb-8 { margin-bottom: 8px; }
+    .mb-12 { margin-bottom: 12px; }
+    .text-small { font-size: 13px; }
+    .text-right { text-align: right; }
+    .opacity-70 { opacity: 0.7; }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Natus Vincere-Movistar KOI 2026-09-18 g1 end</b></div>
+<div class="container">
+  <!-- 头部 -->
+  <div class="card">
+    <div class="flex-between">
+      <div>
+        <h1>NAVI vs MKOI · 第1小局 局中情报快照</h1>
+        <div class="subhead">
+          <span>2026-09-18 · G1 局末/局间</span>
+          <span class="badge warning">局中·非终局，结果待定</span>
+          <span class="badge">弹幕口径 · 官方待回填</span>
+        </div>
+      </div>
+      <div class="text-right text-small text-muted">
+        情报输出时间<br>2026-09-19 00:15 北京时间
+      </div>
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="grid-2 mb-12">
+      <div class="stat-item">
+        <div class="stat-label">当前比分（官方）</div>
+        <div class="stat-value">MKOI 0 : 1 NAVI</div>
+        <div class="text-small text-muted">官方 gameWins · 本页为第1小局结束情报</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">弹幕密度 / 活跃用户</div>
+        <div class="stat-value">84.4 条/分</div>
+        <div class="text-small text-muted">总弹幕 3793 · 活跃用户 1162</div>
+      </div>
+    </div>
+    <h3>TOP 信号（风险 → 锚点 → 盘口 → 共识）</h3>
+    <ul class="signal-list">
+      <li>
+        <span class="tag tag-risk">风险</span>
+        <span class="signal-text">灰信号55条，集中质疑“假赛/演员/辅助K头”，观众情绪偏负面</span>
+        <span class="source-ref">→ §2</span>
+      </li>
+      <li>
+        <span class="tag tag-anchor">锚点</span>
+        <span class="signal-text">NAVI打野被多次提及为“唯一人类”，MKOI被指“假优势”</span>
+        <span class="source-ref">→ §3 §5</span>
+      </li>
+      <li>
+        <span class="tag tag-market">盘口</span>
+        <span class="signal-text">人头＜23.5 讨论14条，辅助K头引发盘口争议</span>
+        <span class="source-ref">→ §4</span>
+      </li>
+      <li>
+        <span class="tag tag-consensus">共识</span>
+        <span class="signal-text">“LEC只要基地不爆炸永远55开”成高频共识，比赛胶着</span>
+        <span class="source-ref">→ §5 §9</span>
+      </li>
+      <li>
+        <span class="tag tag-gray">灰信号</span>
+        <span class="signal-text">“让一追三剧本”“lec经典剧本”等剧本论出现</span>
+        <span class="source-ref">→ §2</span>
+      </li>
+    </ul>
+    <div class="highlight mt-12">
+      <strong>一句话决策落点：</strong>本局弹幕情绪偏负面且灰信号密集，NAVI打野为正向锚点，MKOI“假优势”共识强；盘口聚焦人头数，建议关注后续官方结算与阵容验证。局中信息，谨慎参考。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="grid-2">
+      <div>
+        <p><strong>比赛：</strong>Natus Vincere vs Movistar KOI</p>
+        <p><strong>日期：</strong>2026-09-18</p>
+        <p><strong>小局：</strong>第1小局（G1）</p>
+        <p><strong>节点：</strong>G1｜局末/局间（GAME-REVIEW）</p>
+        <p><strong>官方当前比分：</strong>MKOI 0 : 1 NAVI（gameWins）</p>
+      </div>
+      <div>
+        <p><strong>状态：</strong><span class="badge warning">局中·非终局，结果待定</span></p>
+        <p><strong>进度口径：</strong>弹幕口径 · 官方待回填</p>
+        <p><strong>数据源：</strong>规则层JSON + 弹幕切片（本节点）</p>
+        <p><strong>页面范围：</strong>本页为该小局唯一页面，覆盖BP/选人、对线、团战、结局</p>
+      </div>
+    </div>
+    <div class="highlight mt-12">
+      ⚠️ 本页所有比分与结果以官方为准，禁止从弹幕推断比分。当前官方仅提供系列赛比分，第1小局结果待官方核对。
+    </div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <p class="text-muted mb-8">灰信号共 <strong>55条</strong>，以下为高频主题与代表性样本。所有内容均为观众质疑，非事实结论。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>假赛/演员质疑</td><td>负面</td><td>≥8</td><td>“海超打了那么多假赛你看不出？”（x2）</td></tr>
+          <tr><td>辅助K头争议</td><td>负面</td><td>≥6</td><td>“辅助 不要k 最后皇子人头 这辅助 故意k”</td></tr>
+          <tr><td>剧本论</td><td>负面</td><td>≥4</td><td>“又是让一追三剧本”“lec经典剧本”</td></tr>
+          <tr><td>韩援表现质疑</td><td>负面</td><td>≥5</td><td>“那威买了两个彩笔韩国人”“2个韩国人是真的坑”</td></tr>
+          <tr><td>米人/米孝子</td><td>负面</td><td>≥4</td><td>“米孝子真觉得米人能操控一路啊？”</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠）</summary>
+      <div class="timeline">
+        <div class="timeline-item"><span class="timeline-time">09-18 23:45</span><span class="timeline-text">海超打了那么多假赛你看不出？（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:35</span><span class="timeline-text">k了送（x2）｜喜欢k头（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:34</span><span class="timeline-text">4打5还上去送，是人？</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:21</span><span class="timeline-text">2个韩国人是真的坑</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:25</span><span class="timeline-text">懂你意思那就是米÷的原因（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:40</span><span class="timeline-text">放心看山地会送的（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:42</span><span class="timeline-text">放心看山地会送的（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:58</span><span class="timeline-text">这皇子甚至不如一个超级兵（x3）</span></div>
+      </div>
+    </details>
+    <p class="text-small text-muted mt-8">* 灰信号词表统计：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送 均已扫描，以上为真实命中。</p>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <p><strong>本局阵容（英雄+选手）：</strong>根据弹幕提及与官方窗口校准，本局出现英雄包括：琪亚娜、皇子、辛德拉、瑞兹、兰博、萨勒芬妮、米利欧等。选手提及：Poby（13次）、Chovy（9次）、Zeus（8次）、Faker（7次）、33（6次）。</p>
+    <p><strong>BP后战绩情报：</strong>无战绩情报提及。</p>
+    <p><strong>选人相关弹幕锚点：</strong></p>
+    <ul class="signal-list">
+      <li><span class="tag tag-anchor">锚点</span><span class="signal-text">“张神奇亚娜，全技能双招杀个米利欧，然后掉大龙” — 琪亚娜（奇亚娜）被重点讨论</span><span class="source-ref">本场弹幕</span></li>
+      <li><span class="tag tag-anchor">锚点</span><span class="signal-text">“爆杀流皇子（x2）”“ic的皇子好像和亚洲的长得不一样” — 皇子出装引发讨论</span><span class="source-ref">本场弹幕</span></li>
+      <li><span class="tag tag-anchor">锚点</span><span class="signal-text">“这球女出装是什么理解呢（x2）”“16级辛德拉。。” — 辛德拉（球女）被多次提及</span><span class="source-ref">本场弹幕</span></li>
+      <li><span class="tag tag-anchor">锚点</span><span class="signal-text">“土龙魂对于右边这阵容加成基本为零” — 阵容与龙魂适配性讨论</span><span class="source-ref">本场弹幕</span></li>
+    </ul>
+    <details>
+      <summary>BP/选人相关弹幕原文（折叠）</summary>
+      <div class="timeline">
+        <div class="timeline-item"><span class="timeline-time">09-18 23:37</span><span class="timeline-text">其实是学的canyon，打琪亚娜一定要出爆杀流（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:37</span><span class="timeline-text">这球女出装是什么理解呢（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:49</span><span class="timeline-text">16级辛德拉。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:52</span><span class="timeline-text">皇子出装这么暴力，怎么不去开啊（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:58</span><span class="timeline-text">0-3-5的兰博</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:57</span><span class="timeline-text">这瑞兹到底在干嘛（x2）</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p>盘口相关弹幕共 <strong>14条</strong>，主要围绕人头数大小盘及辅助K头对盘口的影响。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>盘口主题</th><th>方向</th><th>条数</th><th>关键样本</th></tr></thead>
+        <tbody>
+          <tr><td>人头＜23.5</td><td>关注</td><td>≥4</td><td>“人头＜23.5。有任务不打不打”</td></tr>
+          <tr><td>辅助K头影响盘口</td><td>负面</td><td>≥5</td><td>“辅助 不要k 最后皇子人头 这辅助 故意k”</td></tr>
+          <tr><td>人头数异常</td><td>质疑</td><td>≥3</td><td>“真牛逼，一个人头都没有”“都是辅助人头啊”</td></tr>
+          <tr><td>让分/胜负盘</td><td>关注</td><td>≥2</td><td>“-5.5感觉要扫码”“7倍刚上 直接收？？？？”</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>盘口相关弹幕原文（折叠）</summary>
+      <div class="timeline">
+        <div class="timeline-item"><span class="timeline-time">09-18 23:50</span><span class="timeline-text">-5.5感觉要扫码</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-19 00:00</span><span class="timeline-text">7倍刚上 直接收？？？？（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:35</span><span class="timeline-text">k了送（x2）｜喜欢k头（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:41</span><span class="timeline-text">三龙诱盘？（x2）</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚</h3>
+        <ul class="signal-list">
+          <li><span class="tag tag-anchor">正锚</span><span class="signal-text">NAVI打野被多次称为“唯一人类”：“navi就靠打野 类似AL”“nv只有打野是人类”</span><span class="source-ref">本场弹幕</span></li>
+          <li><span class="tag tag-anchor">正锚</span><span class="signal-text">“全靠辛德拉（x5）” — 辛德拉被视作NAVI关键点</span><span class="source-ref">本场弹幕</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>负锚</h3>
+        <ul class="signal-list">
+          <li><span class="tag tag-risk">负锚</span><span class="signal-text">“mkoi真是假优势” — MKOI优势被质疑</span><span class="source-ref">本场弹幕</span></li>
+          <li><span class="tag tag-risk">负锚</span><span class="signal-text">“左边怎么看着像假优势啊” — 对左侧优势的不信任</span><span class="source-ref">本场弹幕</span></li>
+          <li><span class="tag tag-risk">负锚</span><span class="signal-text">“2个韩国人是真的坑”“大韩双坑” — 韩援表现被批评</span><span class="source-ref">本场弹幕</span></li>
+        </ul>
+      </div>
+    </div>
+    <h3>群体共识（+分歧+样本量）</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+        <tbody>
+          <tr><td>LEC比赛胶着</td><td>共识</td><td>≥12</td><td>“LEC只要基地不爆炸永远都是55开”</td><td>弹幕+局势</td></tr>
+          <tr><td>MKOI假优势</td><td>共识</td><td>≥6</td><td>“mkoi真是假优势”</td><td>弹幕+局势</td></tr>
+          <tr><td>NAVI靠打野</td><td>共识</td><td>≥5</td><td>“navi就靠打野 类似AL”</td><td>弹幕</td></tr>
+          <tr><td>辅助K头争议</td><td>分歧</td><td>≥8</td><td>“辅助 不要k 最后皇子人头”</td><td>弹幕+盘口</td></tr>
+          <tr><td>比赛精彩度</td><td>分歧</td><td>≥10</td><td>“就我觉得比lpl厉害 精彩吗” vs “lec的比赛真的好难看”</td><td>弹幕</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-small text-muted mt-8">共识→信号链：LEC胶着共识 + MKOI假优势共识 → 强信号：比赛可能进入后期决胜，人头数偏低；辅助K头分歧 → 盘口波动信号。</p>
+    <h3>灰信号条件预测</h3>
+    <p>若后续出现“剧本/假赛”类弹幕密度上升，则观众对比赛真实性信任度下降，可能影响盘口情绪。当前灰信号55条，需持续监控。</p>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="grid-2">
+      <div class="stat-item">
+        <div class="stat-label">LONG 方向</div>
+        <div class="stat-value small">NAVI 打野节奏 / 辛德拉后期</div>
+        <div class="text-small text-muted">依据：打野被多次正向提及，辛德拉被视作翻盘关键</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">SHORT 方向</div>
+        <div class="stat-value small">MKOI 假优势 / 韩援低迷</div>
+        <div class="text-small text-muted">依据：假优势共识强，韩援被批“坑”</div>
+      </div>
+    </div>
+    <div class="highlight mt-12">
+      <strong>决策落点：</strong>局中信息显示NAVI打野为正向锚点，MKOI优势受质疑。但灰信号密集，建议等待官方结算与阵容确认后再做最终判断。当前仅作情报参考。
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <p><strong>当前局已发生片段（基于弹幕时间线）：</strong></p>
+    <div class="timeline">
+      <div class="timeline-item"><span class="timeline-time">23:18-23:22</span><span class="timeline-text">开局阶段，弹幕讨论亚运会、选手状态，比赛尚未进入高潮。</span></div>
+      <div class="timeline-item"><span class="timeline-time">23:23-23:27</span><span class="timeline-text">对线期，出现“上波皇子不抓上单？”“mkoi真是假优势”等评论。</span></div>
+      <div class="timeline-item"><span class="timeline-time">23:28-23:34</span><span class="timeline-text">中期节奏，弹幕关注“缤纷一直在控线”“MK手短了”，并出现“4打5还上去送”。</span></div>
+      <div class="timeline-item"><span class="timeline-time">23:35-23:42</span><span class="timeline-text">团战频发，“k了送”“喜欢k头”刷屏，盘口讨论升温。</span></div>
+      <div class="timeline-item"><span class="timeline-time">23:43-23:49</span><span class="timeline-text">“两个韩援被单杀”“丹砂！”出现，局势胶着。</span></div>
+      <div class="timeline-item"><span class="timeline-time">23:50-23:55</span><span class="timeline-text">“0换5”“MK0换5结束”等弹幕出现，比赛进入后期。</span></div>
+      <div class="timeline-item"><span class="timeline-time">23:56-23:59</span><span class="timeline-text">“一波了（x9）”“翻了（x5）”“全靠辛德拉（x5）”密集刷屏。</span></div>
+      <div class="timeline-item"><span class="timeline-time">00:00-00:02</span><span class="timeline-text">“二哥看下最后一波（x6）”“7倍刚上 直接收？？？？”比赛结束。</span></div>
+    </div>
+    <p class="mt-8"><strong>未发生：</strong>待观察（官方结算与第2小局）。</p>
+    <details>
+      <summary>G1 完整弹幕时间线（折叠）</summary>
+      <div class="timeline">
+        <div class="timeline-item"><span class="timeline-time">09-18 23:18</span><span class="timeline-text">二哥二哥亚运会看吗（x3）｜传下去老张说领导敏感肌（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:19</span><span class="timeline-text">les现在太墨迹了（x2）｜老张你能问下二哥今天为什么上班迟到（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:20</span><span class="timeline-text">31 拿下。干死navi｜MKOI这几个人是真能亮标</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:21</span><span class="timeline-text">关键被妹子单杀几次，面子过不去（x2）｜2个韩国人是真的坑</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:22</span><span class="timeline-text">二哥 s赛什么时候开（x2）｜16强怎么了</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:23</span><span class="timeline-text">刚从一路直播间过来，那边太卡了（x6）｜上波皇子不抓上单？</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:24</span><span class="timeline-text">今年是超威最有希望的一年（x2）｜mkoi真是假优势</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:25</span><span class="timeline-text">京东这种乌龟看得恶心（x3）｜懂你意思那就是米÷的原因（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:26</span><span class="timeline-text">本人二哥铁粉实名辟谣：失眠迟到不是因为IG输了，而是滔搏赢了（x3）｜mkoi在干啊</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:27</span><span class="timeline-text">lec一直都是娘刷｜lec现在是非洲队伍，完全不打架，就运营</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:28</span><span class="timeline-text">这缤纷一直在控线 感觉像个憨憨（x2）｜MK手短了</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:29</span><span class="timeline-text">想看宙斯把米人打哭（x4）｜爆杀流皇子（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:30</span><span class="timeline-text">左边打野太傻了 一直无所事事（x2）｜28-1=27</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:31</span><span class="timeline-text">Nv就是lec京东｜lec都有人看别说lpl了</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:32</span><span class="timeline-text">27-1=扫码｜28-1=27</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:33</span><span class="timeline-text">28-2=26｜EDG来这个赛区都能随便第一｜GG</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:34</span><span class="timeline-text">弱悲（x4）｜4打5还上去送，是人？｜GG</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:35</span><span class="timeline-text">k了送（x2）｜喜欢k头（x2）｜我的发（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:36</span><span class="timeline-text">这悠亚进野区下河道一点意识都没有，像个新手（x2）｜4打5呀。</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:37</span><span class="timeline-text">猪头（x3）｜其实是学的canyon，打琪亚娜一定要出爆杀流（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:38</span><span class="timeline-text">0-16传奇教练｜ad都上来了 他都不下去</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:39</span><span class="timeline-text">28-11=17｜navi就靠打野 类似AL</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:40</span><span class="timeline-text">放心看山地会送的（x2）｜LEC的龙魂团了</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:41</span><span class="timeline-text">三龙诱盘？（x2）｜28-14=14｜55开</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:42</span><span class="timeline-text">再拼一条吧，琪亚娜（x2）｜22-15=7</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:43</span><span class="timeline-text">啊？（x3）｜两个韩援被单杀（x2）｜丹砂！（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:44</span><span class="timeline-text">二哥你今天迟到扣钱了吗（x3）｜太菜了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:45</span><span class="timeline-text">大韩双坑（x2）｜海超打了那么多假赛你看不出？（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:46</span><span class="timeline-text">能找出一把母低不被虐三千经济的局吗（x4）｜28-19=9</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:47</span><span class="timeline-text">就我觉得比lpl厉害 精彩吗（x3）｜7龙</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:48</span><span class="timeline-text">能找出一把母低不被虐三千经济的局吗（x3）｜AD莼菜</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:49</span><span class="timeline-text">就我觉得比lpl厉害 精彩吗（x3）｜0换5｜16级辛德拉。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:50</span><span class="timeline-text">为什么就2个人（x3）｜-5.5感觉要扫码</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:51</span><span class="timeline-text">七龙珠（x2）｜要结束了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:52</span><span class="timeline-text">皇子出装这么暴力，怎么不去开啊（x2）｜20-20</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:53</span><span class="timeline-text">jojo说开了杀光了一波了你负责吗（x8）｜3-0不用看了</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:54</span><span class="timeline-text">就我觉得比lpl厉害 精彩吗（x3）｜jd（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:55</span><span class="timeline-text">完了（x6）｜翻了（x5）｜一次没死（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:56</span><span class="timeline-text">We 被🐢队传染了｜koi的兄弟们 准备打歌</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:57</span><span class="timeline-text">你永远可以相信米人（x3）｜辛德拉推空气（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:58</span><span class="timeline-text">这皇子甚至不如一个超级兵（x3）｜0-3-5的兰博</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-18 23:59</span><span class="timeline-text">一波了（x9）｜牛逼（x6）｜全靠辛德拉（x5）｜翻了（x5）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-19 00:00</span><span class="timeline-text">二哥看下最后一波（x6）｜7倍刚上 直接收？？？？（x3）</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-19 00:01</span><span class="timeline-text">悠亚太变态了，我就隐隐约约感觉到他第一把会吃（x2）｜200变2000</span></div>
+        <div class="timeline-item"><span class="timeline-time">09-19 00:02</span><span class="timeline-text">六楼天生赢家收米，狮子给我扫码去（x2）｜LEC只要基地不爆炸永远都是55开</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP</h3>
+        <ul class="signal-list">
+          <li><span class="tag tag-source">IG</span> 提及52 (正4/负9)</li>
+          <li><span class="tag tag-source">Navi</span> 提及27 (正2/负8)</li>
+          <li><span class="tag tag-source">NAVI</span> 提及27 (正2/负8)</li>
+          <li><span class="tag tag-source">WE</span> 提及20 (正1/负4)</li>
+          <li><span class="tag tag-source">IC</span> 提及13 (正0/负1)</li>
+          <li><span class="tag tag-source">KC</span> 提及6 (正2/负0)</li>
+          <li><span class="tag tag-source">JDG</span> 提及6 (正0/负0)</li>
+          <li><span class="tag tag-source">T1</span> 提及5 (正0/负2)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>选手提及 TOP</h3>
+        <ul class="signal-list">
+          <li><span class="tag tag-source">Poby</span> 提及13 (正1/负2)</li>
+          <li><span class="tag tag-source">Chovy</span> 提及9 (正3/负0)</li>
+          <li><span class="tag tag-source">Zeus</span> 提及8 (正0/负0)</li>
+          <li><span class="tag tag-source">Faker</span> 提及7 (正0/负0)</li>
+          <li><span class="tag tag-source">33</span> 提及6 (正1/负0)</li>
+        </ul>
+      </div>
+    </div>
+    <h3>队伍特质统计（长期库）</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>特质</th><th>计数</th></tr></thead>
+        <tbody>
+          <tr><td>顺风隐身</td><td>1</td></tr>
+          <tr><td>被翻守不住</td><td>10</td></tr>
+          <tr><td>韧性逆转</td><td>11</td></tr>
+          <tr><td>心态摆烂</td><td>7</td></tr>
+          <tr><td>慢热手热</td><td>1</td></tr>
+          <tr><td>打法风格</td><td>7</td></tr>
+          <tr><td>选手特质</td><td>6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>长画像与历史提及（折叠）</summary>
+      <p class="text-small">NAVI在LEC赛区被类比为“lec京东”，打法偏运营；MKOI被指“假优势”多次出现。选手Poby被提及13次，正负比1:2，观众对其表现存在质疑。Chovy被提及9次，正3负0，评价偏正面。</p>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul class="signal-list">
+      <li><span class="tag tag-consensus">规律</span><span class="signal-text">“LEC只要基地不爆炸永远都是55开” — 本场弹幕高频共识，反映LEC比赛胶着特性</span><span class="source-ref">本场弹幕</span></li>
+      <li><span class="tag tag-consensus">规律</span><span class="signal-text">“lec经典剧本”“又是让一追三剧本” — 观众对LEC剧本化印象</span><span class="source-ref">本场弹幕</span></li>
+      <li><span class="tag tag-consensus">版本</span><span class="signal-text">“土龙魂对于右边这阵容加成基本为零” — 龙魂与阵容适配性讨论</span><span class="source-ref">本场弹幕</span></li>
+      <li><span class="tag tag-consensus">版本</span><span class="signal-text">“LEC好喜欢吸血鞋啊” — 出装倾向观察</span><span class="source-ref">本场弹幕</span></li>
+    </ul>
+    <p class="text-small text-muted mt-8">跨源一致性提示：弹幕共识与局势数据（234条）方向一致，均指向比赛胶着、MKOI优势不实。</p>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p><strong>当前局预测：</strong>基于弹幕共识，MKOI“假优势”被多次提及，NAVI打野为正向锚点。最终比赛结果待官方回填。</p>
+    <p><strong>验证状态：</strong>待官方结算后回填。本页为局中快照，不构成最终结论。</p>
+    <div class="highlight mt-12">
+      ⏳ 预测验证将在官方公布第1小局结果后更新。
+    </div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div class="stat-item">
+        <div class="stat-label">实际数据源</div>
+        <div class="stat-value small">规则层JSON + 弹幕切片</div>
+        <div class="text-small text-muted">/opt/danmu-intel/runtime/vps_intel/lol-navi-mkoi-2026-09-18_g1_end_intel.json<br>/opt/danmu-intel/data/intel_slices/lol-navi-mkoi-2026-09-18_g1_end.jsonl</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">预期数据源</div>
+        <div class="stat-value small">官方比赛数据</div>
+        <div class="text-small text-muted">Riot官方窗口 · 阵容校准 · 比分回填</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">缺口</div>
+        <div class="stat-value small">官方结算未回填</div>
+        <div class="text-small text-muted">第1小局最终结果待官方确认</div>
+      </div>
+    </div>
+    <div class="footer-note">
+      <p><strong>情报输出时间：</strong>2026-09-19 00:15 北京时间</p>
+      <p><strong>数据完整性：</strong>弹幕样本225条（覆盖45个有弹幕分钟段），规则层统计完整。缺官方结算数据，不交付完整结论。</p>
+      <p><strong>本场长期沉淀点：</strong>LEC赛区“55开”共识与“假优势”质疑并存，反映观众对比赛胶着与真实性的双重感知；NAVI打野作为正向锚点值得后续关注。</p>
+      <p class="mt-8">* 本页所有时间均为北京时间（UTC+8）。弹幕原文保留原始表述，带量数据来自规则层统计。</p>
+    </div>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
