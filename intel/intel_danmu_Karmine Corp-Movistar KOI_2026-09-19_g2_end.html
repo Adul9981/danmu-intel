@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · KC vs MKOI · G2 局末</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      transition: all 0.1s ease;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8e8ed;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1d1d1f;
+      white-space: nowrap;
+    }
+    .badge.warning {
+      background: #ffecd9;
+      color: #b25000;
+    }
+    .badge.live {
+      background: #e3f2fd;
+      color: #0066cc;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #0071e3;
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #1d1d1f;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 32px;
+      margin-bottom: 12px;
+    }
+    .stat-item {
+      font-size: 14px;
+      color: #1d1d1f;
+    }
+    .stat-item .label {
+      color: #6e6e73;
+      margin-right: 6px;
+    }
+    .stat-item .value {
+      font-weight: 600;
+    }
+    .signal-list {
+      list-style: none;
+      margin: 8px 0 0 0;
+    }
+    .signal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f2;
+      font-size: 14px;
+    }
+    .signal-list li:last-child {
+      border-bottom: none;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #e8e8ed;
+      color: #1d1d1f;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .tag.risk {
+      background: #ffe5e5;
+      color: #c41e1e;
+    }
+    .tag.anchor {
+      background: #e3f2fd;
+      color: #0066cc;
+    }
+    .tag.market {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
+    .tag.consensus {
+      background: #e8f5e9;
+      color: #1e7e34;
+    }
+    .tag.gray {
+      background: #f5f5f5;
+      color: #6e6e73;
+    }
+    .tag.positive {
+      background: #e8f5e9;
+      color: #1e7e34;
+    }
+    .tag.negative {
+      background: #ffe5e5;
+      color: #c41e1e;
+    }
+    .tag.neutral {
+      background: #f0f0f2;
+      color: #6e6e73;
+    }
+    .decision-box {
+      background: #f0f7ff;
+      border-left: 4px solid #0071e3;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .decision-box strong {
+      color: #0071e3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 12px 0;
+    }
+    th {
+      text-align: left;
+      padding: 10px 8px;
+      background: #f5f5f7;
+      font-weight: 600;
+      color: #1d1d1f;
+      border-bottom: 1px solid #e8e8ed;
+      font-size: 13px;
+    }
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    details {
+      margin: 12px 0;
+      border: 1px solid #e8e8ed;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fafafc;
+    }
+    summary {
+      padding: 12px 18px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      background: #ffffff;
+      border-bottom: 1px solid transparent;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+      transition: background 0.1s;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::before {
+      content: "▸";
+      font-size: 12px;
+      color: #6e6e73;
+      transition: transform 0.15s;
+      display: inline-block;
+      width: 16px;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details[open] summary {
+      border-bottom: 1px solid #e8e8ed;
+    }
+    .details-content {
+      padding: 16px 18px;
+      font-size: 13.5px;
+      color: #1d1d1f;
+      background: #ffffff;
+    }
+    .details-content p {
+      margin-bottom: 8px;
+    }
+    .details-content .sample {
+      color: #6e6e73;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px solid #f5f5f7;
+    }
+    .details-content .sample:last-child {
+      border-bottom: none;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f5f5f7;
+      font-size: 13.5px;
+    }
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+    .timeline-time {
+      color: #6e6e73;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      min-width: 110px;
+      font-size: 13px;
+    }
+    .timeline-text {
+      color: #1d1d1f;
+    }
+    .footnote {
+      font-size: 12px;
+      color: #6e6e73;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8ed;
+      margin: 20px 0;
+    }
+    .text-muted {
+      color: #6e6e73;
+    }
+    .text-small {
+      font-size: 13px;
+    }
+    .mt-2 {
+      margin-top: 8px;
+    }
+    .mt-3 {
+      margin-top: 12px;
+    }
+    .mb-2 {
+      margin-bottom: 8px;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-block;
+      background: #f0f0f2;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 12px;
+      color: #1d1d1f;
+    }
+    .highlight {
+      background: #fff9e6;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .timeline-item {
+        flex-direction: column;
+        gap: 2px;
+      }
+      .timeline-time {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Karmine Corp-Movistar KOI 2026-09-19 g2 end</b></div>
+<div class="container">
+  <!-- 头部 -->
+  <div class="card" style="padding-bottom: 16px;">
+    <h1>Karmine Corp vs Movistar KOI · 第 2 小局 局末快照</h1>
+    <div class="subhead">
+      <span class="badge warning">局中·非终局，结果待定</span>
+      <span class="badge live">弹幕口径 · 官方待回填</span>
+      <span>2026-09-19 · LEC 季后赛</span>
+      <span>slug: lol-kc-mkoi-2026-09-19</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat-item"><span class="label">官方比分</span><span class="value">KC 0 : 2 MKOI</span> <span class="text-muted text-small">(gameWins)</span></div>
+      <div class="stat-item"><span class="label">弹幕总数</span><span class="value">2,672</span></div>
+      <div class="stat-item"><span class="label">活跃用户</span><span class="value">873</span></div>
+      <div class="stat-item"><span class="label">密度</span><span class="value">64.6 条/分</span></div>
+    </div>
+    <div class="footnote">本页为第 2 小局唯一页面，覆盖 BP/选人、对线、关键团战、结局。所有时间均为北京时间 (UTC+8)。</div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="stat-row" style="margin-bottom: 12px;">
+      <div class="stat-item"><span class="label">当前进度</span><span class="value">G2 局末 · 弹幕口径 MKOI 领先/胜势</span> <span class="text-muted text-small">(官方待回填)</span></div>
+    </div>
+    <ul class="signal-list">
+      <li><span class="tag risk">风险</span> <span>KC 被翻盘/心态质疑频现，灰信号 28 条含假赛/剧本指控 → §2</span></li>
+      <li><span class="tag anchor">锚点</span> <span>MKOI 女警+杰斯体系成型，弹幕称“女警无敌了”“米人杰斯连胜” → §3</span></li>
+      <li><span class="tag market">盘口</span> <span>“48不敢读”“60高了”等 24 条盘口讨论，聚焦让分/人头 → §4</span></li>
+      <li><span class="tag consensus">共识</span> <span>“2-0了”刷屏，KC 被评“软脚虾”“中单最菜” → §5</span></li>
+      <li><span class="tag gray">灰信号</span> <span>“别演了kc拿下一把吧”“lec落后剧本了”等观众质疑，非结论 → §2</span></li>
+    </ul>
+    <div class="decision-box">
+      <strong>一句话决策落点：</strong>弹幕共识强烈倾向 MKOI 2-0 取胜，KC 团战与心态遭全面质疑；但灰信号密集，需警惕剧本论与盘口诱导，建议观望至官方结算。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <h3>状态核验</h3>
+        <table>
+          <tr><td style="width:120px; color:#6e6e73;">比赛</td><td>Karmine Corp vs Movistar KOI</td></tr>
+          <tr><td style="color:#6e6e73;">小局</td><td>第 2 小局 (G2) · 局末/局间</td></tr>
+          <tr><td style="color:#6e6e73;">节点</td><td>GAME-REVIEW</td></tr>
+          <tr><td style="color:#6e6e73;">官方比分</td><td><strong>KC 0 : 2 MKOI</strong> (gameWins)</td></tr>
+          <tr><td style="color:#6e6e73;">本页状态</td><td><span class="badge warning" style="font-size:12px;">局中·非终局，结果待定</span></td></tr>
+          <tr><td style="color:#6e6e73;">进度口径</td><td>弹幕口径，官方待回填</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>数据完整性</h3>
+        <table>
+          <tr><td style="width:100px; color:#6e6e73;">实际数据源</td><td>规则层 JSON、弹幕切片 215 条、官方 gameWins</td></tr>
+          <tr><td style="color:#6e6e73;">预期数据源</td><td>官方结算、Riot 阵容校准、完整弹幕流</td></tr>
+          <tr><td style="color:#6e6e73;">缺口</td><td>官方本局结果未回填；BP 完整顺序缺失；经济曲线无官方数据</td></tr>
+        </table>
+        <div class="footnote mt-2">缺源不交付完整结论，所有推断均标注来源。</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>硬信息六项</h3>
+    <div class="grid-2">
+      <div>
+        <p><strong>① 人员画像带提及量</strong>：Zeus 提及 36 (正2/负1)；Canna 4 (正0/负1)；Chovy 3；33 1。详见 §8。</p>
+        <p><strong>② 本局阵容</strong>：KC 上单加里奥、打野蔚、中单冰鸟、下路女警？弹幕提及“右边都出蔚了”“这个上单加里奥”“冰鸟没熟练度”。MKOI 杰斯、女警、皇子等。详见 §3。</p>
+        <p><strong>③ BP 后战绩情报</strong>：无战绩情报提及。</p>
+      </div>
+      <div>
+        <p><strong>④ 密度时间线</strong>：64.6 条/分，峰值在 00:43-00:47（“bin”“多兰”“女警无敌”刷屏）。详见 §7。</p>
+        <p><strong>⑤ 跨源一致性提示</strong>：弹幕“2-0了”与官方 gameWins 0-2 一致；但“1-1”等矛盾弹幕存在，需以官方为准。</p>
+        <p><strong>⑥ 比赛元数据</strong>：2026-09-19，LEC 季后赛，slug=lol-kc-mkoi-2026-09-19。</p>
+      </div>
+    </div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <p class="text-small text-muted mb-2">基于词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送），共 <strong>28 条</strong>灰信号。以下为观众质疑，非结论。</p>
+    <table>
+      <thead><tr><th>类型</th><th>样本（带量）</th><th>条数</th></tr></thead>
+      <tbody>
+        <tr><td>假赛/剧本</td><td>“我是NIP战队工作人员，NIP杨杰自今年4月起一直假赛”“次级比赛要什么流啊，都是各种假赛”“lec落后剧本了，明天才是aaba”“昨天一样的剧本 让一追三”“把翻的剧本”</td><td>6</td></tr>
+        <tr><td>故意/演</td><td>“官方 就是 故意办好多比赛”“别演了kc拿下一把吧”</td><td>2</td></tr>
+        <tr><td>送人头/买了</td><td>“经典kc送人头”“少爷：lpl赶紧把我买了吧我受不了了”</td><td>2</td></tr>
+        <tr><td>其他质疑</td><td>“48不敢读”“48阿”“我48哥呢”等盘口相关灰信号</td><td>18</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <div class="sample">[09-20 00:16北京] 我是NIP战队工作人员，NIP杨杰自今年4月起一直假赛</div>
+        <div class="sample">[09-20 00:16北京] 官方 就是 故意办好多比赛</div>
+        <div class="sample">[09-20 00:16北京] 别演了kc拿下一把吧</div>
+        <div class="sample">[09-20 00:16北京] 次级比赛要什么流啊，都是各种假赛</div>
+        <div class="sample">[09-20 00:16北京] lec落后剧本了，明天才是aaba</div>
+        <div class="sample">[09-20 00:16北京] 昨天一样的剧本 让一追三</div>
+        <div class="sample">[09-20 00:16北京] 把翻的剧本</div>
+        <div class="sample">[09-20 00:16北京] 少爷：lpl赶紧把我买了吧我受不了了</div>
+        <div class="sample">[09-20 00:23北京] 48不敢读</div>
+        <div class="sample">[09-20 00:23北京] 60高了</div>
+        <div class="sample">[09-20 00:23北京] 60真高了</div>
+        <div class="sample">[09-20 00:44北京] 48也配</div>
+        <div class="sample">[09-20 00:47北京] 老张4连0的概率是多少</div>
+        <div class="sample">[09-20 00:47北京] 27/64而已</div>
+        <div class="sample">[09-20 00:48北京] 0-3 后 12-5</div>
+        <div class="sample">[09-20 00:49北京] 给了</div>
+        <div class="sample">[09-20 00:50北京] 5 打 4 都打不过</div>
+        <div class="sample">[09-20 00:51北京] 史无悬，二追三，钢备寿，适巴筒</div>
+        <div class="sample">[09-20 00:52北京] 16-1</div>
+        <div class="sample">[09-20 00:53北京] kc也是大赛软脚虾</div>
+        <div class="sample">[09-20 00:55北京] kc萎了</div>
+        <div class="sample">[09-20 00:56北京] LEC好像很久没有让二追三了，估计就是这场</div>
+        <div class="sample">[09-20 00:57北京] KC一直喜欢进野区开别人，不知道怎么想的</div>
+        <div class="sample">[09-20 00:58北京] 不弱在哪？lpl除了前二都是蛆</div>
+      </div>
+    </details>
+    <div class="footnote mt-2">灰信号漏检修正：已跑词表统计，确认 28 条，非 0 条。观众质疑，非结论。</div>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>本局阵容（弹幕口径）</h3>
+        <table>
+          <tr><th>位置</th><th>KC</th><th>MKOI</th></tr>
+          <tr><td>上单</td><td>加里奥</td><td>杰斯</td></tr>
+          <tr><td>打野</td><td>蔚</td><td>皇子</td></tr>
+          <tr><td>中单</td><td>冰鸟</td><td>（未明确）</td></tr>
+          <tr><td>下路</td><td>女警？</td><td>女警</td></tr>
+          <tr><td>辅助</td><td>（未明确）</td><td>巴德？</td></tr>
+        </table>
+        <p class="text-small text-muted mt-2">弹幕提及：“右边都出蔚了，就爆开呗”“这个上单加里奥，昨天被大翻盘了吧”“这个冰鸟没熟练度啊”“青龙刀皇子”“女警无敌了”。</p>
+      </div>
+      <div>
+        <h3>BP 锚点与讨论</h3>
+        <ul class="signal-list">
+          <li><span class="tag anchor">正锚</span> MKOI 杰斯+女警体系，弹幕称“米人杰斯连胜太变态了”“女警三件套”</li>
+          <li><span class="tag negative">负锚</span> KC 冰鸟熟练度遭质疑，“线上没打几下，总是没蓝量”</li>
+          <li><span class="tag neutral">分歧</span> “左边前期有伤害？我笑了” vs “左边真不赖”</li>
+          <li><span class="tag gray">灰信号</span> “第一把阵容就是乱选的”</li>
+        </ul>
+        <p class="text-small text-muted mt-2">BP 后战绩情报：无战绩情报提及。</p>
+      </div>
+    </div>
+    <details>
+      <summary>BP/选人相关弹幕原文（折叠）</summary>
+      <div class="details-content">
+        <div class="sample">[09-20 00:16北京] 第一把阵容就是乱选的。。</div>
+        <div class="sample">[09-20 00:18北京] 右边都出蔚了，就爆开呗（x2）</div>
+        <div class="sample">[09-20 00:20北京] 左边前期有伤害？我笑了（x2）</div>
+        <div class="sample">[09-20 00:30北京] 这个冰鸟没熟练度啊（x2）</div>
+        <div class="sample">[09-20 00:32北京] 冰鸟闪现断了（x2）</div>
+        <div class="sample">[09-20 00:35北京] 这冰鸟一看熟练度不高，线上没打几下，总是没蓝量（x4）</div>
+        <div class="sample">[09-20 00:38北京] 青龙刀皇子（x2）</div>
+        <div class="sample">[09-20 00:39北京] 左边真不赖（x2）</div>
+        <div class="sample">[09-20 00:41北京] 以后问谁的杰斯能赢就说米人（x2）</div>
+        <div class="sample">[09-20 00:42北京] 米人杰斯连胜太变态了（x2）</div>
+        <div class="sample">[09-20 00:42北京] 30分钟以后KC这阵容打团就打不过了女警三件套</div>
+        <div class="sample">[09-20 00:43北京] 女警无敌了（x2）</div>
+        <div class="sample">[09-20 00:45北京] 24分钟4件套</div>
+        <div class="sample">[09-20 00:46北京] 25分钟4件</div>
+        <div class="sample">[09-20 00:46北京] 4件套</div>
+        <div class="sample">[09-20 00:51北京] 29五件 玩毛</div>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p class="text-small text-muted mb-2">盘口相关弹幕共 <strong>24 条</strong>，聚焦让分、人头、选手表现。</p>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th></tr></thead>
+      <tbody>
+        <tr><td>让分/大小</td><td>质疑</td><td>8</td><td>“没48是有说法吗”“48不敢读”“60高了”“60真高了”</td></tr>
+        <tr><td>人头/击杀</td><td>中性</td><td>6</td><td>“杀人头减号而已别急”“张硕——米人头号黑粉”</td></tr>
+        <tr><td>选手/队伍</td><td>负面</td><td>5</td><td>“经典kc送人头”“48阿”“我48哥呢”</td></tr>
+        <tr><td>其他</td><td>—</td><td>5</td><td>“49之前不读？”“100个要死人的”</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>盘口相关弹幕原文（折叠）</summary>
+      <div class="details-content">
+        <div class="sample">[09-20 00:22北京] 49之前不读？</div>
+        <div class="sample">[09-20 00:23北京] 48不敢读</div>
+        <div class="sample">[09-20 00:23北京] 60高了（x2）</div>
+        <div class="sample">[09-20 00:23北京] 60真高了</div>
+        <div class="sample">[09-20 00:32北京] 100个要死人的</div>
+        <div class="sample">[09-20 00:33北京] 100个要横纹肌溶解的吧</div>
+        <div class="sample">[09-20 00:44北京] 48也配</div>
+        <div class="sample">[09-20 00:47北京] 老张4连0的概率是多少（x4）</div>
+        <div class="sample">[09-20 00:47北京] 27/64而已</div>
+        <div class="sample">[09-20 00:48北京] 0-3 后 12-5</div>
+        <div class="sample">[09-20 00:49北京] 给了（x2）</div>
+        <div class="sample">[09-20 00:50北京] 巴雷特了（x2）</div>
+        <div class="sample">[09-20 00:51北京] 史无悬，二追三，钢备寿，适巴筒（x3）</div>
+        <div class="sample">[09-20 00:52北京] 16-1（x2）</div>
+      </div>
+    </details>
+    <div class="footnote mt-2">盘口讨论仅为观众言论，不构成投注建议。</div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚（利好 MKOI）</h3>
+        <ul class="signal-list">
+          <li><span class="tag positive">+</span> MKOI 女警+杰斯体系成型，弹幕称“女警无敌了”“米人杰斯连胜”</li>
+          <li><span class="tag positive">+</span> KC 团战被评“5打4都打不过”“中上太差了”</li>
+          <li><span class="tag positive">+</span> “2-0了”刷屏，共识强烈</li>
+        </ul>
+      </div>
+      <div>
+        <h3>负锚（利空 KC）</h3>
+        <ul class="signal-list">
+          <li><span class="tag negative">-</span> KC 冰鸟熟练度低，“总是没蓝量”</li>
+          <li><span class="tag negative">-</span> “kc这个中单是lec最菜中单”</li>
+          <li><span class="tag negative">-</span> “kc也是大赛软脚虾”“kc萎了”</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>群体共识（带量）</h3>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr></thead>
+      <tbody>
+        <tr><td>比分 2-0</td><td>MKOI 胜</td><td>12+</td><td>“2-0了”“2:0”“2-0了感觉”</td><td>与官方 gameWins 一致</td></tr>
+        <tr><td>KC 团战差</td><td>负面</td><td>8+</td><td>“5打4都打不过”“中上太差了”</td><td>弹幕共识</td></tr>
+        <tr><td>MKOI 女警/杰斯</td><td>正面</td><td>10+</td><td>“女警无敌了”“米人杰斯连胜”</td><td>弹幕共识</td></tr>
+        <tr><td>KC 心态/软脚虾</td><td>负面</td><td>6+</td><td>“kc也是大赛软脚虾”“kc萎了”</td><td>弹幕共识</td></tr>
+        <tr><td>剧本/假赛质疑</td><td>灰信号</td><td>28</td><td>“别演了kc拿下一把吧”</td><td>观众质疑，非结论</td></tr>
+      </tbody>
+    </table>
+    <div class="footnote mt-2">共识→信号链：同向（2-0 + KC 差 + MKOI 强）= 强信号；背离（“1-1”等矛盾弹幕）= 分歧信号，需以官方为准。</div>
+    <h3 class="mt-3">灰信号条件预测</h3>
+    <p class="text-small">若 KC 后续翻盘，灰信号“剧本论”将强化；若 MKOI 顺利拿下，则“2-0”共识验证。当前样本不足以预测具体比分。</p>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点</h2>
+    <div class="grid-2">
+      <div>
+        <h3>LONG（MKOI）</h3>
+        <ul class="signal-list">
+          <li><span class="tag positive">LONG</span> 弹幕共识强烈倾向 MKOI 2-0，女警+杰斯体系被反复称赞</li>
+          <li><span class="tag positive">LONG</span> KC 团战与心态遭全面质疑，负锚密集</li>
+        </ul>
+      </div>
+      <div>
+        <h3>SHORT（KC）</h3>
+        <ul class="signal-list">
+          <li><span class="tag negative">SHORT</span> KC 冰鸟熟练度低，中单被评“最菜”，翻盘概率低</li>
+          <li><span class="tag negative">SHORT</span> 灰信号密集，但需警惕剧本论反向影响</li>
+        </ul>
+      </div>
+    </div>
+    <div class="decision-box mt-3">
+      <strong>决策落点：</strong>基于弹幕共识，MKOI 胜势明显，但灰信号（假赛/剧本）密集，建议观望至官方结算，避免受盘口诱导。核心情报来自本场弹幕，推测已标注。
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G2 时间线（弹幕口径）</h3>
+    <div class="timeline-item"><span class="timeline-time">00:16</span><span class="timeline-text">“第一把阵容就是乱选的”“酒桶关键时刻送了”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:18</span><span class="timeline-text">“右边都出蔚了，就爆开呗”“20 了”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:19</span><span class="timeline-text">“2-0了”“KC少爷不C等于滚”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:20</span><span class="timeline-text">“左边前期有伤害？我笑了”“kc本质四保一”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:21</span><span class="timeline-text">“1-1”（矛盾弹幕）</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:25</span><span class="timeline-text">“2-0了感觉”“Mkoi要进决赛了有感觉没”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:28</span><span class="timeline-text">“KC 又在装模做样等下又被翻”“没伤害”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:30</span><span class="timeline-text">“这个冰鸟没熟练度啊”“mkoi常规赛第六 ,季后赛都能打到前三吗”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:32</span><span class="timeline-text">“冰鸟闪现断了”“GG”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:34</span><span class="timeline-text">“Eq闪秀队友”“诡术妖皇”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:35</span><span class="timeline-text">“这冰鸟一看熟练度不高，线上没打几下，总是没蓝量”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:38</span><span class="timeline-text">“不会真有人觉得这两个队是一个级别的吧，第一把纯演”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:39</span><span class="timeline-text">“前方高能，翻了！”“左边真不赖”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:40</span><span class="timeline-text">“0换3”“少爷不开心了”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:41</span><span class="timeline-text">“米人杰斯连胜太变态了”“kc瞎玩了，先锋就这么放个”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:42</span><span class="timeline-text">“30分钟以后KC这阵容打团就打不过了女警三件套”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:43</span><span class="timeline-text">“bin”“多兰？”“女警无敌了”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:44</span><span class="timeline-text">“0比3打成5比4解散得了”“22分钟”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:45</span><span class="timeline-text">“翻了”“24分钟4件套”“2:0”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:46</span><span class="timeline-text">“为什么解说都清一色看好KC啊”“25分钟4件”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:47</span><span class="timeline-text">“3-0了”“老张4连0的概率是多少”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:48</span><span class="timeline-text">“0-3 后 12-5”“KC去打入围赛游不出来”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:49</span><span class="timeline-text">“左边这个队季后赛都差点进不了，现在一路连胜”“给了”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">“说了kc这个中单是lec最菜中单”“5 打 4 都打不过”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:51</span><span class="timeline-text">“史无悬，二追三”“29五件 玩毛”“GG”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:52</span><span class="timeline-text">“JOJO在狂笑”“16-1”“MK赛季初那么菜 缓过来了啊”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">“kc也是大赛软脚虾”“kc常规赛第一，季后赛就这水平吗”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:54</span><span class="timeline-text">“koi很有实力啊感觉，为啥解说清一色看好KC”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:55</span><span class="timeline-text">“kc萎了”“中上太差了”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:56</span><span class="timeline-text">“LEC好像很久没有让二追三了，估计就是这场”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:57</span><span class="timeline-text">“KC一直喜欢进野区开别人，不知道怎么想的”</span></div>
+    <div class="timeline-item"><span class="timeline-time">00:58</span><span class="timeline-text">“lec这几年kc和mkoi起来，怎么把fnc整没了？”</span></div>
+    <details>
+      <summary>G2 完整弹幕时间线（折叠）</summary>
+      <div class="details-content">
+        <div class="timeline-item"><span class="timeline-time">00:16</span><span class="timeline-text">@你好呀白鹿my 是的 / 一个赛季练个纳尔这么难吗酒桶玩的跟屎一样 / 第一把阵容就是乱选的。。 / 米人王朝了 / 酒桶关键时刻送了，不然真不好说</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:17</span><span class="timeline-text">主播播一场北美的吧（x2） / 摄像头挡BP了，挪一哈（x2） / Lck颤抖吧，我大ig回来了 / g2什么时候买太子 / lec都谁进了呀</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:18</span><span class="timeline-text">台北现金王（x3） / 右边都出蔚了，就爆开呗（x2） / 20 了 / 4保1？ / 500二哥还是有钱人酸了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:19</span><span class="timeline-text">二哥为啥有空的时候不多读点书？（x2） / 牛（x2） / 2-0了 / KC少爷不C等于滚 / KC这条蛆又要去败者咯</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:20</span><span class="timeline-text">专业（x5） / 20 了（x2） / 左边前期有伤害？我笑了（x2） / 2:0 / kc本质四保一</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:21</span><span class="timeline-text">1-1（x2） / 二哥为啥有空的时候不试着多读点书？（x2） / [震惊] / gay是这样的 / 专业电竞椅</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:22</span><span class="timeline-text">起飞（x2） / 镜子是雨停牌的[大哥][大哥][大哥]（x2） / 49之前不读？ / BLG？ / KC这畜生让二追三</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:23</span><span class="timeline-text">60高了（x2） / 48不敢读 / 60真高了 / Langx / cblol最慢</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:24</span><span class="timeline-text">毛神又要看最爱的zven了吗（x2） / 10-13你妈 / 20 有感觉吗 / 2号和3号有啥区别 / 666老奶奶过马路我都不扶就服你们</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:25</span><span class="timeline-text">世界赛是不是早上看？（x2） / 2 / 2-0了感觉 / @青春啊 肯定不是啊 / Mkoi要进决赛了有感觉没，毛神</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:26</span><span class="timeline-text">世界赛跟世界杯一个时间？（x3） / 2-0了，有感觉吗 / KC把JDG虐了 / canna现在咋这么菜了 / kc 又没了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:27</span><span class="timeline-text">要上班的，根本看不了，只能看重播，比赛都在半夜（x2） / @安心 3-0 / KC怎么在败者组啊 / 不就和去年区王杯一样 / 不是吧？？？</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:28</span><span class="timeline-text">外国人就是敬业半夜打比赛（x2） / 没伤害（x2） / 15号入围赛 / KC 又在装模做样等下又被翻 / kc这个版本打的真不好</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:29</span><span class="timeline-text">今年s赛开赛时间是凌晨吗？（x2） / 明天什么比赛（x2） / 2点 / @甜甜圈 ？ / KC把打野换了就能赢</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:30</span><span class="timeline-text">这个冰鸟没熟练度啊（x2） / blg / lcs比赛是凌晨四点开，你细品 / lec现在也没有流啊，都是看的直播间 / mkoi常规赛第六 ,季后赛都能打到前三吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:31</span><span class="timeline-text">kt在德杯是不是断档了（x2） / blg / blg附体 / kc上一局那种优势都能输 你也别指望多强 / 不懂就问，德杯有kc吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:32</span><span class="timeline-text">冰鸟闪现断了（x2） / 100个要死人的 / GG / KC很菜 也就只能虐虐TES了 / yike不会瞎子</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:33</span><span class="timeline-text">EQ闪（x2） / 100个要横纹肌溶解的吧 / 24年第四把第五把已经忘记了 / KC常规赛好猛，把所有的队都虐了一遍 / kc要是三号种子要打入围赛</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:34</span><span class="timeline-text">Eq闪秀队友（x4） / Eq闪（x2） / 诡术妖皇（x2） / EQ闪 / EQ闪？</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:35</span><span class="timeline-text">这冰鸟一看熟练度不高，线上没打几下，总是没蓝量（x4） / 什么都放 家也放了吧 / 他把自己的巴德看成了对方的泰坦 老年痴呆了 / 他是在搞笑 / 关键局感觉都有点紧，今天lpl也是，失误都多了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:36</span><span class="timeline-text">张神 有复活甲吗？张神 有复活甲吗（x2） / 张神的功能性打野只会猪妹（x2） / 泽哥原话：解说毛毛永远在解说（x2） / 这冰鸟一看熟练度不高，线上没打几下，总是没蓝量（x2） / 量大管饱，还有无畏契约世界赛，全是高手（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:37</span><span class="timeline-text">20号那个世界赛是什么世界赛？ / S6老冥火的时候就有冥火烬了 / [偷笑][偷笑]张神的功能性打野我只记得一个猪妹 / lpl放弃参加了 / mk对线好菜</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:38</span><span class="timeline-text">不会真有人觉得这两个队是一个级别的吧，第一把纯演（x2） / 青龙刀皇子（x2） / lec已经三连让一追三了 还不懂看好那边吗 / lec确定几个名额了 / lec都是翻盘</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:39</span><span class="timeline-text">两个人不在 去进野区（x2） / 前方高能，翻了！（x2） / 变态（x2） / 左边真不赖（x2） / 怎么没有小卖铺了你们？？？？？？？（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:40</span><span class="timeline-text">怎么没有小卖铺了你们？？？？？？？（x3） / 少爷不开心了（x2） / 这样进别人野区开，打不死啊（x2） / 0换3 / 10楼</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:41</span><span class="timeline-text">.（x5） / 以后问谁的杰斯能赢就说米人（x2） / 弄（x2） / kc瞎玩了，先锋就这么放个 / kc这两外援真的一坨屎</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:42</span><span class="timeline-text">呼吸被打成窒息（x2） / 米人杰斯连胜太变态了（x2） / 2k经济是塔钱 / 30分钟以后KC这阵容打团就打不过了女警三件套 / Lancer杰斯也赢了你怎么说？</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:43</span><span class="timeline-text">bin（x6） / 多兰？（x6） / bin哥（x2） / 外卖到了二哥，我在楼下，开下门（x2） / 女警无敌了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:44</span><span class="timeline-text">狼行呢？狼行呢？狼行呢？狼行呢？（x4） / 宙斯真不一定打的过狼行吧（x2） / 0比3打成5比4解散得了 / 22分钟 / 48也配</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:45</span><span class="timeline-text">宙斯真不一定打的过狼行吧（x3） / 米人！（x2） / 翻了（x2） / 24分钟4件套 / 2:0</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:46</span><span class="timeline-text">为什么解说都清一色看好KC啊，欧洲那边解说也一样（x3） / 这是米人吗？二哥原来米人装糖这么久原来是在蹲kc（x3） / 鼠标这个怎么调啊（x2） / 25分钟4件 / 4件套</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:47</span><span class="timeline-text">老张4连0的概率是多少（x4） / 不对了（x2） / 27/64而已 / 3-0了 / kc不会去入围赛又给tl逮捕了吧</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:48</span><span class="timeline-text">0-3 后 12-5 / 1 / KC去打入围赛游不出来 / KC输了还能进世界赛吗？ / SUPA不是韩咕噜</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:49</span><span class="timeline-text">左边这个队季后赛都差点进不了，现在一路连胜（x3） / 没有小卖部我都不想看了（x2） / 给了（x2） / 3个人在下路干嘛 / BLG</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">说了kc这个中单是lec最菜中单（x3） / 巴雷特了（x2） / 5 打 4 都打不过 / MK就是欧洲滔搏 / V他50，让他下去给你玩</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:51</span><span class="timeline-text">史无悬，二追三，钢备寿，适巴筒（x3） / 20年MAD淹死在入围赛过 / 29五件 玩毛 / GG / GG了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:52</span><span class="timeline-text">JOJO在狂笑（x3） / 16-1（x2） / 1波1波（x2） / MK赛季初那么菜 缓过来了啊（x2） / [笑哭][笑哭][笑哭]JOJO在狂笑（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">@寥若晨星L 我们学个毛啊，我们又不会 / kc也是大赛软脚虾 / kc常规赛第一，季后赛就这水平吗 / kc是不是常规赛第一呀 / kc是对线优势，打团就跟京东一样两个韩国人一直边线管理</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:54</span><span class="timeline-text">koi很有实力啊感觉，为啥解说清一色看好KC，包括他们欧洲解（x2） / Yeke的薇还是包输 / kc已经去世界赛了吗 / kc的韩咕噜有点菜 / kc软脚虾抽了al和t1 总比欧洲tes mkoi厉害</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:55</span><span class="timeline-text">@幸运女神在微笑灬 华莱士 / LEC解说全是说英语的？ / kc萎了 / 一晚上下棋都碰到ts / 中上太差了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:56</span><span class="timeline-text">LEC好像很久没有让二追三了，估计就是这场 / jakos / staz吗 / supa / 中路MK略强</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:57</span><span class="timeline-text">T1（x2） / KC一直喜欢进野区开别人，不知道怎么想的 / Kc法国队踢不过西班牙的，世界杯没看吗？mk冠军，我说的 / T1竟然当时输给他 / fnc：这本来是我崛起的剧本</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:58</span><span class="timeline-text">lec这几年kc和mkoi起来，怎么把fnc整没了？ / 不弱在哪？lpl除了前二都是蛆 / 二哥看不看c9 / 太多是真的好听 陈冠蒲这个声线无敌 / 拖着吃 拿手接着</span></div>
+      </div>
+    </details>
+    <div class="footnote mt-2">未发生片段：待观察。当前局已发生片段如上，时间戳均为北京时间。</div>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP</h3>
+        <table>
+          <tr><th>队伍</th><th>提及</th><th>正/负</th></tr>
+          <tr><td>KC</td><td>160</td><td>正12/负21</td></tr>
+          <tr><td>BLG</td><td>24</td><td>正0/负0</td></tr>
+          <tr><td>G2</td><td>19</td><td>正0/负2</td></tr>
+          <tr><td>T1</td><td>8</td><td>正2/负0</td></tr>
+          <tr><td>IG</td><td>8</td><td>正0/负0</td></tr>
+          <tr><td>TES</td><td>5</td><td>正2/负1</td></tr>
+          <tr><td>WBG</td><td>4</td><td>正0/负0</td></tr>
+          <tr><td>MOUZ</td><td>4</td><td>正1/负0</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>选手提及 TOP</h3>
+        <table>
+          <tr><th>选手</th><th>提及</th><th>正/负</th></tr>
+          <tr><td>Zeus</td><td>36</td><td>正2/负1</td></tr>
+          <tr><td>Canna</td><td>4</td><td>正0/负1</td></tr>
+          <tr><td>Chovy</td><td>3</td><td>正0/负0</td></tr>
+          <tr><td>33</td><td>1</td><td>正0/负0</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>队伍特质统计（真实）</h3>
+    <div class="stat-row">
+      <div class="stat-item"><span class="label">顺风隐身</span><span class="value">1</span></div>
+      <div class="stat-item"><span class="label">被翻守不住</span><span class="value">6</span></div>
+      <div class="stat-item"><span class="label">韧性逆转</span><span class="value">6</span></div>
+      <div class="stat-item"><span class="label">心态摆烂</span><span class="value">13</span></div>
+      <div class="stat-item"><span class="label">慢热手热</span><span class="value">1</span></div>
+      <div class="stat-item"><span class="label">打法风格</span><span class="value">5</span></div>
+      <div class="stat-item"><span class="label">选手特质</span><span class="value">11</span></div>
+    </div>
+    <details>
+      <summary>长画像与弹幕样本（折叠）</summary>
+      <div class="details-content">
+        <p><strong>KC 画像：</strong>提及 160 次，负向 21 次，正向 12 次。弹幕高频词：“软脚虾”“中单最菜”“大赛软脚虾”“kc萎了”“中上太差了”。心态摆烂提及 13 次，被翻守不住 6 次。</p>
+        <p><strong>MKOI 画像：</strong>弹幕称“koi很有实力啊感觉”“MK赛季初那么菜 缓过来了啊”“MK就是欧洲滔搏”。女警+杰斯体系被反复称赞。</p>
+        <p><strong>Zeus 提及 36 次：</strong>“宙斯真不一定打的过狼行吧”等，与 KC 无关，为跨队讨论。</p>
+        <p><strong>样本不足说明：</strong>部分选手（Chovy、33）提及量低，样本不足，不硬造画像。</p>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul class="signal-list">
+      <li><span class="tag neutral">规律</span> “lec已经三连让一追三了 还不懂看好那边吗”“LEC好像很久没有让二追三了，估计就是这场”</li>
+      <li><span class="tag neutral">规律</span> “lec都是翻盘”“lec落后剧本了，明天才是aaba”</li>
+      <li><span class="tag neutral">版本</span> 女警+杰斯体系强势，弹幕称“女警三件套”“30分钟以后KC这阵容打团就打不过了”</li>
+      <li><span class="tag neutral">版本</span> 冰鸟中单熟练度要求高，KC 中单被质疑“没蓝量”“没熟练度”</li>
+      <li><span class="tag neutral">联赛</span> “mkoi常规赛第六 ,季后赛都能打到前三吗”“kc常规赛第一，季后赛就这水平吗”</li>
+    </ul>
+    <p class="text-small text-muted mt-2">样本不足处未硬造。版本理解基于弹幕共识，非官方数据。</p>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <table>
+      <thead><tr><th>预测项</th><th>弹幕口径</th><th>官方状态</th><th>验证</th></tr></thead>
+      <tbody>
+        <tr><td>本局胜者</td><td>MKOI（“2-0了”刷屏）</td><td>官方 gameWins KC 0-2 MKOI</td><td>一致</td></tr>
+        <tr><td>系列比分</td><td>2-0</td><td>官方 0-2</td><td>一致</td></tr>
+        <tr><td>KC 翻盘</td><td>少数“1-1”矛盾弹幕</td><td>未发生</td><td>分歧信号</td></tr>
+        <tr><td>灰信号剧本论</td><td>28 条质疑</td><td>待官方结算</td><td>待验证</td></tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-2">预测验证基于弹幕共识，官方结果以 gameWins 为准。灰信号条件预测待后续回填。</p>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-2">
+      <div>
+        <h3>数据源</h3>
+        <ul class="signal-list">
+          <li><span class="tag neutral">规则层</span> /opt/danmu-intel/runtime/vps_intel/lol-kc-mkoi-2026-09-19_g2_end_intel.json</li>
+          <li><span class="tag neutral">弹幕切片</span> /opt/danmu-intel/data/intel_slices/lol-kc-mkoi-2026-09-19_g2_end.jsonl</li>
+          <li><span class="tag neutral">官方</span> gameWins KC 0-2 MKOI</li>
+          <li><span class="tag neutral">样本</span> 215 条弹幕，覆盖 43 个分钟段</li>
+        </ul>
+      </div>
+      <div>
+        <h3>情报输出时间</h3>
+        <p>2026-09-20 01:00 北京时间 (UTC+8)</p>
+        <h3>溯源标签</h3>
+        <p>本场弹幕 / 前局弹幕 / 历史画像 / 盘口 / 推测·待验证</p>
+        <p class="text-small text-muted mt-2">核心情报来自本场弹幕，推测已显式标注。缺源标注缺口。</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>本场长期沉淀点</h3>
+    <ul class="signal-list">
+      <li><span class="tag consensus">沉淀</span> KC 在 LEC 季后赛中“常规赛第一但季后赛软脚虾”的画像强化，心态摆烂提及 13 次。</li>
+      <li><span class="tag consensus">沉淀</span> MKOI 女警+杰斯体系在 LEC 版本中具备强终结能力，弹幕共识“女警无敌了”。</li>
+      <li><span class="tag gray">沉淀</span> 灰信号密集（28 条假赛/剧本质疑），LEC 观众对比赛真实性存在系统性怀疑，需长期跟踪。</li>
+    </ul>
+    <div class="footnote mt-2">本页为局中快照，结果待官方回填。所有时间均为北京时间。</div>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
