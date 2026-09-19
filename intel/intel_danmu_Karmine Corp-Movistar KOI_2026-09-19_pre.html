@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛前弹幕情报 · Karmine Corp vs Movistar KOI</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --text: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --accent: #0071e3;
+            --accent-light: #e8f0fe;
+            --border: #d2d2d7;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --radius: 18px;
+            --radius-sm: 12px;
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            font-family: var(--font);
+            color: var(--text);
+            line-height: 1.5;
+            padding: 24px 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        .header {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        .header .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 28px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        .header .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--accent-light);
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.01em;
+        }
+        .badge.gray {
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        .section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        .section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .card-mini {
+            background: #fafafa;
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+        }
+        .card-mini .label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .card-mini .value {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        .card-mini .sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .signal-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .signal-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 15px;
+            padding: 10px 14px;
+            background: #fafafa;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--accent);
+        }
+        .signal-list li .tag {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 2px 8px;
+            border-radius: 12px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 10px 10px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .tag-sm {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        .tag-sm.positive {
+            background: #e6f4ea;
+            color: #1e7e34;
+        }
+        .tag-sm.negative {
+            background: #fce8e8;
+            color: #c62828;
+        }
+        .tag-sm.neutral {
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        details {
+            margin-top: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        details summary {
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #fafafa;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details summary:hover {
+            background: #f0f0f2;
+        }
+        details .details-content {
+            padding: 16px 18px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text);
+            background: #fff;
+        }
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .bullet-list li {
+            display: flex;
+            gap: 8px;
+            font-size: 14px;
+            align-items: flex-start;
+        }
+        .bullet-list li::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 16px 0;
+        }
+        .text-muted {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .highlight-box {
+            background: var(--accent-light);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            font-size: 14px;
+            border-left: 3px solid var(--accent);
+        }
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3, .two-col {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                padding: 20px;
+            }
+            .section {
+                padding: 18px 16px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Karmine Corp-Movistar KOI 2026-09-19 pre</b></div>
+<div class="container">
+    <!-- 头部 -->
+    <div class="header">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+            <span class="badge">赛前 · 未开赛</span>
+            <span class="badge gray">S0｜PRE-MATCH</span>
+        </div>
+        <h1>Karmine Corp vs Movistar KOI</h1>
+        <div class="meta">
+            <span>📅 2026-09-19</span>
+            <span>🏷️ lol-kc-mkoi-2026-09-19</span>
+            <span>🕒 情报生成：2026-09-19 22:05 北京时间</span>
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="section">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="grid-3" style="margin-bottom:18px;">
+            <div class="card-mini">
+                <div class="label">弹幕总数</div>
+                <div class="value">577</div>
+                <div class="sub">活跃用户 208 · 密度 19.1条/分</div>
+            </div>
+            <div class="card-mini">
+                <div class="label">赛前预期</div>
+                <div class="value" style="font-size:18px;">胶着 · 上单焦点</div>
+                <div class="sub">KC vs KOI 历史对阵讨论升温</div>
+            </div>
+            <div class="card-mini">
+                <div class="label">决策落点</div>
+                <div class="value" style="font-size:18px;">待开赛</div>
+                <div class="sub">盘口数据暂缺</div>
+            </div>
+        </div>
+        <div class="signal-list">
+            <li><span class="tag">TOP1</span> 上单对位讨论集中：剑魔/卢锡安/鳄鱼等选人争议，弹幕频繁提及“剑魔不会打团就是超级兵”。</li>
+            <li><span class="tag">TOP2</span> 灰信号“谢处故意的”“大中又开始演了”共2条，指向选手态度质疑，非结论。</li>
+            <li><span class="tag">TOP3</span> 盘口讨论仅1条：“1个人头也是终结吗？有点抽象了”，市场信息稀薄。</li>
+            <li><span class="tag">TOP4</span> 队伍提及：IG(2)、MOUZ(1)、Iron Wing(1)，均为跨场关联，非本场直接对手。</li>
+            <li><span class="tag">TOP5</span> 选手提及：Chovy(1)、Zeus(1)，属外部联想，本场核心选手未形成集中讨论。</li>
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="section">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="two-col">
+            <div>
+                <table>
+                    <tr><th style="width:40%;">项目</th><th>内容</th></tr>
+                    <tr><td>赛事</td><td>LEC / 常规赛（待确认）</td></tr>
+                    <tr><td>对阵</td><td>Karmine Corp vs Movistar KOI</td></tr>
+                    <tr><td>日期</td><td>2026-09-19</td></tr>
+                    <tr><td>状态</td><td><span class="tag-sm neutral">赛前 · 未开赛</span></td></tr>
+                    <tr><td>节点</td><td>S0｜赛前｜PRE-MATCH</td></tr>
+                </table>
+            </div>
+            <div>
+                <div class="highlight-box">
+                    <strong>结果总览</strong><br>
+                    比赛尚未开始，无比分/结果数据。当前情报聚焦赛前共识、队伍状态、历史对阵与盘口讨论。禁用比分类结论。
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="section">
+        <h2><span class="no">2</span>灰信号汇总</h2>
+        <p class="text-muted" style="margin-bottom:12px;">观众质疑·非结论，先跑词表。共2条灰信号，均指向选手表现/态度。</p>
+        <table>
+            <tr><th>灰信号原文</th><th>类型</th><th>指向</th><th>条数</th></tr>
+            <tr><td>“谢处故意的”</td><td><span class="tag-sm negative">态度质疑</span></td><td>选手“谢处”</td><td>1</td></tr>
+            <tr><td>“大中又开始演了”</td><td><span class="tag-sm negative">表现质疑</span></td><td>选手“大中”</td><td>1</td></tr>
+        </table>
+        <details>
+            <summary>📋 灰信号完整弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>[09-19 21:45北京] “没有xiye谢区就是无敌的啊” — 关联“谢处”讨论</li>
+                    <li>[09-19 21:48北京] “xiye不在谢区在哪边哪边赢” — 同上</li>
+                    <li>[09-19 21:50北京] “一直亮标亮你妈呢?昨天没被谢哥云教育够?” — 谢哥相关</li>
+                    <li>[09-19 21:57北京] “有人收了张处的羊了吗” — 张处相关</li>
+                    <li>[09-19 21:57北京] “查他手机” — 调侃态度</li>
+                </ul>
+                <p class="text-muted" style="margin-top:10px;">注：以上为灰信号上下文，不代表事实结论。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="section">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <p style="margin-bottom:12px;">赛前弹幕中选人讨论活跃，上单英雄池与BP博弈成为焦点。</p>
+        <div class="grid-2">
+            <div class="card-mini">
+                <div class="label">高频英雄提及</div>
+                <div style="font-size:15px; margin-top:6px;">
+                    <span class="tag-sm" style="margin:2px;">剑魔</span>
+                    <span class="tag-sm" style="margin:2px;">卢锡安</span>
+                    <span class="tag-sm" style="margin:2px;">鳄鱼</span>
+                    <span class="tag-sm" style="margin:2px;">凯南</span>
+                    <span class="tag-sm" style="margin:2px;">亚索</span>
+                    <span class="tag-sm" style="margin:2px;">永恩</span>
+                    <span class="tag-sm" style="margin:2px;">瑞兹</span>
+                    <span class="tag-sm" style="margin:2px;">狗头</span>
+                </div>
+            </div>
+            <div class="card-mini">
+                <div class="label">BP 讨论方向</div>
+                <div style="font-size:14px; margin-top:6px;">
+                    上单counter、打团能力、版本强势度
+                </div>
+            </div>
+        </div>
+        <details style="margin-top:16px;">
+            <summary>🔍 BP 相关弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <ul class="bullet-list">
+                    <li>“剑魔不会打团就是超级兵”</li>
+                    <li>“下把选鳄鱼凯男吧，要不你对线打团都没优势”</li>
+                    <li>“剑魔这个版本就是下水道啊 对线打得过谁 现版本强势上单全是剑”</li>
+                    <li>“卢米很强势不要浪费了”</li>
+                    <li>“眼泪卢锡安吗”</li>
+                    <li>“老张不知道会不会亚索永恩”</li>
+                    <li>“你们这选人四路劣势玩个毛啊”</li>
+                    <li>“你们这有个能C的吗 这阵容还想赢”</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="section">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="highlight-box" style="margin-bottom:14px;">
+            <strong>盘口数据：待开赛</strong><br>
+            当前赛前窗口未捕获有效盘口/赔率数据。弹幕中仅1条相关讨论，市场信息极度稀薄。
+        </div>
+        <table>
+            <tr><th>盘口讨论原文</th><th>类型</th><th>条数</th></tr>
+            <tr><td>“1个人头也是终结吗？有点抽象了”</td><td><span class="tag-sm neutral">规则/赔率质疑</span></td><td>1</td></tr>
+        </table>
+        <p class="text-muted" style="margin-top:12px;">Polymarket 赛前价/让分：暂无数据，待开赛。</p>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="section">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">赛前共识提炼</h3>
+                <table>
+                    <tr><th>主题</th><th>方向</th><th>条数</th><th>样本</th><th>多源</th></tr>
+                    <tr><td>上单对位</td><td><span class="tag-sm negative">劣势/质疑</span></td><td>12+</td><td>“剑魔不会打团”“上路纯破绽”</td><td>是</td></tr>
+                    <tr><td>打野节奏</td><td><span class="tag-sm negative">批评</span></td><td>5</td><td>“大俊打野还是没灵性”</td><td>是</td></tr>
+                    <tr><td>阵容选择</td><td><span class="tag-sm negative">不看好</span></td><td>4</td><td>“四路劣势玩个毛”</td><td>是</td></tr>
+                    <tr><td>选手状态</td><td><span class="tag-sm neutral">调侃/质疑</span></td><td>8+</td><td>“张处”“大米单杀了”</td><td>是</td></tr>
+                </table>
+            </div>
+            <div>
+                <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">共识 → 信号链</h3>
+                <ul class="bullet-list">
+                    <li><strong>上单差距共识</strong> → 弹幕集中批评剑魔/上单表现 → 灰信号“谢处故意的” → 赛前预期上单为突破口</li>
+                    <li><strong>打野节奏共识</strong> → “大俊打野没灵性” → 影响前期资源控制预期</li>
+                    <li><strong>阵容悲观共识</strong> → “四路劣势” → 观众对KC/KOI整体配合存疑</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="section">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div class="grid-2">
+            <div class="card-mini">
+                <div class="label">赛前情报含义</div>
+                <ul class="bullet-list" style="margin-top:8px;">
+                    <li>上单对位是弹幕最关注的点，剑魔/卢锡安等选人争议大。</li>
+                    <li>打野节奏与团队配合被普遍看衰，情绪偏负面。</li>
+                    <li>灰信号指向个别选手态度，需关注赛前舆论压力。</li>
+                    <li>盘口信息缺失，无法形成市场共识判断。</li>
+                </ul>
+            </div>
+            <div class="card-mini">
+                <div class="label">决策落点</div>
+                <ul class="bullet-list" style="margin-top:8px;">
+                    <li><strong>BP观察：</strong>上单英雄选择是否回应弹幕质疑（剑魔/鳄鱼/凯南）。</li>
+                    <li><strong>前期节奏：</strong>打野是否主动做事，缓解“没灵性”评价。</li>
+                    <li><strong>心态管理：</strong>灰信号涉及的选手是否受影响。</li>
+                    <li><strong>盘口：</strong>待开赛，暂无操作建议。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="section">
+        <h2><span class="no">7</span>逐局复盘</h2>
+        <p class="text-muted" style="margin-bottom:12px;">比赛尚未开始，无逐局数据。以下为赛前弹幕时间线，供赛后复盘对照。</p>
+        <details>
+            <summary>⏱️ 完整弹幕时间线（赛前窗口，折叠）</summary>
+            <div class="details-content" style="max-height:400px; overflow-y:auto;">
+                <table style="font-size:13px;">
+                    <tr><th>时间（北京）</th><th>弹幕内容</th></tr>
+                    <tr><td>21:30</td><td>今晚谁打谁 毛哥（x2）｜lck也会处罚的｜saki是瓦的解说吗｜一定要在河道打｜两边上单默契点燃</td></tr>
+                    <tr><td>21:31</td><td>IG下场打谁｜Ig赢了么｜世界赛要打根了｜今天热闹了｜今晚谁打谁 毛哥 Lec</td></tr>
+                    <tr><td>21:32</td><td>lec谁打谁｜为啥要看？｜二哥刚刚在一路说想看打李家跟韩门了，笑死｜卡西安｜卢米很强势不要浪费了</td></tr>
+                    <tr><td>21:33</td><td>仇人对线</td></tr>
+                    <tr><td>21:34</td><td>这不亮弱爆（x2）｜不能输的理由，甚至不敢幻血｜哈哈哈哈压力很大啊小张｜现在解说人人自危，话都不敢说，平铺直叙是很严谨，但有啥好看的｜越不了吧</td></tr>
+                    <tr><td>21:35</td><td>大米单杀了（x3）｜老张心里的火灭了（x2）｜15点吧｜zgg＞大米＞张神！｜丑陋</td></tr>
+                    <tr><td>21:36</td><td>不如周敢敢（x2）｜对面严肃米｜很舒服｜打野打野玩不过管 上单上单被大米单杀｜批神</td></tr>
+                    <tr><td>21:37</td><td>i系列｜上了钻二，大米说话都变硬气了/{zc｜不敢看了｜不要花太多精力给他，你被爆了，老张｜不讲武德叫打野</td></tr>
+                    <tr><td>21:38</td><td>周敢敢在哪里直播？（x2）｜11点谁打谁 牢毛｜上路不用来｜不想和你玩了｜今晚原来是大硬米吗？米神神了</td></tr>
+                    <tr><td>21:39</td><td>三抓一都让人跑了｜你张哥情愿输都不会玩肉的｜大俊打野还是没灵性 瑞兹都打完一套了 大俊还在刷｜大米原话 张神就是脾气不好的v神｜对面开始互动了</td></tr>
+                    <tr><td>21:40</td><td>大米：不用管他 他没什么用！老张：可以来上｜对面大狼打野吧 中路妹子根本不会 你是打野你也玩不了｜张处杀不回来今晚觉都睡不好｜翡翠？ 白银！｜老张不知道会不会亚索永恩</td></tr>
+                    <tr><td>21:41</td><td>今天有亚运表演赛，不解说吗｜剑魔打卢锡安没法玩｜大米虐完毛处虐｜建议你直接出穿甲的｜眼泪卢锡安吗</td></tr>
+                    <tr><td>21:42</td><td>1个人头也是终结吗？有点抽象了｜这么换，你剑魔纯亏啊</td></tr>
+                    <tr><td>21:43</td><td>三召是？（x2）｜DFR｜乘风儿怎么当着瑞兹面r｜你们这有个能C的吗 这阵容还想赢｜你好兄弟训练赛也小心脏了</td></tr>
+                    <tr><td>21:44</td><td>好臭的大｜经典</td></tr>
+                    <tr><td>21:45</td><td>大米都能抽你陀螺吗｜好狠的棒球棍｜打野在干嘛｜没有xiye谢区就是无敌的啊｜装b失败</td></tr>
+                    <tr><td>21:46</td><td>真的菜啊（x2）｜红温了（x2）｜6｜hahahahaha｜上路又单杀了</td></tr>
+                    <tr><td>21:47</td><td>不如周敢敢（x2）｜米人原话：单杀没什么好说的（x2）｜米：单杀张处没什么好说的啊又不是单杀周敢敢（x2）｜0-5？｜不如大米</td></tr>
+                    <tr><td>21:48</td><td>敢一孙（x4）｜0 3 1｜xiye不在谢区在哪边哪边赢｜不如真憨憨｜不是不叫人吗</td></tr>
+                    <tr><td>21:49</td><td>这剑魔和徐处的上单有什么区别（x2）｜上路纯破绽｜你特码一万米，你靠你妹｜僵硬的卢｜剑魔这个版本就是下水道啊 对线打得过谁 现版本强势上单全是剑</td></tr>
+                    <tr><td>21:50</td><td>一直亮标亮你妈呢?昨天没被谢哥云教育够?｜其实老张才是lc｜千万别升级鞋子｜点燃啊｜这剑魔和徐处的上单有什么区别</td></tr>
+                    <tr><td>21:51</td><td>qe二连用的真烂｜你们这选人四路劣势玩个毛啊｜天天说大米是lc，你比大米还菜｜张处｜慢性死亡</td></tr>
+                    <tr><td>21:52</td><td>不如妹妹（x2）｜本质京东（x2）｜saki玩的可以啊｜俊这个打野还是跟之前一样一坨｜四个人玩的不如一个妹妹</td></tr>
+                    <tr><td>21:53</td><td>本质京东（x3）｜翻了（x2）｜不是要变｜亚运会表演赛在哪看｜京东线下5人组</td></tr>
+                    <tr><td>21:54</td><td>起到一个开游戏的作用（x2）｜0-3-2｜剑魔不会打团就是超级兵｜开大打巨魔吗｜开大摸了巨魔两下跑了，哈哈</td></tr>
+                    <tr><td>21:55</td><td>张处不是不打内战了吗｜特么的卢锡安骑着关羽的白龙马好恶心｜玩上单更不用说了｜老张打线上的水平最多铂金不能再多了｜老张玩打野打团也最多虐虐辅助</td></tr>
+                    <tr><td>21:56</td><td>5个彩笔 没赢面｜Q1距离够为什么要E｜不出火炮还把杀人书送了｜主播这么菜我好没面子啊｜刚刚张处转账了</td></tr>
+                    <tr><td>21:57</td><td>你以为是为了赢吗 都在看上路的乐子罢了｜兮夜，其次鲳鱼｜有人收了张处的羊了吗｜查他手机｜毛➗也厉害啊</td></tr>
+                    <tr><td>21:58</td><td>还不如玩个狗头（x2）｜下凡｜下把选鳄鱼凯男吧，要不你对线打团都没优势｜不会延迟e的剑魔｜你对线都没有打爆大米，</td></tr>
+                    <tr><td>21:59</td><td>完了，全是老张的头（x2）｜gala走到的离谱位置，毛毛也走到了｜一波一波｜一看毛大牲就是要羊没成功｜下凡了张</td></tr>
+                    <tr><td>22:00</td><td>28分钟第一个眼｜ad谁啊｜大米打团零作用｜张张的神｜张畜送羊了，肯定数据华丽</td></tr>
+                </table>
+            </div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="section">
+        <h2><span class="no">8</span>队伍/人员画像</h2>
+        <p class="text-muted" style="margin-bottom:12px;">基于长期库与赛前弹幕提及量。本场直接队伍画像数据有限，以下为关联信息。</p>
+        <div class="grid-2">
+            <div class="card-mini">
+                <div class="label">队伍提及 TOP（真实）</div>
+                <table style="margin-top:8px;">
+                    <tr><th>队伍</th><th>提及</th><th>正/负</th></tr>
+                    <tr><td>IG</td><td>2</td><td><span class="tag-sm neutral">0/0</span></td></tr>
+                    <tr><td>MOUZ</td><td>1</td><td><span class="tag-sm neutral">0/0</span></td></tr>
+                    <tr><td>Iron Wing</td><td>1</td><td><span class="tag-sm neutral">0/0</span></td></tr>
+                </table>
+                <p class="text-muted" style="margin-top:8px;">注：以上为跨场关联提及，非本场直接对手。</p>
+            </div>
+            <div class="card-mini">
+                <div class="label">选手提及 TOP（真实）</div>
+                <table style="margin-top:8px;">
+                    <tr><th>选手</th><th>提及</th><th>正/负</th></tr>
+                    <tr><td>Chovy</td><td>1</td><td><span class="tag-sm neutral">0/0</span></td></tr>
+                    <tr><td>Zeus</td><td>1</td><td><span class="tag-sm neutral">0/0</span></td></tr>
+                </table>
+                <p class="text-muted" style="margin-top:8px;">本场核心选手未形成集中讨论。</p>
+            </div>
+        </div>
+        <details style="margin-top:16px;">
+            <summary>📊 长期画像与特质统计（折叠）</summary>
+            <div class="details-content">
+                <p><strong>队伍特质统计（真实）：</strong></p>
+                <ul class="bullet-list">
+                    <li>心态摆烂：4 条</li>
+                    <li>选手特质：1 条</li>
+                </ul>
+                <p style="margin-top:10px;"><strong>弹幕情绪倾向：</strong>负面/质疑占比较高，集中在上单与打野表现。观众对“张处”“大米”“大俊”等选手讨论热烈，但多为调侃与批评。</p>
+                <p style="margin-top:10px;"><strong>历史对阵：</strong>KC vs KOI 历史交手记录暂未在本次数据中体现，待补充。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="section">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">版本观察</h3>
+                <ul class="bullet-list">
+                    <li>弹幕提及“剑魔这个版本就是下水道”，反映当前版本上单生态偏向战士/剑系。</li>
+                    <li>“现版本强势上单全是剑”暗示剑魔、剑姬等英雄优先级讨论。</li>
+                    <li>卢锡安、鳄鱼、凯南等英雄被反复提及，BP博弈围绕上单展开。</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">联赛规律</h3>
+                <ul class="bullet-list">
+                    <li>LEC赛区弹幕文化活跃，选手个人表现易被放大讨论。</li>
+                    <li>赛前窗口弹幕密度19.1条/分，关注度中等偏上。</li>
+                    <li>“本质京东”等梗反映观众对特定战队风格的联想。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="section">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="highlight-box">
+            <strong>赛前预测待验证</strong><br>
+            本页为赛前情报，所有预测性内容（如上单突破口、打野节奏问题）需在赛后回填验证。当前无历史预测数据可回填。
+        </div>
+        <table style="margin-top:14px;">
+            <tr><th>预测项</th><th>赛前信号</th><th>赛后验证</th></tr>
+            <tr><td>上单对位是否成为突破口</td><td>弹幕集中质疑剑魔/上单</td><td><span class="tag-sm neutral">待回填</span></td></tr>
+            <tr><td>打野节奏是否被压制</td><td>“大俊打野没灵性”</td><td><span class="tag-sm neutral">待回填</span></td></tr>
+            <tr><td>阵容是否四路劣势</td><td>“四路劣势玩个毛”</td><td><span class="tag-sm neutral">待回填</span></td></tr>
+        </table>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="section">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">数据完整性三栏</h3>
+                <table>
+                    <tr><th>维度</th><th>状态</th></tr>
+                    <tr><td>弹幕数据</td><td><span class="tag-sm positive">完整</span> 577条 / 208用户</td></tr>
+                    <tr><td>盘口数据</td><td><span class="tag-sm negative">缺失</span> 仅1条讨论</td></tr>
+                    <tr><td>队伍/选手画像</td><td><span class="tag-sm neutral">部分</span> 长期库待补充</td></tr>
+                </table>
+            </div>
+            <div>
+                <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">硬信息六项</h3>
+                <ul class="bullet-list">
+                    <li>比赛：Karmine Corp vs Movistar KOI</li>
+                    <li>日期：2026-09-19</li>
+                    <li>节点：S0｜赛前｜PRE-MATCH</li>
+                    <li>弹幕总数：577</li>
+                    <li>活跃用户：208</li>
+                    <li>密度：19.1条/分</li>
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">长期沉淀点</h3>
+        <ul class="bullet-list">
+            <li>上单英雄池与版本适应性问题持续被讨论，可作为长期跟踪指标。</li>
+            <li>“谢处”“大中”“张处”等选手标签化讨论，反映社区情绪。</li>
+            <li>盘口信息缺失，需加强赛前市场数据采集。</li>
+        </ul>
+        <div class="divider"></div>
+        <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">关键信息 TOP 5-7</h3>
+        <ol style="padding-left:20px; font-size:14px; display:flex; flex-direction:column; gap:6px;">
+            <li>赛前弹幕总数577，活跃用户208，密度19.1条/分。</li>
+            <li>上单对位讨论最热，剑魔/卢锡安/鳄鱼等英雄争议大。</li>
+            <li>灰信号2条：“谢处故意的”“大中又开始演了”。</li>
+            <li>盘口讨论仅1条，市场信息稀薄，待开赛。</li>
+            <li>队伍提及IG(2)、MOUZ(1)、Iron Wing(1)，均为跨场关联。</li>
+            <li>选手提及Chovy(1)、Zeus(1)，本场核心选手未集中讨论。</li>
+            <li>队伍特质统计：心态摆烂4条，选手特质1条。</li>
+        </ol>
+        <p class="text-muted" style="margin-top:16px;">情报输出时间：2026-09-19 22:05 北京时间</p>
+    </div>
+    <div class="footer">
+        赛前弹幕情报 · 固定模板 v1 · 2026-08-30 固化 · 数据来源：弹幕切片与规则层统计
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
