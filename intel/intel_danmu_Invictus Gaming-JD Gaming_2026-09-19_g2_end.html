@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · IG vs JDG · G2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            align-items: center;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        .badge.warning {
+            background: #fff3cd;
+            color: #8a6d3b;
+        }
+        .badge.live {
+            background: #d4edda;
+            color: #155724;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #0071e3;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+            color: #1d1d1f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            color: #6e6e73;
+        }
+        .stat-value {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        .signal-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+            align-items: flex-start;
+        }
+        .signal-item:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .tag-risk { background: #ffe5e5; color: #c0392b; }
+        .tag-anchor { background: #e5f0ff; color: #0055b3; }
+        .tag-market { background: #fff3e0; color: #b85c00; }
+        .tag-consensus { background: #e8f5e9; color: #1e7e34; }
+        .tag-grey { background: #f0f0f2; color: #6e6e73; }
+        .tag-pred { background: #f3e5f5; color: #7b1fa2; }
+        .tag-source { background: #e8e8ed; color: #3a3a3c; font-weight: 500; }
+        .decision-box {
+            background: #f0f7ff;
+            border-left: 4px solid #0071e3;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        .decision-box strong {
+            color: #0071e3;
+        }
+        details {
+            margin-top: 12px;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        details summary {
+            padding: 12px 16px;
+            background: #fafafa;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: #0071e3;
+            transition: transform 0.2s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details .details-content {
+            padding: 16px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 13px;
+            color: #3a3a3c;
+            background: #ffffff;
+        }
+        .danmu-line {
+            padding: 4px 0;
+            border-bottom: 1px solid #f5f5f7;
+            font-size: 13px;
+            display: flex;
+            gap: 8px;
+        }
+        .danmu-line:last-child {
+            border-bottom: none;
+        }
+        .danmu-time {
+            color: #8e8e93;
+            white-space: nowrap;
+            font-size: 12px;
+            min-width: 80px;
+        }
+        .danmu-text {
+            color: #1d1d1f;
+            word-break: break-word;
+        }
+        .danmu-count {
+            color: #0071e3;
+            font-weight: 500;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 8px 0;
+        }
+        th {
+            text-align: left;
+            padding: 8px 10px;
+            background: #fafafa;
+            font-weight: 600;
+            color: #6e6e73;
+            font-size: 12px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .text-muted {
+            color: #8e8e93;
+            font-size: 13px;
+        }
+        .text-small {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mb-8 { margin-bottom: 8px; }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .highlight {
+            background: #fff9e6;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        .source-tag {
+            font-size: 11px;
+            color: #8e8e93;
+            background: #f5f5f7;
+            padding: 1px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .chip {
+            display: inline-block;
+            background: #f0f0f2;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin: 2px 4px 2px 0;
+            color: #3a3a3c;
+        }
+        .chip.blue { background: #e5f0ff; color: #0055b3; }
+        .chip.red { background: #ffe5e5; color: #c0392b; }
+        .chip.green { background: #e8f5e9; color: #1e7e34; }
+        .chip.orange { background: #fff3e0; color: #b85c00; }
+        .chip.purple { background: #f3e5f5; color: #7b1fa2; }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Invictus Gaming-JD Gaming 2026-09-19 g2 end</b></div>
+<div class="container">
+    <!-- 头部 -->
+    <div class="card" style="padding-bottom: 16px;">
+        <h1>局中弹幕情报快照 · G2</h1>
+        <div class="subhead">
+            <span class="badge warning">⚠️ 局中·非终局，结果待定</span>
+            <span class="badge">Invictus Gaming vs JD Gaming</span>
+            <span class="badge">2026-09-19 · 第2小局</span>
+            <span class="badge live">弹幕口径 · 官方待回填</span>
+        </div>
+        <div class="text-small" style="color:#8e8e93;">情报输出时间：2026-09-19 19:05 北京时间（UTC+8）｜数据源：弹幕切片 + 规则层统计</div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div style="background:#fafafa; border-radius:12px; padding:14px 18px; margin-bottom:14px;">
+            <div style="font-size:15px; font-weight:600; margin-bottom:4px;">比分/进度：IG 2 : 0 JDG（弹幕口径·官方待回填）</div>
+            <div class="text-small">第2小局已结束（局末·待结算校准），系列赛结果以官方为准，禁止从弹幕推断比分。</div>
+        </div>
+        <div class="signal-item">
+            <span class="tag tag-risk">风险</span>
+            <span>灰信号集中质疑“故意输/打钱/暂停”，528条灰信号，观众质疑非结论 <span class="source-tag">本场弹幕</span> → 详 §2</span>
+        </div>
+        <div class="signal-item">
+            <span class="tag tag-anchor">锚点</span>
+            <span>IG韧性逆转提及365次，JDG被翻守不住58次，心态摆烂815次 <span class="source-tag">历史画像</span> → 详 §8</span>
+        </div>
+        <div class="signal-item">
+            <span class="tag tag-market">盘口</span>
+            <span>盘口讨论763条，“48”反复刷屏，指向资金/让分讨论 <span class="source-tag">本场弹幕</span> → 详 §4</span>
+        </div>
+        <div class="signal-item">
+            <span class="tag tag-consensus">共识</span>
+            <span>“打钱/加钱/到账”刷屏，弹幕共识指向比赛公正性质疑 <span class="source-tag">本场弹幕</span> → 详 §5</span>
+        </div>
+        <div class="signal-item">
+            <span class="tag tag-pred">条件预测</span>
+            <span>若灰信号持续，JDG心态摆烂风险上升；IG韧性逆转概率偏高 <span class="source-tag">推测·待验证</span> → 详 §6</span>
+        </div>
+        <div class="decision-box">
+            <strong>一句话决策落点：</strong>本局弹幕灰信号密集，盘口讨论活跃，建议对JDG方向保持谨慎，关注官方结算与后续BP调整。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-row"><span class="stat-label">比赛</span><span class="stat-value">Invictus Gaming vs JD Gaming</span></div>
+                <div class="stat-row"><span class="stat-label">日期</span><span class="stat-value">2026-09-19</span></div>
+                <div class="stat-row"><span class="stat-label">小局</span><span class="stat-value">第2小局（G2）</span></div>
+                <div class="stat-row"><span class="stat-label">节点</span><span class="stat-value">局末/局间（GAME-REVIEW）</span></div>
+            </div>
+            <div>
+                <div class="stat-row"><span class="stat-label">官方当前比分</span><span class="stat-value">JDG 0 : 2 IG（官方 gameWins）</span></div>
+                <div class="stat-row"><span class="stat-label">本页状态</span><span class="stat-value" style="color:#b85c00;">局中·非终局，结果待定</span></div>
+                <div class="stat-row"><span class="stat-label">弹幕总数</span><span class="stat-value">93,919 条</span></div>
+                <div class="stat-row"><span class="stat-label">活跃用户</span><span class="stat-value">12,741</span></div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between">
+            <span class="text-small">弹幕密度：1857.5 条/分</span>
+            <span class="text-small">本节点弹幕样本：259 条（覆盖52个分钟段）</span>
+        </div>
+        <div class="mt-8 text-small" style="color:#8e8e93;">⚠️ 结果待官方核对，本页所有比分/进度均以弹幕口径为准，系列赛结果以官方为准。</div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="flex-between mb-8">
+            <span><strong>灰信号总量：528 条</strong> <span class="source-tag">本场弹幕</span></span>
+            <span class="text-small">词表命中：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送</span>
+        </div>
+        <table>
+            <thead><tr><th>灰信号主题</th><th>典型样本</th><th>条数（带量）</th></tr></thead>
+            <tbody>
+                <tr><td>让一追三剧本</td><td>“又是让一追三吗？我喜欢这个剧本”</td><td>高频</td></tr>
+                <tr><td>故意输/打钱</td><td>“故意输给钱了”</td><td>高频</td></tr>
+                <tr><td>解说质疑</td><td>“王多多故意的”</td><td>中频</td></tr>
+                <tr><td>暂停/收米</td><td>“一局暂停三次，IG又打钱了？”</td><td>中频</td></tr>
+                <tr><td>打野收钱</td><td>“这打野是真菜，严查打野收钱了”</td><td>中频</td></tr>
+            </tbody>
+        </table>
+        <div class="text-small mt-8" style="color:#8e8e93;">⚠️ 以上均为观众质疑，非结论。灰信号密集反映弹幕情绪，不构成事实判断。</div>
+        <details>
+            <summary>灰信号弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <div class="danmu-line"><span class="danmu-time">18:25</span><span class="danmu-text">ig特权队，jdl不敢赢</span><span class="danmu-count">x18</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:25</span><span class="danmu-text">资本不给IG赢，搞BUG给IG，但是我相信正义必胜</span><span class="danmu-count">x12</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:44</span><span class="danmu-text">一局暂停三次，IG又打钱了？</span><span class="danmu-count">x30</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:45</span><span class="danmu-text">IG一局暂停三次，又打钱了？</span><span class="danmu-count">x30</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:48</span><span class="danmu-text">暂停完就送哈哈</span><span class="danmu-count">x18</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:48</span><span class="danmu-text">这打野是真菜，严查打野收钱了</span><span class="danmu-count">x18</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:55</span><span class="danmu-text">不敢赢，不敢赢，懂得都懂</span><span class="danmu-count">x15</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <h3>本局阵容（英雄+选手）</h3>
+                <div class="text-small" style="color:#8e8e93;">基于弹幕提及与Riot window校准，部分选手对应关系待官方确认。</div>
+                <div class="mt-8">
+                    <div class="chip blue">IG：杰斯</div>
+                    <div class="chip blue">IG：永恩（肉鸡）</div>
+                    <div class="chip blue">IG：青钢影</div>
+                    <div class="chip blue">IG：卡莉斯塔（嘎子）</div>
+                    <div class="chip blue">IG：奥恩</div>
+                </div>
+                <div class="mt-8">
+                    <div class="chip red">JDG：皇子</div>
+                    <div class="chip red">JDG：阿卡丽</div>
+                    <div class="chip red">JDG：卡牌</div>
+                    <div class="chip red">JDG：列娜塔</div>
+                    <div class="chip red">JDG：薇恩</div>
+                </div>
+                <div class="text-small mt-8">弹幕提及：“京东拿皇子＋阿卡丽无敌了”（x18），“选卡列上来抗压？？？”（x12），“卡牌扣一万~”（x24）</div>
+            </div>
+            <div>
+                <h3>BP 后战绩情报</h3>
+                <div class="text-small">无战绩情报提及（弹幕未提供该阵容历史胜率数据）。</div>
+                <h3 class="mt-12">选人讨论锚点</h3>
+                <div class="text-small">“肉鸡还能玩永恩啊”（x1）、“ez没用”（x15）、“下把选奥拉夫就赢了”（x6）、“薇恩”（x12）</div>
+            </div>
+        </div>
+        <details>
+            <summary>BP 相关弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <div class="danmu-line"><span class="danmu-time">18:04</span><span class="danmu-text">杰斯</span><span class="danmu-count">x1</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:04</span><span class="danmu-text">肉鸡还能玩永恩啊，</span><span class="danmu-count">x1</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:05</span><span class="danmu-text">青钢影</span><span class="danmu-count">x6</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:07</span><span class="danmu-text">京东拿皇子＋阿卡丽无敌了！！！！！！！！！！！！！！</span><span class="danmu-count">x18</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:08</span><span class="danmu-text">奥恩</span><span class="danmu-count">x19</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:27</span><span class="danmu-text">选卡列上来抗压？？？</span><span class="danmu-count">x12</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:33</span><span class="danmu-text">卡牌扣一万~卡牌扣一万~</span><span class="danmu-count">x24</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:54</span><span class="danmu-text">薇恩</span><span class="danmu-count">x12</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="flex-between mb-8">
+            <span><strong>盘口讨论总量：763 条</strong> <span class="source-tag">本场弹幕</span></span>
+            <span class="text-small">高频词：“48”反复出现</span>
+        </div>
+        <table>
+            <thead><tr><th>盘口主题</th><th>典型样本</th><th>条数（带量）</th></tr></thead>
+            <tbody>
+                <tr><td>“48”刷屏</td><td>“48”</td><td>高频（763条中集中）</td></tr>
+                <tr><td>打钱/加钱</td><td>“打钱”（x172）、“加钱”（x110）、“得加钱”（x75）</td><td>高频</td></tr>
+                <tr><td>到账/钱到位</td><td>“到账了”（x49）、“钱到位了”（x24）</td><td>中频</td></tr>
+                <tr><td>退钱</td><td>“退钱”（x30）</td><td>中频</td></tr>
+                <tr><td>刘总：JD不缺钱</td><td>“刘总：JD不缺钱。”（x36）</td><td>中频</td></tr>
+            </tbody>
+        </table>
+        <div class="text-small mt-8">盘口讨论与灰信号高度重叠，弹幕共识指向“资金/让分”讨论，需结合官方信息判断。</div>
+        <details>
+            <summary>盘口相关弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <div class="danmu-line"><span class="danmu-time">18:17</span><span class="danmu-text">打钱</span><span class="danmu-count">x172</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:18</span><span class="danmu-text">打钱了</span><span class="danmu-count">x40</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:21</span><span class="danmu-text">到账了</span><span class="danmu-count">x27</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:22</span><span class="danmu-text">加钱</span><span class="danmu-count">x40</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:23</span><span class="danmu-text">得加钱</span><span class="danmu-count">x75</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:24</span><span class="danmu-text">刘总：JD不缺钱。</span><span class="danmu-count">x36</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:42</span><span class="danmu-text">打钱</span><span class="danmu-count">x135</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:43</span><span class="danmu-text">得加钱</span><span class="danmu-count">x49</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div>
+                <h3>正锚</h3>
+                <div class="text-small">IG加油/必胜类弹幕高频（“IG加油”x45、“ig加油”x42、“ig必胜”x15），IG韧性逆转历史提及365次。</div>
+                <h3 class="mt-12">负锚</h3>
+                <div class="text-small">JDG被翻守不住58次、心态摆烂815次；弹幕“ig没了”（x12）、“gg”（x12）、“没了”（x24）。</div>
+            </div>
+            <div>
+                <h3>群体共识</h3>
+                <div class="text-small">“打钱/加钱/到账”共识强烈（盘口763条），灰信号528条质疑比赛公正性。分歧点：部分弹幕认为IG实力取胜（“黑子说话”x1620），部分认为JDG故意输。</div>
+                <h3 class="mt-12">灰信号条件预测</h3>
+                <div class="text-small">若灰信号持续，JDG心态摆烂风险上升；IG韧性逆转概率偏高（历史画像支持）。<span class="source-tag">推测·待验证</span></div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>弹幕共识提炼表</h3>
+        <table>
+            <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+            <tbody>
+                <tr><td>打钱/加钱</td><td>质疑比赛公正</td><td>高频（763条盘口）</td><td>“打钱”（x172）、“加钱”（x110）</td><td>同向=强信号</td></tr>
+                <tr><td>IG加油</td><td>支持IG</td><td>高频（4914提及）</td><td>“IG加油”（x45）、“ig加油”（x42）</td><td>同向=强信号</td></tr>
+                <tr><td>黑子说话</td><td>反击质疑</td><td>高频（x1620）</td><td>“黑子说话”（x1620）</td><td>背离=分歧信号</td></tr>
+                <tr><td>暂停/收米</td><td>质疑暂停动机</td><td>中频</td><td>“一局暂停三次，IG又打钱了？”（x30）</td><td>同向=强信号</td></tr>
+                <tr><td>让一追三</td><td>剧本论</td><td>中频</td><td>“又是让一追三吗？我喜欢这个剧本”</td><td>同向=强信号</td></tr>
+            </tbody>
+        </table>
+        <div class="text-small mt-8">共识→信号链：打钱/加钱共识强烈 → 灰信号密集 → 比赛公正性质疑上升；IG加油共识 → 正锚支撑。</div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div class="grid-2">
+            <div>
+                <h3>LONG（看多）</h3>
+                <div class="text-small">IG方向：韧性逆转历史提及365次，弹幕正锚“IG加油”高频，若官方结算确认IG胜，则正锚强化。</div>
+                <h3 class="mt-12">SHORT（看空）</h3>
+                <div class="text-small">JDG方向：心态摆烂815次、被翻守不住58次，灰信号密集指向JDG可能存在问题，短期谨慎。</div>
+            </div>
+            <div>
+                <h3>关键决策落点</h3>
+                <div class="text-small">1. 灰信号528条，盘口763条，比赛公正性质疑强烈，建议等待官方结算。<br>
+                2. 弹幕共识“打钱/加钱”与“黑子说话”背离，分歧信号明显。<br>
+                3. 本局BP中JDG皇子+阿卡丽被弹幕认为“无敌”，但实际结果待定。</div>
+            </div>
+        </div>
+        <div class="decision-box mt-12">
+            <strong>综合落点：</strong>局中弹幕情绪偏向质疑与支持IG并存，灰信号密集，建议对JDG方向保持谨慎，关注官方结算与后续BP调整。
+        </div>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <div class="text-small mb-8">当前局已发生片段+时间线，未发生写「待观察」。</div>
+        <div class="grid-2">
+            <div>
+                <h3>G2 关键时间线</h3>
+                <div class="text-small">18:04-18:07 BP阶段：杰斯、永恩、青钢影、皇子、阿卡丽等英雄提及。<br>
+                18:08-18:12 对线期：奥恩、及时雨、bin哥牛壁等弹幕。<br>
+                18:13-18:20 节奏期：打钱、加钱、暂停讨论开始出现。<br>
+                18:21-18:35 团战期：卡牌扣一万、暂停、打钱刷屏。<br>
+                18:36-18:48 关键团战：乌龟队、帅（x1980）、黑子说话。<br>
+                18:49-18:55 结局：翻了（x144）、一波了（x25）、2（x2077）、黑子说话（x1620）。</div>
+            </div>
+            <div>
+                <h3>关键团战/事件</h3>
+                <div class="text-small">“帅”（x1980）出现在18:38，疑似关键操作引发弹幕爆发。<br>
+                “翻了”（x144）、“翻盘了”（x30）出现在18:49，指向局势逆转。<br>
+                “2”（x2077）、“黑子说话”（x1620）出现在18:51，疑似IG拿下比赛后弹幕刷屏。</div>
+            </div>
+        </div>
+        <details>
+            <summary>G2 完整弹幕时间线（折叠）</summary>
+            <div class="details-content">
+                <div class="danmu-line"><span class="danmu-time">18:04</span><span class="danmu-text">IG加油（x3）｜ig加油（x3）｜杰斯｜肉鸡还能玩永恩啊，</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:05</span><span class="danmu-text">IG加油（x12）｜iG加油（x9）｜强队软脚虾1（x6）｜青钢影（x6）｜1-3（x3）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:06</span><span class="danmu-text">没了（x24）｜ig加油（x18）｜IG加油（x15）｜ez没用（x15）｜ig必胜（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:07</span><span class="danmu-text">我老婆（x39）｜二哥（x27）｜京东拿皇子＋阿卡丽无敌了！（x18）｜ig必胜（x15）｜你们老婆（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:08</span><span class="danmu-text">我老婆（x72）｜二哥（x45）｜驼子姐（x22）｜老二（x21）｜奥恩（x19）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:09</span><span class="danmu-text">于慧源我想你了你快回来吧（x18）｜谁是老二（x15）｜都是lck的玩具（x15）｜gg（x12）｜ig没了（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:10</span><span class="danmu-text">IG加油（x45）｜ig加油（x42）｜今天是919暗示救一救嘎拉吧（x27）｜于慧源我想你了你快回来吧（x18）｜阿水：我学会了（x18）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:11</span><span class="danmu-text">ig加油（x48）｜哪里学的鞠躬碰拳，恶心…（x30）｜牛来（x28）｜于慧源我想你了你快回来吧（x21）｜阿一古，来点苏轼原话（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:12</span><span class="danmu-text">及时雨（x40）｜bin哥牛壁bin哥牛壁bin（x15）｜哪里学的鞠躬碰拳…（x12）｜于慧源我想你了你快回来吧（x9）｜码头（x9）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:13</span><span class="danmu-text">及时雨（x131）｜逆天（x30）｜白子说话（x27）｜下雨了（x24）｜犯病了（x16）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:14</span><span class="danmu-text">今天是919暗示救一救嘎拉吧（x27）｜黑子急了！shy哥世界第一上单（x18）｜IG加油（x15）｜佳琪：大哥，你好好对线別送好么（x12）｜黑子说话！shy哥世界第一上单（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:15</span><span class="danmu-text">黑子急了！shy哥世界第一上单（x24）｜🧟🧟🧟🧟🧟🧟🧟（x18）｜IG加油（x15）｜今天是919暗示救一救嘎拉吧（x15）｜黑子说话！shy哥世界第一上单（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:16</span><span class="danmu-text">打工（x21）｜阿一古，来点苏轼原话（x18）｜本土选手的兰博杰斯都是一坨（x15）｜都是lck的玩具（x15）｜黑子急了！shy哥世界第一上单（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:17</span><span class="danmu-text">打钱（x172）｜打钱了（x58）｜糯米鸡（x33）｜送一斤（x23）｜黑子说话！shy哥世界第一上单（x21）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:18</span><span class="danmu-text">打钱（x105）｜打钱了（x40）｜白子说话（x30）｜ig加油（x27）｜打野：中上各送一个怎么玩（x21）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:19</span><span class="danmu-text">打钱（x60）｜阿一古（x42）｜黑子说话！shy哥世界第一上单（x24）｜48你真牛大了？敢封杀我管哥（x18）｜TES加油（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:20</span><span class="danmu-text">乐队出国巡演了（x15）｜宝岛双区（x15）｜哪里学的鞠躬碰拳…（x12）｜管泽元去哪了多久没解说了啊（x12）｜菜菜菜菜…（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:21</span><span class="danmu-text">黑子说话（x39）｜宝岛双区（x34）｜到账了（x27）｜今天是919暗示救一救嘎拉吧（x21）｜嘎子 太抽象了 嘎子这卡莉斯塔 没一点熟练度（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:22</span><span class="danmu-text">打钱（x58）｜钱不够（x41）｜加钱（x40）｜继续打钱（x24）｜得加钱（x21）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:23</span><span class="danmu-text">加钱（x110）｜得加钱（x75）｜打钱（x49）｜退钱（x30）｜阿一古（x30）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:24</span><span class="danmu-text">刘总：JD不缺钱。（x36）｜加钱（x33）｜打钱（x27）｜这怎么玩（x27）｜加油（x21）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:25</span><span class="danmu-text">ig特权队，jdl不敢赢（x18）｜弹幕春货真多（x15）｜资本不给IG赢…（x12）｜黑子说话…（x12）｜一个队2分钟内连续叫停？？？？（x9）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:26</span><span class="danmu-text">黑子说话（x36）｜到账了（x24）｜钱到位了（x24）｜红区（x21）｜救救旮旯（x18）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:27</span><span class="danmu-text">美团和京东外卖一哥之争？（x18）｜讲个笑话：s8s9s11有含金量（x18）｜ig特权队，jdl不敢赢（x15）｜记住我的话今年S赛冠必是HLE（x15）｜选卡列上来抗压？？？（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:28</span><span class="danmu-text">可惜今年没有17强给ig蝉联了（x18）｜ig特权队，jdl不敢赢（x15）｜想48了（x12）｜管泽元去哪了多久没解说了啊（x12）｜妹妹发威了？？？？（x9）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:29</span><span class="danmu-text">网红队，老年人，吃流量（x21）｜区（x18）｜许褚（x18）｜你们觉得哪个战队出去打比赛不丢脸？（x15）｜加油（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:30</span><span class="danmu-text">舅舅旮旯（x41）｜网红队，老年人，吃流量（x18）｜救救旮旯（x15）｜让一追三人类胜利（x15）｜🍆🍆🍆🍆🍆🍆🍆（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:31</span><span class="danmu-text">网红队，老年人，吃流量（x21）｜手刃叛徒旮旯！（x15）｜记住我的话今年S赛冠必是HLE（x15）｜iG加油（x12）｜lpl就靠ig赚门票吗（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:32</span><span class="danmu-text">网红队，老年人，吃流量（x33）｜宝岛双区（x18）｜这真的是AD差距，佳琪打哥哥把把被压着打（x18）｜暂停完无限送 卖票了（x15）｜琪老登别看了（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:33</span><span class="danmu-text">‘有主队当什么解说（x24）｜卡牌扣一万~（x24）｜网红队，老年人，吃流量（x24）｜为什么不喷这个上单这个小徐像个人机（x18）｜rng（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:34</span><span class="danmu-text">旮旯连佳琪都打不过，队伍最贵的打不过最便宜的人（x18）｜IG加油！！（x15）｜我算看懂了IG就想以4号进世界（x15）｜我靠jee骑大嫂出事了快去看（x15）｜ig（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:35</span><span class="danmu-text">网红队，老年人，吃流量（x18）｜让二追三（x15）｜黑子急急急（x15）｜99嘎啦（x9）｜ig（x9）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:36</span><span class="danmu-text">涅槃也有孝子吗？哈哈哈哈（x15）｜网红队，老年人，吃流量（x15）｜琪亚娜人头都喂到队友嘴里…（x12）｜保送网红队真的恶心（x9）｜手刃叛徒旮旯！（x9）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:37</span><span class="danmu-text">乌龟（x27）｜帅（x21）｜乌龟队名不虚传（x18）｜严查（x15）｜乌龟队（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:38</span><span class="danmu-text">帅（x1980）｜黑子说话（x25）｜詹姆斯挡拆（x21）｜又可以出集锦剪一周了（x18）｜嘎处现在知道急了…（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:39</span><span class="danmu-text">红区（x28）｜我是隔壁赛区的，你们别犬吠了…（x21）｜乌龟队名不虚传（x18）｜IG哥几个加油啊（x15）｜卡牌扣一万~（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:40</span><span class="danmu-text">IG永不五杀（x31）｜红区（x30）｜ig永不五杀（x19）｜舅舅旮旯（x18）｜黑子说话（x18）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:41</span><span class="danmu-text">IG加油（x18）｜下等马下等马下等马（x15）｜哈哈哈哈哈哈哈，列娜塔大招不掩护队友撤退…（x15）｜SHY哥太厉害了！！！！！！！！！（x12）｜junjia快滚（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:42</span><span class="danmu-text">打钱（x135）｜加钱（x58）｜打钱了（x46）｜又来（x33）｜又暂停（x31）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:43</span><span class="danmu-text">打钱（x70）｜得加钱（x49）｜舅舅旮旯（x48）｜加钱（x33）｜暂停队（x30）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:44</span><span class="danmu-text">IG加油（x39）｜舅舅旮旯（x33）｜一局暂停三次，IG又打钱了？（x30）｜救救旮旯（x30）｜tabe收米红区不会卡牌一直选（x24）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:45</span><span class="danmu-text">IG一局暂停三次，又打钱了？（x30）｜刘总：JD不缺钱。（x30）｜tabe收米红区不会卡牌一直选（x27）｜加油（x27）｜打钱（x24）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:46</span><span class="danmu-text">今天是919暗示救一救嘎拉吧（x24）｜IG一局暂停三次，又打钱了？（x15）｜不敢赢不敢赢不敢赢根本不敢赢（x15）｜舅舅旮旯（x12）｜4848，4488是人我吃（x9）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:47</span><span class="danmu-text">今天是919暗示救一救嘎拉吧（x27）｜TABE早就算到了~（x15）｜村里一个姑娘叫小芳（x15）｜陌生（x15）｜下等马下等马下等马（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:48</span><span class="danmu-text">今天是919暗示救一救嘎拉吧（x27）｜暂停完就送哈哈（x18）｜这打野是真菜，严查打野收钱了（x18）｜可以想象现在塌鼻的嘴脸…（x15）｜广告鬼才（x15）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:49</span><span class="danmu-text">翻了（x144）｜到账了（x49）｜翻了翻了（x47）｜翻盘了（x30）｜翻（x24）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:50</span><span class="danmu-text">黑子说话（x114）｜2（x30）｜一波了（x25）｜gg（x24）｜今天是919暗示救一救嘎拉吧（x24）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:51</span><span class="danmu-text">2（x2077）｜黑子说话（x1620）｜1（x180）｜3（x75）｜5（x66）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:52</span><span class="danmu-text">2（x1234）｜1（x180）｜黑子说话（x33）｜4（x27）｜5（x27）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:53</span><span class="danmu-text">Wei（x15）｜wei（x15）｜2（x9）｜对面这个发挥。iG赢不了的话。那可以解散了。哪来脸喊黑子说话（x9）｜下把选奥拉夫就赢了（x6）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:54</span><span class="danmu-text">警告警告（x18）｜让二追三的话就卸载游戏了（x18）｜等下有出征仪式吗？（x15）｜薇恩（x12）｜警告（x12）</span></div>
+                <div class="danmu-line"><span class="danmu-time">18:55</span><span class="danmu-text">不敢赢，不敢赢，懂得都懂（x15）｜警告警告（x13）｜黑子叫（x9）｜之前IG输怪我，我一看就输，不看就赢（x6）｜让二追三的话就卸载游戏了（x6）</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <h3>队伍提及 TOP</h3>
+                <div class="stat-row"><span class="stat-label">IG</span><span class="stat-value">提及4914（正258/负207）</span></div>
+                <div class="stat-row"><span class="stat-label">JDG</span><span class="stat-value">提及1087（正20/负146）</span></div>
+                <div class="stat-row"><span class="stat-label">BLG</span><span class="stat-value">提及286（正24/负41）</span></div>
+                <div class="stat-row"><span class="stat-label">WE</span><span class="stat-value">提及205（正18/负43）</span></div>
+                <div class="stat-row"><span class="stat-label">AL</span><span class="stat-value">提及161（正12/负9）</span></div>
+                <div class="stat-row"><span class="stat-label">TES</span><span class="stat-value">提及158（正17/负7）</span></div>
+                <div class="stat-row"><span class="stat-label">T1</span><span class="stat-value">提及103（正8/负12）</span></div>
+                <div class="stat-row"><span class="stat-label">EDG</span><span class="stat-value">提及99（正0/负1）</span></div>
+            </div>
+            <div>
+                <h3>选手提及 TOP</h3>
+                <div class="stat-row"><span class="stat-label">Faker</span><span class="stat-value">提及697（正28/负99）</span></div>
+                <div class="stat-row"><span class="stat-label">Chovy</span><span class="stat-value">提及24（正3/负0）</span></div>
+                <div class="stat-row"><span class="stat-label">33</span><span class="stat-value">提及12（正0/负0）</span></div>
+                <div class="stat-row"><span class="stat-label">Zeus</span><span class="stat-value">提及11（正0/负0）</span></div>
+                <div class="stat-row"><span class="stat-label">Zywoo</span><span class="stat-value">提及6（正0/负0）</span></div>
+                <div class="stat-row"><span class="stat-label">Collapse</span><span class="stat-value">提及6（正0/负0）</span></div>
+                <div class="stat-row"><span class="stat-label">Oscar</span><span class="stat-value">提及3（正0/负0）</span></div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>队伍特质统计（历史画像）</h3>
+        <div class="grid-3">
+            <div class="stat-row"><span class="stat-label">逆风崩盘</span><span class="stat-value">37</span></div>
+            <div class="stat-row"><span class="stat-label">顺风隐身</span><span class="stat-value">6</span></div>
+            <div class="stat-row"><span class="stat-label">被翻守不住</span><span class="stat-value">58</span></div>
+            <div class="stat-row"><span class="stat-label">韧性逆转</span><span class="stat-value">365</span></div>
+            <div class="stat-row"><span class="stat-label">心态摆烂</span><span class="stat-value">815</span></div>
+            <div class="stat-row"><span class="stat-label">慢热手热</span><span class="stat-value">10</span></div>
+            <div class="stat-row"><span class="stat-label">打法风格</span><span class="stat-value">231</span></div>
+            <div class="stat-row"><span class="stat-label">选手特质</span><span class="stat-value">164</span></div>
+        </div>
+        <details>
+            <summary>长画像与特质说明（折叠）</summary>
+            <div class="details-content">
+                <p><strong>IG：</strong>韧性逆转提及365次，正锚“IG加油”高频，历史画像显示IG在逆境中有较强翻盘能力。但“心态摆烂”815次也提示情绪波动风险。</p>
+                <p><strong>JDG：</strong>被翻守不住58次，心态摆烂815次，负锚明显。弹幕提及JDG时负向146次，正向仅20次，情绪偏负面。</p>
+                <p><strong>选手：</strong>Faker提及697次（负99），Chovy提及24次，其他选手样本较少。本局选手表现讨论集中在“嘎子”、“肉鸡”、“shy哥”等。</p>
+                <p class="text-small">注：以上画像基于历史弹幕统计，非本局实时结论。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="grid-2">
+            <div>
+                <h3>联赛规律</h3>
+                <div class="text-small">LPL季后赛/资格赛阶段，弹幕情绪波动大，灰信号密集。历史规律显示“让一追三”剧本讨论频繁，但实际发生概率需结合官方数据。</div>
+                <h3 class="mt-12">版本相关</h3>
+                <div class="text-small">本局BP涉及杰斯、永恩、青钢影、皇子、阿卡丽、卡牌、列娜塔、薇恩等英雄。弹幕提及“下把选奥拉夫就赢了”，暗示版本强势英雄讨论。</div>
+            </div>
+            <div>
+                <h3>跨源一致性提示</h3>
+                <div class="text-small">弹幕口径与官方数据存在差异：弹幕大量讨论“打钱/暂停”，官方未发布相关公告。建议以官方为准，弹幕仅作情绪参考。</div>
+                <h3 class="mt-12">比赛元数据</h3>
+                <div class="text-small">比赛：IG vs JDG，2026-09-19，第2小局。节点：局末/局间。弹幕总数93,919，活跃用户12,741，密度1857.5条/分。</div>
+            </div>
+        </div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="text-small mb-8">本页为局中快照，预测验证需等待官方结算与后续比赛。</div>
+        <table>
+            <thead><tr><th>预测项</th><th>当前状态</th><th>验证结果</th></tr></thead>
+            <tbody>
+                <tr><td>IG韧性逆转</td><td>弹幕“翻了”（x144）、“翻盘了”（x30）出现</td><td>待官方结算确认</td></tr>
+                <tr><td>JDG心态摆烂</td><td>灰信号密集，负锚明显</td><td>待观察</td></tr>
+                <tr><td>“打钱”共识</td><td>盘口763条，灰信号528条</td><td>非结论，待官方信息</td></tr>
+                <tr><td>让一追三剧本</td><td>弹幕提及“让一追三”（x15）</td><td>待观察</td></tr>
+            </tbody>
+        </table>
+        <div class="text-small mt-8">⚠️ 局中·非终局，结果待定。预测验证需以官方最终数据为准。</div>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-2">
+            <div>
+                <h3>实际数据源</h3>
+                <div class="text-small">1. 规则层情报 JSON：/opt/danmu-intel/runtime/vps_intel/lol-ig1-jdg-2026-09-19_g2_end_intel.json<br>
+                2. 弹幕切片：/opt/danmu-intel/data/intel_slices/lol-ig1-jdg-2026-09-19_g2_end.jsonl<br>
+                3. 官方数据：官方当前比分 JDG 0 : 2 IG（gameWins）</div>
+            </div>
+            <div>
+                <h3>预期数据源</h3>
+                <div class="text-small">官方结算数据、Riot window阵容校准、后续小局BP数据。</div>
+                <h3 class="mt-12">缺口</h3>
+                <div class="text-small">官方结算未出，本页所有比分/进度以弹幕口径为准，结果待定。部分选手对应关系待官方确认。</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between">
+            <span class="text-small">情报输出时间：2026-09-19 19:05 北京时间（UTC+8）</span>
+            <span class="text-small">数据完整性：实际数据源已覆盖，官方结算缺口待补。</span>
+        </div>
+        <div class="text-small mt-8" style="color:#8e8e93;">本页为局中弹幕情报快照，不构成最终结论。所有时间均为北京时间。</div>
+    </div>
+    <!-- 本场长期沉淀点 -->
+    <div class="card" style="background:#fafafa;">
+        <h2 style="font-size:16px;"><span class="no" style="background:#6e6e73;">★</span>本场长期沉淀点</h2>
+        <div class="text-small">1. 灰信号密集（528条）与盘口讨论（763条）高度重叠，反映弹幕对比赛公正性的强烈质疑，可作为后续同类赛事情绪监测的参考基线。</div>
+        <div class="text-small mt-8">2. IG韧性逆转历史提及365次，本局弹幕出现“翻了”“翻盘了”等信号，若官方确认IG胜，则正锚强化，可沉淀为IG逆境翻盘案例。</div>
+        <div class="text-small mt-8">3. JDG被翻守不住58次、心态摆烂815次，负锚明显，后续JDG比赛需关注心态波动风险。</div>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
