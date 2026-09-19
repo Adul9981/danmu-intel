@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · Karmine Corp vs Movistar KOI · G2 BP后</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card-bg: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --accent: #0071e3;
+    --accent-soft: #e8f0fe;
+    --border: #d2d2d7;
+    --divider: #e5e5ea;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --mono: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: 20px 16px 60px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+  /* header */
+  .page-header {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px 28px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    border: 1px solid var(--divider);
+  }
+  .page-header .match-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .page-header .match-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-bottom: 12px;
+  }
+  .page-header .match-meta span { display: inline-flex; align-items: center; gap: 4px; }
+  .badge-live {
+    display: inline-block;
+    background: #ff3b30;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .badge-pending {
+    display: inline-block;
+    background: #ff9500;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .notice-bar {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #8d6e00;
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .notice-bar .icon { font-size: 16px; flex-shrink: 0; }
+  /* section */
+  .section {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 22px 26px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    border: 1px solid var(--divider);
+  }
+  .section h2 {
+    font-size: 17px;
+    font-weight: 650;
+    letter-spacing: -0.2px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+  }
+  .section h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+    color: var(--text-primary);
+  }
+  .section h3:first-of-type { margin-top: 4px; }
+  /* speed card */
+  .speed-card {
+    background: linear-gradient(135deg, #f0f6ff 0%, #ffffff 100%);
+    border: 1px solid #cde0f7;
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .speed-card .score-line {
+    font-size: 15px;
+    font-weight: 650;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .speed-card .score-line .tag {
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .speed-card .signal-list { list-style: none; }
+  .speed-card .signal-list li {
+    font-size: 13px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .speed-card .signal-list li:last-child { border-bottom: none; }
+  .signal-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    letter-spacing: 0.2px;
+  }
+  .tag-risk { background: #ffe5e5; color: #d70015; }
+  .tag-anchor { background: #e5f0ff; color: #0055b3; }
+  .tag-market { background: #fff3e0; color: #b35c00; }
+  .tag-consensus { background: #e8f5e9; color: #1b7a2e; }
+  .tag-gray { background: #f3e5f5; color: #7b1fa2; }
+  .tag-info { background: #e8eaf6; color: #3949ab; }
+  .speed-card .decision-line {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #cde0f7;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  /* tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 8px 0 4px;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--divider);
+    vertical-align: top;
+    color: var(--text-primary);
+  }
+  tr:last-child td { border-bottom: none; }
+  .num { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .muted { color: var(--text-tertiary); font-size: 12px; }
+  /* details */
+  details {
+    margin: 10px 0 4px;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  details summary {
+    cursor: pointer;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    background: #fafafa;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before {
+    content: "▸";
+    font-size: 11px;
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details .detail-body {
+    padding: 12px 16px 14px;
+    font-size: 13px;
+    border-top: 1px solid var(--divider);
+    background: #fff;
+  }
+  /* timeline */
+  .timeline { list-style: none; padding: 0; }
+  .timeline li {
+    display: flex;
+    gap: 10px;
+    padding: 4px 0;
+    font-size: 12.5px;
+    border-bottom: 1px solid #f0f0f2;
+    align-items: flex-start;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .ts {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    min-width: 78px;
+    padding-top: 1px;
+  }
+  .timeline .msg { color: var(--text-primary); }
+  .timeline .msg .repeat {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 11px;
+    margin-left: 4px;
+  }
+  /* chips */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .chip {
+    display: inline-block;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    background: #f0f0f2;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .chip.blue { background: #e5f0ff; color: #0055b3; }
+  .chip.red { background: #ffe5e5; color: #d70015; }
+  .chip.green { background: #e8f5e9; color: #1b7a2e; }
+  .chip.purple { background: #f3e5f5; color: #7b1fa2; }
+  .chip.orange { background: #fff3e0; color: #b35c00; }
+  /* integrity grid */
+  .integrity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .integrity-grid .cell {
+    background: #fafafa;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    border: 1px solid var(--divider);
+  }
+  .integrity-grid .cell .label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .integrity-grid .cell ul {
+    list-style: none;
+    font-size: 12.5px;
+    color: var(--text-primary);
+  }
+  .integrity-grid .cell ul li {
+    padding: 2px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .integrity-grid .cell ul li::before {
+    content: "·";
+    color: var(--text-tertiary);
+    font-weight: 700;
+  }
+  /* source tag */
+  .src {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 8px;
+    background: #f0f0f2;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+    vertical-align: middle;
+    letter-spacing: 0.2px;
+  }
+  .src.this-match { background: #e5f0ff; color: #0055b3; }
+  .src.prev-match { background: #fff3e0; color: #b35c00; }
+  .src.history { background: #e8f5e9; color: #1b7a2e; }
+  .src.market { background: #f3e5f5; color: #7b1fa2; }
+  .src.speculative { background: #ffe5e5; color: #d70015; }
+  /* footer */
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    padding: 20px 0 10px;
+    line-height: 1.8;
+  }
+  @media (max-width: 640px) {
+    body { padding: 12px 8px 40px; }
+    .section { padding: 16px 14px 14px; }
+    .page-header { padding: 18px 16px 14px; }
+    .integrity-grid { grid-template-columns: 1fr; }
+    .page-header .match-title { font-size: 18px; }
+    table { font-size: 12px; }
+    th, td { padding: 5px 5px; }
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Karmine Corp-Movistar KOI 2026-09-19 g2 bp</b></div>
+<div class="container">
+  <!-- ====== PAGE HEADER ====== -->
+  <div class="page-header">
+    <div class="match-title">
+      Karmine Corp vs Movistar KOI
+      <span class="badge-live">局中</span>
+      <span class="badge-pending">非终局</span>
+    </div>
+    <div class="match-meta">
+      <span>📅 2026-09-19（北京时间 09-20 凌晨）</span>
+      <span>🎮 第 2 小局 · BP 后 / 开局</span>
+      <span>🏷️ slug: lol-kc-mkoi-2026-09-19</span>
+      <span>📡 节点: G2｜BP 后/开局（EARLY-GAME）</span>
+    </div>
+    <div class="notice-bar">
+      <span class="icon">⚠️</span>
+      <span><strong>局中·非终局，结果待定。</strong>本页为第 2 小局 BP 后情报快照，系列比分与结果一律以官方为准。官方当前比分：KC 0 – MKOI 1（官方 gameWins）。禁止从弹幕推断比分。</span>
+    </div>
+  </div>
+  <!-- ====== 0 核心情报速览 ====== -->
+  <div class="section">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="speed-card">
+      <div class="score-line">
+        <span>📊 比分/进度：</span>
+        <span>KC 0 – MKOI 1（官方 gameWins）</span>
+        <span class="tag">弹幕口径·官方待回填</span>
+      </div>
+      <ul class="signal-list">
+        <li>
+          <span class="signal-tag tag-risk">风险</span>
+          <span>灰信号 5 条集中指向“假赛/剧本/让2追”质疑，欧洲赛场信任度承压 <span class="src this-match">本场弹幕</span> → 详 §2</span>
+        </li>
+        <li>
+          <span class="signal-tag tag-anchor">锚点</span>
+          <span>KC 被翻盘历史被反复提及（“稳定第一局被大翻盘”），本局 BP 后士气存疑 <span class="src this-match">本场弹幕</span> → 详 §3/§5</span>
+        </li>
+        <li>
+          <span class="signal-tag tag-market">盘口</span>
+          <span>盘口讨论 3 条，聚焦人头数（“人头几比几”“4842阿韦罗”），无明确方向性下注信号 <span class="src market">盘口</span> → 详 §4</span>
+        </li>
+        <li>
+          <span class="signal-tag tag-consensus">共识</span>
+          <span>弹幕共识：KC 打野短板 + 双 C 心态脆弱，MKOI 被视作更稳一方 <span class="src this-match">本场弹幕</span> → 详 §5</span>
+        </li>
+        <li>
+          <span class="signal-tag tag-info">信息</span>
+          <span>弹幕密度 27.8 条/分，活跃用户 177，峰值在 00:06 前后（梅西/C罗争论刷屏） <span class="src this-match">本场弹幕</span> → 详 §7</span>
+        </li>
+      </ul>
+      <div class="decision-line">
+        🎯 一句话决策落点：本局 BP 后弹幕情绪偏空 KC，灰信号密集但无实锤；建议观望至 10 分钟资源团，确认打野节奏后再定方向。
+      </div>
+    </div>
+  </div>
+  <!-- ====== 1 比赛信息与结果总览/状态核验 ====== -->
+  <div class="section">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <table>
+      <tr><th style="width:130px;">项目</th><th>内容</th></tr>
+      <tr><td>赛事</td><td>LEC 2026 季后赛（Karmine Corp vs Movistar KOI）</td></tr>
+      <tr><td>系列赛比分</td><td><strong>KC 0 – MKOI 1</strong>（官方 gameWins，第 1 小局 MKOI 胜）</td></tr>
+      <tr><td>当前小局</td><td>第 2 小局 · BP 后 / 开局（EARLY-GAME）</td></tr>
+      <tr><td>页面状态</td><td><span style="color:#ff9500;font-weight:600;">局中 · 非终局，结果待定</span></td></tr>
+      <tr><td>进度口径</td><td>弹幕口径（以弹幕时间戳与内容推断），官方数据待回填</td></tr>
+      <tr><td>数据时间窗</td><td>北京时间 2026-09-20 00:01 – 00:18（BP 后至开局阶段）</td></tr>
+      <tr><td>弹幕总量</td><td>452 条（本节点切片），活跃用户 177，密度 27.8 条/分</td></tr>
+    </table>
+    <div class="notice-bar" style="margin-top:12px; background:#f0f6ff; border-color:#cde0f7; color:#0055b3;">
+      <span class="icon">ℹ️</span>
+      <span>本页所有时间均为<strong>北京时间（UTC+8）</strong>。弹幕原始时间戳已换算。系列比分以官方为准，弹幕中出现的“1比0”“0-3带走”等均为观众讨论，不作为比分依据。</span>
+    </div>
+  </div>
+  <!-- ====== 2 灰信号汇总 ====== -->
+  <div class="section">
+    <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+      本节点共检出 <strong>5 条</strong>灰信号，关键词覆盖：假赛、剧本、让2追、故意输。以下为观众质疑，<strong>非事实结论</strong>，需结合官方数据与后续赛况验证。
+    </p>
+    <table>
+      <tr><th>#</th><th>灰信号原文</th><th>类型</th><th>来源</th></tr>
+      <tr><td>1</td><td>欧洲人打假赛太多了。</td><td>假赛质疑</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>2</td><td>kc追三剧本，实力还是摆在那里</td><td>剧本论</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>3</td><td>男的故意输的！我看出来了！嘻嘻</td><td>故意输质疑</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>4</td><td>这才证明不假赛</td><td>反讽/假赛讨论</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>5</td><td>来个让2追的剧本</td><td>剧本论</td><td><span class="src this-match">本场弹幕</span></td></tr>
+    </table>
+    <details>
+      <summary>📋 灰信号词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）</summary>
+      <div class="detail-body">
+        <table>
+          <tr><th>关键词</th><th>命中条数</th><th>说明</th></tr>
+          <tr><td>假赛</td><td class="num">2</td><td>“欧洲人打假赛太多了”“这才证明不假赛”</td></tr>
+          <tr><td>剧本</td><td class="num">2</td><td>“kc追三剧本”“来个让2追的剧本”</td></tr>
+          <tr><td>故意输</td><td class="num">1</td><td>“男的故意输的！我看出来了！”</td></tr>
+          <tr><td>演员/演/明演</td><td class="num">0</td><td>本节点无命中</td></tr>
+          <tr><td>菠菜/收米/322</td><td class="num">0</td><td>本节点无命中</td></tr>
+          <tr><td>送人头/买了/故意送</td><td class="num">0</td><td>本节点无命中</td></tr>
+        </table>
+        <p class="muted" style="margin-top:8px;">注：灰信号统计基于本节点弹幕切片（452 条），已跑词表，非印象判断。</p>
+      </div>
+    </details>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:10px;">
+      ⚠️ 观众质疑，非结论。灰信号密度（5/452 ≈ 1.1%）处于中等水平，但“假赛/剧本”类词汇集中出现，反映部分观众对 LEC 赛场信任度偏低。
+    </p>
+  </div>
+  <!-- ====== 3 BP 锚点与选人情报 ====== -->
+  <div class="section">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <h3>本局阵容（Riot window 阵容，开局后 1 分钟校准）</h3>
+    <table>
+      <tr><th>位置</th><th>Karmine Corp</th><th>Movistar KOI</th></tr>
+      <tr><td>上单</td><td>待官方回填</td><td>待官方回填</td></tr>
+      <tr><td>打野</td><td>待官方回填</td><td>待官方回填</td></tr>
+      <tr><td>中单</td><td>待官方回填</td><td>待官方回填</td></tr>
+      <tr><td>ADC</td><td>待官方回填</td><td>待官方回填</td></tr>
+      <tr><td>辅助</td><td>待官方回填</td><td>待官方回填</td></tr>
+    </table>
+    <p class="muted" style="margin-top:6px;">⚠️ 官方 BP 数据尚未回填，以上为占位。弹幕中提及“加里奥走上路估计”“我靠米人的加里奥”，推测 MKOI 可能选出加里奥（上/中摇摆），待官方确认。</p>
+    <h3>BP 后战绩情报</h3>
+    <p style="font-size:13px;">无战绩情报提及。</p>
+    <h3>弹幕 BP 讨论锚点</h3>
+    <div class="chip-row">
+      <span class="chip blue">李青（盲僧）被多次提及</span>
+      <span class="chip blue">加里奥摇摆猜测</span>
+      <span class="chip orange">KC 打野短板</span>
+      <span class="chip red">“摄像头挡BP了”</span>
+    </div>
+    <details>
+      <summary>🎙️ BP 相关弹幕原文（带时间戳）</summary>
+      <div class="detail-body">
+        <ul class="timeline">
+          <li><span class="ts">00:01</span><span class="msg">开始我就说了这人的李青跟LCK的李青一样很秀的</span></li>
+          <li><span class="ts">00:04</span><span class="msg">MVP就是这李青的。标准李青C的局。</span></li>
+          <li><span class="ts">00:10</span><span class="msg">KC唯一的短板就是打野</span></li>
+          <li><span class="ts">00:17</span><span class="msg">摄像头挡BP了，挪一哈 摄像头挡BP了，挪一哈 摄像头挡BP <span class="repeat">(x2)</span></span></li>
+          <li><span class="ts">00:18</span><span class="msg">加里奥走上路估计</span></li>
+          <li><span class="ts">00:18</span><span class="msg">我靠米人的加里奥</span></li>
+        </ul>
+        <p class="muted" style="margin-top:6px;">注：以上为弹幕原文，不代表官方 BP 结果。李青相关讨论可能指向第 1 小局或本局选人，需结合官方数据校准。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ====== 4 盘口与市场讨论 ====== -->
+  <div class="section">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+      本节点盘口相关弹幕共 <strong>3 条</strong>，聚焦人头数讨论，无明确方向性下注信号。
+    </p>
+    <table>
+      <tr><th>#</th><th>盘口原文</th><th>类型</th><th>来源</th></tr>
+      <tr><td>1</td><td>人头几比几</td><td>人头盘询问</td><td><span class="src market">盘口</span></td></tr>
+      <tr><td>2</td><td>哟西不是48了吗</td><td>数字梗/盘口暗语</td><td><span class="src market">盘口</span></td></tr>
+      <tr><td>3</td><td>4842阿韦罗</td><td>数字梗/盘口暗语</td><td><span class="src market">盘口</span></td></tr>
+    </table>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:10px;">
+      ⚠️ “4842”“48”等数字在弹幕语境中与足球梗（C罗/阿韦罗）混杂，非明确盘口指令。本节点无有效盘口方向性情报。
+    </p>
+    <details>
+      <summary>📊 盘口相关弹幕上下文</summary>
+      <div class="detail-body">
+        <ul class="timeline">
+          <li><span class="ts">00:07</span><span class="msg">4842阿韦罗</span></li>
+          <li><span class="ts">00:09</span><span class="msg">43个头拿4个头</span></li>
+          <li><span class="ts">00:12</span><span class="msg">30 有感觉吗</span></li>
+          <li><span class="ts">00:14</span><span class="msg">kc 要被 30 有感觉吗</span></li>
+          <li><span class="ts">00:16</span><span class="msg">30 有感觉吗</span></li>
+        </ul>
+        <p class="muted" style="margin-top:6px;">“30”可能指 3:0 比分预测，但语境混杂，置信度低。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ====== 5 方向性情报板 ====== -->
+  <div class="section">
+    <h2><span class="no">5</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <h3>正锚（利好 KC）</h3>
+    <ul style="font-size:13px; padding-left:18px; color:var(--text-primary);">
+      <li>“kc追三剧本，实力还是摆在那里” — 部分观众仍认可 KC 硬实力 <span class="src this-match">本场弹幕</span></li>
+      <li>“lec就是g2的天下” — 侧面反映 LEC 竞争格局，KC 作为强队之一有底蕴 <span class="src this-match">本场弹幕</span></li>
+    </ul>
+    <h3>负锚（利空 KC）</h3>
+    <ul style="font-size:13px; padding-left:18px; color:var(--text-primary);">
+      <li>“KC唯一的短板就是打野” — 打野位被点名为短板 <span class="src this-match">本场弹幕</span></li>
+      <li>“kc两个小心脏，难赢” — 双 C 心态被质疑 <span class="src this-match">本场弹幕</span></li>
+      <li>“kc稳定第一句被大翻盘，好多次了” — 被翻盘历史被反复提及 <span class="src this-match">本场弹幕</span></li>
+      <li>“KC纯粹就交给少爷，其他人感觉没啥动力打游戏一样” — 团队动力质疑 <span class="src this-match">本场弹幕</span></li>
+    </ul>
+    <h3>群体共识（+分歧 +样本量）</h3>
+    <table>
+      <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      <tr>
+        <td>KC 打野短板</td>
+        <td>负向</td>
+        <td class="num">1</td>
+        <td>“KC唯一的短板就是打野”</td>
+        <td>单源·本场弹幕</td>
+      </tr>
+      <tr>
+        <td>KC 心态/被翻盘</td>
+        <td>负向</td>
+        <td class="num">3</td>
+        <td>“kc两个小心脏”“稳定第一局被大翻盘”“其他人没动力”</td>
+        <td>多源·本场弹幕</td>
+      </tr>
+      <tr>
+        <td>灰信号（假赛/剧本）</td>
+        <td>负向</td>
+        <td class="num">5</td>
+        <td>“欧洲人打假赛太多了”“让2追剧本”</td>
+        <td>多源·本场弹幕</td>
+      </tr>
+      <tr>
+        <td>李青/盲僧表现</td>
+        <td>正向</td>
+        <td class="num">2</td>
+        <td>“这人的李青跟LCK的李青一样很秀”“MVP就是这李青的”</td>
+        <td>单源·本场弹幕</td>
+      </tr>
+      <tr>
+        <td>盘口人头数</td>
+        <td>中性</td>
+        <td class="num">3</td>
+        <td>“人头几比几”“4842阿韦罗”</td>
+        <td>单源·盘口</td>
+      </tr>
+    </table>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:6px;">
+      共识→信号链：KC 负向共识（打野+心态）与灰信号同向叠加 → <strong>强负向信号</strong>；李青正向讨论为单源，置信度低，需观察是否为本局选人。
+    </p>
+    <h3>灰信号条件预测</h3>
+    <ul style="font-size:13px; padding-left:18px; color:var(--text-primary);">
+      <li>若 KC 本局再次被翻盘 → 灰信号（“假赛/剧本”）可能进一步放大，弹幕信任度继续走低。</li>
+      <li>若 KC 顺利拿下本局 → “追三剧本”讨论可能升温，灰信号转向“让2追”叙事。</li>
+    </ul>
+  </div>
+  <!-- ====== 6 情报含义与决策落点 ====== -->
+  <div class="section">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG / SHORT）</h2>
+    <table>
+      <tr><th>方向</th><th>逻辑</th><th>置信度</th><th>触发条件</th></tr>
+      <tr>
+        <td><span style="color:#d70015; font-weight:700;">SHORT KC</span></td>
+        <td>弹幕共识偏空 KC（打野短板+心态脆弱+被翻盘历史），灰信号密集，BP 后情绪面不利。</td>
+        <td>中</td>
+        <td>开局 10 分钟内 KC 打野节奏落后 / 第一条小龙丢失</td>
+      </tr>
+      <tr>
+        <td><span style="color:#1b7a2e; font-weight:700;">LONG MKOI</span></td>
+        <td>MKOI 已拿第 1 局，士气占优；弹幕中 KC 负面讨论集中，MKOI 被视作更稳一方。</td>
+        <td>中</td>
+        <td>MKOI 前期拿到一血 / 控下第一只先锋</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--text-tertiary); font-weight:700;">观望</span></td>
+        <td>BP 后信息不足，官方阵容未回填，灰信号无实锤，盘口无明确方向。</td>
+        <td>—</td>
+        <td>等待 10 分钟资源团结果</td>
+      </tr>
+    </table>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:10px;">
+      ⚠️ 以上为基于弹幕情报的决策参考，非投注建议。局中信息不完整，请以官方数据为准。
+    </p>
+  </div>
+  <!-- ====== 7 逐局复盘（证据层） ====== -->
+  <div class="section">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>第 1 小局（已结束）</h3>
+    <p style="font-size:13px;">MKOI 胜。弹幕中提及“1比0”“0-3带走”“kc被翻了？”等，反映第 1 局 KC 可能曾领先但被翻盘。具体过程待官方回填。</p>
+    <h3>第 2 小局（进行中 · BP 后/开局）</h3>
+    <p style="font-size:13px;">当前节点：BP 后，开局阶段。已发生片段：BP 讨论、阵容猜测（加里奥/李青）、弹幕情绪偏空 KC。未发生：对线细节、资源团、关键团战 — <strong>待观察</strong>。</p>
+    <details>
+      <summary>⏱️ 本节点弹幕时间线（北京时间 00:01 – 00:18，带量）</summary>
+      <div class="detail-body">
+        <ul class="timeline">
+          <li><span class="ts">00:01</span><span class="msg">嫂子那么会穿啊？</span></li>
+          <li><span class="ts">00:01</span><span class="msg">开始我就说了这人的李青跟LCK的李青一样很秀的</span></li>
+          <li><span class="ts">00:01</span><span class="msg">输了是三号种子吗</span></li>
+          <li><span class="ts">00:02</span><span class="msg">mkoi是西班牙的，法国打西班牙，品吧 <span class="repeat">(x2)</span></span></li>
+          <li><span class="ts">00:02</span><span class="msg">1比0</span></li>
+          <li><span class="ts">00:02</span><span class="msg">LPL不可能搞这种的</span></li>
+          <li><span class="ts">00:03</span><span class="msg">没想到LEC季后赛也这么变态。。 <span class="repeat">(x2)</span></span></li>
+          <li><span class="ts">00:03</span><span class="msg">下水道老鼠真多，这么恨球王[笑哭]</span></li>
+          <li><span class="ts">00:04</span><span class="msg">MVP就是这李青的。标准李青C的局。</span></li>
+          <li><span class="ts">00:04</span><span class="msg">c罗严父</span></li>
+          <li><span class="ts">00:05</span><span class="msg">主播4点看北美季后赛吗？ <span class="repeat">(x4)</span></span></li>
+          <li><span class="ts">00:05</span><span class="msg">二哥，我看了回放，米人最后一波基本是0作用死的</span></li>
+          <li><span class="ts">00:06</span><span class="msg">梅西是c罗严父 c罗qjf <span class="repeat">(x9)</span></span></li>
+          <li><span class="ts">00:06</span><span class="msg">中哥才是节奏天王啊，一句话吵到现在</span></li>
+          <li><span class="ts">00:07</span><span class="msg">4842阿韦罗</span></li>
+          <li><span class="ts">00:08</span><span class="msg">jojo对线可以，但是后期打团很容易拉跨</span></li>
+          <li><span class="ts">00:09</span><span class="msg">43个头拿4个头</span></li>
+          <li><span class="ts">00:09</span><span class="msg">一波你又要发</span></li>
+          <li><span class="ts">00:10</span><span class="msg">开始了 <span class="repeat">(x3)</span></span></li>
+          <li><span class="ts">00:10</span><span class="msg">KC唯一的短板就是打野</span></li>
+          <li><span class="ts">00:10</span><span class="msg">kc追三剧本，实力还是摆在那里</span></li>
+          <li><span class="ts">00:10</span><span class="msg">lec就是g2的天下</span></li>
+          <li><span class="ts">00:11</span><span class="msg">LEC决赛是明天</span></li>
+          <li><span class="ts">00:11</span><span class="msg">kc没进吗</span></li>
+          <li><span class="ts">00:12</span><span class="msg">0-3带走</span></li>
+          <li><span class="ts">00:12</span><span class="msg">30 有感觉吗</span></li>
+          <li><span class="ts">00:12</span><span class="msg">kc两个小心脏，难赢</span></li>
+          <li><span class="ts">00:13</span><span class="msg">龟龟，谢神 <span class="repeat">(x3)</span></span></li>
+          <li><span class="ts">00:14</span><span class="msg">kc 要被 30 有感觉吗</span></li>
+          <li><span class="ts">00:14</span><span class="msg">kc被翻了？</span></li>
+          <li><span class="ts">00:15</span><span class="msg">kc人多 不怕被打吗</span></li>
+          <li><span class="ts">00:16</span><span class="msg">30 有感觉吗</span></li>
+          <li><span class="ts">00:16</span><span class="msg">kc赶紧滚吧</span></li>
+          <li><span class="ts">00:17</span><span class="msg">摄像头挡BP了，挪一哈 摄像头挡BP了，挪一哈 摄像头挡BP <span class="repeat">(x2)</span></span></li>
+          <li><span class="ts">00:17</span><span class="msg">g2什么时候买太子</span></li>
+          <li><span class="ts">00:18</span><span class="msg">KC纯粹就交给少爷，其他人感觉没啥动力打游戏一样</span></li>
+          <li><span class="ts">00:18</span><span class="msg">加里奥走上路估计</span></li>
+          <li><span class="ts">00:18</span><span class="msg">我靠米人的加里奥</span></li>
+        </ul>
+        <p class="muted" style="margin-top:8px;">注：以上为抽样时间线，覆盖 18 个有弹幕分钟段。完整 452 条切片见数据源。</p>
+      </div>
+    </details>
+    <h3>弹幕密度峰值</h3>
+    <p style="font-size:13px;">峰值出现在 <strong>00:06 前后</strong>，主要由“梅西是c罗严父 c罗qjf”刷屏（x9）驱动，属于足球梗争论，非比赛内容。比赛相关讨论峰值在 00:10（“KC短板打野”“追三剧本”）。</p>
+  </div>
+  <!-- ====== 8 队伍/人员画像 ====== -->
+  <div class="section">
+    <h2><span class="no">8</span>队伍 / 人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（本节点）</h3>
+    <table>
+      <tr><th>队伍</th><th>提及量</th><th>正/负</th><th>来源</th></tr>
+      <tr><td>KC（Karmine Corp）</td><td class="num">15</td><td>正 2 / 负 1</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>G2</td><td class="num">4</td><td>正 0 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>MOUZ</td><td class="num">3</td><td>正 1 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>T1</td><td class="num">1</td><td>正 0 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>EDG</td><td class="num">1</td><td>正 0 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>TES</td><td class="num">1</td><td>正 0 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>IG</td><td class="num">1</td><td>正 0 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+      <tr><td>Liquid</td><td class="num">1</td><td>正 1 / 负 0</td><td><span class="src this-match">本场弹幕</span></td></tr>
+    </table>
+    <h3>选手/人员提及</h3>
+    <ul style="font-size:13px; padding-left:18px;">
+      <li><strong>米人</strong> — “米人最后一波基本是0作用死的”“我靠米人的加里奥” <span class="src this-match">本场弹幕</span></li>
+      <li><strong>少爷</strong> — “KC纯粹就交给少爷” <span class="src this-match">本场弹幕</span></li>
+      <li><strong>jojo</strong> — “jojo对线可以，但是后期打团很容易拉跨” <span class="src this-match">本场弹幕</span></li>
+      <li><strong>谢神</strong> — “龟龟，谢神” <span class="src this-match">本场弹幕</span></li>
+    </ul>
+    <h3>队伍特质统计（规则层）</h3>
+    <table>
+      <tr><th>特质</th><th>条数</th></tr>
+      <tr><td>被翻守不住</td><td class="num">1</td></tr>
+      <tr><td>打法风格</td><td class="num">2</td></tr>
+      <tr><td>选手特质</td><td class="num">1</td></tr>
+    </table>
+    <details>
+      <summary>📚 长期画像引用（历史库）</summary>
+      <div class="detail-body">
+        <p style="font-size:13px;">KC 在 LEC 长期被视作强队，但“被翻盘”标签在弹幕中反复出现（“稳定第一局被大翻盘，好多次了”）。MKOI 作为西班牙队伍，本场被部分观众视作“法国打西班牙”的地缘对决。长期画像数据待补充。</p>
+        <p class="muted">注：以上为弹幕长期沉淀，非官方数据。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ====== 9 联赛规律与版本 ====== -->
+  <div class="section">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul style="font-size:13px; padding-left:18px; color:var(--text-primary);">
+      <li><strong>LEC 季后赛强度：</strong>弹幕“没想到LEC季后赛也这么变态。。”反映观众对 LEC 季后赛竞争激烈程度的意外 <span class="src this-match">本场弹幕</span></li>
+      <li><strong>LEC 格局：</strong>“lec就是g2的天下” — 弹幕共识认为 G2 在 LEC 统治力强，KC/MKOI 处于挑战者位置 <span class="src this-match">本场弹幕</span></li>
+      <li><strong>赛程：</strong>“LEC决赛是明天” — 提示 LEC 决赛临近，本场为季后赛关键战 <span class="src this-match">本场弹幕</span></li>
+      <li><strong>版本/选人：</strong>李青（盲僧）被多次提及，可能为本版本热门打野；加里奥摇摆猜测 <span class="src this-match">本场弹幕</span></li>
+      <li><strong>跨赛区对比：</strong>弹幕多次将 LEC 与 LPL/LCK 对比（“LPL不可能搞这种的”“lck太严肃了”），反映观众对赛区风格的讨论 <span class="src this-match">本场弹幕</span></li>
+    </ul>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:8px;">
+      ⚠️ 以上为弹幕观察，非官方版本分析。具体版本数据待官方回填。
+    </p>
+  </div>
+  <!-- ====== 10 预测验证回填 ====== -->
+  <div class="section">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <table>
+      <tr><th>预测项</th><th>预测内容</th><th>当前状态</th><th>验证结果</th></tr>
+      <tr>
+        <td>第 1 小局胜者</td>
+        <td>—</td>
+        <td>MKOI 胜（官方）</td>
+        <td>✅ 已回填</td>
+      </tr>
+      <tr>
+        <td>第 2 小局 BP 后情绪</td>
+        <td>弹幕偏空 KC</td>
+        <td>进行中</td>
+        <td>⏳ 待观察</td>
+      </tr>
+      <tr>
+        <td>灰信号走向</td>
+        <td>若 KC 再被翻盘，灰信号放大</td>
+        <td>进行中</td>
+        <td>⏳ 待观察</td>
+      </tr>
+      <tr>
+        <td>本局结果</td>
+        <td>—</td>
+        <td>未发生</td>
+        <td>⏳ 待回填</td>
+      </tr>
+    </table>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:8px;">
+      注：本页为局中快照，预测验证需等待小局结束后回填。系列比分以官方为准。
+    </p>
+  </div>
+  <!-- ====== 11 数据与溯源 ====== -->
+  <div class="section">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性三栏</h3>
+    <div class="integrity-grid">
+      <div class="cell">
+        <div class="label">✅ 实际数据源</div>
+        <ul>
+          <li>规则层情报 JSON（vps_intel）</li>
+          <li>弹幕切片（452 条，本节点）</li>
+          <li>官方 gameWins（KC 0 – MKOI 1）</li>
+          <li>弹幕密度/活跃用户统计</li>
+          <li>灰信号词表统计</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <div class="label">📋 预期数据源</div>
+        <ul>
+          <li>Riot 官方 BP 阵容</li>
+          <li>官方小局比分/结果</li>
+          <li>选手对位数据</li>
+          <li>资源控制/经济曲线</li>
+          <li>长期队伍画像库</li>
+        </ul>
+      </div>
+      <div class="cell">
+        <div class="label">⚠️ 缺口</div>
+        <ul>
+          <li>官方 BP 阵容未回填</li>
+          <li>本局结果未产生</li>
+          <li>选手详细数据缺失</li>
+          <li>长期画像库样本不足</li>
+          <li>盘口有效方向性信号缺失</li>
+        </ul>
+      </div>
+    </div>
+    <h3>情报来源分层</h3>
+    <table>
+      <tr><th>结论</th><th>来源标签</th><th>置信度</th></tr>
+      <tr><td>灰信号 5 条（假赛/剧本）</td><td><span class="src this-match">本场弹幕</span></td><td>高（直接命中）</td></tr>
+      <tr><td>KC 打野短板</td><td><span class="src this-match">本场弹幕</span></td><td>中（单源）</td></tr>
+      <tr><td>KC 心态/被翻盘</td><td><span class="src this-match">本场弹幕</span> + <span class="src history">历史画像</span></td><td>中高（多源）</td></tr>
+      <tr><td>李青表现正向</td><td><span class="src this-match">本场弹幕</span></td><td>低（单源，可能指前局）</td></tr>
+      <tr><td>盘口人头数讨论</td><td><span class="src market">盘口</span></td><td>低（无方向性）</td></tr>
+      <tr><td>加里奥摇摆猜测</td><td><span class="src this-match">本场弹幕</span> + <span class="src speculative">推测·待验证</span></td><td>低（待官方确认）</td></tr>
+    </table>
+    <h3>比赛元数据</h3>
+    <table>
+      <tr><th>字段</th><th>值</th></tr>
+      <tr><td>比赛</td><td>Karmine Corp vs Movistar KOI</td></tr>
+      <tr><td>日期</td><td>2026-09-19（北京时间 09-20 凌晨）</td></tr>
+      <tr><td>slug</td><td>lol-kc-mkoi-2026-09-19</td></tr>
+      <tr><td>小局</td><td>G2</td></tr>
+      <tr><td>节点</td><td>BP 后 / 开局（EARLY-GAME）</td></tr>
+      <tr><td>官方比分</td><td>KC 0 – MKOI 1（gameWins）</td></tr>
+      <tr><td>弹幕总量</td><td>452 条</td></tr>
+      <tr><td>活跃用户</td><td>177</td></tr>
+      <tr><td>密度</td><td>27.8 条/分</td></tr>
+      <tr><td>时间窗</td><td>北京时间 2026-09-20 00:01 – 00:18</td></tr>
+      <tr><td>情报输出时间</td><td>2026-09-20 00:20（北京时间）</td></tr>
+    </table>
+    <h3>本场长期沉淀点</h3>
+    <ul style="font-size:13px; padding-left:18px;">
+      <li><strong>KC 的“被翻盘”标签</strong>：弹幕多次提及“稳定第一局被大翻盘，好多次了”，该标签可能长期影响观众对 KC 的信任度，建议纳入长期画像库跟踪。</li>
+      <li><strong>LEC 灰信号密度</strong>：本节点灰信号占比约 1.1%，但“假赛/剧本”词汇集中，反映部分观众对 LEC 赛场信任度偏低，可作为联赛舆情指标持续监测。</li>
+    </ul>
+    <p style="font-size:12.5px; color:var(--text-tertiary); margin-top:10px;">
+      ⚠️ 本页为局中快照，所有结论基于弹幕情报，非官方数据。结果待定，请以官方为准。
+    </p>
+  </div>
+  <!-- ====== FOOTER ====== -->
+  <div class="footer-note">
+    局中弹幕情报快照 · G2 BP后 · Karmine Corp vs Movistar KOI · 2026-09-19<br>
+    数据来源：弹幕切片 + 规则层情报 JSON + 官方 gameWins · 情报输出时间：2026-09-20 00:20（北京时间）<br>
+    <span style="color:#ff9500;">局中·非终局，结果待定</span> · 本页不构成投注建议
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
