@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · G2 vs MKOI · G1 局末</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #1d1d1f;
+    }
+    .subhead {
+      font-size: 15px;
+      color: #6e6e73;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #f5f5f7;
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1d1d1f;
+      letter-spacing: 0.01em;
+    }
+    .badge.warning {
+      background: #fff3e0;
+      color: #b85e00;
+    }
+    .badge.live {
+      background: #e8f5e9;
+      color: #1e7b3c;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #0071e3;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px;
+      color: #1d1d1f;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 32px;
+      margin-bottom: 12px;
+    }
+    .stat-item {
+      font-size: 14px;
+      color: #6e6e73;
+    }
+    .stat-item strong {
+      color: #1d1d1f;
+      font-weight: 600;
+    }
+    .signal-list {
+      list-style: none;
+      margin: 8px 0;
+    }
+    .signal-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f2;
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .signal-list li:last-child {
+      border-bottom: none;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 100px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .tag.risk { background: #ffebee; color: #c62828; }
+    .tag.anchor { background: #e3f2fd; color: #0d47a1; }
+    .tag.market { background: #fff8e1; color: #b26a00; }
+    .tag.consensus { background: #e8f5e9; color: #1e7b3c; }
+    .tag.gray { background: #f3e5f5; color: #6a1b9a; }
+    .tag.info { background: #f5f5f7; color: #1d1d1f; }
+    .tag.spec { background: #e0f2f1; color: #00695c; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 12px 0;
+    }
+    .data-table th {
+      text-align: left;
+      font-weight: 600;
+      color: #6e6e73;
+      padding: 8px 8px 8px 0;
+      border-bottom: 1px solid #e5e5ea;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .data-table td {
+      padding: 10px 8px 10px 0;
+      border-bottom: 1px solid #f0f0f2;
+      vertical-align: top;
+    }
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+    details {
+      margin: 12px 0;
+      border: 1px solid #e5e5ea;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    details summary {
+      padding: 12px 16px;
+      background: #fafafa;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+      transition: background 0.15s ease;
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary::before {
+      content: "▸";
+      font-size: 12px;
+      color: #0071e3;
+      transition: transform 0.2s ease;
+      display: inline-block;
+      width: 16px;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details summary:hover {
+      background: #f0f0f2;
+    }
+    details .details-content {
+      padding: 16px;
+      background: #fff;
+      border-top: 1px solid #e5e5ea;
+      font-size: 14px;
+    }
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+    }
+    .bullet-list li {
+      padding: 6px 0 6px 20px;
+      position: relative;
+      font-size: 14px;
+      color: #1d1d1f;
+    }
+    .bullet-list li::before {
+      content: "•";
+      position: absolute;
+      left: 4px;
+      color: #0071e3;
+      font-weight: 700;
+    }
+    .highlight-box {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    .highlight-box strong {
+      color: #1d1d1f;
+    }
+    .footnote {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    .divider {
+      height: 1px;
+      background: #e5e5ea;
+      margin: 20px 0;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .text-small {
+      font-size: 12px;
+      color: #8e8e93;
+    }
+    .text-muted {
+      color: #6e6e73;
+    }
+    .mono {
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 13px;
+    }
+    .chip {
+      display: inline-block;
+      background: #f5f5f7;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 12px;
+      color: #1d1d1f;
+      margin: 2px 4px 2px 0;
+    }
+    .chip.blue {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    .chip.green {
+      background: #e8f5e9;
+      color: #1e7b3c;
+    }
+    .chip.red {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .chip.purple {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2 Esports-Movistar KOI 2026-09-20 g1 end</b></div>
+<div class="container">
+  <!-- 页头 -->
+  <div class="card" style="padding-bottom: 20px;">
+    <div class="flex-between">
+      <div>
+        <h1>G2 Esports vs Movistar KOI · G1 局中弹幕情报</h1>
+        <div class="subhead">
+          <span class="badge warning">局中·非终局，结果待定</span>
+          <span class="badge live">弹幕口径 · 官方待回填</span>
+          <span>2026-09-20 · 第1小局 · GAME-REVIEW</span>
+        </div>
+      </div>
+      <div class="text-small" style="text-align:right;">
+        情报输出时间<br>
+        <strong>2026-09-20 23:45 北京时间</strong>
+      </div>
+    </div>
+    <div class="stat-row" style="margin-top: 12px;">
+      <div class="stat-item">弹幕总数 <strong>2,744</strong></div>
+      <div class="stat-item">活跃用户 <strong>1,008</strong></div>
+      <div class="stat-item">密度 <strong>75.3 条/分</strong></div>
+      <div class="stat-item">官方比分 <strong>G2 1 : 0 MKOI</strong>（gameWins）</div>
+    </div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="highlight-box" style="margin-top: 0;">
+      <div style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">
+        G1 局末 · 弹幕口径：G2 领先，但“翻盘/被翻”讨论激烈 · 官方结果待回填
+      </div>
+      <ul class="signal-list" style="margin: 4px 0;">
+        <li><span class="tag risk">风险</span> 灰信号17条，含“欧洲假赛联赛”“小组赛都在演戏”等质疑，观众对比赛真实性存疑 → 详 §2</li>
+        <li><span class="tag anchor">锚点</span> G2 提及159条（正9/负4），KC 40条，IG 23条；G2 仍是弹幕焦点 → 详 §8</li>
+        <li><span class="tag market">盘口</span> 盘口讨论7条，集中“48”“人头多少”“泽丽没人头”，市场关注击杀数 → 详 §4</li>
+        <li><span class="tag consensus">共识</span> 局势讨论80条，“前期被打爆，后期翻盘”“G2就喜欢翻盘”成高频共识 → 详 §5</li>
+        <li><span class="tag gray">灰信号</span> “这是al打blg剧本吗”“drx剧本”等剧本论反复出现，需警惕 → 详 §2</li>
+      </ul>
+      <div style="margin-top: 10px; font-size: 14px; border-top: 1px solid #e5e5ea; padding-top: 10px;">
+        <strong>一句话决策落点：</strong>G1 局末弹幕情绪偏 G2 翻盘/韧性，但灰信号与剧本论密集，建议观望官方结算，谨慎对待“G2 必胜”类共识。
+      </div>
+    </div>
+    <div class="footnote">* 速览卡仅含提炼信号，无裸弹幕原文；所有数据基于本场弹幕切片与规则层统计。</div>
+  </div>
+  <!-- 1 比赛信息与结果总览 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <h3>比赛元数据</h3>
+        <table class="data-table">
+          <tr><td style="width:120px; color:#6e6e73;">赛事</td><td>LEC / 2026 赛季</td></tr>
+          <tr><td style="color:#6e6e73;">对阵</td><td>G2 Esports vs Movistar KOI</td></tr>
+          <tr><td style="color:#6e6e73;">日期</td><td>2026-09-20</td></tr>
+          <tr><td style="color:#6e6e73;">小局</td><td>第 1 小局（G1）</td></tr>
+          <tr><td style="color:#6e6e73;">节点</td><td>局末/局间（GAME-REVIEW）</td></tr>
+          <tr><td style="color:#6e6e73;">官方比分</td><td><strong>G2 1 : 0 MKOI</strong>（gameWins）</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>状态核验</h3>
+        <div class="highlight-box" style="margin: 0;">
+          <div style="font-size: 14px; margin-bottom: 6px;">
+            <span class="badge warning">局中·非终局，结果待定</span>
+          </div>
+          <ul class="bullet-list" style="font-size: 13px;">
+            <li>本页为 G1 唯一页面，覆盖 BP/选人、对线、关键团战、结局。</li>
+            <li>进度以弹幕口径为准，官方结果待回填。</li>
+            <li>系列比分以官方为准，禁止从弹幕推断比分。</li>
+            <li>Riot window 阵容，开局后 1 分钟校准。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footnote">* 官方当前比分：G2 1 MKOI 0（官方 gameWins）；本页为第 1 小局 结束 情报。</div>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <p style="font-size: 14px; margin-bottom: 8px;">规则层灰信号共 <strong>17 条</strong>，经词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）后提炼如下：</p>
+    <table class="data-table">
+      <thead><tr><th>灰信号原文（节选）</th><th>条数</th><th>风险指向</th></tr></thead>
+      <tbody>
+        <tr><td>小组赛都在演戏呢 到bo5你就知道差距多大了</td><td>1</td><td>质疑比赛真实性</td></tr>
+        <tr><td>g2要故意拿二号种子，去逮捕t1了</td><td>2</td><td>策略性控分猜测</td></tr>
+        <tr><td>这是al打blg剧本吗</td><td>2</td><td>剧本论</td></tr>
+        <tr><td>drx剧本</td><td>1</td><td>剧本论</td></tr>
+        <tr><td>欧洲假赛联赛</td><td>1</td><td>赛区公信力质疑</td></tr>
+        <tr><td>刚出门有蓝就先不买了吧</td><td>1</td><td>疑似消极比赛</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="background: #fff8e1; margin-top: 12px;">
+      <strong>⚠️ 观众质疑，非结论。</strong> 灰信号集中指向“剧本/假赛/控分”，但均为弹幕主观言论，无官方证据。需结合后续局间表现与官方公告判断。
+    </div>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <ul class="bullet-list">
+          <li>小组赛都在演戏呢 到bo5你就知道差距多大了</li>
+          <li>g2要故意拿二号种子，去逮捕t1了（x2）</li>
+          <li>这是al打blg剧本吗（x2）</li>
+          <li>刚出门有蓝就先不买了吧</li>
+          <li>drx剧本</li>
+          <li>欧洲假赛联赛</li>
+        </ul>
+        <div class="footnote">* 以上为规则层灰信号全部条目，共17条（含重复），此处去重展示。</div>
+      </div>
+    </details>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <div class="grid-2">
+      <div>
+        <h3>本局阵容（Riot window 校准）</h3>
+        <div class="highlight-box" style="margin: 0;">
+          <p style="font-size: 14px; margin-bottom: 6px;"><strong>G2 Esports</strong></p>
+          <div>
+            <span class="chip blue">上单：Broken Blade</span>
+            <span class="chip blue">打野：Yike</span>
+            <span class="chip blue">中单：Caps</span>
+            <span class="chip blue">下路：Hans Sama</span>
+            <span class="chip blue">辅助：Mikyx</span>
+          </div>
+          <p style="font-size: 14px; margin: 12px 0 6px;"><strong>Movistar KOI</strong></p>
+          <div>
+            <span class="chip red">上单：Myrwn</span>
+            <span class="chip red">打野：Elyoya</span>
+            <span class="chip red">中单：Jojo</span>
+            <span class="chip red">下路：Supa</span>
+            <span class="chip red">辅助：Alvaro</span>
+          </div>
+          <div class="footnote" style="margin-top: 8px;">* 阵容基于 Riot window 开局后 1 分钟校准，选手 ID 为常用称呼。</div>
+        </div>
+      </div>
+      <div>
+        <h3>BP 弹幕锚点</h3>
+        <ul class="bullet-list" style="font-size: 14px;">
+          <li>“帽皇cosplay瑞兹”反复出现（x3+），Caps 瑞兹成焦点。</li>
+          <li>“维克托”“塞拉斯”“佛耶戈”在 23:25 集中刷屏（x10/x8/x3），疑似 BP 阶段讨论。</li>
+          <li>“泽丽猫”多次被提及，“一来就泽丽猫？”指向下路组合。</li>
+          <li>“BB的朗姆没什么熟练度”“BB还有亚索”涉及 G2 上单英雄池。</li>
+        </ul>
+        <div class="footnote">* BP 后战绩情报：无战绩情报提及。</div>
+      </div>
+    </div>
+    <details>
+      <summary>BP 相关弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <ul class="bullet-list">
+          <li>[23:09] 帽皇cosplay瑞兹（x2）</li>
+          <li>[23:10] 帽皇cosplay瑞兹（x3）</li>
+          <li>[23:12] 猴补来了（x2）</li>
+          <li>[23:12] 琪亚娜啊（x2）</li>
+          <li>[23:25] 维克托（x10）</li>
+          <li>[23:25] 塞拉斯（x8）</li>
+          <li>[23:25] 佛耶戈（x3）</li>
+          <li>[23:28] BB还有亚索</li>
+          <li>[23:22] Bb的朗姆没什么熟练度</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p style="font-size: 14px;">规则层盘口讨论共 <strong>7 条</strong>，集中如下：</p>
+    <table class="data-table">
+      <thead><tr><th>盘口原文</th><th>条数</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td>48</td><td>3</td><td>疑似盘口赔率/大小分</td></tr>
+        <tr><td>还在48</td><td>1</td><td>持续关注同一盘口</td></tr>
+        <tr><td>泽丽没人头啊</td><td>1</td><td>关注泽丽击杀数</td></tr>
+        <tr><td>人头多少</td><td>2</td><td>询问实时击杀</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top: 12px;">
+      <strong>市场信号：</strong>“48”反复出现，可能指向某盘口阈值（如总击杀、时长）；“泽丽没人头”与“人头多少”反映观众对击杀数的敏感。整体盘口讨论量小，样本不足，不构成强信号。
+    </div>
+    <div class="footnote">* 盘口数据仅来自弹幕讨论，非官方盘口，仅供参考。</div>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="grid-2">
+      <div>
+        <h3>正锚（利好 G2）</h3>
+        <ul class="bullet-list">
+          <li>“G2就喜欢翻盘”（x2）——韧性标签</li>
+          <li>“G2比KC猛多了”“G2还是lec的王”——实力认可</li>
+          <li>“G2随便赢 送一把无所谓”——信心充足</li>
+          <li>“汉斯领先基本就赢了”——下路优势论</li>
+        </ul>
+      </div>
+      <div>
+        <h3>负锚（利空 G2 / 风险）</h3>
+        <ul class="bullet-list">
+          <li>“G2今天要陨落了”——看衰</li>
+          <li>“BB菜了好多”“G2这个上路越来越菜了”——上单状态质疑</li>
+          <li>“3-0领先2千，直接失了智一样”——决策批评</li>
+          <li>“G2拿头S冠”——长期质疑</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top: 16px;">
+      <h3>群体共识（+分歧+样本量）</h3>
+      <table class="data-table">
+        <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+        <tbody>
+          <tr><td>G2 翻盘能力</td><td>正向</td><td>“G2就喜欢翻盘”等约5条</td><td>G2就喜欢翻盘；前期被打爆，后期翻盘</td><td>本场弹幕</td></tr>
+          <tr><td>剧本/假赛质疑</td><td>负向</td><td>灰信号17条</td><td>欧洲假赛联赛；这是al打blg剧本吗</td><td>本场弹幕</td></tr>
+          <tr><td>上单 BB 状态</td><td>负向</td><td>“BB菜了好多”等约4条</td><td>BB菜了好多；G2这个上路越来越菜了</td><td>本场弹幕</td></tr>
+          <tr><td>泽丽猫组合</td><td>中性</td><td>“泽丽猫”等约6条</td><td>一来就泽丽猫？；昨天少爷泽丽猫都赢不了</td><td>本场弹幕</td></tr>
+        </tbody>
+      </table>
+      <div class="footnote">* 共识→信号链：同向=强信号；背离=分歧信号/共识盲区。当前“翻盘”与“假赛”并存，属分歧信号。</div>
+    </div>
+    <div style="margin-top: 16px;">
+      <h3>灰信号条件预测</h3>
+      <p style="font-size: 14px;">若后续局间出现“G2 突然决策失常”或“MKOI 离奇失误”，弹幕灰信号可能进一步放大，需警惕舆论转向“剧本论”。当前无官方证据，仅作条件观察。</p>
+    </div>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="grid-2">
+      <div class="highlight-box" style="background: #e8f5e9;">
+        <strong>LONG 信号（看多 G2）</strong>
+        <ul class="bullet-list" style="margin-top: 8px;">
+          <li>弹幕共识“G2 翻盘能力强”，历史画像“韧性逆转:1”</li>
+          <li>G2 提及量 159 条，正9/负4，情绪偏正</li>
+          <li>“G2还是lec的王”“G2比KC猛多了”等实力认可</li>
+        </ul>
+      </div>
+      <div class="highlight-box" style="background: #ffebee;">
+        <strong>SHORT 信号（看空/风险）</strong>
+        <ul class="bullet-list" style="margin-top: 8px;">
+          <li>灰信号 17 条，剧本/假赛质疑密集</li>
+          <li>“BB菜了好多”“G2这个上路越来越菜了”上单状态担忧</li>
+          <li>“3-0领先2千，直接失了智一样”决策批评</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top: 12px;">
+      <strong>决策落点：</strong>G1 局末弹幕情绪偏 G2，但灰信号与负锚并存，建议观望官方结算，不宜盲目追多。若官方确认 G2 获胜，可关注“翻盘”叙事延续；若 MKOI 翻盘，则灰信号可能被放大。
+    </div>
+  </div>
+  <!-- 7 逐局复盘 -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 已发生片段 + 时间线</h3>
+    <p style="font-size: 14px;">基于弹幕时间戳（北京时间）与内容，还原 G1 关键节点：</p>
+    <table class="data-table">
+      <thead><tr><th>时间</th><th>弹幕原文（带量）</th><th>阶段推断</th></tr></thead>
+      <tbody>
+        <tr><td>23:08</td><td>G2肯定要一号种子要不然又打T1</td><td>BP前讨论</td></tr>
+        <tr><td>23:09</td><td>帽皇cosplay瑞兹（x2）</td><td>BP阶段</td></tr>
+        <tr><td>23:12</td><td>猴补来了（x2）；琪亚娜啊（x2）</td><td>BP/选人</td></tr>
+        <tr><td>23:18</td><td>G2在干嘛！！！！！；GG</td><td>对线期/早期团战</td></tr>
+        <tr><td>23:20</td><td>G2就喜欢翻盘；G2 今天要陨落了</td><td>局势焦灼</td></tr>
+        <tr><td>23:24</td><td>翻了（x4）；全打回来了（x2）</td><td>关键团战/翻盘</td></tr>
+        <tr><td>23:25</td><td>维克托（x10）；塞拉斯（x8）</td><td>团战/BP讨论</td></tr>
+        <tr><td>23:37</td><td>这波真是jojo肉身开团 他闪现还骗了萨勒芬妮R（x3）</td><td>关键团战</td></tr>
+        <tr><td>23:42</td><td>3-0了；3比0了</td><td>局势明朗</td></tr>
+        <tr><td>23:44</td><td>人头多少；切换一下屏幕</td><td>局末结算</td></tr>
+      </tbody>
+    </table>
+    <div class="footnote">* 未发生片段：待观察。当前局已结束，但官方结果待回填。</div>
+    <details>
+      <summary>G1 完整弹幕时间线（折叠）</summary>
+      <div class="details-content">
+        <p style="font-size: 13px; color: #6e6e73; margin-bottom: 8px;">基于本场弹幕样本 185 条，覆盖 37 个有弹幕分钟段，以下为关键时间戳摘录：</p>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>[23:08] ldl无敌了（x2）；据说那个暗夜杀手是在其他国家线上参赛 不和其他人一起（x2）；G2肯定要一号种子要不然又打T1；fklol；lec也没冒泡赛了？</li>
+          <li>[23:09] 帽皇cosplay瑞兹（x2）；LEC能玩些不一样的英雄吗 期待；MKOI一把都赢不了，放心；主播你别老打哈欠，搞得我也困了；主要是他🐍女出来还被翻了，没想通。</li>
+          <li>[23:10] 帽皇cosplay瑞兹（x3）；昨天少爷泽丽猫都赢不了冰粉（x2）；10个人，3个秃头；lets go g2；一来就泽丽猫？</li>
+          <li>[23:11] 安静（x6）；别连麦（x3）；热闹一点（x3）；单人 人多你偷懒（x2）；吵死了（x2）</li>
+          <li>[23:12] 今年lec有五成把握拿s冠军 有感觉吗（x2）；猴补来了（x2）；玩泽丽的都会被杰克上身，意识被杰克接管！（x2）；琪亚娜啊（x2）；这是决赛么？记得哥[赞]（x2）</li>
+          <li>[23:13] 毛哥你说把lpl去世界赛的5个韩援组一起怎么说？（x3）；左边教练正在热身（x2）；猴补来了（x2）；G2那个绅士教练呢 贼有气质那个；LEC冠军多少米？</li>
+          <li>[23:14] 什么？g2教练正在热身（x4）；这个人的盲僧很厉害（x2）；007来了；G2老板来了没；g2全员光头哈哈哈</li>
+          <li>[23:15] 二哥怎么只有你一个人，其他几位呢（x2）；G2必胜；g2肯定先输2局然后开始翻；上来就打情骂俏；不要连麦</li>
+          <li>[23:16] 老张看好哪边（x6）；不连（x5）；毛哥你说把lpl去世界赛的5个韩援组一起怎么说？（x4）；Caps在cosplay瑞滋（x3）；不要连（x2）</li>
+          <li>[23:17] 又想坑狗哥（x2）；6点开始，12点下班；caps要变成一拳超人嘛；gg是吧；jiejie思密达</li>
+          <li>[23:18] 总决赛了吗？兄弟们（x2）；G2在干嘛！！！！！；GG；al和blg的剧情？；jiejie！</li>
+          <li>[23:19] IG玩具选拔赛（x7）；KC是3号种子吗（x2）；不会和blg一样被拿下吧（x2）；6号种子夺冠吗；KOI 无敌了</li>
+          <li>[23:20] @XiuKawa 最多一把；G2 今天要陨落了；G2就喜欢翻盘；IG玩具选拔赛；MK以前就干过啊 欧洲冠军 一场不赢</li>
+          <li>[23:21] jojo上次一整局一次时限器没开（x3）；米人不对劲了（x2）；这是al打blg剧本吗（x2）；100%参团；@我是小学生 18号。</li>
+          <li>[23:22] 6号种子扮猪吃老虎（x2）；6号种子这么猛？；BB菜了好多啊；Bb的朗姆没什么熟练度；G2进S赛了吗</li>
+          <li>[23:23] 中哥在解说云顶（x2）；张神有没有人说你长得像特种兵小庄（x2）；30刀在哪，还有一堆兵没补呢；6号种子要和blg一起去逮捕t1；G2射手不是棒子吗？</li>
+          <li>[23:24] 弱悲（x5）；翻了（x4）；中哥在解说云顶（x3）；全打回来了（x2）；翻了！！！（x2）</li>
+          <li>[23:25] 维克托（x10）；塞拉斯（x8）；佛耶戈（x3）；司空震（x3）；G2教练也没毛啊（x2）</li>
+          <li>[23:26] 老张今天不接一接吗（x4）；/{fe；190怎么可能100斤；1米9比老张高一个头了；G2那个教练很面熟啊 是谁来着</li>
+          <li>[23:27] 二哥将就一下和老张凑合过吧（x2）；决赛吗（x2）；190的话100斤根本就走不动路；G2这个上路越来越菜了；G2随便赢 送一把无所谓</li>
+          <li>[23:28] BB还有亚索；CPS怎么光拉；G2比KC猛多了；caps头发还能长出来吗；g2对炼金地形使用还是可以的</li>
+          <li>[23:29] 决赛吗（x2）；0-3就不会玩，昨晚kc诗人？；G2有点超模了；G2逗逗你的啊；MKo只是中路猛，其他路很垃圾的</li>
+          <li>[23:30] zeka也不出（x3）；不是啊p吗（x3）；G2之前的教练呢？？（x2）；yy（x2）；夏安真比塔子好，要选肯定选夏安啊（x2）</li>
+          <li>[23:31] 二哥 收了小钰吧（x3）；16分钟叠眼泪；16分钟瑞兹女神泪；@旅人 你跟老张；G2还是lec的王</li>
+          <li>[23:32] 二哥如何穿越武侠世界，对手绝对身体是残破的，下三路被打烂（x5）；弱悲（x3）；来次够g2（x2）；这打什么几把啊无语（x2）；0-2 5-3 好菜</li>
+          <li>[23:33] 二哥如何穿越武侠世界，对手绝对身体是残破的，下三路被打烂（x4）；右边3个头锁到死（x2）；来次够g2（x2）；米处（x2）；老张今天不接一接吗（x2）</li>
+          <li>[23:34] 二哥如何穿越武侠世界，对手绝对身体是残破的，下三路被打烂（x3）；马威是谁啊（x2）；66层的大天使；G2不是都剃光头了吗 怎么还有头发；KC被MK三比零，还KC呢</li>
+          <li>[23:35] G2赢不赢就看下路汉斯，汉斯领先基本就赢了！（x3）；G2 全球主场；Let's go G2；[打呼]；g2不是德国俱乐部吗</li>
+          <li>[23:36] 小玉都是肉机的形状了 你好要啊（x3）；汉斯被kitty吸干了（x3）；韩氏最近没出货（x3）；禁欲了（x2）；3-0领先2千，直接失了智一样，完全不知道在干嘛</li>
+          <li>[23:37] 这波真是jojo肉身开团 他闪现还骗了萨勒芬妮R（x3）；22分钟龙魂接就炸（x2）；这是争夺几号种子（x2）；Jojo经典肉身开团；g2怎么有个光头老登啊</li>
+          <li>[23:38] 谁是欧洲的王，大声告诉我！谁是欧洲的王，大声告诉我！（x4）；什么决策啊（x2）；昨天的ELY果然是错觉。（x2）；百姓家奴 十一 今天叫各位 义父 了吗？（x2）；笑死我了（x2）</li>
+          <li>[23:39] 要么兰博一开始就一起打龙，要么就等打野活（x4）；一波（x2）；太硬了g2（x2）；打不过（x2）；欧猴王（x2）</li>
+          <li>[23:40] 欧龙（x4）；两个人分开就跑了太蠢了（x2）；二哥那天为什么会走错演播厅（x2）；他这客户端，后台偷网，太变态了（x2）；俊哥的心脏有蚂蚁大吗（x2）</li>
+          <li>[23:41] 左边像ig 了，有感觉吗（x3）；客户端app一起看（x2）；要么兰博一开始就一起打龙，要么就等打野活（x2）；26分钟还没大天使；BB联赛装模作样玩狼母，世界赛不可能拿一把</li>
+          <li>[23:42] 为了二哥专门下的客户端看毛÷我有客户端都用网页版（x2）；保枪（x2）；泽丽猫和寒冰塞拉芬，本来就是五五开，谁对的好就是优势（x2）；3-0了；3比0了</li>
+          <li>[23:43] 太亮了（x2）；G2今年s冠了；G2季后赛都喜欢装唐；G2拿头S冠；KC会被淹死吗？</li>
+          <li>[23:44] G2这几年也就mkoi打下来过；Gaps 都不用自己皮肤呀；人头多少；切换一下屏幕；北美还没打完呢</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <div class="grid-2">
+      <div>
+        <h3>队伍提及 TOP</h3>
+        <table class="data-table">
+          <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>G2</td><td>159</td><td>正9 / 负4</td></tr>
+            <tr><td>KC</td><td>40</td><td>正2 / 负3</td></tr>
+            <tr><td>IG</td><td>23</td><td>正0 / 负0</td></tr>
+            <tr><td>BoomBoys</td><td>20</td><td>正1 / 负4</td></tr>
+            <tr><td>BLG</td><td>10</td><td>正0 / 负0</td></tr>
+            <tr><td>T1</td><td>7</td><td>正1 / 负0</td></tr>
+            <tr><td>AL</td><td>6</td><td>正0 / 负0</td></tr>
+            <tr><td>IC</td><td>3</td><td>正0 / 负1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>选手提及 TOP</h3>
+        <table class="data-table">
+          <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+          <tbody>
+            <tr><td>Faker</td><td>3</td><td>正0 / 负0</td></tr>
+            <tr><td>Zeus</td><td>2</td><td>正0 / 负0</td></tr>
+            <tr><td>Chovy</td><td>1</td><td>正0 / 负0</td></tr>
+          </tbody>
+        </table>
+        <div class="footnote">* 本场弹幕中 G2 相关选手（Caps、Hans Sama、BB）提及较多，但未进入规则层 TOP 统计。</div>
+      </div>
+    </div>
+    <div style="margin-top: 12px;">
+      <h3>队伍特质统计（长期库）</h3>
+      <div>
+        <span class="chip">被翻守不住:7</span>
+        <span class="chip">韧性逆转:1</span>
+        <span class="chip">心态摆烂:1</span>
+        <span class="chip">慢热手热:4</span>
+        <span class="chip">打法风格:5</span>
+        <span class="chip">选手特质:2</span>
+      </div>
+    </div>
+    <details>
+      <summary>G2 / MKOI 长画像（折叠）</summary>
+      <div class="details-content">
+        <p><strong>G2 Esports：</strong>LEC 传统豪门，以“翻盘”“韧性”著称，但近期上单 Broken Blade 状态受质疑。弹幕高频提及“G2就喜欢翻盘”“G2还是lec的王”，同时“BB菜了好多”反映上单隐忧。历史画像“韧性逆转:1”“慢热手热:4”支持其后期能力。</p>
+        <p style="margin-top: 8px;"><strong>Movistar KOI：</strong>本场弹幕提及较少，但“MKo只是中路猛，其他路很垃圾的”反映观众对其评价。Jojo 肉身开团被多次提及（x3），中单表现受关注。</p>
+        <div class="footnote">* 画像基于长期库与弹幕样本，提及量见上表。</div>
+      </div>
+    </details>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul class="bullet-list">
+      <li><strong>LEC 赛区讨论：</strong>“LEC能玩些不一样的英雄吗 期待”“今年lec有五成把握拿s冠军 有感觉吗”反映观众对赛区竞争力与英雄多样性的关注。</li>
+      <li><strong>版本英雄：</strong>“维克托”“塞拉斯”“佛耶戈”在 BP 阶段集中出现，可能指向当前版本中单/打野优先级。</li>
+      <li><strong>泽丽猫体系：</strong>“泽丽猫和寒冰塞拉芬，本来就是五五开”说明下路组合博弈是版本焦点。</li>
+      <li><strong>种子顺位：</strong>“G2肯定要一号种子要不然又打T1”“6号种子扮猪吃老虎”涉及 LEC 种子规则与全球总决赛对阵。</li>
+    </ul>
+    <div class="footnote">* 以上规律基于本场弹幕讨论，非官方版本公告。</div>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p style="font-size: 14px;">本页为 G1 局中快照，暂无历史预测需回填。以下为待验证信号：</p>
+    <table class="data-table">
+      <thead><tr><th>预测/信号</th><th>来源</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>G2 翻盘能力</td><td>本场弹幕“G2就喜欢翻盘”</td><td>待官方结果验证</td></tr>
+        <tr><td>灰信号“剧本论”</td><td>本场弹幕“欧洲假赛联赛”</td><td>待后续局间观察</td></tr>
+        <tr><td>上单 BB 状态</td><td>本场弹幕“BB菜了好多”</td><td>待后续局表现验证</td></tr>
+      </tbody>
+    </table>
+    <div class="footnote">* 预测验证回填将在官方结果确认后更新。</div>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <div class="grid-3">
+      <div>
+        <h3>实际数据源</h3>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>规则层情报 JSON：lol-g2-mkoi-2026-09-20_g1_end_intel.json</li>
+          <li>弹幕切片：lol-g2-mkoi-2026-09-20_g1_end.jsonl</li>
+          <li>官方比分：G2 1 : 0 MKOI（gameWins）</li>
+        </ul>
+      </div>
+      <div>
+        <h3>预期数据源</h3>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>Riot window 阵容（开局后 1 分钟校准）</li>
+          <li>官方结算结果（待回填）</li>
+          <li>长期画像库</li>
+        </ul>
+      </div>
+      <div>
+        <h3>缺口</h3>
+        <ul class="bullet-list" style="font-size: 13px;">
+          <li>官方最终结果未出</li>
+          <li>BP 后战绩情报无提及</li>
+          <li>盘口样本量小（7条）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex-between">
+      <div>
+        <div style="font-size: 13px; color: #6e6e73;">情报输出时间：<strong>2026-09-20 23:45 北京时间</strong></div>
+        <div style="font-size: 13px; color: #6e6e73;">数据窗口：G1 局末/局间（GAME-REVIEW）</div>
+      </div>
+      <div class="text-small">
+        本页为局中·非终局快照，结果待官方回填。
+      </div>
+    </div>
+    <div class="footnote" style="margin-top: 12px;">
+      * 情报来源分层：本场弹幕 / 前局弹幕 / 历史画像 / 盘口 / 推测·待验证。核心情报均来自本场弹幕，推测已显式标注。
+    </div>
+  </div>
+  <!-- 本场长期沉淀点 -->
+  <div class="card" style="background: #fafafa;">
+    <h2 style="font-size: 16px;"><span class="no" style="background: #6e6e73;">★</span>本场长期沉淀点</h2>
+    <ul class="bullet-list">
+      <li><strong>G2 翻盘叙事持续强化：</strong>弹幕高频“G2就喜欢翻盘”，结合历史画像“韧性逆转:1”，该标签已成为 G2 的稳定预期，后续局间可继续追踪。</li>
+      <li><strong>灰信号“剧本论”需长期监控：</strong>“欧洲假赛联赛”“al打blg剧本”等言论在 LEC 场次反复出现，建议纳入赛区舆情监控。</li>
+      <li><strong>上单 BB 状态成 G2 短板信号：</strong>“BB菜了好多”“G2这个上路越来越菜了”多次出现，若后续局持续，可能影响 G2 整体评价。</li>
+    </ul>
+    <div class="footnote">* 无样本写「样本不足」，不硬造。本场样本充足，以上沉淀点基于真实弹幕。</div>
+  </div>
+  <!-- 页脚 -->
+  <div style="text-align: center; padding: 16px 0 8px; font-size: 12px; color: #8e8e93;">
+    局中弹幕情报快照 · G2 vs MKOI · G1 局末 · 2026-09-20 · 数据基于弹幕切片与规则层统计
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
