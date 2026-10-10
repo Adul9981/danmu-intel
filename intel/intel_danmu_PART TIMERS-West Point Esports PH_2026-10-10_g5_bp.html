@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · PART TIMERS vs West Point Esports PH · G5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 980px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+        .subhead {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8e8ed;
+            color: #1d1d1f;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.01em;
+        }
+        .badge.live {
+            background: #ff3b30;
+            color: #ffffff;
+        }
+        .badge.warning {
+            background: #ff9500;
+            color: #ffffff;
+        }
+        .badge.neutral {
+            background: #e8e8ed;
+            color: #1d1d1f;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 650;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #0071e3;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            color: #1d1d1f;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            margin-bottom: 12px;
+        }
+        .stat-item {
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .stat-item .label {
+            color: #6e6e73;
+            margin-right: 4px;
+        }
+        .stat-item .value {
+            font-weight: 600;
+        }
+        .signal-list {
+            list-style: none;
+            margin: 8px 0 4px;
+        }
+        .signal-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .signal-list li:last-child {
+            border-bottom: none;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .tag.risk {
+            background: #ff3b30;
+            color: #fff;
+        }
+        .tag.anchor {
+            background: #0071e3;
+            color: #fff;
+        }
+        .tag.market {
+            background: #ff9500;
+            color: #fff;
+        }
+        .tag.consensus {
+            background: #34c759;
+            color: #fff;
+        }
+        .tag.gray {
+            background: #8e8e93;
+            color: #fff;
+        }
+        .tag.info {
+            background: #e8e8ed;
+            color: #1d1d1f;
+        }
+        .decision-line {
+            background: #f0f7ff;
+            border-left: 4px solid #0071e3;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 12px;
+            color: #1d1d1f;
+        }
+        .gray-box {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 12px 0;
+            border: 1px solid #e8e8ed;
+        }
+        .gray-box .gray-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #6e6e73;
+            margin-bottom: 8px;
+        }
+        .gray-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .gray-box li {
+            font-size: 14px;
+            padding: 4px 0;
+            color: #1d1d1f;
+        }
+        .gray-box li::before {
+            content: "•";
+            color: #8e8e93;
+            margin-right: 8px;
+        }
+        details {
+            margin: 12px 0;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        details summary {
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #ffffff;
+            color: #0071e3;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary::before {
+            content: "▸";
+            font-size: 12px;
+            transition: transform 0.2s;
+            color: #0071e3;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details summary:hover {
+            background: #f5f5f7;
+        }
+        details .details-content {
+            padding: 16px 18px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 14px;
+            background: #ffffff;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 600px;
+        }
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #f5f5f7;
+            font-weight: 600;
+            color: #6e6e73;
+            border-bottom: 1px solid #e8e8ed;
+            white-space: nowrap;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .meta-list {
+            list-style: none;
+            font-size: 14px;
+        }
+        .meta-list li {
+            padding: 6px 0;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .meta-list li:last-child {
+            border-bottom: none;
+        }
+        .meta-list .key {
+            color: #6e6e73;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+        .meta-list .val {
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 16px 0;
+        }
+        .empty-state {
+            color: #8e8e93;
+            font-style: italic;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        .highlight {
+            background: #fff9e6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .source-tag {
+            font-size: 11px;
+            color: #8e8e93;
+            background: #f5f5f7;
+            padding: 2px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        @media (max-width: 700px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2 {
+                font-size: 17px;
+            }
+            .meta-list .key {
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="intel_profiles_index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">四维画像库</a><a href="intel_map_records.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">地图战绩</a><a href="intel_gray_verification_stats.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">灰信号·验证闭环</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">PART TIMERS-West Point Esports PH 2026-10-10 g5 bp</b></div>
+<div class="container">
+    <!-- 头部 -->
+    <div class="card" style="padding-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h1>局中弹幕情报快照 · G5</h1>
+                <div class="subhead">
+                    <span>PART TIMERS vs West Point Esports PH</span>
+                    <span>·</span>
+                    <span>2026-10-10</span>
+                    <span>·</span>
+                    <span>slug: lol-pt-wpe1-2026-10-10</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span class="badge live">局中·非终局</span>
+                <span class="badge warning">结果待定</span>
+                <span class="badge neutral">G5 · BP后/开局</span>
+            </div>
+        </div>
+        <div class="footnote" style="margin-top: 10px;">
+            页面所有时间均为北京时间（UTC+8）· 弹幕口径进度 · 官方数据待回填
+        </div>
+    </div>
+    <!-- 0 核心情报速览 -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览</h2>
+        <div class="stat-row">
+            <div class="stat-item"><span class="label">当前小局</span><span class="value">G5 · BP后/开局</span></div>
+            <div class="stat-item"><span class="label">大比分</span><span class="value">弹幕口径·官方待回填</span></div>
+            <div class="stat-item"><span class="label">弹幕总数</span><span class="value">0 条</span></div>
+            <div class="stat-item"><span class="label">活跃用户</span><span class="value">0 人</span></div>
+            <div class="stat-item"><span class="label">密度</span><span class="value">0.0 条/分</span></div>
+        </div>
+        <div class="divider"></div>
+        <h3 style="margin-top: 0;">TOP 信号</h3>
+        <ul class="signal-list">
+            <li>
+                <span class="tag risk">风险</span>
+                <span>本节点弹幕样本为0，无法提炼有效信号，情报置信度极低。</span>
+                <span class="source-tag">溯源 → §2 §11</span>
+            </li>
+            <li>
+                <span class="tag anchor">锚点</span>
+                <span>BP阵容已锁定，但无弹幕讨论，锚点信息仅来自规则层。</span>
+                <span class="source-tag">溯源 → §3</span>
+            </li>
+            <li>
+                <span class="tag market">盘口</span>
+                <span>无盘口讨论样本，市场情绪缺失。</span>
+                <span class="source-tag">溯源 → §4</span>
+            </li>
+            <li>
+                <span class="tag consensus">共识</span>
+                <span>样本不足，无法形成群体共识。</span>
+                <span class="source-tag">溯源 → §5</span>
+            </li>
+        </ul>
+        <div class="decision-line">
+            <strong>一句话决策落点：</strong>当前节点无弹幕数据支撑，建议观望，等待官方数据回填或后续弹幕积累，暂不给出方向性结论。
+        </div>
+        <div class="footnote" style="margin-top: 10px;">
+            速览卡仅展示核心信号，详细证据见各分节。样本不足，不硬造。
+        </div>
+    </div>
+    <!-- 1 比赛信息与结果总览 -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-top: 0;">比赛元数据</h3>
+                <ul class="meta-list">
+                    <li><span class="key">赛事</span><span class="val">LoL 系列赛（slug: lol-pt-wpe1-2026-10-10）</span></li>
+                    <li><span class="key">对阵</span><span class="val">PART TIMERS vs West Point Esports PH</span></li>
+                    <li><span class="key">日期</span><span class="val">2026-10-10（北京时间）</span></li>
+                    <li><span class="key">当前小局</span><span class="val">G5 · BP后/开局（EARLY-GAME）</span></li>
+                    <li><span class="key">大比分</span><span class="val">弹幕口径·官方待回填</span></li>
+                    <li><span class="key">官方源</span><span class="val">Riot 小局状态（阵容已锁定，开局后1分钟校准）</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="margin-top: 0;">结果状态核验</h3>
+                <div class="gray-box" style="margin-top: 0;">
+                    <div class="gray-title">⚠️ 局中·非终局，结果待定</div>
+                    <ul>
+                        <li>本小局尚未结束，当前为BP后/开局阶段。</li>
+                        <li>弹幕口径进度：无弹幕数据，无法判断实时走势。</li>
+                        <li>官方数据：阵容已确认，但比分/经济等实时数据待回填。</li>
+                        <li>禁止从弹幕推断比分（当前无弹幕）。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footnote" style="margin-top: 12px;">
+            数据完整性提示：本节点弹幕样本为0，官方实时数据未回填，结果总览仅基于规则层元数据。
+        </div>
+    </div>
+    <!-- 2 灰信号汇总 -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="gray-box">
+            <div class="gray-title">灰信号词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）</div>
+            <ul>
+                <li>本节点弹幕切片共 0 条，灰信号相关词命中 0 条。</li>
+                <li>无观众质疑样本，无法判断是否存在异常行为讨论。</li>
+                <li>样本不足，不硬造灰信号结论。</li>
+            </ul>
+        </div>
+        <div class="footnote">
+            观众质疑，非结论。灰信号漏检修正机制已执行：先跑词表统计，确认0条命中。
+        </div>
+        <details>
+            <summary>弹幕原文摘录（灰信号相关）· 折叠</summary>
+            <div class="details-content">
+                <p class="empty-state">本节点无弹幕样本，无原文可摘录。</p>
+                <p style="font-size: 13px; color: #6e6e73; margin-top: 8px;">切片文件：/opt/danmu-intel/data/intel_slices/lol-pt-wpe1-2026-10-10_g5_bp.jsonl（0条记录）</p>
+            </div>
+        </details>
+    </div>
+    <!-- 3 BP 锚点与选人情报 -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-top: 0;">本局阵容（英雄+选手）</h3>
+                <div class="gray-box" style="margin-top: 0;">
+                    <div class="gray-title">PART TIMERS</div>
+                    <ul>
+                        <li>上单：待官方回填</li>
+                        <li>打野：待官方回填</li>
+                        <li>中单：待官方回填</li>
+                        <li>下路：待官方回填</li>
+                        <li>辅助：待官方回填</li>
+                    </ul>
+                </div>
+                <div class="gray-box">
+                    <div class="gray-title">West Point Esports PH</div>
+                    <ul>
+                        <li>上单：待官方回填</li>
+                        <li>打野：待官方回填</li>
+                        <li>中单：待官方回填</li>
+                        <li>下路：待官方回填</li>
+                        <li>辅助：待官方回填</li>
+                    </ul>
+                </div>
+                <div class="footnote">规则层JSON已读取，但阵容具体英雄与选手映射待官方窗口校准后回填。</div>
+            </div>
+            <div>
+                <h3 style="margin-top: 0;">BP 锚点与讨论</h3>
+                <div class="gray-box" style="margin-top: 0;">
+                    <div class="gray-title">弹幕讨论锚点</div>
+                    <ul>
+                        <li>本节点无弹幕样本，无BP讨论锚点。</li>
+                        <li>无法提炼选人倾向、禁用策略等情报。</li>
+                    </ul>
+                </div>
+                <div class="gray-box">
+                    <div class="gray-title">BP后战绩情报</div>
+                    <ul>
+                        <li>无战绩情报提及。</li>
+                    </ul>
+                </div>
+                <div class="footnote">规则层情报JSON：/opt/danmu-intel/runtime/vps_intel/lol-pt-wpe1-2026-10-10_g5_bp_intel.json（已读取，无有效弹幕锚点）</div>
+            </div>
+        </div>
+        <details>
+            <summary>BP阶段弹幕原文摘录（折叠）</summary>
+            <div class="details-content">
+                <p class="empty-state">本节点无弹幕样本，无原文可摘录。</p>
+            </div>
+        </details>
+    </div>
+    <!-- 4 盘口与市场讨论 -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <div class="gray-box">
+            <div class="gray-title">盘口讨论样本</div>
+            <ul>
+                <li>本节点弹幕总数0，无盘口相关讨论。</li>
+                <li>无法提炼市场情绪、赔率变化、资金流向等情报。</li>
+                <li>样本不足，不硬造盘口结论。</li>
+            </ul>
+        </div>
+        <div class="footnote">
+            盘口数据源：无。建议等待后续弹幕积累或官方盘口数据接入。
+        </div>
+    </div>
+    <!-- 5 方向性情报板 -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-top: 0;">正锚（看多信号）</h3>
+                <div class="empty-state">今日无正锚信号（样本不足）。</div>
+                <h3>负锚（看空信号）</h3>
+                <div class="empty-state">今日无负锚信号（样本不足）。</div>
+            </div>
+            <div>
+                <h3 style="margin-top: 0;">群体共识</h3>
+                <div class="empty-state">样本不足，无法形成共识。</div>
+                <h3>灰信号条件预测</h3>
+                <div class="empty-state">今日无灰信号条件预测（样本不足）。</div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>弹幕共识提炼表</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>主题</th>
+                        <th>方向</th>
+                        <th>条数（带量）</th>
+                        <th>关键样本</th>
+                        <th>多源状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" class="empty-state" style="text-align: center; padding: 20px;">本节点弹幕样本为0，无法提炼共识。样本不足，不硬造。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="footnote">
+            共识→信号链：无样本，无法建立信号链。
+        </div>
+    </div>
+    <!-- 6 情报含义与决策落点 -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+        <div class="gray-box">
+            <div class="gray-title">当前节点情报含义</div>
+            <ul>
+                <li>弹幕样本为0，无有效情报输入。</li>
+                <li>BP阵容已锁定但无讨论，无法判断观众情绪。</li>
+                <li>盘口、灰信号、共识均缺失。</li>
+                <li>官方实时数据未回填，结果待定。</li>
+            </ul>
+        </div>
+        <div class="decision-line" style="background: #f5f5f7; border-left-color: #8e8e93;">
+            <strong>决策落点：</strong>无足够情报支撑 LONG 或 SHORT 方向。建议观望，等待弹幕积累或官方数据回填。当前节点不给出交易/预测建议。
+        </div>
+        <div class="footnote">
+            情报来源分层：本节点无本场弹幕、无前局弹幕、无历史画像引用、无盘口数据。所有结论均为推测·待验证或缺口标注。
+        </div>
+    </div>
+    <!-- 7 逐局复盘 -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+        <h3 style="margin-top: 0;">G5 当前局已发生片段</h3>
+        <div class="gray-box">
+            <div class="gray-title">时间线（北京时间）</div>
+            <ul>
+                <li>BP阶段：阵容已锁定（具体英雄待官方回填）。</li>
+                <li>开局阶段：进行中，无弹幕记录。</li>
+                <li>后续：待观察。</li>
+            </ul>
+        </div>
+        <h3>弹幕时间线（真实时间戳+原文带量）</h3>
+        <div class="empty-state">本节点无弹幕样本，无时间线可展示。</div>
+        <details>
+            <summary>G5 完整弹幕时间线（折叠）</summary>
+            <div class="details-content">
+                <p class="empty-state">切片文件：/opt/danmu-intel/data/intel_slices/lol-pt-wpe1-2026-10-10_g5_bp.jsonl（0条记录）</p>
+                <p style="font-size: 13px; color: #6e6e73; margin-top: 8px;">无弹幕原文，时间线为空。</p>
+            </div>
+        </details>
+        <div class="footnote">
+            逐局复盘当前局已发生片段+时间线，未发生写「待观察」。本节点无弹幕证据，仅记录规则层状态。
+        </div>
+    </div>
+    <!-- 8 队伍/人员画像 -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="margin-top: 0;">PART TIMERS</h3>
+                <div class="gray-box" style="margin-top: 0;">
+                    <div class="gray-title">长期画像（引用长期库）</div>
+                    <ul>
+                        <li>本节点无弹幕提及，无法更新提及量。</li>
+                        <li>长期库数据待接入，当前画像为空。</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <h3 style="margin-top: 0;">West Point Esports PH</h3>
+                <div class="gray-box" style="margin-top: 0;">
+                    <div class="gray-title">长期画像（引用长期库）</div>
+                    <ul>
+                        <li>本节点无弹幕提及，无法更新提及量。</li>
+                        <li>长期库数据待接入，当前画像为空。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <details>
+            <summary>长画像与提及量详情（折叠）</summary>
+            <div class="details-content">
+                <p class="empty-state">本节点无弹幕样本，无提及量数据。长期画像库未接入，样本不足。</p>
+                <p style="font-size: 13px; color: #6e6e73; margin-top: 8px;">硬信息六项禁止删除：人员画像带提及量——当前提及量为0，已标注。</p>
+            </div>
+        </details>
+        <div class="footnote">
+            队伍/人员画像引用长期库带提及量；本节点无弹幕提及，提及量为0。
+        </div>
+    </div>
+    <!-- 9 联赛规律与版本 -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="gray-box">
+            <div class="gray-title">当前版本/联赛规律</div>
+            <ul>
+                <li>本节点无弹幕讨论，无法提炼版本理解或联赛规律。</li>
+                <li>规则层未提供版本号，待官方数据回填。</li>
+                <li>样本不足，不硬造规律。</li>
+            </ul>
+        </div>
+        <div class="footnote">
+            跨源一致性提示：无多源数据，无法校验一致性。
+        </div>
+    </div>
+    <!-- 10 预测验证回填 -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="gray-box">
+            <div class="gray-title">预测验证状态</div>
+            <ul>
+                <li>本节点无预测输出，无验证回填。</li>
+                <li>前局预测验证数据待接入。</li>
+                <li>样本不足，不硬造验证结论。</li>
+            </ul>
+        </div>
+        <div class="footnote">
+            预测验证回填：无。等待后续节点数据。
+        </div>
+    </div>
+    <!-- 11 数据与溯源 -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-3">
+            <div>
+                <h3 style="margin-top: 0;">实际数据源</h3>
+                <ul class="meta-list">
+                    <li><span class="key">规则层JSON</span><span class="val">已读取（无有效弹幕锚点）</span></li>
+                    <li><span class="key">弹幕切片</span><span class="val">0条记录</span></li>
+                    <li><span class="key">官方数据</span><span class="val">Riot 小局状态（阵容已锁定，实时待回填）</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="margin-top: 0;">预期数据源</h3>
+                <ul class="meta-list">
+                    <li><span class="key">弹幕切片</span><span class="val">lol-pt-wpe1-2026-10-10_g5_bp.jsonl</span></li>
+                    <li><span class="key">规则层情报</span><span class="val">lol-pt-wpe1-2026-10-10_g5_bp_intel.json</span></li>
+                    <li><span class="key">官方源</span><span class="val">LoL=Riot 小局状态</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="margin-top: 0;">缺口</h3>
+                <ul class="meta-list">
+                    <li><span class="key">弹幕样本</span><span class="val">0条（缺口）</span></li>
+                    <li><span class="key">盘口数据</span><span class="val">缺失</span></li>
+                    <li><span class="key">长期画像</span><span class="val">未接入</span></li>
+                    <li><span class="key">官方实时</span><span class="val">待回填</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <ul class="meta-list">
+            <li><span class="key">情报输出时间</span><span class="val">2026-10-10 20:30（北京时间）</span></li>
+            <li><span class="key">数据完整性</span><span class="val">缺源不交付完整结论。当前弹幕样本为0，官方实时数据未回填，情报置信度极低。</span></li>
+            <li><span class="key">跨源一致性提示</span><span class="val">无多源数据，无法校验。</span></li>
+            <li><span class="key">硬信息六项</span><span class="val">人员画像带提及量（0）、本局阵容（待回填）、BP后战绩情报（无）、密度时间线（0）、跨源一致性（无）、比赛元数据（已列）</span></li>
+        </ul>
+        <div class="footnote" style="margin-top: 12px;">
+            情报来源分层：本场弹幕（0条）、前局弹幕（未接入）、历史画像（未接入）、盘口（无）、推测·待验证（无）。核心情报必须来自本场弹幕，当前无样本，所有结论均为缺口标注。
+        </div>
+    </div>
+    <!-- 长期沉淀点 -->
+    <div class="card" style="background: #fafafa;">
+        <h2 style="font-size: 17px;"><span class="no" style="background: #8e8e93;">★</span>本场长期沉淀点</h2>
+        <ul class="meta-list">
+            <li><span class="key">沉淀点1</span><span class="val">本节点弹幕样本为0，需检查弹幕采集链路或切片时间窗是否覆盖正确。建议后续节点验证数据管道。</span></li>
+            <li><span class="key">沉淀点2</span><span class="val">官方阵容数据待回填，建议在开局后1分钟校准窗口内完成回填，以支撑后续情报生成。</span></li>
+        </ul>
+        <div class="footnote" style="margin-top: 8px;">
+            样本不足，不硬造。本场长期沉淀点至少1条，已满足。
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <div class="card" style="text-align: center; padding: 16px; background: transparent; box-shadow: none;">
+        <div class="footnote" style="margin: 0;">
+            局中·非终局，结果待定 · 弹幕口径进度 · 官方数据待回填 · 北京时间（UTC+8）
+        </div>
+        <div class="footnote" style="margin-top: 4px;">
+            生成时间：2026-10-10 20:30 北京时间 · 模板 v1 · 2026-08-30 固化
+        </div>
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
