@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import datetime
 import json
+import random
 import re
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -21,9 +23,31 @@ ROOT = Path(__file__).resolve().parents[2]
 UA = {"User-Agent": "Mozilla/5.0 danmu-intel"}
 
 
-def get(url: str):
-    req = urllib.request.Request(url, headers=UA)
-    return json.loads(urllib.request.urlopen(req, timeout=25).read())
+RETRY_CODES = {429, 500, 502, 503, 504}
+
+
+def get(url: str, attempts: int = 5):
+    """带退避重试的 GET（2026-10-11 固化）。
+
+    教训：Polymarket gamma 偶发 500/超时，原实现直接抛出 -> 工作流失败 ->
+    每 5 分钟一封 GitHub 失败邮件。上游瞬时故障必须自行重试吸收；
+    仅对可重试错误（5xx / 429 / 网络超时）退避重试，其余 4xx 立即抛出。
+    """
+    last: Exception | None = None
+    for i in range(attempts):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                return json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            last = e
+            if e.code not in RETRY_CODES:
+                raise
+        except Exception as e:  # noqa: BLE001 超时/连接重置/响应截断
+            last = e
+        if i < attempts - 1:
+            time.sleep(min(2 ** i, 8) + random.uniform(0, 0.4))
+    raise last if last else RuntimeError(f"GET failed: {url}")
 
 
 def norm_teams(title: str) -> list[str]:
@@ -87,16 +111,15 @@ def detect_format(title: str, markets: list[dict]) -> tuple[int, dict, bool]:
     return fmt, sources, conflict
 
 
-def main() -> None:
-    today = datetime.date.today().isoformat()
-    horizon = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
-    backfill_from = (datetime.date.today() - datetime.timedelta(days=3)).isoformat()
+def scan_candidates(backfill_from: str, horizon: str) -> dict[str, dict]:
+    """用 Esports 标签（tag_id=64）精准拉电竞事件候选（避免被加密货币小时盘刷屏）。
+
+    2026-08-25 固化：只保留近 3 天 + 今明两天开赛的候选（同市场扫描器口径）。
+    2026-08-27：archived=false（进行中/未开始）+ archived=true（已结束归档）
+    两批都要，否则已结束的今天场次会从今日页消失（教训：08-27 CS2 缺场次）。
+    """
     candidates: dict[str, dict] = {}
-    # 用 Esports 标签（tag_id=64）精准拉电竞事件（避免被加密货币小时盘刷屏），
-    # 只保留今天/明天开赛的候选（2026-08-25 固化，同市场扫描器口径）
     for arch in ("false", "true"):
-        # 2026-08-27：archived=false（进行中/未开始）+ archived=true（已结束归档）
-        # 两批都要，否则已结束的今天场次会从今日页消失（教训：08-27 CS2 缺场次）
         for off in range(0, 8):
             evs = get(
                 "https://gamma-api.polymarket.com/events?tag_id=64"
@@ -113,13 +136,26 @@ def main() -> None:
                 sd = mm.group(1) if mm else ""
                 if sd and backfill_from <= sd <= horizon:
                     candidates[slug] = {"title": tt, "date": sd, "teams": norm_teams(tt)}
-            if not evs:
-                break
+    return candidates
+
+
+def main() -> None:
+    today = datetime.date.today().isoformat()
+    horizon = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+    backfill_from = (datetime.date.today() - datetime.timedelta(days=3)).isoformat()
+    try:
+        candidates = scan_candidates(backfill_from, horizon)
+    except Exception as e:  # noqa: BLE001
+        # 上游整体不可用：保留上一份数据，不让工作流失败
+        # （2026-10-11 固化：失败邮件由上游瞬时 500 触发，数据自愈只需 5 分钟）
+        print(f"::warning::Polymarket 扫描失败，保留上一份数据：{type(e).__name__}: {e}", flush=True)
+        return
 
     games: dict[str, dict] = {}
     settlements: dict[str, dict] = {}
     today_matches: list[dict] = []
     watch_events: list[dict] = []
+    slug_failures: list[str] = []
     for slug, meta in candidates.items():
         try:
             evs = get(f"https://gamma-api.polymarket.com/events?slug={slug}")
@@ -198,7 +234,8 @@ def main() -> None:
                     "end_time": end_dt.isoformat() if end_dt else "",
                     "time_status": "upcoming_within_window",
                 })
-        except Exception:  # noqa: BLE001
+        except Exception as e:  # noqa: BLE001 单场失败不拖垮整轮（下轮重试）
+            slug_failures.append(f"{slug}({type(e).__name__})")
             continue
         time.sleep(0.3)
 
@@ -223,6 +260,12 @@ def main() -> None:
         }, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    if slug_failures:
+        print(
+            f"::warning::{len(slug_failures)} 场比赛详情抓取失败（本轮跳过，下轮自动重试）："
+            + ", ".join(slug_failures[:10]),
+            flush=True,
+        )
     print(f"games={len(games)} settlements={len(settlements)} today_matches={len(today_matches)}", flush=True)
 
 
