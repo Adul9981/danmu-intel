@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · KOI vs CFO · G1 BP后/开局</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: #1d1d1f;
+    line-height: 1.5;
+    padding: 24px 16px 48px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 980px; margin: 0 auto; }
+  /* 顶部状态条 */
+  .top-banner {
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.03);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-left: 5px solid #ff9f0a;
+  }
+  .top-banner .match-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .top-banner .match-title span { color: #86868b; font-weight: 500; font-size: 15px; margin-left: 8px; }
+  .badge-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff4e5;
+    color: #c93400;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1px solid #ffd8a8;
+  }
+  .badge-live::before {
+    content: "";
+    width: 7px; height: 7px;
+    background: #ff3b30;
+    border-radius: 50%;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  .meta-line { font-size: 13px; color: #86868b; margin-top: 4px; }
+  /* 卡片通用 */
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.03);
+  }
+  h2 {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1d1d1f;
+  }
+  h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: #0071e3;
+    color: #fff;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  h3 { font-size: 15px; font-weight: 600; margin: 14px 0 8px; color: #1d1d1f; }
+  p { font-size: 14px; color: #424245; margin-bottom: 8px; }
+  .muted { color: #86868b; font-size: 13px; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-right: 6px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .tag-risk { background: #ffe5e5; color: #c93400; }
+  .tag-anchor { background: #e5f0ff; color: #0066cc; }
+  .tag-market { background: #f0e5ff; color: #7a3cc4; }
+  .tag-consensus { background: #e5f7e9; color: #1d7a3c; }
+  .tag-gray { background: #f2f2f7; color: #6e6e73; }
+  .tag-source { background: #f2f2f7; color: #6e6e73; font-weight: 500; }
+  .tag-warn { background: #fff4e5; color: #c93400; }
+  /* 速览卡 */
+  .quick-score {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #f5f5f7;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .quick-score .score-main { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .quick-score .score-main .vs { color: #86868b; font-weight: 500; margin: 0 6px; font-size: 16px; }
+  .quick-score .score-note { font-size: 12px; color: #86868b; }
+  .signal-list { list-style: none; }
+  .signal-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f2;
+    font-size: 14px;
+    color: #1d1d1f;
+  }
+  .signal-list li:last-child { border-bottom: none; }
+  .signal-list .sig-text { flex: 1; }
+  .signal-list .sig-ref { font-size: 12px; color: #0071e3; white-space: nowrap; font-weight: 500; }
+  .decision-line {
+    margin-top: 14px;
+    background: #e5f0ff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0066cc;
+  }
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: #86868b;
+    font-size: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e8e8ed;
+    white-space: nowrap;
+  }
+  td { padding: 9px 10px; border-bottom: 1px solid #f0f0f2; vertical-align: top; color: #424245; }
+  tr:last-child td { border-bottom: none; }
+  .num { font-variant-numeric: tabular-nums; font-weight: 600; color: #1d1d1f; }
+  /* 折叠 */
+  details {
+    margin-top: 10px;
+    border: 1px solid #e8e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  details summary {
+    cursor: pointer;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0071e3;
+    background: #fafafc;
+    list-style: none;
+    user-select: none;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before { content: "▸ "; font-size: 11px; }
+  details[open] summary::before { content: "▾ "; }
+  details .detail-body { padding: 14px 16px; border-top: 1px solid #e8e8ed; }
+  /* 时间线 */
+  .timeline { list-style: none; }
+  .timeline li {
+    display: flex;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed #f0f0f2;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .t { color: #86868b; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12px; min-width: 92px; }
+  .timeline .txt { color: #424245; flex: 1; }
+  .timeline .cnt { color: #0071e3; font-weight: 600; font-size: 12px; white-space: nowrap; }
+  /* 三栏完整性 */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .grid-3 .box {
+    background: #f5f5f7;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 13px;
+  }
+  .grid-3 .box h4 { font-size: 12px; font-weight: 700; color: #86868b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .grid-3 .box ul { list-style: none; }
+  .grid-3 .box li { padding: 3px 0; color: #424245; }
+  .grid-3 .box li::before { content: "· "; color: #0071e3; font-weight: 700; }
+  /* 方向板 */
+  .dir-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dir-box { border-radius: 12px; padding: 14px 16px; font-size: 13px; }
+  .dir-long { background: #e5f7e9; border: 1px solid #b8e6c4; }
+  .dir-short { background: #ffe5e5; border: 1px solid #ffc9c9; }
+  .dir-box h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .dir-long h4 { color: #1d7a3c; }
+  .dir-short h4 { color: #c93400; }
+  .dir-box ul { list-style: none; }
+  .dir-box li { padding: 3px 0; color: #424245; }
+  .dir-box li::before { content: "— "; color: #86868b; }
+  .footnote {
+    font-size: 12px;
+    color: #86868b;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f2;
+  }
+  .source-tag { font-size: 11px; color: #86868b; font-weight: 500; }
+  .highlight { color: #0071e3; font-weight: 600; }
+  .warn-text { color: #c93400; font-weight: 600; }
+  .divider { height: 1px; background: #f0f0f2; margin: 14px 0; }
+  @media (max-width: 640px) {
+    .grid-3 { grid-template-columns: 1fr; }
+    .dir-grid { grid-template-columns: 1fr; }
+    .top-banner { flex-direction: column; align-items: flex-start; }
+    body { padding: 16px 10px 32px; }
+    .card { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">KOI-CFO 2026-10-24 g1 bp</b></div>
+<div class="container">
+  <!-- 顶部状态 -->
+  <div class="top-banner">
+    <div>
+      <div class="match-title">KOI <span>vs</span> CFO <span>· 第 1 小局 · BP 后/开局</span></div>
+      <div class="meta-line">2026-10-24 · slug=lol-hupu-1693138568183808 · 北京时间 (UTC+8)</div>
+    </div>
+    <div class="badge-live">局中 · 非终局，结果待定</div>
+  </div>
+  <!-- 0 核心情报速览 -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="quick-score">
+      <div class="score-main">KOI <span class="vs">vs</span> CFO</div>
+      <div class="score-note">G1 · BP 后/开局 · 比分待官方回填<br>弹幕口径 · 官方待回填</div>
+    </div>
+    <ul class="signal-list">
+      <li>
+        <span class="tag tag-risk">风险</span>
+        <span class="sig-text">灰信号词表命中 0 条（演员/菠菜/假赛等），但观众对 CFO 阵容与操作有质疑声</span>
+        <span class="sig-ref">→ §2</span>
+      </li>
+      <li>
+        <span class="tag tag-anchor">锚点</span>
+        <span class="sig-text">BP 讨论聚焦奥拉夫/盲僧/小炮/蛇女，观众认为 CFO 阵容“有赢的画面”但需看执行</span>
+        <span class="sig-ref">→ §3</span>
+      </li>
+      <li>
+        <span class="tag tag-market">盘口</span>
+        <span class="sig-text">本节点弹幕无明确盘口/赔率讨论样本，盘口信号缺失</span>
+        <span class="sig-ref">→ §4</span>
+      </li>
+      <li>
+        <span class="tag tag-consensus">共识</span>
+        <span class="sig-text">弹幕对 CFO 中单来头、赛区归属讨论密集；对 LPL 名额与赛区实力有发散讨论</span>
+        <span class="sig-ref">→ §5</span>
+      </li>
+    </ul>
+    <div class="decision-line">
+      决策落点：本节点信息以 BP 与阵容讨论为主，灰信号未触发，盘口样本缺失；建议维持观察，待对线期弹幕密度与关键团战信号再校准方向。
+    </div>
+  </div>
+  <!-- 1 比赛信息与结果总览/状态核验 -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <table>
+      <tr><th>项目</th><th>内容</th><th>来源</th></tr>
+      <tr><td>赛事</td><td>KOI vs CFO · 第 1 小局</td><td class="source-tag">比赛元数据</td></tr>
+      <tr><td>日期</td><td>2026-10-24（北京时间）</td><td class="source-tag">比赛元数据</td></tr>
+      <tr><td>节点</td><td>G1 · BP 后 / 开局（EARLY-GAME）</td><td class="source-tag">规则层</td></tr>
+      <tr><td>比分状态</td><td><span class="warn-text">局中 · 非终局，结果待定</span>；比分待 Riot 官方窗口回填</td><td class="source-tag">官方待回填</td></tr>
+      <tr><td>进度口径</td><td>以弹幕口径为准（本节点切片时间窗）</td><td class="source-tag">本场弹幕</td></tr>
+      <tr><td>弹幕总量</td><td class="num">640</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>活跃用户</td><td class="num">218</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>弹幕密度</td><td class="num">22.9 条/分</td><td class="source-tag">规则层统计</td></tr>
+    </table>
+    <p class="footnote">状态核验：本节点为 BP 后/开局阶段，比赛尚未产生可确认的终局结果；页面所有比分与胜负信息均标注“待定/待回填”，不构成结论。</p>
+  </div>
+  <!-- 2 灰信号汇总 -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <p><span class="tag tag-gray">灰信号</span> 词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）：<span class="highlight">本节点弹幕样本命中 0 条</span>。</p>
+    <p>但观众对 CFO 阵容与操作存在质疑性表达，属于观赛情绪而非假赛/菠菜结论：</p>
+    <table>
+      <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      <tr>
+        <td>CFO 阵容/操作质疑</td>
+        <td>负向</td>
+        <td class="num">约 4 条</td>
+        <td>“cfo感觉失了智了”“cfo亏了”“cfo感觉也很菜”“上来就空q”</td>
+        <td>单源（本场弹幕），非结论</td>
+      </tr>
+      <tr>
+        <td>LPL 名额/赛区吐槽</td>
+        <td>负向</td>
+        <td class="num">约 3 条</td>
+        <td>“LPL不配四个名额”“去美国时候已经没有LPL了”</td>
+        <td>单源（本场弹幕），非结论</td>
+      </tr>
+    </table>
+    <p class="footnote">灰信号纪律：以上为观众质疑，非结论；词表命中 0 条，不构成假赛/菠菜信号。样本量有限，需后续节点复核。</p>
+  </div>
+  <!-- 3 BP 锚点与选人情报 -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <p><span class="tag tag-anchor">锚点</span> 本节点弹幕对 BP 与阵容讨论集中，核心英雄提及：</p>
+    <table>
+      <tr><th>英雄/选人</th><th>弹幕方向</th><th>条数（带量）</th><th>关键样本</th></tr>
+      <tr><td>奥拉夫</td><td>强度讨论</td><td class="num">约 4 条</td><td>“奥拉夫砍🉐动谁”“奥拉夫无敌了”“奥拉夫是不是1到18级都被巨魔吊打”</td></tr>
+      <tr><td>盲僧（瞎子）</td><td>优先级/操作</td><td class="num">约 5 条</td><td>“傻豆的瞎子”“好被动，只有瞎子先手”“Oner的瞎子没问题啊”“lck绝对是盲僧第一优先级”</td></tr>
+      <tr><td>小炮</td><td>后期/欢乐</td><td class="num">约 3 条</td><td>“小炮”“小炮后期领先一把逐日”“小炮这个英雄欢乐是很欢乐但是很难赢”</td></tr>
+      <tr><td>蛇女</td><td>选手招牌</td><td class="num">约 2 条</td><td>“jojo的蛇女好像是招牌”“为什么不回头先打蛇女啊”</td></tr>
+      <tr><td>德莱文/大嘴/琪亚娜</td><td>选人疑问</td><td class="num">各 1 条</td><td>“会德莱文不拿的吗？”“大嘴能出吗”“为啥没人用琪亚娜呢”</td></tr>
+    </table>
+    <p class="footnote">BP 后战绩情报：<span class="muted">无战绩情报提及</span>。本局阵容（英雄+选手）以 Riot 官方窗口为准，弹幕讨论仅作参考。</p>
+    <details>
+      <summary>展开：BP 相关弹幕原文样本（带量）</summary>
+      <div class="detail-body">
+        <ul class="timeline">
+          <li><span class="t">02:05</span><span class="txt">不会来塞恩打奥拉夫吧</span><span class="cnt">×1</span></li>
+          <li><span class="t">02:06</span><span class="txt">会不会上单蛇 / 会德莱文不拿的吗？</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:07</span><span class="txt">傻豆的瞎子 / 奥拉夫砍🉐动谁 / 好被动，只有瞎子先手</span><span class="cnt">×3</span></li>
+          <li><span class="t">02:08</span><span class="txt">小炮（x2）/ 两个约德尔人</span><span class="cnt">×3</span></li>
+          <li><span class="t">02:09</span><span class="txt">cfo这阵容有赢的画面，看能不能打出来了</span><span class="cnt">×1</span></li>
+          <li><span class="t">02:11</span><span class="txt">jojo的蛇女好像是招牌 / 奥拉夫无敌了</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:14</span><span class="txt">AKL在家 / 为什么不回头先打蛇女啊</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:19</span><span class="txt">Oner的瞎子没问题啊 / one r</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:21</span><span class="txt">lck绝对是盲僧第一优先级</span><span class="cnt">×1</span></li>
+          <li><span class="t">02:24</span><span class="txt">小炮后期领先一把逐日 / 小炮这个英雄欢乐是很欢乐但是很难赢</span><span class="cnt">×2</span></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <!-- 4 盘口与市场讨论 -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p><span class="tag tag-market">盘口</span> 本节点弹幕样本中<span class="highlight">未发现明确的盘口/赔率/让分讨论</span>，盘口信号缺失。</p>
+    <p class="muted">样本不足，不硬造盘口方向。后续节点若出现盘口讨论将回填。</p>
+  </div>
+  <!-- 5 方向性情报板 -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <h3>正锚（正向信号）</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-anchor">正锚</span><span class="sig-text">观众认为 CFO 阵容“有赢的画面”，看执行（02:09）</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-anchor">正锚</span><span class="sig-text">盲僧/奥拉夫等英雄被讨论为强势点，LCK 盲僧优先级被认可</span><span class="sig-ref">本场弹幕</span></li>
+    </ul>
+    <h3>负锚（负向信号）</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-risk">负锚</span><span class="sig-text">CFO 操作被质疑“失了智”“亏了”“空q”，阵容执行存疑</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-risk">负锚</span><span class="sig-text">小炮被评“很难赢”，后期英雄选择存争议</span><span class="sig-ref">本场弹幕</span></li>
+    </ul>
+    <h3>群体共识（带量）</h3>
+    <table>
+      <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      <tr><td>CFO 中单来头/赛区归属</td><td>中性好奇</td><td class="num">约 6 条</td><td>“Cfo 的中单是什么来头的”“cfo是哪个赛区的啊”“cfo也是全华班嘛”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>BP/阵容讨论</td><td>中性偏正</td><td class="num">约 10 条</td><td>“cfo这阵容有赢的画面”“奥拉夫无敌了”“小炮”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>LPL/赛区吐槽</td><td>负向</td><td class="num">约 4 条</td><td>“LPL不配四个名额”“去美国时候已经没有LPL了”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>主播/二路讨论</td><td>中性</td><td class="num">约 5 条</td><td>“主播看好哪个队”“957今天没二路”“二哥下次一路什么时候”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>生活/杂谈</td><td>中性</td><td class="num">约 6 条</td><td>“烧烤配啤酒”“便利店点一下”“泡面很香的”</td><td>单源（本场弹幕）</td></tr>
+    </table>
+    <p class="footnote">共识→信号链：BP/阵容讨论偏中性偏正，但 CFO 操作质疑与 LPL 吐槽构成负向扰动；同向度不足，暂为分歧信号，非强共识。</p>
+    <h3>灰信号条件预测</h3>
+    <p class="muted">本节点灰信号词表命中 0 条，无假赛/菠菜条件预测触发。若后续出现“送人头/买了/故意送”等词表命中，将升级为风险信号。</p>
+  </div>
+  <!-- 6 情报含义与决策落点 -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG / SHORT）</h2>
+    <div class="dir-grid">
+      <div class="dir-box dir-long">
+        <h4>LONG 倾向依据</h4>
+        <ul>
+          <li>CFO 阵容被部分观众认为“有赢的画面”</li>
+          <li>盲僧/奥拉夫等英雄被讨论为强势点</li>
+          <li>BP 讨论整体中性偏正</li>
+        </ul>
+      </div>
+      <div class="dir-box dir-short">
+        <h4>SHORT 倾向依据</h4>
+        <ul>
+          <li>CFO 操作被质疑“失了智”“空q”</li>
+          <li>小炮被评“很难赢”</li>
+          <li>LPL/赛区吐槽构成负向情绪</li>
+        </ul>
+      </div>
+    </div>
+    <div class="decision-line" style="margin-top:14px;">
+      决策落点：本节点多空信号交织，灰信号未触发，盘口样本缺失；建议维持观察，待对线期与关键团战弹幕密度峰值出现后再校准方向。局中非终局，结果待定。
+    </div>
+  </div>
+  <!-- 7 逐局复盘（证据层） -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <p><span class="tag tag-source">G1 · BP 后/开局</span> 当前局已发生片段：BP 完成、开局对线初期。未发生阶段写“待观察”。</p>
+    <h3>弹幕时间线（真实时间戳 · 北京时间 · 带量）</h3>
+    <details open>
+      <summary>展开：本节点弹幕时间线（28 个有弹幕分钟段抽样）</summary>
+      <div class="detail-body">
+        <ul class="timeline">
+          <li><span class="t">02:00</span><span class="txt">主播看好哪个队（x3）/ 牛仔帽（x3）/ 但是米润（x2）/ 八强说不定没我们队伍（x2）/ Cfo 的中单是什么来头的</span><span class="cnt">×11</span></li>
+          <li><span class="t">02:01</span><span class="txt">主播看好哪个队（x2）/ 4个16强是不是不用去美国了？/ 957今天没二路 / 975怎么不播 / JOJO不热吗，毛哥</span><span class="cnt">×6</span></li>
+          <li><span class="t">02:02</span><span class="txt">BLG xiye / JOJO老师今天还能吃到国补吗 / LEC今年感觉会有一波爆发 / [戳脸] / 上去被打成傻子</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:03</span><span class="txt">Cfo 的中单是什么来头 / MKOI是什么赛区 / cfo有了 / jojo确实恶 / shadow给我杀</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:04</span><span class="txt">LCK会破卡烈 / cfo好人 / peyz的招牌英雄 / shadow打老欧子有一套的 / 为啥没人用琪亚娜呢</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:05</span><span class="txt">Al怎么样了？/ LCK人家不光会玩 还知道怎么破 / cfo拿下 / 不会来塞恩打奥拉夫吧 / 二哥牡蛎中单什么来头</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:06</span><span class="txt">昨天全是 僧补！！！（x2）/ cfo是哪个赛区的啊 / 会不会上单蛇 / 会德莱文不拿的吗？/ 傻豆的瞎子</span><span class="cnt">×6</span></li>
+          <li><span class="t">02:07</span><span class="txt">cfo梅了 / 大嘴能出吗 / 奥拉夫砍🉐动谁 / 好被动，只有瞎子先手 / 小炮</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:08</span><span class="txt">小炮（x2）/ g / pb音乐这么有感觉的 / 两个约德尔人 / 二哥下次一路什么时候</span><span class="cnt">×6</span></li>
+          <li><span class="t">02:09</span><span class="txt">cfo / cfo感觉也很菜 / cfo这阵容有赢的画面，看能不能打出来了 / 二哥你这是我家 / 傻豆也去玩瓦了</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:10</span><span class="txt">这把右边要看大狗兜底毛神（x2）/ APP没广告 / cfo也是全华班嘛 二哥 / cfo加油 / 上来就空q</span><span class="cnt">×6</span></li>
+          <li><span class="t">02:11</span><span class="txt">????这什么选择 / jojo的蛇女好像是招牌 / 世界赛不去现场吗 / 奥拉夫无敌了 / 好稳的抓人操作</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:12</span><span class="txt">去美国时候已经没有LPL了，有感觉吗（x2）/ 叫！（x2）/ 烧烤配啤酒（x2）/ CFO那个车长呢 / Mc一少部分的店才是24H</span><span class="cnt">×8</span></li>
+          <li><span class="t">02:13</span><span class="txt">不用去，因为lpl一个都进不去 / 他不是带资进队的吗rest / 他肯定不如车长的 / 便利店点一下 / 很久不吃，泡面很香的</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:14</span><span class="txt">% / AKL在家 / Coo今年还是2个上单轮换吗？/ cfo这个ad好像一直玩的都还行 / 为什么不回头先打蛇女啊</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:15</span><span class="txt">g / 二哥如果家乡队打tes你支持谁 / 傻豆blg化了 / 傻豆是真傻 / 冤枉blg了</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:16</span><span class="txt">[拥抱] / obviously1-0 / s赛二路好高贵，我看瓦都是从头到尾的 / z注意发言 / 今年的op英雄有点多啊</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:17</span><span class="txt">jojo也真不是人 / 不赚啊 / 卧槽 / 有MKOI肯定是1-0 / 牢梦，那你这把上去打李星会比傻豆号好吗</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:18</span><span class="txt">0-1都很变态打得 / cfo亏了 / rest有用吗，说话 / 不加都亏了 加了亏大了 / 不是为什么打的这么怪啊</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:19</span><span class="txt">oner（x2）/ Oner的瞎子没问题啊 / bfx打野 / cfo感觉失了智了 / one r</span><span class="cnt">×6</span></li>
+          <li><span class="t">02:20</span><span class="txt">圈子妈（x2）/ KT打野 / Shadow和五月天玛莎有点像0.0 / dk的打野也是瞎子招牌 / lucid绝活瞎子啊</span><span class="cnt">×6</span></li>
+          <li><span class="t">02:21</span><span class="txt">Dns 那个也是绝活瞎子 / dk是2-0。。/ lck绝对是盲僧第一优先级 / 不会3.4把1.2弄了吧 / 二哥怎么不把pp拉来上海一起二路呀</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:22</span><span class="txt">/??/ / AL输TES了？/ 不是他也太小心了吧 / 为什么这么糊啊画面 / 为什么这么糊啊画面 和主直播间天差地别</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:23</span><span class="txt">CFO输吧 然后抽tes / mkoi带替补看来还是给米人上压力了 / 不如吃了塔 / 主队危 / 二哥有感觉吗AL0-2要和BLG相遇了</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:24</span><span class="txt">[害羞]私信我一下3333 / 他敢吗 / 小炮后期领先一把逐日 / 小炮这个英雄欢乐是很欢乐但是很难赢 / 小龙很慢 无所谓</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:25</span><span class="txt">OPPO啊 / blv是菜逼 / oppo钱给的太多了 / xun🐶不是人 / 下路一分钟被线杀</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:26</span><span class="txt">二哥去美国么 / 二哥我睡不着，又回来看你了 / 他们不管我们观赛体验，烂完了 / 你又不赚它的钱怕什么 / 卧槽看这AD</span><span class="cnt">×5</span></li>
+          <li><span class="t">02:27</span><span class="txt">奥拉夫是不是1到18级都被巨魔吊打（x2）/ LPL不配四个名额 / blg今天能虐北美嘛 / 一会王嘉尔粉丝就把你冲了 / 为什么昨天blg下路打不过啊</span><span class="cnt">×6</span></li>
+        </ul>
+      </div>
+    </details>
+    <h3>当前局已发生片段</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-source">已发生</span><span class="sig-text">BP 完成，弹幕讨论阵容与英雄强度</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-source">已发生</span><span class="sig-text">开局对线初期，出现“下路一分钟被线杀”“上来就空q”等操作讨论</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-source">待观察</span><span class="sig-text">关键团战、资源争夺、节奏转折点</span><span class="sig-ref">待后续节点</span></li>
+    </ul>
+  </div>
+  <!-- 8 队伍/人员画像 -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍 / 人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（真实）</h3>
+    <table>
+      <tr><th>队伍</th><th>提及量</th><th>正/负</th><th>来源</th></tr>
+      <tr><td>BLG</td><td class="num">13</td><td>正 0 / 负 1</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>TES</td><td class="num">3</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>AL</td><td class="num">3</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>DK</td><td class="num">3</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>KC</td><td class="num">1</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>DNS</td><td class="num">1</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>KT</td><td class="num">1</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+      <tr><td>IG</td><td class="num">1</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+    </table>
+    <h3>选手提及 TOP（真实）</h3>
+    <table>
+      <tr><th>选手</th><th>提及量</th><th>正/负</th><th>来源</th></tr>
+      <tr><td>Faker</td><td class="num">1</td><td>正 0 / 负 0</td><td class="source-tag">规则层统计</td></tr>
+    </table>
+    <h3>队伍特质统计（真实）</h3>
+    <p>打法风格：<span class="num">1</span> 条；选手特质：<span class="num">1</span> 条。</p>
+    <details>
+      <summary>展开：本场弹幕中队伍/选手相关讨论样本</summary>
+      <div class="detail-body">
+        <ul class="timeline">
+          <li><span class="t">02:02</span><span class="txt">BLG xiye</span><span class="cnt">×1</span></li>
+          <li><span class="t">02:03</span><span class="txt">Cfo 的中单是什么来头 / MKOI是什么赛区 / cfo有了</span><span class="cnt">×3</span></li>
+          <li><span class="t">02:04</span><span class="txt">peyz的招牌英雄 / shadow打老欧子有一套的</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:06</span><span class="txt">cfo是哪个赛区的啊 / 傻豆的瞎子</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:10</span><span class="txt">cfo也是全华班嘛 二哥 / cfo加油</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:11</span><span class="txt">jojo的蛇女好像是招牌</span><span class="cnt">×1</span></li>
+          <li><span class="t">02:13</span><span class="txt">他不是带资进队的吗rest / 他肯定不如车长的</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:14</span><span class="txt">Coo今年还是2个上单轮换吗？/ cfo这个ad好像一直玩的都还行</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:15</span><span class="txt">傻豆blg化了 / 傻豆是真傻 / 冤枉blg了</span><span class="cnt">×3</span></li>
+          <li><span class="t">02:19</span><span class="txt">Oner的瞎子没问题啊 / bfx打野</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:20</span><span class="txt">KT打野 / dk的打野也是瞎子招牌 / lucid绝活瞎子啊</span><span class="cnt">×3</span></li>
+          <li><span class="t">02:21</span><span class="txt">Dns 那个也是绝活瞎子 / dk是2-0。。</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:22</span><span class="txt">AL输TES了？</span><span class="cnt">×1</span></li>
+          <li><span class="t">02:23</span><span class="txt">CFO输吧 然后抽tes / 二哥有感觉吗AL0-2要和BLG相遇了</span><span class="cnt">×2</span></li>
+          <li><span class="t">02:27</span><span class="txt">blg今天能虐北美嘛 / 为什么昨天blg下路打不过啊</span><span class="cnt">×2</span></li>
+        </ul>
+      </div>
+    </details>
+    <p class="footnote">画像说明：队伍/选手提及量来自规则层长期库统计，本场弹幕样本为补充；CFO/KOI 直接提及量较低，画像以跨队讨论为主。</p>
+  </div>
+  <!-- 9 联赛规律与版本 -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p><span class="tag tag-source">版本/联赛</span> 本节点弹幕涉及赛区与版本讨论：</p>
+    <ul class="signal-list">
+      <li><span class="tag tag-consensus">共识</span><span class="sig-text">“LEC今年感觉会有一波爆发，看吧”（02:02）</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-consensus">共识</span><span class="sig-text">“LCK人家不光会玩 还知道怎么破”“lck绝对是盲僧第一优先级”</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-consensus">共识</span><span class="sig-text">“今年的op英雄有点多啊”</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-risk">负向</span><span class="sig-text">“LPL不配四个名额”“去美国时候已经没有LPL了”</span><span class="sig-ref">本场弹幕</span></li>
+    </ul>
+    <p class="footnote">联赛规律：LCK 盲僧优先级被观众认可；LEC 被部分观众看好；LPL 名额与实力遭吐槽。样本量有限，非结论。</p>
+  </div>
+  <!-- 10 预测验证回填 -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p>本节点为 BP 后/开局，尚无终局结果可回填。预测验证状态：<span class="warn-text">待定</span>。</p>
+    <table>
+      <tr><th>预测项</th><th>状态</th><th>回填条件</th></tr>
+      <tr><td>CFO 阵容“有赢的画面”是否兑现</td><td>待观察</td><td>关键团战/资源争夺后</td></tr>
+      <tr><td>小炮后期是否“很难赢”</td><td>待观察</td><td>比赛进入后期</td></tr>
+      <tr><td>盲僧/奥拉夫强度是否兑现</td><td>待观察</td><td>对线期与团战表现</td></tr>
+    </table>
+    <p class="footnote">局中非终局，结果待定；预测验证将在后续节点回填。</p>
+  </div>
+  <!-- 11 数据与溯源 -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性（三栏）</h3>
+    <div class="grid-3">
+      <div class="box">
+        <h4>实际数据源</h4>
+        <ul>
+          <li>规则层情报 JSON</li>
+          <li>弹幕切片（本节点时间窗）</li>
+          <li>规则层统计（640 条/218 用户/22.9 条/分）</li>
+          <li>本场弹幕样本 140 条</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>预期数据源</h4>
+        <ul>
+          <li>Riot 小局状态（比分/阵容）</li>
+          <li>官方 BP 数据</li>
+          <li>盘口/赔率数据</li>
+          <li>关键团战事件流</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>缺口</h4>
+        <ul>
+          <li>官方比分待回填</li>
+          <li>盘口样本缺失</li>
+          <li>关键团战数据未产生</li>
+          <li>CFO/KOI 直接画像样本少</li>
+        </ul>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>情报来源分层</h3>
+    <table>
+      <tr><th>结论/信号</th><th>来源标签</th><th>置信</th></tr>
+      <tr><td>CFO 阵容“有赢的画面”</td><td>本场弹幕</td><td>中</td></tr>
+      <tr><td>CFO 操作质疑</td><td>本场弹幕</td><td>中低</td></tr>
+      <tr><td>盲僧/奥拉夫强度讨论</td><td>本场弹幕</td><td>中</td></tr>
+      <tr><td>LPL 名额吐槽</td><td>本场弹幕</td><td>中低</td></tr>
+      <tr><td>盘口信号缺失</td><td>本场弹幕（无样本）</td><td>—</td></tr>
+      <tr><td>灰信号词表命中 0 条</td><td>本场弹幕（词表统计）</td><td>高（样本内）</td></tr>
+    </table>
+    <h3>关键信息 TOP（5-7 条）</h3>
+    <table>
+      <tr><th>类型</th><th>一句话</th><th>来源/置信</th></tr>
+      <tr><td><span class="tag tag-anchor">锚点</span></td><td>观众认为 CFO 阵容“有赢的画面”，看执行</td><td>本场弹幕 / 中</td></tr>
+      <tr><td><span class="tag tag-risk">风险</span></td><td>CFO 操作被质疑“失了智”“空q”，执行存疑</td><td>本场弹幕 / 中低</td></tr>
+      <tr><td><span class="tag tag-consensus">共识</span></td><td>盲僧/奥拉夫被讨论为强势点，LCK 盲僧优先级被认可</td><td>本场弹幕 / 中</td></tr>
+      <tr><td><span class="tag tag-consensus">共识</span></td><td>CFO 中单来头/赛区归属讨论密集</td><td>本场弹幕 / 中</td></tr>
+      <tr><td><span class="tag tag-gray">灰信号</span></td><td>词表命中 0 条，无假赛/菠菜信号</td><td>本场弹幕 / 高（样本内）</td></tr>
+      <tr><td><span class="tag tag-market">盘口</span></td><td>盘口/赔率讨论样本缺失</td><td>本场弹幕 / —</td></tr>
+      <tr><td><span class="tag tag-risk">风险</span></td><td>LPL 名额与赛区实力遭吐槽</td><td>本场弹幕 / 中低</td></tr>
+    </table>
+    <div class="divider"></div>
+    <h3>弹幕共识提炼表（固定模板）</h3>
+    <table>
+      <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      <tr><td>BP/阵容讨论</td><td>中性偏正</td><td class="num">约 10 条</td><td>“cfo这阵容有赢的画面”“奥拉夫无敌了”“小炮”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>CFO 操作质疑</td><td>负向</td><td class="num">约 4 条</td><td>“cfo感觉失了智了”“cfo亏了”“上来就空q”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>CFO 中单/赛区归属</td><td>中性好奇</td><td class="num">约 6 条</td><td>“Cfo 的中单是什么来头的”“cfo是哪个赛区的啊”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>LPL/赛区吐槽</td><td>负向</td><td class="num">约 4 条</td><td>“LPL不配四个名额”“去美国时候已经没有LPL了”</td><td>单源（本场弹幕）</td></tr>
+      <tr><td>主播/二路讨论</td><td>中性</td><td class="num">约 5 条</td><td>“主播看好哪个队”“957今天没二路”</td><td>单源（本场弹幕）</td></tr>
+    </table>
+    <p class="footnote">共识→信号链：BP/阵容讨论偏中性偏正，但 CFO 操作质疑与 LPL 吐槽构成负向扰动；同向度不足，暂为分歧信号，非强共识。</p>
+    <div class="divider"></div>
+    <h3>密度时间线</h3>
+    <p>本节点弹幕密度 <span class="highlight">22.9 条/分</span>（规则层统计），覆盖 28 个有弹幕分钟段。峰值分钟段：02:00（约 11 条）、02:12（约 8 条）、02:01/02:06/02:08/02:10/02:19/02:20/02:27（各约 6 条）。</p>
+    <h3>跨源一致性提示</h3>
+    <p>规则层统计（640 条/218 用户/22.9 条/分）与本场弹幕样本（140 条/28 分钟段）方向一致；队伍提及 TOP 与弹幕样本中 BLG/TES/AL/DK 讨论方向一致。官方比分与阵容待 Riot 窗口回填，当前跨源一致性为“部分一致（弹幕内部）”。</p>
+    <h3>比赛元数据</h3>
+    <table>
+      <tr><th>字段</th><th>值</th></tr>
+      <tr><td>比赛</td><td>KOI vs CFO</td></tr>
+      <tr><td>小局</td><td>G1</td></tr>
+      <tr><td>节点</td><td>BP 后/开局（EARLY-GAME）</td></tr>
+      <tr><td>日期</td><td>2026-10-24（北京时间）</td></tr>
+      <tr><td>slug</td><td>lol-hupu-1693138568183808</td></tr>
+      <tr><td>情报输出时间</td><td>2026-10-25 02:28 北京时间（UTC+8）</td></tr>
+    </table>
+    <div class="divider"></div>
+    <h3>本场长期沉淀点</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-source">沉淀</span><span class="sig-text">CFO 阵容“有赢的画面”与操作质疑并存，可作为后续 CFO 局中情绪锚点参考</span><span class="sig-ref">本场弹幕</span></li>
+      <li><span class="tag tag-source">沉淀</span><span class="sig-text">LCK 盲僧优先级被观众认可，可作为版本英雄优先级参考</span><span class="sig-ref">本场弹幕</span></li>
+    </ul>
+    <p class="footnote">数据完整性声明：本节点盘口样本缺失、官方比分待回填，不交付完整结论；所有推测已显式标注，缺源已标注缺口。局中非终局，结果待定。</p>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
