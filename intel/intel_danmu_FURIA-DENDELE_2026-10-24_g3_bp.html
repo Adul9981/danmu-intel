@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>局中弹幕情报快照 · FURIA vs DENDELE · G3</title>
+  <style>
+    /* SAP / Apple 风格 — 浅底、白卡片、单一强调色、系统字体栈 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1d1d1f;
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    /* 卡片 */
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: box-shadow 0.2s ease;
+    }
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+    /* 标题 */
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #1d1d1f;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #0071e3;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 16px 0 8px;
+      color: #1d1d1f;
+    }
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 12px 0 6px;
+      color: #3a3a3c;
+    }
+    /* 标签 */
+    .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      background: #e8e8ed;
+      color: #3a3a3c;
+      margin-right: 6px;
+    }
+    .tag-risk { background: #ffe8e8; color: #c41e3a; }
+    .tag-anchor { background: #e3f2fd; color: #0071e3; }
+    .tag-market { background: #fff3e0; color: #b25000; }
+    .tag-consensus { background: #e8f5e9; color: #1e7b3c; }
+    .tag-gray { background: #f3e8ff; color: #6b21a8; }
+    .tag-spec { background: #fef9c3; color: #854d0e; }
+    .tag-source { background: #f0f0f5; color: #636366; }
+    /* 速览卡 */
+    .snapshot-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e8e8ed;
+    }
+    .snapshot-score {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .snapshot-meta {
+      font-size: 0.85rem;
+      color: #636366;
+    }
+    .signal-list {
+      list-style: none;
+      margin: 12px 0 8px;
+    }
+    .signal-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f5;
+      font-size: 0.95rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .signal-list li:last-child {
+      border-bottom: none;
+    }
+    .signal-ref {
+      font-size: 0.8rem;
+      color: #0071e3;
+      font-weight: 500;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .decision-line {
+      background: #f5f5f7;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1d1d1f;
+    }
+    .decision-line strong {
+      color: #0071e3;
+    }
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 12px 0;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: #636366;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 8px 10px;
+      border-bottom: 1px solid #e8e8ed;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f0f5;
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    /* 折叠区 */
+    details {
+      margin: 12px 0;
+      border-radius: 12px;
+      background: #fafafc;
+      border: 1px solid #e8e8ed;
+      overflow: hidden;
+    }
+    summary {
+      padding: 12px 16px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #0071e3;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::before {
+      content: "▸";
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    details[open] summary {
+      border-bottom: 1px solid #e8e8ed;
+    }
+    .details-content {
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #3a3a3c;
+    }
+    .details-content p {
+      margin-bottom: 8px;
+    }
+    /* 灰信号 */
+    .gray-note {
+      font-size: 0.8rem;
+      color: #6b21a8;
+      background: #f3e8ff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    /* 方向板 */
+    .direction-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 12px 0;
+    }
+    .direction-box {
+      background: #fafafc;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border-left: 3px solid #0071e3;
+    }
+    .direction-box.negative {
+      border-left-color: #c41e3a;
+    }
+    .direction-box.consensus {
+      border-left-color: #1e7b3c;
+    }
+    .direction-box.gray {
+      border-left-color: #6b21a8;
+    }
+    .direction-box h4 {
+      margin-top: 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #636366;
+    }
+    .direction-box p {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    /* 数据完整性三栏 */
+    .integrity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .integrity-col {
+      background: #fafafc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+    .integrity-col h4 {
+      margin-top: 0;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #636366;
+      margin-bottom: 8px;
+    }
+    .integrity-col ul {
+      list-style: none;
+      padding: 0;
+    }
+    .integrity-col li {
+      padding: 3px 0;
+      color: #3a3a3c;
+    }
+    .integrity-col li::before {
+      content: "· ";
+      color: #0071e3;
+      font-weight: 700;
+    }
+    /* 元数据 */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+      font-size: 0.88rem;
+      margin: 8px 0;
+    }
+    .meta-item {
+      display: flex;
+      gap: 8px;
+    }
+    .meta-label {
+      color: #636366;
+      min-width: 100px;
+    }
+    .meta-value {
+      font-weight: 500;
+    }
+    /* 时间线 */
+    .timeline {
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid #f0f0f5;
+    }
+    .timeline-time {
+      color: #0071e3;
+      font-weight: 500;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .timeline-text {
+      color: #3a3a3c;
+    }
+    .timeline-count {
+      color: #636366;
+      font-size: 0.75rem;
+      margin-left: 4px;
+    }
+    /* 响应式 */
+    @media (max-width: 720px) {
+      .card { padding: 18px 16px; }
+      .direction-grid { grid-template-columns: 1fr; }
+      .integrity-grid { grid-template-columns: 1fr; }
+      .meta-grid { grid-template-columns: 1fr; }
+      h2 { font-size: 1.15rem; }
+      .snapshot-score { font-size: 1.3rem; }
+    }
+    /* 辅助 */
+    .text-muted { color: #636366; }
+    .text-small { font-size: 0.8rem; }
+    .mt-8 { margin-top: 8px; }
+    .mb-8 { margin-bottom: 8px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #0071e3;
+      color: #fff;
+    }
+    .badge-outline {
+      background: transparent;
+      color: #0071e3;
+      border: 1px solid #0071e3;
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8ed;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">FURIA-DENDELE 2026-10-24 g3 bp</b></div>
+<div class="container">
+  <!-- ========== 0 核心情报速览 ========== -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="snapshot-row">
+      <span class="snapshot-score">G3 · BP 后 / 开局</span>
+      <span class="snapshot-meta">FURIA vs DENDELE · 2026-10-24 · 弹幕口径 · 官方待回填</span>
+      <span class="badge" style="background:#c41e3a;">局中·非终局，结果待定</span>
+    </div>
+    <ul class="signal-list">
+      <li>
+        <span class="tag tag-risk">风险</span>
+        <span>donk 提及 165 条（正 5 / 负 7），负面情绪集中，状态下滑讨论升温</span>
+        <span class="signal-ref">→ §2 · §8</span>
+      </li>
+      <li>
+        <span class="tag tag-anchor">锚点</span>
+        <span>天禄（TYLOO）相关刷屏密集，“两张图能拿 5 分吗”反复出现，观众预期极低</span>
+        <span class="signal-ref">→ §3 · §5</span>
+      </li>
+      <li>
+        <span class="tag tag-market">盘口</span>
+        <span>“天禄输了加几分”“navi 赢黑豹加多少分”等积分/盘口讨论出现，但无具体赔率数据</span>
+        <span class="signal-ref">→ §4</span>
+      </li>
+      <li>
+        <span class="tag tag-consensus">共识</span>
+        <span>“业余”刷屏 118 条（x36+x82），对比赛质量/选手表现形成集中负面共识</span>
+        <span class="signal-ref">→ §5 · §7</span>
+      </li>
+      <li>
+        <span class="tag tag-gray">灰信号</span>
+        <span>“宫了”“宫”等词出现 20+ 条，观众质疑队内氛围/管理，非结论</span>
+        <span class="signal-ref">→ §2</span>
+      </li>
+    </ul>
+    <div class="decision-line">
+      <strong>一句话决策落点：</strong>本局弹幕情绪偏负面，donk 状态与天禄预期为两大焦点；盘口讨论零散无实据，建议观望，等待官方数据校准后再定 LONG/SHORT。
+    </div>
+  </div>
+  <!-- ========== 1 比赛信息与结果总览 ========== -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="meta-grid">
+      <div class="meta-item"><span class="meta-label">比赛</span><span class="meta-value">FURIA vs DENDELE</span></div>
+      <div class="meta-item"><span class="meta-label">小局</span><span class="meta-value">G3（第三小局）</span></div>
+      <div class="meta-item"><span class="meta-label">节点</span><span class="meta-value">BP 后 / 开局（EARLY-GAME）</span></div>
+      <div class="meta-item"><span class="meta-label">日期</span><span class="meta-value">2026-10-24</span></div>
+      <div class="meta-item"><span class="meta-label">slug</span><span class="meta-value">cs2-hupu-1441778164564991679</span></div>
+      <div class="meta-item"><span class="meta-label">状态</span><span class="meta-value"><span class="badge" style="background:#c41e3a;">局中·非终局，结果待定</span></span></div>
+    </div>
+    <div class="divider"></div>
+    <h3>结果总览</h3>
+    <p style="font-size:0.95rem; margin-bottom:8px;">
+      <strong>当前进度：</strong>G3 BP 后 / 开局阶段，弹幕口径显示比赛已进入早期回合，但官方比分数据尚未回填。
+    </p>
+    <p style="font-size:0.95rem; margin-bottom:8px;">
+      <strong>弹幕口径：</strong>弹幕切片覆盖 23 个有弹幕分钟段，总弹幕 4069 条，活跃用户 998，密度 181.7 条/分。观众讨论集中在选手状态（donk）、天禄预期、比赛质量（“业余”）等方向。
+    </p>
+    <p style="font-size:0.95rem;">
+      <strong>官方数据：</strong>CS2 官方源（HLTV-Liquipedia）待回填；禁止从弹幕推断比分。当前页面所有比分/进度信息均标注为“弹幕口径·官方待回填”。
+    </p>
+    <div class="mt-8">
+      <span class="tag tag-source">来源：本场弹幕切片 · 规则层统计</span>
+    </div>
+  </div>
+  <!-- ========== 2 灰信号汇总 ========== -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="gray-note">⚠️ 以下内容为观众质疑/情绪表达，非事实结论，需结合官方数据交叉验证。</div>
+    <table>
+      <thead>
+        <tr><th>灰信号类型</th><th>关键词/样本</th><th>条数（带量）</th><th>来源</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>队内氛围/管理质疑</td>
+          <td>“宫了”“宫”“宫”（x6+x4+x10）</td>
+          <td>约 20 条</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>选手状态质疑</td>
+          <td>“donk 从上次赛事就泯然众人矣了”“donk 泯然众人了有感觉吗”“donk 和豪哥真是难兄难弟，技术都下滑了”</td>
+          <td>约 8 条</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>比赛质量质疑</td>
+          <td>“业余”（x36+x82=118 条）、“就是菜”“别洗了”“垃圾 只会装逼”</td>
+          <td>约 140 条</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>选手能力质疑</td>
+          <td>“jee 能否恢复人籍就看这几句了”“给天禄老板说说我去代替 JEE、我也空枪但是我不要工资”</td>
+          <td>约 10 条</td>
+          <td>本场弹幕</td>
+        </tr>
+        <tr>
+          <td>“演员/假赛”词表筛查</td>
+          <td>演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送</td>
+          <td><strong>0 条</strong>（词表统计确认）</td>
+          <td>本场弹幕</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">注：灰信号词表已跑统计，未发现“演员/假赛/菠菜”等明确指控；但“宫了”“业余”等词反映观众对比赛质量与队内氛围的负面情绪，需持续观察。</p>
+    <details>
+      <summary>灰信号弹幕原文摘录（折叠）</summary>
+      <div class="details-content">
+        <p><strong>“宫”相关：</strong>[10-25 15:56北京] 宫（x6）；[10-25 15:56北京] 宫了（x4）；[10-25 15:57北京] 宫了（x10）</p>
+        <p><strong>“业余”相关：</strong>[10-25 15:57北京] 业余（x36）；[10-25 15:58北京] 业余（x82）</p>
+        <p><strong>donk 状态：</strong>[10-25 15:47北京] donk 从上次赛事就泯然众人矣了（x2）；[10-25 15:47北京] donk 泯然众人了有感觉吗（x2）；[10-25 15:59北京] donk 和豪哥真是难兄难弟，技术都下滑了（x4）</p>
+        <p><strong>JEE 相关：</strong>[10-25 15:50北京] 给天禄老板说说我去代替 JEE、我也空枪但是我不要工资（x3）；[10-25 16:04北京] jee 能否恢复人籍就看这几句了（x2）</p>
+        <p><strong>比赛质量：</strong>[10-25 16:00北京] 就是菜（x6）；[10-25 16:00北京] 别洗了（x4）；[10-25 16:00北京] 垃圾 只会装逼（x4）</p>
+      </div>
+    </details>
+  </div>
+  <!-- ========== 3 BP 锚点与选人情报 ========== -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <p style="font-size:0.95rem; margin-bottom:12px;">
+      <strong>本局阵容：</strong>官方 BP 数据待回填（HLTV-Liquipedia）。弹幕中提及地图/选人信息零散，未形成完整阵容情报。
+    </p>
+    <h3>弹幕中的 BP / 地图讨论</h3>
+    <table>
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>地图询问</td>
+          <td>中性/好奇</td>
+          <td>约 20 条</td>
+          <td>“什么图”（x2+x4+x4）、“液体什么图”（x8）、“xixi 液体什么图”（x2）</td>
+        </tr>
+        <tr>
+          <td>天禄地图预期</td>
+          <td>负面/低预期</td>
+          <td>约 18 条</td>
+          <td>“天禄两张图能拿 5 分吗？”（x6+x6）、“两张图能拿到 10 分算赢”（x2）、“两张图能拿 26 分么？”（x4）</td>
+        </tr>
+        <tr>
+          <td>选手/阵容讨论</td>
+          <td>中性偏负</td>
+          <td>约 12 条</td>
+          <td>“niko 指挥的 ct”（x2）、“shiro 只打腿？”（x2）、“donk 又要大开杀戒，拿天禄找自信”（x2）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">BP 后战绩情报：无战绩情报提及。</p>
+    <details>
+      <summary>BP / 地图相关弹幕原文（折叠）</summary>
+      <div class="details-content">
+        <p>[10-25 15:45北京] 天禄两张图能拿 5 分吗？（x6）</p>
+        <p>[10-25 15:45北京] xixi 液体什么图（x2）</p>
+        <p>[10-25 15:45北京] 两张图能拿到 10 分算赢（x2）</p>
+        <p>[10-25 15:45北京] 什么图（x2）</p>
+        <p>[10-25 15:46北京] 什么图（x4）</p>
+        <p>[10-25 15:48北京] 天禄两张图能拿 5 分吗？（x6）</p>
+        <p>[10-25 15:49北京] 两张图能拿 26 分么？（x4）</p>
+        <p>[10-25 15:51北京] 液体什么图（x8）</p>
+        <p>[10-25 15:55北京] 两张图能拿十分吗（x4）</p>
+        <p>[10-25 15:55北京] 什么图（x4）</p>
+        <p>[10-25 16:04北京] niko 指挥的 ct（x2）</p>
+        <p>[10-25 16:04北京] shiro 只打腿？（x2）</p>
+        <p>[10-25 15:55北京] DONK 又要大开杀戒，拿天禄找自信（x2）</p>
+      </div>
+    </details>
+  </div>
+  <!-- ========== 4 盘口与市场讨论 ========== -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p style="font-size:0.95rem; margin-bottom:12px;">
+      弹幕中盘口/积分讨论零散出现，但<strong>无具体赔率、盘口数据</strong>，以下为观众提及的积分/胜负相关话题。
+    </p>
+    <table>
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>天禄输赢积分</td>
+          <td>中性/好奇</td>
+          <td>约 6 条</td>
+          <td>“天禄输了加几分”（x6）</td>
+        </tr>
+        <tr>
+          <td>Navi 赢黑豹积分</td>
+          <td>中性/好奇</td>
+          <td>约 2 条</td>
+          <td>“navi 赢黑豹加多少分”（x2）</td>
+        </tr>
+        <tr>
+          <td>比分预测</td>
+          <td>负面/低预期</td>
+          <td>约 10 条</td>
+          <td>“预测一下比分呗马总”“8 分给了，最多 6 分”（x2）、“两张图能拿十分吗”（x4）</td>
+        </tr>
+        <tr>
+          <td>“万一呢”类博冷</td>
+          <td>中性/娱乐</td>
+          <td>约 14 条</td>
+          <td>“万一呢？赢了就搞笑了”（x2）、“万一呢”（x8+x4）、“roll 一下就有了”（x2+x6）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">⚠️ 盘口讨论无实据，不构成投注建议。官方盘口数据缺失，标注为数据缺口。</p>
+    <details>
+      <summary>盘口/积分相关弹幕原文（折叠）</summary>
+      <div class="details-content">
+        <p>[10-25 15:50北京] 天禄输了加几分（x6）</p>
+        <p>[10-25 15:54北京] navi 赢黑豹加多少分（x2）</p>
+        <p>[10-25 15:55北京] 8 分给了，最多 6 分（x2）</p>
+        <p>[10-25 15:55北京] 两张图能拿十分吗（x4）</p>
+        <p>[10-25 15:47北京] 万一呢？赢了就搞笑了（x2）</p>
+        <p>[10-25 15:48北京] 万一呢（x8）</p>
+        <p>[10-25 15:48北京] roll 一下就有了（x6）</p>
+        <p>[10-25 15:49北京] 万一呢（x4）</p>
+        <p>[10-25 15:49北京] 两张图能拿 26 分么？（x4）</p>
+      </div>
+    </details>
+  </div>
+  <!-- ========== 5 方向性情报板 ========== -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <div class="direction-grid">
+      <div class="direction-box">
+        <h4>正锚（看多/积极信号）</h4>
+        <p>· “天禄皇朝就在今天/{xd 看我 jee 大显神通”（x5+x12+x6）—— 少数观众对天禄/JEE 抱有期待</p>
+        <p>· “j 神神了”（x4+x8）—— JEE 个别高光引发正面刷屏</p>
+        <p>· “正义必胜”（x22）、“天胡开局”（x16）、“我们是冠军”（x14）—— 正面情绪集中爆发（16:05 时段）</p>
+        <p class="text-small text-muted">样本量：约 80 条，集中在 15:56-16:05 时段</p>
+      </div>
+      <div class="direction-box negative">
+        <h4>负锚（看空/消极信号）</h4>
+        <p>· “业余”（x36+x82=118 条）—— 对比赛质量/选手水平的集中负面评价</p>
+        <p>· “donk 泯然众人矣”“技术都下滑了”—— 对明星选手状态的质疑</p>
+        <p>· “天禄两张图能拿 5 分吗？”—— 对天禄得分的极低预期</p>
+        <p class="text-small text-muted">样本量：约 150 条，贯穿全时段</p>
+      </div>
+      <div class="direction-box consensus">
+        <h4>群体共识（+分歧+样本量）</h4>
+        <p><strong>共识：</strong>比赛质量偏低（“业余”刷屏 118 条），donk 状态下滑（提及 165 条，负 7 正 5）。</p>
+        <p><strong>分歧：</strong>“万一呢”类博冷（14 条）与“天禄皇朝”类期待（23 条）形成微弱反向声音，但被负面共识压制。</p>
+        <p><strong>样本量：</strong>本场弹幕 115 条抽样，覆盖 23 个分钟段。</p>
+      </div>
+      <div class="direction-box gray">
+        <h4>灰信号条件预测</h4>
+        <p>· 若“宫了”类队内氛围质疑持续发酵，可能影响天禄图二/图三表现（推测·待验证）。</p>
+        <p>· 若 donk 负面提及继续增加，可能反映其实际状态低迷，需关注官方数据（击杀/ADR）验证。</p>
+        <p class="text-small text-muted">以上为条件预测，非结论，需官方数据回填后校准。</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>弹幕共识提炼表</h3>
+    <table>
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>比赛质量</td>
+          <td>负面</td>
+          <td>118 条（“业余”x36+x82）</td>
+          <td>“业余”“就是菜”“别洗了”</td>
+          <td>单源（本场弹幕），无官方数据交叉</td>
+        </tr>
+        <tr>
+          <td>donk 状态</td>
+          <td>负面</td>
+          <td>165 条提及（正 5 / 负 7）</td>
+          <td>“donk 泯然众人矣”“技术下滑”</td>
+          <td>单源，需官方击杀数据验证</td>
+        </tr>
+        <tr>
+          <td>天禄预期</td>
+          <td>负面</td>
+          <td>约 18 条</td>
+          <td>“两张图能拿 5 分吗”</td>
+          <td>单源，无盘口数据交叉</td>
+        </tr>
+        <tr>
+          <td>JEE 表现</td>
+          <td>分歧</td>
+          <td>约 20 条（正负交织）</td>
+          <td>“j 神神了” vs “jee 能否恢复人籍”</td>
+          <td>单源，分歧信号</td>
+        </tr>
+        <tr>
+          <td>队内氛围</td>
+          <td>负面</td>
+          <td>约 20 条（“宫”相关）</td>
+          <td>“宫了”“宫”</td>
+          <td>单源，灰信号，非结论</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8"><strong>共识→信号链：</strong>“业余”刷屏 118 条 + donk 负面提及 7 条 → 观众对比赛质量与明星选手状态形成负面共识，但缺乏官方数据验证，属单源强信号，需谨慎对待。</p>
+  </div>
+  <!-- ========== 6 情报含义与决策落点 ========== -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <div class="direction-grid">
+      <div class="direction-box">
+        <h4>LONG 条件（看多）</h4>
+        <p>· 若官方数据回填显示 donk 实际击杀/ADR 高于预期，且天禄得分超出弹幕低预期（>5 分/图），则负面共识可能反转，形成 LONG 机会。</p>
+        <p>· 若“天禄皇朝”类正面情绪扩散，且 JEE 持续高光，可关注天禄方向。</p>
+        <p class="text-small text-muted">当前证据不足，LONG 条件未触发。</p>
+      </div>
+      <div class="direction-box negative">
+        <h4>SHORT 条件（看空）</h4>
+        <p>· 若官方数据确认 donk 状态低迷（击杀低于平均），且天禄得分持续低迷（<5 分/图），则负面共识强化，SHORT 天禄/donk 方向。</p>
+        <p>· 若“宫了”类队内氛围质疑被后续事件印证，可能进一步打压天禄表现。</p>
+        <p class="text-small text-muted">当前弹幕情绪偏空，但缺乏官方数据，SHORT 需等待验证。</p>
+      </div>
+    </div>
+    <div class="decision-line" style="margin-top:16px;">
+      <strong>决策落点：</strong>本局弹幕情绪偏负面（“业余”118 条、donk 负 7 正 5），但盘口/官方数据缺失，<strong>建议观望</strong>。等待 HLTV-Liquipedia 数据回填后，若 donk 实际表现与负面共识背离，可考虑反向 LONG；若数据印证负面共识，则 SHORT 天禄/donk 方向。当前不给出明确 LONG/SHORT 建议。
+    </div>
+    <div class="mt-8">
+      <span class="tag tag-source">来源：本场弹幕 · 规则层统计 · 推测·待验证</span>
+    </div>
+  </div>
+  <!-- ========== 7 逐局复盘 ========== -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G3 当前局已发生片段 + 时间线</h3>
+    <p style="font-size:0.95rem; margin-bottom:12px;">
+      <strong>状态：</strong>BP 后 / 开局阶段。弹幕时间线覆盖 15:43–16:05（北京时间），以下为关键分钟段弹幕密度与内容摘要。
+    </p>
+    <table>
+      <thead>
+        <tr><th>北京时间</th><th>弹幕密度/关键内容</th><th>信号方向</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>15:43–15:44</td><td>jee 相关讨论、“let's go”、“不熟说是”</td><td>中性偏正</td></tr>
+        <tr><td>15:45–15:46</td><td>“天禄两张图能拿 5 分吗？”（x6）、“什么图”（x4）、“卡了”（x4）</td><td>负面/低预期</td></tr>
+        <tr><td>15:47–15:48</td><td>“donk 泯然众人矣”（x2）、“万一呢”（x8）、“roll 一下就有了”（x6）</td><td>负面 + 博冷</td></tr>
+        <tr><td>15:49–15:50</td><td>“两张图能拿 26 分么？”（x4）、“天禄输了加几分”（x6）、“给天禄老板说说我去代替 JEE”（x3）</td><td>负面/调侃</td></tr>
+        <tr><td>15:51–15:52</td><td>“液体什么图”（x8）、“为什么别人犯的错要让天禄来承担？”（x6）</td><td>中性偏负</td></tr>
+        <tr><td>15:53–15:54</td><td>“唯一一支起狙就害怕的队伍”（x4）、“navi 赢黑豹加多少分”（x2）</td><td>中性</td></tr>
+        <tr><td>15:55–15:56</td><td>“8 分给了，最多 6 分”（x2）、“DONK 又要大开杀戒”（x2）、“宫”（x6）、“天禄皇朝就在今天”（x5）</td><td>分歧</td></tr>
+        <tr><td>15:57–15:58</td><td><strong>“业余”（x36+x82=118 条）</strong>、“宫了”（x10）、“donk 明年没有拓扑了”（x8）</td><td><strong>负面峰值</strong></td></tr>
+        <tr><td>15:59–16:00</td><td>“j 神神了”（x8）、“天禄首胜有感觉吗”（x6）、“小孩也是架中间没驾边”（x8）、“就是菜”（x6）</td><td>分歧偏负</td></tr>
+        <tr><td>16:01–16:02</td><td>“donk 明年没有拓扑了”（x10）、“今天 j 哥来泄愤了”（x10）、“宗主真帅”（x8）</td><td>中性偏负</td></tr>
+        <tr><td>16:03–16:04</td><td>“猎鹰没有来，这比赛没有含金量”（x8）、“jee 能否恢复人籍”（x2）、“niko 指挥的 ct”（x2）</td><td>负面</td></tr>
+        <tr><td>16:05</td><td><strong>“正义必胜”（x22）、“天胡开局”（x16）、“我们是冠军”（x14）、“道歉”（x10）</strong></td><td><strong>正面峰值</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">未发生片段：待观察（官方数据回填后补充）。</p>
+    <details>
+      <summary>G3 完整弹幕时间线（折叠 · 真实时间戳 + 原文带量）</summary>
+      <div class="details-content timeline">
+        <div class="timeline-item"><span class="timeline-time">15:43</span><span class="timeline-text">jee｜jee 全杀了｜今天勾哥狙几个？｜他会解说的,他上次还解说了｜出图了没？</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:44</span><span class="timeline-text">let's go（x2）｜不熟说是（x2）｜加油，天（x2）｜叫明日晴陪看不就行了（x2）｜回音（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:45</span><span class="timeline-text">天禄两张图能拿 5 分吗？（x6）｜JEE 明年退役吗？（x2）｜xixi 液体什么图（x2）｜两张图能拿到 10 分算赢（x2）｜什么图（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:46</span><span class="timeline-text">什么图（x4）｜卡了（x4）｜那是第三（x4）｜2000 分是不是上限（x2）｜bb 欧洲前 5 了没（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:47</span><span class="timeline-text">donk 从上次赛事就泯然众人矣了（x2）｜donk 泯然众人了有感觉吗（x2）｜if（x2）｜roll 一下就有了（x2）｜万一呢？赢了就搞笑了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:48</span><span class="timeline-text">万一呢（x8）｜roll 一下就有了（x6）｜天禄两张图能拿 5 分吗？（x6）｜真赢了（x4）｜2 张图拿 10 分算赢（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:49</span><span class="timeline-text">万一呢（x4）｜两张图能拿 26 分么？（x4）｜昨天 nuke 只狙一个（x4）｜马总预测一下 jee 被手撕多少次（x4）｜TOP 1 就只能给狙击手，步枪手哪来哪去（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:50</span><span class="timeline-text">天禄输了加几分（x6）｜你们都不上班的吗（x4）｜多了（x4）｜给天禄老板说说我去代替 JEE、我也空枪但是我不要工资（x3）｜10 个真多了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:51</span><span class="timeline-text">液体什么图（x8）｜你们都不上班的吗（x6）｜给天禄老板说说我去代替 JEE、我也空枪但是我不要工资（x6）｜1 年半前（x2）｜一年半（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:52</span><span class="timeline-text">为什么别人犯的错要让天禄来承担？（x6）｜.（x4）｜几败回家，，马西西（x4）｜天下无敌（x4）｜好看在哪（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:53</span><span class="timeline-text">几点开（x6）｜唯一一支起狙就害怕的队伍是哪个（x4）｜唯一一支起狙就让人害怕的队伍是哪个（x4）｜还有 pm 跑打（x4）｜MO 不在，找深冬来（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:54</span><span class="timeline-text">找深冬（x4）｜navi 赢黑豹加多少分（x2）｜上次天禄一线比赛赢是什么时候了（x2）｜上次天禄一线比赛赢是什么时候？（x2）｜不然早醒了（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:55</span><span class="timeline-text">有了~（x6）｜两张图能拿十分吗（x4）｜什么图（x4）｜8 分给了，最多 6 分（x2）｜DONK 又要大开杀戒，拿天禄找自信（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:56</span><span class="timeline-text">宫（x6）｜天禄皇朝就在今天/{xd 看我 jee 大显神通（x5）｜j 神神了（x4）｜宫了（x4）｜找深东（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:57</span><span class="timeline-text">业余（x36）｜天禄皇朝就在今天/{xd 看我 jee 大显神通（x12）｜宫了（x10）｜世子多病（x6）｜懂你意思（x6）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:58</span><span class="timeline-text">业余（x82）｜donk 明年没有拓扑了😂😂（x8）｜0 皇暴打 donk（x6）｜天禄皇朝就在今天/{xd 看我 jee 大显神通（x6）｜打起来打起来（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">15:59</span><span class="timeline-text">还真是（x12）｜j 神神了（x8）｜刚来户儒能偷 top1 吗今年（x6）｜天禄首胜有感觉吗（x6）｜donk 和豪哥真是难兄难弟，技术都下滑了（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:00</span><span class="timeline-text">小孩也是架中间没驾边（x8）｜喜欢装（x6）｜就是菜（x6）｜别洗了（x4）｜垃圾 只会装逼（x4）</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:01</span><span class="timeline-text">donk 明年没有拓扑了😂😂（x10）｜今天 j 哥来泄愤了 暴力炸吧（x10）｜照猫画虎 模仿孩神的（x10）｜甩狙不是甩老二，你可没办甩回来（x8）｜mo 呢（x6）</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:02</span><span class="timeline-text">宗主真帅（x8）｜mo 呢（x6）｜主播主持哪个队（x6）｜帅（x6）｜怎么今天 MO 听起来声音不太对（x6）</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:03</span><span class="timeline-text">猎鹰没有来，这比赛没有含金量。猎鹰没有来，这比赛没有含金量（x8）｜【骗谁啊你，这明明是 259 的声音】（x6）｜看看马头（x6）｜马西西漏个马头（x6）｜😂😂😂😂😂😂😂（x6）</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:04</span><span class="timeline-text">游戏声音太小了（x4）｜PL（x2）｜jee 能否恢复人籍就看这几句了（x2）｜niko 指挥的 ct（x2）｜shiro 只打腿？（x2）</span></div>
+        <div class="timeline-item"><span class="timeline-time">16:05</span><span class="timeline-text">正义必胜（x22）｜天胡开局（x16）｜我们是冠军（x14）｜道歉（x10）｜洞你手疼不疼（x8）</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- ========== 8 队伍/人员画像 ========== -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（本场弹幕 · 真实统计）</h3>
+    <table>
+      <thead>
+        <tr><th>队伍</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Spirit</td><td>17</td><td>正 0 / 负 3</td><td>负面提及为主</td></tr>
+        <tr><td>Liquid</td><td>16</td><td>正 1 / 负 0</td><td>中性偏正</td></tr>
+        <tr><td>FLC</td><td>16</td><td>正 0 / 负 0</td><td>中性</td></tr>
+        <tr><td>BoomBoys</td><td>16</td><td>正 4 / 负 2</td><td>正面提及较多</td></tr>
+        <tr><td>FURIA</td><td>8</td><td>正 0 / 负 0</td><td>本场主角之一，提及量偏低</td></tr>
+        <tr><td>G2</td><td>6</td><td>正 0 / 负 2</td><td>负面提及</td></tr>
+        <tr><td>Vitality</td><td>5</td><td>正 1 / 负 0</td><td>中性偏正</td></tr>
+        <tr><td>Navi</td><td>4</td><td>正 0 / 负 0</td><td>中性</td></tr>
+      </tbody>
+    </table>
+    <h3>选手提及 TOP（本场弹幕 · 真实统计）</h3>
+    <table>
+      <thead>
+        <tr><th>选手</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>donk</td><td>165</td><td>正 5 / 负 7</td><td>绝对焦点，负面情绪集中</td></tr>
+        <tr><td>Zywoo</td><td>10</td><td>正 0 / 负 0</td><td>中性提及</td></tr>
+        <tr><td>Niko</td><td>4</td><td>正 0 / 负 0</td><td>中性</td></tr>
+        <tr><td>sh1ro</td><td>4</td><td>正 0 / 负 0</td><td>中性</td></tr>
+        <tr><td>Chovy</td><td>2</td><td>正 0 / 负 0</td><td>中性</td></tr>
+      </tbody>
+    </table>
+    <h3>队伍特质统计（规则层 · 真实）</h3>
+    <p style="font-size:0.9rem;">被翻守不住:8 · 心态摆烂:4 · 打法风格:17 · 选手特质:4</p>
+    <details>
+      <summary>长画像：donk 提及详情与情绪分布（折叠）</summary>
+      <div class="details-content">
+        <p><strong>donk 提及 165 条，正 5 / 负 7。</strong>负面样本包括：“donk 从上次赛事就泯然众人矣了”（x2）、“donk 泯然众人了有感觉吗”（x2）、“donk 和豪哥真是难兄难弟，技术都下滑了”（x4）、“donk 明年没有拓扑了😂😂”（x8+x10）、“0 皇暴打 donk”（x6）、“DONK 又要大开杀戒，拿天禄找自信”（x2）。</p>
+        <p>正面样本较少，如“洞你手疼不疼”（x8）属调侃中性。整体情绪偏负，观众对 donk 当前状态持怀疑态度。</p>
+        <p class="text-small text-muted">来源：本场弹幕 · 历史画像待补充</p>
+      </div>
+    </details>
+    <details>
+      <summary>长画像：天禄（TYLOO）相关讨论（折叠）</summary>
+      <div class="details-content">
+        <p>天禄相关弹幕贯穿全时段，核心话题为得分预期：“天禄两张图能拿 5 分吗？”（x6+x6）、“两张图能拿到 10 分算赢”（x2）、“两张图能拿 26 分么？”（x4）、“8 分给了，最多 6 分”（x2）。</p>
+        <p>另有“天禄输了加几分”（x6）、“上次天禄一线比赛赢是什么时候了”（x2）等历史/积分讨论，反映观众对天禄近期表现的低预期。</p>
+        <p>正面声音：“天禄皇朝就在今天/{xd 看我 jee 大显神通”（x5+x12+x6）、“天禄首胜有感觉吗”（x6），但被负面共识压制。</p>
+        <p class="text-small text-muted">来源：本场弹幕 · 历史画像待补充</p>
+      </div>
+    </details>
+  </div>
+  <!-- ========== 9 联赛规律与版本 ========== -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p style="font-size:0.95rem; margin-bottom:12px;">
+      本场为 CS2 赛事，当前版本/地图池信息待官方回填。弹幕中未出现明确的版本/地图池规律讨论。
+    </p>
+    <table>
+      <thead>
+        <tr><th>维度</th><th>观察</th><th>来源</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>地图池</td><td>弹幕多次询问“什么图”“液体什么图”，但无具体地图信息</td><td>本场弹幕</td></tr>
+        <tr><td>版本趋势</td><td>无版本相关讨论</td><td>—</td></tr>
+        <tr><td>联赛规律</td><td>“猎鹰没有来，这比赛没有含金量”（x8）—— 观众认为强队缺席影响赛事质量</td><td>本场弹幕</td></tr>
+        <tr><td>历史对战</td><td>“上次天禄一线比赛赢是什么时候了”（x2）—— 暗示天禄长期未赢一线比赛</td><td>本场弹幕</td></tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">样本不足：版本/地图池规律缺乏足够弹幕样本，不硬造。</p>
+  </div>
+  <!-- ========== 10 预测验证回填 ========== -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p style="font-size:0.95rem; margin-bottom:12px;">
+      本节点为 G3 BP 后 / 开局，尚无终局结果，预测验证待后续回填。
+    </p>
+    <table>
+      <thead>
+        <tr><th>预测项</th><th>当前状态</th><th>验证结果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>天禄单图得分 ≤5 分</td><td>弹幕低预期强烈</td><td>待官方数据回填</td></tr>
+        <tr><td>donk 状态低迷</td><td>负面提及 7 条</td><td>待官方击杀/ADR 数据验证</td></tr>
+        <tr><td>比赛质量偏低（“业余”）</td><td>118 条刷屏</td><td>主观评价，无客观验证标准</td></tr>
+        <tr><td>队内氛围问题（“宫了”）</td><td>约 20 条</td><td>待后续事件/官方信息验证</td></tr>
+      </tbody>
+    </table>
+    <p class="text-small text-muted mt-8">回填机制：官方数据（HLTV-Liquipedia）到达后，程序将自动回填比分、选手数据，并重新校准本页结论。</p>
+  </div>
+  <!-- ========== 11 数据与溯源 ========== -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性三栏</h3>
+    <div class="integrity-grid">
+      <div class="integrity-col">
+        <h4>实际数据源</h4>
+        <ul>
+          <li>规则层情报 JSON（vps_intel）</li>
+          <li>弹幕切片（g3_bp.jsonl，115 条抽样）</li>
+          <li>规则层统计：弹幕总数 4069，活跃用户 998，密度 181.7 条/分</li>
+          <li>队伍/选手提及 TOP（真实统计）</li>
+          <li>局势 10 条（真实）</li>
+          <li>队伍特质统计（真实）</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <h4>预期数据源</h4>
+        <ul>
+          <li>CS2 官方源：HLTV-Liquipedia（小局状态、比分、选手数据）</li>
+          <li>官方 BP / 地图池数据</li>
+          <li>官方盘口/赔率数据</li>
+          <li>Riot 小局状态（如适用）</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <h4>缺口</h4>
+        <ul>
+          <li>官方比分未回填（弹幕口径替代）</li>
+          <li>官方 BP / 阵容未回填</li>
+          <li>官方选手数据（击杀/ADR）缺失</li>
+          <li>盘口/赔率数据缺失</li>
+          <li>历史画像长期库未接入本页</li>
+        </ul>
+      </div>
+    </div>
+    <p class="text-small text-muted mt-8">⚠️ 缺源不交付完整结论：本页所有结论均标注来源，官方数据回填后需重新校准。</p>
+    <div class="divider"></div>
+    <h3>关键信息 TOP（5-7 条）</h3>
+    <table>
+      <thead>
+        <tr><th>类型</th><th>一句话</th><th>来源/置信</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="tag tag-risk">风险</span></td><td>donk 提及 165 条（负 7 正 5），状态下滑讨论集中</td><td>本场弹幕 / 中高</td></tr>
+        <tr><td><span class="tag tag-consensus">共识</span></td><td>“业余”刷屏 118 条，比赛质量负面共识强</td><td>本场弹幕 / 高</td></tr>
+        <tr><td><span class="tag tag-anchor">锚点</span></td><td>天禄得分预期极低（“两张图能拿 5 分吗”反复出现）</td><td>本场弹幕 / 中高</td></tr>
+        <tr><td><span class="tag tag-gray">灰信号</span></td><td>“宫了”类队内氛围质疑约 20 条，非结论</td><td>本场弹幕 / 中</td></tr>
+        <tr><td><span class="tag tag-market">盘口</span></td><td>积分/盘口讨论零散，无具体赔率数据</td><td>本场弹幕 / 低</td></tr>
+        <tr><td><span class="tag tag-spec">推测</span></td><td>若 donk 实际数据与负面共识背离，可能形成 LONG 机会</td><td>推测·待验证 / 低</td></tr>
+        <tr><td><span class="tag tag-source">数据</span></td><td>官方比分/BP/选手数据缺失，需 HLTV-Liquipedia 回填</td><td>数据缺口 / —</td></tr>
+      </tbody>
+    </table>
+    <div class="divider"></div>
+    <h3>比赛元数据</h3>
+    <div class="meta-grid">
+      <div class="meta-item"><span class="meta-label">比赛</span><span class="meta-value">FURIA vs DENDELE</span></div>
+      <div class="meta-item"><span class="meta-label">小局</span><span class="meta-value">G3</span></div>
+      <div class="meta-item"><span class="meta-label">节点</span><span class="meta-value">BP 后 / 开局（EARLY-GAME）</span></div>
+      <div class="meta-item"><span class="meta-label">日期</span><span class="meta-value">2026-10-24</span></div>
+      <div class="meta-item"><span class="meta-label">slug</span><span class="meta-value">cs2-hupu-1441778164564991679</span></div>
+      <div class="meta-item"><span class="meta-label">情报输出时间</span><span class="meta-value">2026-10-25 16:10 北京时间</span></div>
+    </div>
+    <div class="divider"></div>
+    <h3>本场长期沉淀点</h3>
+    <p style="font-size:0.95rem;">
+      <strong>沉淀点 1：</strong>donk 负面提及集中（165 条，负 7 正 5），且“泯然众人”“技术下滑”等表述反复出现，可作为后续赛事中 donk 状态跟踪的基线信号。若后续官方数据确认其状态低迷，则本场弹幕可作为早期预警样本。
+    </p>
+    <p style="font-size:0.95rem; margin-top:8px;">
+      <strong>沉淀点 2：</strong>“业余”刷屏 118 条，反映观众对比赛质量的集中负面评价，可作为赛事质量感知的参考指标，但需注意单源偏差。
+    </p>
+    <p class="text-small text-muted mt-8">样本不足：版本/地图池规律缺乏足够样本，不硬造。</p>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
