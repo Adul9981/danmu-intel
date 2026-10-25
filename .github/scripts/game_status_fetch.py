@@ -5,7 +5,14 @@
 不受限）。输出：
   intel/game_status.json   每场 Game/Map Winner 市场状态（供流水线按小局出节点）
   intel/settlements.json   系列赢家结算（供服务器回填比赛结果）
+  data/matches_today.json  今日比赛清单（Polymarket + 虎扑补漏）
+  data/watchlist_events.json
 提交到仓库 data 分支；服务器发布时拉取合并。
+
+2026-10-25 云扫修复：① 白名单补 Worlds/全球总决赛（此前世界赛瑞士轮全部被
+过滤，导致 10-14 起历史库停更）；② 新增虎扑赛程合并（CS2 全部 + 官方 Riot
+未覆盖的 LoL），补 Polymarket 未挂牌场次。虎扑抓取失败仅降级为 Polymarket 结果，
+不阻断工作流。
 """
 
 from __future__ import annotations
@@ -16,6 +23,7 @@ import random
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -62,6 +70,8 @@ def tracked(t: str) -> bool:
             k in t for k in (
                 " LCK ", "LCK Challengers", " LPL ", " LCP ", " LEC ",
                 "KeSPA Cup", "Kespa Cup", "K杯",
+                # 世界赛（2026-10-25 补）：此前漏掉，导致世界赛瑞士轮全部被过滤
+                "Worlds", "World Championship", "全球总决赛", "瑞士轮", "Swiss",
             )
         )
     if "Counter-Strike" in t:
@@ -137,6 +147,172 @@ def scan_candidates(backfill_from: str, horizon: str) -> dict[str, dict]:
                 if sd and backfill_from <= sd <= horizon:
                     candidates[slug] = {"title": tt, "date": sd, "teams": norm_teams(tt)}
     return candidates
+
+
+# ---- 虎扑赛程源（2026-10-25 补：CS2 全部 + 官方 Riot 未覆盖的 LoL）----
+
+HUPU_API = (
+    "https://match-api.hupu.com/1/8.2.10/matchallapi/bff/standard/"
+    "getScheduleListByTagForH5"
+)
+HUPU_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) "
+        "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 "
+        "Safari/604.1"
+    ),
+    "Accept": "application/json, text/plain, */*",
+}
+HUPU_BUSINESSES = {"lol": "LoL", "cs2": "CS2"}
+# 官方 Riot 已覆盖（由 Polymarket / 官方赛程源处理）的 LoL 联赛 + 世界赛
+_HUPU_LOL_SKIP_KEYS = (
+    "lck", "lpl", "lec", "lcp",
+    "全球总决赛", "world championship", "worlds", "瑞士轮", "swiss",
+)
+
+
+def _hupu_iso(ms) -> str:
+    if ms in (None, ""):
+        return ""
+    try:
+        dt = datetime.datetime.fromtimestamp(int(ms) / 1000, tz=datetime.timezone.utc)
+        return dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+    except (ValueError, TypeError, OSError):
+        return ""
+
+
+def _hupu_bj_date(ms) -> str:
+    iso = _hupu_iso(ms)
+    if not iso:
+        return ""
+    try:
+        return datetime.datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone(
+            datetime.timezone(datetime.timedelta(hours=8))
+        ).date().isoformat()
+    except ValueError:
+        return ""
+
+
+def _normalize_hupu(raw: dict, business: str) -> dict | None:
+    if raw.get("matchType") != "against":
+        return None
+    against = raw.get("againstInfo") or {}
+    members = against.get("memberInfos") or []
+    if len(members) != 2:
+        return None
+    mid = str(raw.get("matchId") or "")
+    if not mid:
+        return None
+    status = str(raw.get("matchStatus") or "").upper()
+    teams = [str(m.get("memberName") or "").strip() for m in members]
+    if not all(teams):
+        return None
+    key = raw.get("scoreItemKey") or {}
+    return {
+        "league": HUPU_BUSINESSES[business],
+        "hupu_match_id": mid,
+        "tournament": str(raw.get("matchIntroduction") or raw.get("matchName") or "").strip(),
+        "teams": teams,
+        "start_iso": _hupu_iso(raw.get("matchStartTimeStamp")),
+        "date": _hupu_bj_date(raw.get("matchStartTimeStamp")),
+        "status": (
+            "completed" if status == "COMPLETED"
+            else ("inProgress" if status == "INPROGRESS" else "notStarted")
+        ),
+        "score_item_key": {
+            "out_biz_no": str(key.get("outBizNo") or ""),
+            "out_biz_type": str(key.get("outBizType") or ""),
+        },
+        "member_ids": [
+            {"name": str(m.get("memberName") or "").strip(),
+             "member_id": str(m.get("memberId") or "")}
+            for m in members
+        ],
+    }
+
+
+def fetch_hupu() -> list[dict]:
+    """抓虎扑 LOL + CS2 赛程并归一化（网络失败抛错，由调用方降级）。"""
+    out: list[dict] = []
+    for b in HUPU_BUSINESSES:
+        qs = urllib.parse.urlencode({
+            "businessType": "common",
+            "datasource": "navigation",
+            "businessId": b,
+        })
+        req = urllib.request.Request(f"{HUPU_API}?{qs}", headers=HUPU_HEADERS)
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            payload = json.loads(resp.read().decode("utf-8", errors="replace"))
+        if not payload.get("success"):
+            raise RuntimeError(f"hupu {b} api not success: {payload.get('errorCode')}")
+        for day in payload.get("result", {}).get("dayGameData", []) or []:
+            for raw in day.get("matchData", []) or []:
+                item = _normalize_hupu(raw, b)
+                if item is not None:
+                    out.append(item)
+    return out
+
+
+def _team_norm(name: str) -> str:
+    """队伍名归一化去重键（小写 + 去非字母数字，容忍 Gen.G/GEN、BC.Game/BCGame 等写法）。"""
+    return re.sub(r"[^a-z0-9]", "", str(name or "").lower())
+
+
+def _hupu_skip_lol(tournament: str) -> bool:
+    t = (tournament or "").lower()
+    return any(k in t for k in _HUPU_LOL_SKIP_KEYS)
+
+
+def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_tomorrow: str) -> int:
+    """合并虎扑场次（CS2 全部 + 官方/世界赛未覆盖的 LoL），返回新增条数。
+
+    与 tools/export_today_matches.py merge_hupu 同口径（2026-10-25 上云）：
+    世界赛 / LCK / LPL / LEC / LCP 由 Polymarket（白名单已修复）覆盖，虎扑跳过；
+    虎扑只补 CS2 + 其他 LoL（德玛西亚杯等）。按归一化队伍名去重。
+    """
+    known = {tuple(sorted(_team_norm(t) for t in (m.get("teams") or []))) for m in today_matches}
+    added = 0
+    for e in rows:
+        league = str(e.get("league") or "").upper()
+        if league == "CS2":
+            game = "cs2"
+        elif league == "LOL":
+            if _hupu_skip_lol(e.get("tournament") or ""):
+                continue
+            game = "lol"
+        else:
+            continue
+        teams = e.get("teams") or []
+        if len(teams) != 2:
+            continue
+        hid = str(e.get("hupu_match_id") or "").strip()
+        if not hid:
+            continue
+        # 只取今明两天（北京时间），与本地 export 同口径；跨日凌晨场次由 start_iso 归并
+        if e.get("date") not in (bj_today, bj_tomorrow):
+            continue
+        tkey = tuple(sorted(_team_norm(t) for t in teams))
+        if tkey in known:
+            continue
+        mid = f"{game}-hupu-{hid}"
+        today_matches.append({
+            "id": mid,
+            "slug": mid,
+            "official_match_id": "",
+            "league": "CS2" if game == "cs2" else "LoL",
+            "teams": teams,
+            "start_time": e.get("start_iso") or "",
+            "end_time": "",
+            "closed": bool(e.get("status") == "completed"),
+            "_hupu": True,
+            "_hupu_tournament": e.get("tournament") or "",
+            "hupu_score_out_biz_no": str((e.get("score_item_key") or {}).get("out_biz_no") or ""),
+            "hupu_score_out_biz_type": str((e.get("score_item_key") or {}).get("out_biz_type") or ""),
+            "hupu_member_ids": e.get("member_ids") or [],
+        })
+        known.add(tkey)
+        added += 1
+    return added
 
 
 def main() -> None:
@@ -239,6 +415,17 @@ def main() -> None:
             continue
         time.sleep(0.3)
 
+    # 虎扑补漏（2026-10-25）：CS2 全部 + 官方/世界赛未覆盖的 LoL；失败仅降级，不阻断
+    bj_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
+    bj_today = bj_now.date().isoformat()
+    bj_tomorrow = (bj_now + datetime.timedelta(days=1)).date().isoformat()
+    try:
+        hupu_rows = fetch_hupu()
+        hupu_added = merge_hupu(hupu_rows, today_matches, bj_today, bj_tomorrow)
+    except Exception as e:  # noqa: BLE001
+        hupu_added = -1
+        print(f"::warning::虎扑赛程抓取失败，仅保留 Polymarket 场次：{type(e).__name__}: {e}", flush=True)
+
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     (ROOT / "intel" / "game_status.json").write_text(
         json.dumps({"generated_at": now, "games": games}, ensure_ascii=False, indent=2),
@@ -266,7 +453,11 @@ def main() -> None:
             + ", ".join(slug_failures[:10]),
             flush=True,
         )
-    print(f"games={len(games)} settlements={len(settlements)} today_matches={len(today_matches)}", flush=True)
+    print(
+        f"games={len(games)} settlements={len(settlements)} today_matches={len(today_matches)} "
+        f"hupu_added={hupu_added}",
+        flush=True,
+    )
 
 
 if __name__ == "__main__":
