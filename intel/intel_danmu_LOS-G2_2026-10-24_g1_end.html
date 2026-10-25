@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · LOS vs G2 · G1｜局中·非终局</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --text:#1d1d1f;
+    --text2:#6e6e73;
+    --line:#e8e8ed;
+    --accent:#0071e3;
+    --accent-soft:#e8f1fd;
+    --warn:#b25000;
+    --warn-soft:#fff4e5;
+    --risk:#c0392b;
+    --risk-soft:#fdecea;
+    --ok:#1d7a46;
+    --ok-soft:#e9f7ef;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:28px 18px 64px;}
+  header.page{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px 24px 18px;
+    margin-bottom:18px;
+    border:1px solid var(--line);
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.04em;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border-radius:999px;
+    padding:4px 12px;
+    margin-bottom:12px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  h1{
+    font-size:24px;line-height:1.3;margin:0 0 6px;font-weight:700;letter-spacing:-.01em;
+  }
+  .subtitle{color:var(--text2);font-size:13.5px;margin:0 0 14px;}
+  .status-banner{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    background:var(--warn-soft);
+    border:1px solid #f0d9b8;
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:13px;
+    color:var(--warn);
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .status-banner .tag{
+    background:#fff;border:1px solid #f0d9b8;border-radius:999px;
+    padding:2px 10px;font-weight:600;font-size:12px;color:var(--warn);
+  }
+  .meta-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px 18px;font-size:13px;color:var(--text2);
+  }
+  .meta-grid b{color:var(--text);font-weight:600;}
+  section.card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    border:1px solid var(--line);
+    padding:20px 22px;
+    margin-bottom:16px;
+  }
+  h2{
+    display:flex;align-items:center;gap:10px;
+    font-size:17px;font-weight:700;letter-spacing:-.01em;
+    margin:0 0 14px;padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+  }
+  h2 .no{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:26px;height:26px;border-radius:8px;
+    background:var(--accent);color:#fff;
+    font-size:13px;font-weight:700;
+    flex:0 0 auto;
+  }
+  h3{font-size:14.5px;font-weight:700;margin:18px 0 8px;}
+  h3:first-child{margin-top:0;}
+  p{margin:0 0 10px;}
+  ul{margin:0 0 10px;padding-left:20px;}
+  li{margin-bottom:5px;}
+  .muted{color:var(--text2);}
+  .small{font-size:12.5px;}
+  .tag{
+    display:inline-block;font-size:11.5px;font-weight:600;
+    border-radius:6px;padding:1px 8px;line-height:1.7;
+    vertical-align:middle;
+  }
+  .tag-risk{background:var(--risk-soft);color:var(--risk);}
+  .tag-anchor{background:var(--accent-soft);color:var(--accent);}
+  .tag-market{background:#f3eefc;color:#6b3fa0;}
+  .tag-consensus{background:var(--ok-soft);color:var(--ok);}
+  .tag-gray{background:#f0f0f3;color:#555;}
+  .tag-src{background:#eef4ff;color:#2b5fa8;}
+  .tag-spec{background:#fff4e5;color:#b25000;}
+  .tag-gap{background:#fdecea;color:#c0392b;}
+  .tag-ok{background:var(--ok-soft);color:var(--ok);}
+  .tag-warn{background:var(--warn-soft);color:var(--warn);}
+  .tag-neutral{background:#f0f0f3;color:#555;}
+  .flash-list{list-style:none;padding:0;margin:0 0 14px;}
+  .flash-list li{
+    display:flex;gap:10px;align-items:flex-start;
+    padding:9px 0;border-bottom:1px dashed var(--line);
+    font-size:14px;
+  }
+  .flash-list li:last-child{border-bottom:none;}
+  .flash-list .tag{flex:0 0 auto;margin-top:2px;}
+  .flash-list .src{color:var(--text2);font-size:12px;white-space:nowrap;}
+  .decision-box{
+    background:var(--accent-soft);
+    border:1px solid #cfe2fb;
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:14px;
+    font-weight:600;
+    color:#0b4a8f;
+  }
+  .decision-box .tag{margin-right:6px;}
+  table{
+    width:100%;border-collapse:collapse;font-size:13px;
+    margin:8px 0 12px;
+  }
+  th,td{
+    text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  th{
+    background:#fafafc;color:var(--text2);font-weight:600;font-size:12px;
+    white-space:nowrap;
+  }
+  tr:last-child td{border-bottom:none;}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px;}
+  .pill{
+    background:#f5f5f7;border:1px solid var(--line);border-radius:999px;
+    padding:3px 12px;font-size:12.5px;color:var(--text2);
+  }
+  .pill b{color:var(--text);}
+  details{
+    border:1px solid var(--line);border-radius:12px;
+    padding:0;margin:10px 0;background:#fcfcfd;
+    overflow:hidden;
+  }
+  details summary{
+    cursor:pointer;padding:10px 14px;font-size:13.5px;font-weight:600;
+    color:var(--text);list-style:none;display:flex;align-items:center;gap:8px;
+    user-select:none;
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{
+    content:"▸";color:var(--accent);font-size:12px;transition:transform .15s;
+  }
+  details[open] summary::before{transform:rotate(90deg);}
+  details .body{padding:0 14px 14px;font-size:13px;color:var(--text2);}
+  details .body p{margin:0 0 8px;}
+  .quote{
+    font-size:12.5px;color:#444;background:#fff;border-left:3px solid var(--accent);
+    padding:6px 10px;border-radius:0 8px 8px 0;margin:6px 0;
+  }
+  .quote .ts{color:var(--text2);font-size:11.5px;margin-right:6px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr;}}
+  .kv{font-size:13px;}
+  .kv .row{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);}
+  .kv .row:last-child{border-bottom:none;}
+  .kv .k{flex:0 0 92px;color:var(--text2);}
+  .kv .v{flex:1;}
+  .callout{
+    border-radius:12px;padding:12px 14px;font-size:13px;margin:10px 0;
+  }
+  .callout.warn{background:var(--warn-soft);border:1px solid #f0d9b8;color:#7a4400;}
+  .callout.risk{background:var(--risk-soft);border:1px solid #f5c6c0;color:#8e2a1f;}
+  .callout.ok{background:var(--ok-soft);border:1px solid #c3e6d3;color:#155c34;}
+  .callout.info{background:var(--accent-soft);border:1px solid #cfe2fb;color:#0b4a8f;}
+  .footnote{
+    font-size:12px;color:var(--text2);border-top:1px solid var(--line);
+    padding-top:12px;margin-top:16px;
+  }
+  .badge-line{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;}
+  .badge-line .tag{font-weight:600;}
+  .divider{height:1px;background:var(--line);margin:16px 0;}
+  .nowrap{white-space:nowrap;}
+  .mono{font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">LOS-G2 2026-10-24 g1 end</b></div>
+<div class="wrap">
+  <!-- ============ HEADER ============ -->
+  <header class="page">
+    <div class="eyebrow"><span class="dot"></span>局中弹幕情报快照 · G1 · GAME-REVIEW</div>
+    <h1>LOS vs G2 · 第 1 小局｜局中·非终局，结果待定</h1>
+    <p class="subtitle">
+      比赛：LOS vs G2（2026-10-24，slug=lol-hupu-1693138568364032）· 节点：G1｜局末/局间（GAME-REVIEW）<br>
+      本页为该小局唯一页面，覆盖 BP/选人、对线、节奏、关键团战、灰信号、盘口讨论与弹幕密度峰值。
+    </p>
+    <div class="status-banner">
+      <span class="tag">局中·非终局</span>
+      <span>结果待官方核对 · 进度以弹幕口径为准 · 官方数据待回填</span>
+    </div>
+    <div class="meta-grid">
+      <div><b>比赛</b> LOS vs G2</div>
+      <div><b>小局</b> G1（BO 系列第 1 局）</div>
+      <div><b>节点</b> 局末/局间 · GAME-REVIEW</div>
+      <div><b>弹幕总量</b> 8,743 条</div>
+      <div><b>活跃用户</b> 1,601</div>
+      <div><b>弹幕密度</b> 22.6 条/分</div>
+      <div><b>时间基准</b> 北京时间（UTC+8）</div>
+      <div><b>情报输出时间</b> 2026-10-25 04:25（北京时间）</div>
+    </div>
+  </header>
+  <!-- ============ 0 核心情报速览 ============ -->
+  <section class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="callout info" style="margin-top:0;">
+      <b>比分/进度：</b>G1 局末·待结算校准 —— 弹幕口径显示本局已进入收尾/局间讨论，<b>官方结果待回填</b>；页面状态为「局中·非终局，结果待定」。
+    </div>
+    <ul class="flash-list">
+      <li>
+        <span class="tag tag-risk">风险</span>
+        <span>灰信号 19 条，集中于「剧本/故意」类质疑与「出门买血瓶再卖」异常出装讨论，<b>观众质疑，非结论</b>。</span>
+        <span class="src">→ §2</span>
+      </li>
+      <li>
+        <span class="tag tag-anchor">锚点</span>
+        <span>BP 锚点：杰斯/发条/梦魇/卡莉斯塔-烈娜塔组合被高频讨论，G2 阵容灵活性遭质疑。</span>
+        <span class="src">→ §3</span>
+      </li>
+      <li>
+        <span class="tag tag-market">盘口</span>
+        <span>盘口讨论 10 条，聚焦「人头数偏多」「慎的大人头」「zeka 3 人头无经济优势」。</span>
+        <span class="src">→ §4</span>
+      </li>
+      <li>
+        <span class="tag tag-consensus">共识</span>
+        <span>局势讨论 360 条，主流判断为「G2 仍占优但浪」「一波团定胜负」，分歧在「G2 是否会被翻」。</span>
+        <span class="src">→ §5 / §7</span>
+      </li>
+      <li>
+        <span class="tag tag-gray">灰信号</span>
+        <span>「怎么感觉是昨天打 dk 的剧本」「G2 故意的」等 19 条，需与官方数据交叉核验。</span>
+        <span class="src">→ §2</span>
+      </li>
+    </ul>
+    <div class="decision-box">
+      <span class="tag tag-anchor">决策落点</span>
+      局中信息不足以支撑终局结论：<b>LONG 侧</b>看 G2 阵容灵活性与经济优势延续；<b>SHORT 侧</b>警惕「浪」与灰信号剧本质疑，等待官方结果回填后再校准。
+    </div>
+  </section>
+  <!-- ============ 1 比赛信息与结果总览/状态核验 ============ -->
+  <section class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="callout warn">
+      <b>状态核验：</b>本页为 G1 局中快照，<b>非终局</b>。比分与胜负以官方（Riot 小局状态）为准，当前<b>官方结果待回填</b>；弹幕口径仅反映观众实时感知，不作为比分依据。
+    </div>
+    <div class="grid2">
+      <div class="kv">
+        <div class="row"><span class="k">比赛</span><span class="v">LOS vs G2</span></div>
+        <div class="row"><span class="k">日期</span><span class="v">2026-10-24（北京时间跨日至 10-25 凌晨）</span></div>
+        <div class="row"><span class="k">小局</span><span class="v">G1（BO 系列第 1 局）</span></div>
+        <div class="row"><span class="k">节点</span><span class="v">局末/局间（GAME-REVIEW）</span></div>
+        <div class="row"><span class="k">页面状态</span><span class="v"><span class="tag tag-warn">局中·非终局，结果待定</span></span></div>
+      </div>
+      <div class="kv">
+        <div class="row"><span class="k">弹幕总量</span><span class="v mono">8,743 条</span></div>
+        <div class="row"><span class="k">活跃用户</span><span class="v mono">1,601</span></div>
+        <div class="row"><span class="k">密度</span><span class="v mono">22.6 条/分</span></div>
+        <div class="row"><span class="k">官方源</span><span class="v">LoL = Riot 小局状态（待回填）</span></div>
+        <div class="row"><span class="k">情报输出</span><span class="v">2026-10-25 04:25（北京时间）</span></div>
+      </div>
+    </div>
+    <h3>结果总览（局中口径）</h3>
+    <table>
+      <thead>
+        <tr><th>项目</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>本局胜负</td><td><span class="tag tag-warn">待官方回填</span></td><td>弹幕口径显示局末收尾，但禁止从弹幕推断比分</td></tr>
+        <tr><td>BP/阵容</td><td><span class="tag tag-ok">已记录（弹幕口径）</span></td><td>杰斯、发条、梦魇、卡莉斯塔-烈娜塔等被高频提及</td></tr>
+        <tr><td>对线/节奏</td><td><span class="tag tag-ok">已记录（弹幕口径）</span></td><td>下路压线、控龙、G2 对线送一送打团打回来</td></tr>
+        <tr><td>关键团战</td><td><span class="tag tag-ok">已记录（弹幕口径）</span></td><td>龙团、大龙决策、一波团定胜负讨论</td></tr>
+        <tr><td>灰信号</td><td><span class="tag tag-gray">19 条</span></td><td>观众质疑，非结论，需交叉核验</td></tr>
+        <tr><td>盘口讨论</td><td><span class="tag tag-market">10 条</span></td><td>人头数、慎的大人头、经济优势等</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">注：本段所有「已记录」均为弹幕口径，不代表官方数据；官方数据回填后需重新校准。</p>
+  </section>
+  <!-- ============ 2 灰信号汇总 ============ -->
+  <section class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <div class="callout risk">
+      <b>灰信号 19 条（真实统计）</b> —— 已按词表（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）跑统计，<b>非 0 条</b>。以下均为<b>观众质疑，非结论</b>，需与官方数据交叉核验。
+    </div>
+    <table>
+      <thead>
+        <tr><th>灰信号主题</th><th>条数（带量）</th><th>关键样本（北京时间）</th><th>性质</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>剧本/故意质疑</td>
+          <td class="num">≥3</td>
+          <td>「怎么感觉是昨天打 dk 的剧本」「LPL 在和 LCK 训练赛？LCK 故意的啊，感觉全被骗了啊」「绝对是啊 G2 故意的」</td>
+          <td><span class="tag tag-gray">观众质疑</span></td>
+        </tr>
+        <tr>
+          <td>异常出装/操作质疑</td>
+          <td class="num">≥2</td>
+          <td>「他出门买了个 50 的血瓶回去卖了来了个红水晶」（x2）</td>
+          <td><span class="tag tag-gray">观众质疑</span></td>
+        </tr>
+        <tr>
+          <td>选手水平质疑（次级联赛梗）</td>
+          <td class="num">≥3</td>
+          <td>「请记住雅虎在次级就是 saint 的玩具」（x2）「你就看 saint 怎么爆打雅虎的吧」</td>
+          <td><span class="tag tag-gray">观众质疑</span></td>
+        </tr>
+        <tr>
+          <td>其他灰信号（合计）</td>
+          <td class="num">19（总）</td>
+          <td>含上述主题及零散质疑，详见弹幕切片</td>
+          <td><span class="tag tag-gray">观众质疑</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>灰信号原文样本（真实时间戳 · 带量）</summary>
+      <div class="body">
+        <div class="quote"><span class="ts">10-25 04:13 北京</span>请记住雅虎在次级就是 saint 的玩具（x2）</div>
+        <div class="quote"><span class="ts">10-25 04:14 北京</span>你就看 saint 怎么爆打雅虎的吧</div>
+        <div class="quote"><span class="ts">10-25 04:17 北京</span>他出门买了个 50 的血瓶回去卖了来了个红水晶（x2）</div>
+        <div class="quote"><span class="ts">10-25 04:13 北京</span>LPL 在和 LCK 训练赛？LCK 故意的啊，感觉全被骗了啊</div>
+        <div class="quote"><span class="ts">10-25 04:13 北京</span>绝对是啊 G2 故意的</div>
+        <p class="small muted">以上为观众质疑，非结论；禁止据此推断假赛或比分。</p>
+      </div>
+    </details>
+    <p class="small muted">灰信号漏检修正机制：已先跑词表统计再下结论，确认 19 条灰信号，未凭印象写「0 条」。</p>
+  </section>
+  <!-- ============ 3 BP 锚点与选人情报 ============ -->
+  <section class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <p>本局 BP/选人讨论集中在以下英雄与组合（弹幕口径，真实提及）：</p>
+    <div class="pill-row">
+      <span class="pill"><b>杰斯</b> · 高频</span>
+      <span class="pill"><b>发条</b> · 高频</span>
+      <span class="pill"><b>梦魇</b> · 高频</span>
+      <span class="pill"><b>卡莉斯塔 + 烈娜塔</b> · 高频</span>
+      <span class="pill"><b>奇亚娜</b> · 中频</span>
+      <span class="pill"><b>盲僧</b> · 中频</span>
+      <span class="pill"><b>兰博</b> · 中频</span>
+      <span class="pill"><b>加里奥</b> · 中频</span>
+    </div>
+    <h3>BP 锚点解读（弹幕口径）</h3>
+    <ul>
+      <li><b>杰斯：</b>「巴西龟选杰斯都能赢的话 G2 可以直接回家了」「不知道在装什么选个 B 杰斯 线上都打不出优势」「有杰斯放心看」——观众对杰斯 pick 评价两极，<b>正负锚并存</b>。</li>
+      <li><b>发条 + 梦魇：</b>「发条到底有什么魔力，这么爱选」「梦魇发条没有配合的」「不会配合玩什么发条梦魇」——<b>负锚为主</b>，质疑组合协同。</li>
+      <li><b>卡莉斯塔 + 烈娜塔：</b>「卡列胜率也就 50% 有啥不能放的」「卡列 t0 组合」「卡列这两天是不是基本没输过」——<b>正锚为主</b>，但存在「胜率 50%」分歧。</li>
+      <li><b>奇亚娜：</b>「G2 打野我在数据网站查生涯没玩过奇亚娜」——<b>信息型锚点</b>，提示选手英雄池疑问。</li>
+      <li><b>盲僧：</b>「MVP 只能给瞎子」「瞎子 MVP 了」「一颗的瞎子很菜的」——<b>正负锚并存</b>。</li>
+    </ul>
+    <h3>本局阵容（英雄 + 选手，弹幕口径）</h3>
+    <table>
+      <thead>
+        <tr><th>位置</th><th>英雄（弹幕提及）</th><th>选手（弹幕提及）</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>上单</td><td>杰斯 / 兰博</td><td>Canna（提及 2，正 1/负 0）</td><td>「canna 杰斯很有说法吧」「canna 的兰博还可以」</td></tr>
+        <tr><td>打野</td><td>盲僧 / 奇亚娜</td><td>Yike（弹幕提及）</td><td>「yike 也经常玩啊」「yike 果然开始放龙了」</td></tr>
+        <tr><td>中单</td><td>发条 / 加里奥</td><td>Caps（弹幕提及）</td><td>「caps 的洛克 答辩」「CAPS 真的菜麻了」</td></tr>
+        <tr><td>ADC</td><td>卡莉斯塔 / EZ</td><td>Hans（弹幕提及）</td><td>「hans 的 EZ 还可以的」</td></tr>
+        <tr><td>辅助</td><td>烈娜塔 / 卡尔玛</td><td>—</td><td>「列娜塔早点大啊……每次时间差慢半拍」</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">注：以上阵容为弹幕口径整理，<b>非官方 BP 确认</b>；官方 Riot window 阵容待回填校准。BP 后战绩情报：<b>无战绩情报提及</b>。</p>
+  </section>
+  <!-- ============ 4 盘口与市场讨论 ============ -->
+  <section class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <div class="callout info">
+      <b>盘口讨论 10 条（真实）</b> —— 以下为观众对盘口/人头/经济的讨论，<b>非投注建议</b>，仅作市场情绪参考。
+    </div>
+    <table>
+      <thead>
+        <tr><th>盘口主题</th><th>条数（带量）</th><th>关键样本（北京时间）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>人头数偏多</td><td class="num">≥2</td><td>「就 lck 打 lpl 人头特别多」「亏烂了 兵线和人头 还没闪」</td></tr>
+        <tr><td>慎的大人头</td><td class="num">≥2</td><td>「慎的人头」「还好大人头是慎的」</td></tr>
+        <tr><td>经济优势讨论</td><td class="num">≥2</td><td>「zeka 3 个人头没经济优势」「又一个大人头 经典 t1」</td></tr>
+        <tr><td>选手状态质疑</td><td class="num">≥1</td><td>「48 现在真还能 C 吗？」</td></tr>
+        <tr><td>前期阵容讨论</td><td class="num">≥1</td><td>「前期阵容送起亚娜人头？」</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>盘口原文样本（真实时间戳 · 带量）</summary>
+      <div class="body">
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>就 lck 打 lpl 人头特别多</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>亏烂了 兵线和人头 还没闪</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>前期阵容送起亚娜人头？</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>慎的人头</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>还好大人头是慎的</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>zeka3 个人头没经济优势</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>又一个大人头 经典 t1</div>
+        <div class="quote"><span class="ts">10-25 03:xx 北京</span>48 现在真还能 C 吗？</div>
+      </div>
+    </details>
+  </section>
+  <!-- ============ 5 方向性情报板 ============ -->
+  <section class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <h3>正锚（支持 G2 占优/延续）</h3>
+    <ul>
+      <li>「g2 还是优势」「g2 目前没有输的迹象」「g2 还是有实力的」——<b>本场弹幕</b>，共识偏正。</li>
+      <li>「G2 常态就是这样，对线送一送，打团打回来」——<b>本场弹幕</b>，解释对线劣势但团战可翻。</li>
+      <li>「右边下路压线，稳稳控龙就行了」——<b>本场弹幕</b>，节奏锚点。</li>
+    </ul>
+    <h3>负锚（质疑/风险）</h3>
+    <ul>
+      <li>「g2 太浪了」「g2 别浪呀」「g2 别浪，打龙团吧」——<b>本场弹幕</b>，浪是主要风险。</li>
+      <li>「不会真要去逮捕 AL 了吧」「g2 想去打 al」——<b>本场弹幕</b>，观众联想后续赛程。</li>
+      <li>「CAPS 真的菜麻了」「caps 确实菜」——<b>本场弹幕</b>，中单状态质疑。</li>
+    </ul>
+    <h3>群体共识（+分歧+样本量）</h3>
+    <table>
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>G2 占优但浪</td>
+          <td>偏正（带风险）</td>
+          <td class="num">≥8</td>
+          <td>「g2 还是优势」「g2 太浪了」</td>
+          <td><span class="tag tag-ok">同向=强信号</span></td>
+        </tr>
+        <tr>
+          <td>一波团定胜负</td>
+          <td>中性</td>
+          <td class="num">≥3</td>
+          <td>「一波团的事情了」「一波结束了」</td>
+          <td><span class="tag tag-ok">同向=强信号</span></td>
+        </tr>
+        <tr>
+          <td>杰斯 pick 评价</td>
+          <td>分歧</td>
+          <td class="num">≥4</td>
+          <td>「有杰斯放心看」vs「选个 B 杰斯 线上都打不出优势」</td>
+          <td><span class="tag tag-warn">背离=分歧信号</span></td>
+        </tr>
+        <tr>
+          <td>卡列组合强度</td>
+          <td>分歧</td>
+          <td class="num">≥4</td>
+          <td>「卡列 t0 组合」vs「卡列胜率也就 50%」</td>
+          <td><span class="tag tag-warn">背离=分歧信号</span></td>
+        </tr>
+        <tr>
+          <td>发条+梦魇协同</td>
+          <td>偏负</td>
+          <td class="num">≥3</td>
+          <td>「梦魇发条没有配合的」</td>
+          <td><span class="tag tag-ok">同向=强信号</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>灰信号条件预测</h3>
+    <ul>
+      <li><b>若</b>官方数据确认 G2 经济领先且控龙占优，<b>则</b>「G2 占优但浪」共识成立，灰信号「剧本」质疑弱化。</li>
+      <li><b>若</b>官方数据显示 G2 被翻或经济差收窄，<b>则</b>「一波团定胜负」与「G2 太浪」负锚强化，灰信号需升级核验。</li>
+      <li><b>若</b>官方 BP 确认杰斯/发条/梦魇组合，<b>则</b>「发条+梦魇无配合」负锚获得 BP 层面支撑。</li>
+    </ul>
+  </section>
+  <!-- ============ 6 情报含义与决策落点 ============ -->
+  <section class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG / SHORT）</h2>
+    <div class="grid2">
+      <div class="callout ok">
+        <b>LONG 侧（支持 G2 延续优势）</b>
+        <ul style="margin:8px 0 0;padding-left:18px;">
+          <li>弹幕共识「G2 还是优势」「G2 目前没有输的迹象」。</li>
+          <li>「G2 常态对线送一送，打团打回来」——团战能力被认可。</li>
+          <li>「右边下路压线，稳稳控龙」——节奏锚点偏正。</li>
+        </ul>
+      </div>
+      <div class="callout risk">
+        <b>SHORT 侧（风险/反转）</b>
+        <ul style="margin:8px 0 0;padding-left:18px;">
+          <li>「G2 太浪了」高频出现，浪是最大反转风险。</li>
+          <li>灰信号 19 条含「剧本/故意」质疑，需官方数据核验。</li>
+          <li>「一波团定胜负」——局中信息不足以支撑终局结论。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="decision-box" style="margin-top:12px;">
+      <span class="tag tag-anchor">决策落点</span>
+      局中快照不构成终局结论：<b>LONG</b> 依赖 G2 团战与控龙延续；<b>SHORT</b> 警惕浪与灰信号。等待官方结果回填后重新校准方向。
+    </div>
+  </section>
+  <!-- ============ 7 逐局复盘（证据层） ============ -->
+  <section class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 已发生片段 + 时间线（弹幕口径，北京时间）</h3>
+    <details open>
+      <summary>弹幕时间线（真实时间戳 + 原文带量）</summary>
+      <div class="body">
+        <div class="quote"><span class="ts">10-25 03:08 北京</span>巴西龟选杰斯都能赢的话 g2 可以直接回家了（x2）</div>
+        <div class="quote"><span class="ts">10-25 03:08 北京</span>二哥，G2 打野我在数据网站查生涯没玩过奇亚娜</div>
+        <div class="quote"><span class="ts">10-25 03:08 北京</span>发条到底有什么魔力，这么爱选</div>
+        <div class="quote"><span class="ts">10-25 03:12 北京</span>右边下路压线，稳稳控龙就行了</div>
+        <div class="quote"><span class="ts">10-25 03:14 北京</span>下路抓了</div>
+        <div class="quote"><span class="ts">10-25 03:15 北京</span>对线游戏（x2）</div>
+        <div class="quote"><span class="ts">10-25 03:18 北京</span>G2 常态就是这样，对线送一送，打团打回来</div>
+        <div class="quote"><span class="ts">10-25 03:19 北京</span>三条线同时打架</div>
+        <div class="quote"><span class="ts">10-25 03:21 北京</span>g2 还是优势</div>
+        <div class="quote"><span class="ts">10-25 03:22 北京</span>g2 目前没有输的迹象</div>
+        <div class="quote"><span class="ts">10-25 03:25 北京</span>不知道在装什么选个 B 杰斯 线上都打不出优势</div>
+        <div class="quote"><span class="ts">10-25 03:26 北京</span>梦魇发条没有配合的</div>
+        <div class="quote"><span class="ts">10-25 03:32 北京</span>g2 别浪呀</div>
+        <div class="quote"><span class="ts">10-25 03:35 北京</span>g2 别浪，打龙团吧</div>
+        <div class="quote"><span class="ts">10-25 03:37 北京</span>下条龙控不到就要被翻</div>
+        <div class="quote"><span class="ts">10-25 03:43 北京</span>一波团的事情了</div>
+        <div class="quote"><span class="ts">10-25 03:46 北京</span>GG（x3）</div>
+        <div class="quote"><span class="ts">10-25 03:47 北京</span>g2 太浪了</div>
+        <div class="quote"><span class="ts">10-25 03:48 北京</span>g2 一号种子赢得这么艰难</div>
+        <div class="quote"><span class="ts">10-25 03:49 北京</span>最后一波太急了</div>
+        <div class="quote"><span class="ts">10-25 03:55 北京</span>瞎子 MVP 了</div>
+        <div class="quote"><span class="ts">10-25 03:57 北京</span>偷家了</div>
+        <div class="quote"><span class="ts">10-25 04:06 北京</span>刚睡醒，谁赢了</div>
+        <div class="quote"><span class="ts">10-25 04:13 北京</span>请记住雅虎在次级就是 saint 的玩具（x2）</div>
+        <div class="quote"><span class="ts">10-25 04:17 北京</span>他出门买了个 50 的血瓶回去卖了来了个红水晶（x2）</div>
+      </div>
+    </details>
+    <h3>关键团战/节奏节点（弹幕口径）</h3>
+    <ul>
+      <li><b>下路压线 + 控龙：</b>「右边下路压线，稳稳控龙就行了」「下路抓了」——下路节奏偏正。</li>
+      <li><b>龙团决策：</b>「g2 别浪，打龙团吧」「下条龙控不到就要被翻」——龙团是胜负手。</li>
+      <li><b>大龙/一波团：</b>「别打大龙了」「一波团的事情了」——观众认为一波团定胜负。</li>
+      <li><b>收尾：</b>「GG（x3）」「偷家了」「瞎子 MVP 了」——局末收尾信号。</li>
+    </ul>
+    <p class="small muted">未发生/待观察：官方结果、精确经济曲线、BP 确认、选手数据面板——均标注「待观察」。</p>
+  </section>
+  <!-- ============ 8 队伍/人员画像 ============ -->
+  <section class="card">
+    <h2><span class="no">8</span>队伍 / 人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（真实）</h3>
+    <table>
+      <thead>
+        <tr><th>队伍</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>T1</td><td class="num">256</td><td>正 16 / 负 13</td><td>跨场讨论高频，非本局直接对手</td></tr>
+        <tr><td>IG</td><td class="num">255</td><td>正 18 / 负 5</td><td>跨场讨论高频</td></tr>
+        <tr><td>BLG</td><td class="num">186</td><td>正 9 / 负 11</td><td>跨场讨论</td></tr>
+        <tr><td>AL</td><td class="num">169</td><td>正 11 / 负 14</td><td>「G2 想去逮捕 AL」等联想</td></tr>
+        <tr><td>DK</td><td class="num">143</td><td>正 11 / 负 12</td><td>「昨天打 dk 的剧本」灰信号关联</td></tr>
+        <tr><td>G2</td><td class="num">92</td><td>正 6 / 负 7</td><td>本局直接参与方</td></tr>
+        <tr><td>GEN</td><td class="num">77</td><td>正 9 / 负 1</td><td>跨场讨论</td></tr>
+        <tr><td>HLE</td><td class="num">64</td><td>正 8 / 负 2</td><td>跨场讨论</td></tr>
+      </tbody>
+    </table>
+    <h3>选手提及 TOP（真实）</h3>
+    <table>
+      <thead>
+        <tr><th>选手</th><th>提及量</th><th>正/负</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Chovy</td><td class="num">31</td><td>正 3 / 负 1</td><td>跨场讨论</td></tr>
+        <tr><td>Zeus</td><td class="num">21</td><td>正 0 / 负 1</td><td>跨场讨论</td></tr>
+        <tr><td>Faker</td><td class="num">20</td><td>正 2 / 负 0</td><td>跨场讨论</td></tr>
+        <tr><td>Guma</td><td class="num">8</td><td>正 0 / 负 1</td><td>跨场讨论</td></tr>
+        <tr><td>Canna</td><td class="num">2</td><td>正 1 / 负 0</td><td>本局上单，杰斯/兰博提及</td></tr>
+        <tr><td>Niko</td><td class="num">1</td><td>正 0 / 负 0</td><td>零散提及</td></tr>
+      </tbody>
+    </table>
+    <h3>队伍特质统计（真实）</h3>
+    <div class="pill-row">
+      <span class="pill">顺风隐身 <b>1</b></span>
+      <span class="pill">被翻守不住 <b>9</b></span>
+      <span class="pill">韧性逆转 <b>9</b></span>
+      <span class="pill">心态摆烂 <b>9</b></span>
+      <span class="pill">慢热手热 <b>4</b></span>
+      <span class="pill">打法风格 <b>24</b></span>
+      <span class="pill">选手特质 <b>13</b></span>
+    </div>
+    <p class="small muted">画像引用长期库带提及量；本局直接相关选手提及量偏低（Canna 2、Niko 1），样本有限，不硬造。</p>
+  </section>
+  <!-- ============ 9 联赛规律与版本 ============ -->
+  <section class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul>
+      <li><b>BO1 与 BO3 差异：</b>「LPL 就是不擅长打 BO1 啊」「BO3 打得过 BO1 是真不好说」「0-2 后面只有 bo3 了」——观众对赛制影响判断明显。</li>
+      <li><b>卡莉斯塔-烈娜塔组合：</b>「卡列 t0 组合」「卡列还是强势」「卡列胜率也就 50%」——版本强势组合存在分歧。</li>
+      <li><b>发条/梦魇：</b>「梦魇发条没有配合的」「发条到底有什么魔力」——版本 pick 合理性被质疑。</li>
+      <li><b>杰斯：</b>「杰斯赶紧搞混吧」「有杰斯放心看」——版本杰斯评价两极。</li>
+      <li><b>小火龙/云露：</b>「小火龙这种英雄连欧洲都不选了」「云露感觉这版本都没人玩了」——版本边缘英雄讨论。</li>
+    </ul>
+    <p class="small muted">以上为弹幕口径的版本/联赛规律讨论，非官方版本数据；样本有限，不硬造带量结论。</p>
+  </section>
+  <!-- ============ 10 预测验证回填 ============ -->
+  <section class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <table>
+      <thead>
+        <tr><th>预测/信号</th><th>来源</th><th>状态</th><th>验证结果</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>G2 占优但浪</td>
+          <td>本场弹幕</td>
+          <td><span class="tag tag-warn">待官方回填</span></td>
+          <td>需官方经济/控龙数据核验</td>
+        </tr>
+        <tr>
+          <td>一波团定胜负</td>
+          <td>本场弹幕</td>
+          <td><span class="tag tag-warn">待官方回填</span></td>
+          <td>需官方团战/经济曲线核验</td>
+        </tr>
+        <tr>
+          <td>发条+梦魇无配合</td>
+          <td>本场弹幕</td>
+          <td><span class="tag tag-warn">待官方回填</span></td>
+          <td>需官方 BP 与团战数据核验</td>
+        </tr>
+        <tr>
+          <td>灰信号「剧本」质疑</td>
+          <td>本场弹幕</td>
+          <td><span class="tag tag-gray">观众质疑</span></td>
+          <td>非结论，需官方数据交叉核验</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="small muted">本页为局中快照，预测验证需等待官方结果回填后重新执行。</p>
+  </section>
+  <!-- ============ 11 数据与溯源 ============ -->
+  <section class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性（三栏）</h3>
+    <table>
+      <thead>
+        <tr><th>实际数据源</th><th>预期数据源</th><th>缺口</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            规则层情报 JSON（真实统计）<br>
+            弹幕切片（本节点时间窗）<br>
+            本场弹幕样本 360 条<br>
+            盘口讨论 10 条<br>
+            灰信号 19 条
+          </td>
+          <td>
+            Riot 小局状态（官方比分/经济/BP）<br>
+            Riot window 阵容（开局后 1 分钟校准）<br>
+            官方选手数据面板
+          </td>
+          <td>
+            <span class="tag tag-gap">官方结果待回填</span><br>
+            <span class="tag tag-gap">官方 BP 确认缺失</span><br>
+            <span class="tag tag-gap">精确经济曲线缺失</span><br>
+            <span class="tag tag-gap">选手数据面板缺失</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <b>缺源不交付完整结论：</b>官方结果、BP 确认、经济曲线、选手数据面板均缺失，本页结论为局中弹幕口径，<b>非终局</b>。
+    </div>
+    <h3>硬信息六项（不可删除）</h3>
+    <ul>
+      <li><b>人员画像带提及量：</b>见 §8（T1 256、IG 255、BLG 186、AL 169、DK 143、G2 92、GEN 77、HLE 64；Chovy 31、Zeus 21、Faker 20、Guma 8、Canna 2、Niko 1）。</li>
+      <li><b>本局阵容（英雄+选手）：</b>见 §3（杰斯/兰博、盲僧/奇亚娜、发条/加里奥、卡莉斯塔/EZ、烈娜塔/卡尔玛）。</li>
+      <li><b>BP 后战绩情报：</b>无战绩情报提及。</li>
+      <li><b>密度时间线：</b>弹幕密度 22.6 条/分，覆盖 385 个有弹幕分钟段，全窗口分钟级抽样。</li>
+      <li><b>跨源一致性提示：</b>弹幕口径与官方数据尚未交叉核验，官方结果待回填。</li>
+      <li><b>比赛元数据：</b>LOS vs G2，2026-10-24，slug=lol-hupu-1693138568364032，G1，节点 GAME-REVIEW。</li>
+    </ul>
+    <h3>情报来源分层</h3>
+    <div class="badge-line">
+      <span class="tag tag-src">本场弹幕</span>
+      <span class="tag tag-src">前局弹幕</span>
+      <span class="tag tag-src">历史画像</span>
+      <span class="tag tag-src">盘口</span>
+      <span class="tag tag-spec">推测·待验证</span>
+      <span class="tag tag-gap">缺源</span>
+    </div>
+    <p class="small muted" style="margin-top:8px;">
+      核心情报均来自本场弹幕；推测已显式标注；缺源已标注缺口。禁止无中生有。
+    </p>
+    <h3>情报输出时间</h3>
+    <p class="mono">2026-10-25 04:25（北京时间，UTC+8）</p>
+    <div class="footnote">
+      本页为局中弹幕情报快照（G1），状态「局中·非终局，结果待定」；所有时间均为北京时间；弹幕原文仅作证据，不代表官方结论。
+    </div>
+  </section>
+  <!-- ============ 长期沉淀点 ============ -->
+  <section class="card">
+    <h2><span class="no">★</span>本场长期沉淀点</h2>
+    <ul>
+      <li><b>G2 的「浪」是长期画像标签：</b>本场弹幕高频出现「G2 太浪了」「G2 别浪」，与长期库「被翻守不住 9」「韧性逆转 9」形成呼应，可作为后续 G2 局中风险锚点。</li>
+      <li><b>灰信号「剧本/故意」类质疑需建立核验流程：</b>本场 19 条灰信号中含「昨天打 dk 的剧本」「G2 故意的」，建议与官方数据交叉核验，避免误判。</li>
+      <li><b>卡莉斯塔-烈娜塔组合评价分歧：</b>「卡列 t0」vs「卡列胜率 50%」，可作为版本组合强度讨论的长期样本。</li>
+    </ul>
+  </section>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
