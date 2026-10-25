@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报 · G2 vs NaVi · G3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            background: transparent;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #0071e3;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .badge {
+            display: inline-block;
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6e6e73;
+            margin-left: 8px;
+        }
+        .badge.live {
+            background: #e8f4fd;
+            color: #0071e3;
+        }
+        .badge.warn {
+            background: #fff3e0;
+            color: #b25000;
+        }
+        .badge.gray {
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        .score-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 24px;
+            font-size: 15px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .score-line .item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .score-line .label {
+            color: #6e6e73;
+            font-size: 13px;
+        }
+        .score-line .value {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        .signal-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 12px 0 16px;
+        }
+        .signal-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .signal-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #f0f0f2;
+            color: #6e6e73;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .signal-tag.risk { background: #ffebee; color: #c62828; }
+        .signal-tag.anchor { background: #e8f5e9; color: #2e7d32; }
+        .signal-tag.market { background: #fff8e1; color: #f57f17; }
+        .signal-tag.consensus { background: #e3f2fd; color: #0d47a1; }
+        .signal-tag.gray { background: #f3e5f5; color: #6a1b9a; }
+        .signal-tag.info { background: #e0f7fa; color: #006064; }
+        .signal-text {
+            flex: 1;
+        }
+        .signal-text .src {
+            color: #6e6e73;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+        .decision {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-top: 8px;
+            border-left: 4px solid #0071e3;
+        }
+        .decision strong {
+            color: #0071e3;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 640px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-row .k { color: #6e6e73; }
+        .stat-row .v { font-weight: 500; }
+        .mention-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            font-size: 14px;
+        }
+        .mention-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .mention-item .name { font-weight: 500; }
+        .mention-item .count { color: #6e6e73; font-size: 12px; }
+        .mention-item .pos { color: #2e7d32; font-size: 12px; }
+        .mention-item .neg { color: #c62828; font-size: 12px; }
+        details {
+            margin-top: 12px;
+            border: 1px solid #f0f0f2;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        details summary {
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background: #fafafa;
+            color: #1d1d1f;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        details summary::-webkit-details-marker { display: none; }
+        details summary::before {
+            content: "▸";
+            font-size: 12px;
+            color: #6e6e73;
+            transition: transform 0.2s;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details .details-content {
+            padding: 12px 16px;
+            border-top: 1px solid #f0f0f2;
+            font-size: 13px;
+            color: #1d1d1f;
+            background: #fff;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f5f7;
+            font-size: 13px;
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .timeline-time {
+            color: #6e6e73;
+            font-size: 12px;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+        .timeline-text {
+            flex: 1;
+        }
+        .timeline-count {
+            color: #0071e3;
+            font-weight: 500;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .table-consensus {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 8px 0;
+        }
+        .table-consensus th {
+            text-align: left;
+            padding: 8px 6px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #6e6e73;
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .table-consensus td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .table-consensus tr:last-child td { border-bottom: none; }
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 8px;
+            background: #f0f0f2;
+            color: #6e6e73;
+            margin-right: 4px;
+        }
+        .tag.strong { background: #e8f5e9; color: #2e7d32; }
+        .tag.divergence { background: #fff3e0; color: #b25000; }
+        .tag.blind { background: #f3e5f5; color: #6a1b9a; }
+        .footer-note {
+            font-size: 12px;
+            color: #6e6e73;
+            text-align: center;
+            padding: 16px 0 8px;
+        }
+        .kv-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14px;
+        }
+        .kv-list .row {
+            display: flex;
+            gap: 8px;
+        }
+        .kv-list .k { color: #6e6e73; min-width: 100px; }
+        .kv-list .v { font-weight: 500; }
+        .divider {
+            height: 1px;
+            background: #f0f0f2;
+            margin: 16px 0;
+        }
+        .small-note {
+            font-size: 12px;
+            color: #6e6e73;
+            margin-top: 4px;
+        }
+        .highlight {
+            background: #f5f5f7;
+            border-radius: 8px;
+            padding: 2px 6px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2-NaVi 2026-10-24 g3 mid</b></div>
+<div class="container">
+    <!-- ==================== 0 核心情报速览 ==================== -->
+    <div class="card">
+        <h2><span class="no">0</span>核心情报速览 <span class="badge live">局中·非终局</span></h2>
+        <div class="score-line">
+            <div class="item"><span class="label">小局</span><span class="value">G3</span></div>
+            <div class="item"><span class="label">进度</span><span class="value">弹幕口径 · 官方待回填</span></div>
+            <div class="item"><span class="label">弹幕总数</span><span class="value">10,826</span></div>
+            <div class="item"><span class="label">活跃用户</span><span class="value">2,208</span></div>
+            <div class="item"><span class="label">密度</span><span class="value">381.5 条/分</span></div>
+        </div>
+        <ul class="signal-list">
+            <li>
+                <span class="signal-tag risk">风险</span>
+                <span class="signal-text">灰信号173条，集中质疑“故意输手枪局”“送狙战术”，观众质疑非结论。<span class="src">→ §2</span></span>
+            </li>
+            <li>
+                <span class="signal-tag anchor">锚点</span>
+                <span class="signal-text">donk提及292次（正5/负20），负向情绪显著，为当前最大话题锚点。<span class="src">→ §5/§8</span></span>
+            </li>
+            <li>
+                <span class="signal-tag market">盘口</span>
+                <span class="signal-text">盘口讨论5条，聚焦“特拿点残血人头”“送人头”，样本偏少。<span class="src">→ §4</span></span>
+            </li>
+            <li>
+                <span class="signal-tag consensus">共识</span>
+                <span class="signal-text">“天胡开局→虽败犹荣”剧本梗刷屏，观众预期翻盘/被翻。<span class="src">→ §5/§7</span></span>
+            </li>
+        </ul>
+        <div class="decision">
+            <strong>决策落点：</strong>局中信号偏空，灰信号与donk负向情绪叠加，短期情绪面承压；但盘口样本不足，不宜过度解读，等待官方数据校准。
+        </div>
+    </div>
+    <!-- ==================== 1 比赛信息与结果总览 ==================== -->
+    <div class="card">
+        <h2><span class="no">1</span>比赛信息与结果总览 <span class="badge warn">局中·非终局，结果待定</span></h2>
+        <div class="grid-2">
+            <div>
+                <div class="stat-row"><span class="k">比赛</span><span class="v">G2 vs NaVi</span></div>
+                <div class="stat-row"><span class="k">日期</span><span class="v">2026-10-24</span></div>
+                <div class="stat-row"><span class="k">当前小局</span><span class="v">G3（局中）</span></div>
+                <div class="stat-row"><span class="k">数据源</span><span class="v">HLTV-Liquipedia（官方待回填）</span></div>
+            </div>
+            <div>
+                <div class="stat-row"><span class="k">弹幕总数</span><span class="v">10,826</span></div>
+                <div class="stat-row"><span class="k">活跃用户</span><span class="v">2,208</span></div>
+                <div class="stat-row"><span class="k">密度</span><span class="v">381.5 条/分</span></div>
+                <div class="stat-row"><span class="k">情报输出时间</span><span class="v">2026-10-25 16:30 北京</span></div>
+            </div>
+        </div>
+        <div class="small-note" style="margin-top:12px;">⚠️ 局中页面，比分与结果以官方数据为准，当前进度仅反映弹幕讨论热度。</div>
+    </div>
+    <!-- ==================== 2 灰信号汇总 ==================== -->
+    <div class="card">
+        <h2><span class="no">2</span>灰信号汇总 <span class="badge gray">观众质疑·非结论</span></h2>
+        <p style="font-size:14px; margin-bottom:12px;">灰信号共 <strong>173</strong> 条，主要围绕“故意输手枪局”“送狙战术”“买了不丢”等质疑，<strong>均为观众主观猜测，非事实结论</strong>。</p>
+        <div class="kv-list">
+            <div class="row"><span class="k">高频灰信号</span><span class="v">手枪局故意输，让对面起ak（重复出现）</span></div>
+            <div class="row"><span class="k">衍生质疑</span><span class="v">“懂了，第一轮故意输的，要下来炸鱼特数据”</span></div>
+            <div class="row"><span class="k">盘口关联</span><span class="v">“买了不丢跟没买一样”</span></div>
+            <div class="row"><span class="k">送狙战术</span><span class="v">“送狙战术”出现39次（16:16时段）</span></div>
+        </div>
+        <details>
+            <summary>灰信号原文摘录（折叠）</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">15:52-16:20</span><span class="timeline-text">手枪局故意输，让对面起ak。；懂了，第一轮故意输的，要下来炸鱼特数据；故意输BB来吃天禄大补丸；买了不丢跟没买一样；送狙战术；故意的；阳谋；shiro送狙这招太阴了</span></div>
+                <div class="small-note" style="margin-top:8px;">以上均为观众弹幕原文，不代表事实，仅作情绪与质疑记录。</div>
+            </div>
+        </details>
+    </div>
+    <!-- ==================== 3 BP 锚点与选人情报 ==================== -->
+    <div class="card">
+        <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+        <div class="kv-list">
+            <div class="row"><span class="k">本局阵容</span><span class="v">G2 vs NaVi（具体英雄/选手待官方回填）</span></div>
+            <div class="row"><span class="k">BP后战绩情报</span><span class="v">无战绩情报提及</span></div>
+            <div class="row"><span class="k">选人讨论</span><span class="v">弹幕提及“niko指挥的ct”“shiro只打腿？”等，样本零散</span></div>
+        </div>
+        <details>
+            <summary>BP/选人相关弹幕摘录（折叠）</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">16:04</span><span class="timeline-text">niko指挥的ct（x2）</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:04</span><span class="timeline-text">shiro只打腿？（x2）</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:17</span><span class="timeline-text">jee得到狙击枪就像niko得到了背身（x4）</span></div>
+                <div class="small-note">注：本局BP具体信息官方未同步，以上仅为弹幕讨论。</div>
+            </div>
+        </details>
+    </div>
+    <!-- ==================== 4 盘口与市场讨论 ==================== -->
+    <div class="card">
+        <h2><span class="no">4</span>盘口与市场讨论</h2>
+        <p style="font-size:14px; margin-bottom:12px;">盘口相关讨论共 <strong>5</strong> 条，样本量小，参考价值有限。</p>
+        <div class="kv-list">
+            <div class="row"><span class="k">盘口原文</span><span class="v">“只会特拿点残血人头”“人头4锁定术”“送人头”</span></div>
+            <div class="row"><span class="k">市场情绪</span><span class="v">偏负面，与灰信号“送人头”形成呼应</span></div>
+            <div class="row"><span class="k">样本状态</span><span class="v">样本不足，不构成有效盘口信号</span></div>
+        </div>
+    </div>
+    <!-- ==================== 5 方向性情报板 ==================== -->
+    <div class="card">
+        <h2><span class="no">5</span>方向性情报板</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; font-size:14px; margin-bottom:8px;">正锚</div>
+                <div class="kv-list">
+                    <div class="row"><span class="k">donk正向</span><span class="v">提及292次，正5（少量认可）</span></div>
+                    <div class="row"><span class="k">sh1ro正向</span><span class="v">提及20次，正2</span></div>
+                    <div class="row"><span class="k">“天胡开局”</span><span class="v">18次，观众对开局有期待</span></div>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:600; font-size:14px; margin-bottom:8px;">负锚</div>
+                <div class="kv-list">
+                    <div class="row"><span class="k">donk负向</span><span class="v">负20，质疑“最菜TOP1”等</span></div>
+                    <div class="row"><span class="k">Spirit负向</span><span class="v">提及39次，负8</span></div>
+                    <div class="row"><span class="k">BoomBoys负向</span><span class="v">提及28次，负4</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-weight:600; font-size:14px; margin-bottom:8px;">群体共识（带量）</div>
+        <table class="table-consensus">
+            <thead><tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr></thead>
+            <tbody>
+                <tr><td>“天胡开局→虽败犹荣”剧本</td><td>调侃/预期翻盘</td><td>17+10</td><td>“天胡开局→士气高涨→j哥起狙→棋差一招→昏招频出→虽败犹荣”</td><td><span class="tag strong">强信号</span></td></tr>
+                <tr><td>“业余”刷屏</td><td>负面评价</td><td>36+82+6</td><td>“业余”（15:57-16:10多次出现）</td><td><span class="tag strong">强信号</span></td></tr>
+                <tr><td>“坏了/完了”</td><td>悲观</td><td>775+134+21+10</td><td>“坏了”（x775）、“完了”（x134）</td><td><span class="tag strong">强信号</span></td></tr>
+                <tr><td>“天禄”刷屏</td><td>关注天禄</td><td>116</td><td>“天禄”（16:19）</td><td><span class="tag divergence">分歧信号</span>（与G2/NaVi无关）</td></tr>
+                <tr><td>“正义必胜”</td><td>正向</td><td>22+18+10</td><td>“正义必胜”（16:05、16:12、16:15）</td><td><span class="tag strong">强信号</span></td></tr>
+            </tbody>
+        </table>
+        <div class="small-note">共识→信号链：负面刷屏（坏了/完了/业余）与剧本梗叠加，形成短期情绪压制；但“正义必胜”等正向口号穿插，存在分歧。</div>
+        <div style="margin-top:12px;">
+            <span style="font-weight:600; font-size:14px;">灰信号条件预测：</span>
+            <span style="font-size:14px;">若后续官方数据证实“送狙”等战术选择，灰信号可能进一步发酵；若官方数据澄清，则情绪可能反转。</span>
+        </div>
+    </div>
+    <!-- ==================== 6 情报含义与决策落点 ==================== -->
+    <div class="card">
+        <h2><span class="no">6</span>情报含义与决策落点</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; font-size:14px; margin-bottom:8px;">LONG（正向）</div>
+                <div class="kv-list">
+                    <div class="row"><span class="k">依据</span><span class="v">“正义必胜”等正向口号出现，donk仍有少量正向提及</span></div>
+                    <div class="row"><span class="k">条件</span><span class="v">若官方数据确认G2/NaVi优势，情绪可能修复</span></div>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:600; font-size:14px; margin-bottom:8px;">SHORT（负向）</div>
+                <div class="kv-list">
+                    <div class="row"><span class="k">依据</span><span class="v">灰信号173条、donk负向20、负面刷屏“坏了/完了”</span></div>
+                    <div class="row"><span class="k">条件</span><span class="v">若官方数据不利，负向情绪可能加速</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="decision" style="margin-top:12px;">
+            <strong>综合决策：</strong>局中信号偏空，短期情绪面承压，但盘口样本不足，建议观望，等待官方数据校准后再做判断。
+        </div>
+    </div>
+    <!-- ==================== 7 逐局复盘 ==================== -->
+    <div class="card">
+        <h2><span class="no">7</span>逐局复盘 <span class="badge">G3 局中</span></h2>
+        <p style="font-size:14px; margin-bottom:12px;">当前局已发生片段（基于弹幕时间线），未发生部分标注“待观察”。</p>
+        <div class="kv-list">
+            <div class="row"><span class="k">15:52-15:56</span><span class="v">开局讨论，弹幕关注“几点开”“navi赢黑豹加多少分”</span></div>
+            <div class="row"><span class="k">15:57-16:00</span><span class="v">“业余”刷屏（36→82），负面情绪初现</span></div>
+            <div class="row"><span class="k">16:05-16:08</span><span class="v">“天胡开局”“正义必胜”与“原形毕露”“经典剧情”交织</span></div>
+            <div class="row"><span class="k">16:15-16:16</span><span class="v">“坏了”（x775）、“完了”（x134）集中爆发，情绪峰值</span></div>
+            <div class="row"><span class="k">16:17-16:21</span><span class="v">“送狙战术”“jee狙不行”等讨论持续</span></div>
+            <div class="row"><span class="k">后续</span><span class="v">待观察（官方数据回填后更新）</span></div>
+        </div>
+        <details>
+            <summary>G3 完整弹幕时间线（折叠）</summary>
+            <div class="details-content">
+                <div class="timeline-item"><span class="timeline-time">15:52</span><span class="timeline-text">. (x4)｜天下无敌 (x4)｜1 (x2)｜bt啊 (x2)｜mo不播明日晴可以掌管直播间了 (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:53</span><span class="timeline-text">几点开 (x6)｜唯一一支起狙就害怕的队伍是哪个 (x4)｜唯一一支起狙就让人害怕的队伍是哪个 (x4)｜还有pm跑打 (x4)｜MO不在，找深冬来 (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:54</span><span class="timeline-text">找深冬 (x4)｜navi赢黑豹加多少分 (x2)｜上次天禄一线比赛赢是什么时候了 (x2)｜上次天禄一线比赛赢是什么时候？ (x2)｜不然早醒了 (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:55</span><span class="timeline-text">有了~ (x6)｜两张图能拿十分吗 (x4)｜什么图 (x4)｜8分给了，最多6分 (x2)｜DONK又要大开杀戒，拿天禄找自信 (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:56</span><span class="timeline-text">宫 (x6)｜天禄皇朝就在今天/{xd看我jee大显神通 (x5)｜j神神了 (x4)｜宫了 (x4)｜找深东 (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:57</span><span class="timeline-text">业余 (x36)｜天禄皇朝就在今天/{xd看我jee大显神通 (x12)｜宫了 (x10)｜世子多病 (x6)｜懂你意思 (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:58</span><span class="timeline-text">业余 (x82)｜donk明年没有拓扑了😂😂 (x8)｜0皇暴打donk (x6)｜天禄皇朝就在今天/{xd看我jee大显神通 (x6)｜打起来打起来 (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">15:59</span><span class="timeline-text">还真是 (x12)｜j神神了 (x8)｜刚来户儒能偷top1吗今年 (x6)｜天禄首胜有感觉吗 (x6)｜donk和豪哥真是难兄难弟，技术都下滑了 (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:00</span><span class="timeline-text">小孩也是架中间没驾边 (x8)｜喜欢装 (x6)｜就是菜 (x6)｜别洗了 (x4)｜垃圾 只会装逼 (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:01</span><span class="timeline-text">donk明年没有拓扑了😂😂 (x10)｜今天j哥来泄愤了 暴力炸吧 (x10)｜照猫画虎 模仿孩神的 (x10)｜甩狙不是甩老二，你可没办甩回来 (x8)｜mo呢 (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:02</span><span class="timeline-text">宗主真帅 (x8)｜mo呢 (x6)｜主播主持哪个队 (x6)｜帅 (x6)｜怎么今天MO听起来声音不太对 (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:03</span><span class="timeline-text">猎鹰没有来，这比赛没有含金量。猎鹰没有来，这比赛没有含金量 (x8)｜【骗谁啊你，这明明是259的声音】 (x6)｜看看马头 (x6)｜马西西漏个马头 (x6)｜😂😂😂😂😂😂😂 (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:04</span><span class="timeline-text">游戏声音太小了 (x4)｜PL (x2)｜jee能否恢复人籍就看这几句了 (x2)｜niko指挥的ct (x2)｜shiro只打腿？ (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:05</span><span class="timeline-text">正义必胜 (x22)｜天胡开局 (x18)｜我们是冠军 (x14)｜道歉 (x10)｜洞你手疼不疼 (x8)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:06</span><span class="timeline-text">原形毕露 (x10)｜经典剧情 (x10)｜我是来看马西西解说偏向哪边的！ (x8)｜熟悉 (x8)｜秒翻 (x8)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:07</span><span class="timeline-text">天胡开局→士气高涨→j哥起狙→棋差一招→昏招频出→虽败犹荣 (x17)｜Donk加油啊！狠狠的杀。 (x6)｜亚洲剧情 (x6)｜优势局你给我玩好了啊 (x6)｜漂！漂！漂！漂！漂！漂！ (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:08</span><span class="timeline-text">天胡开局→士气高涨→j哥起狙→棋差一招→昏招频出→虽败犹荣 (x10)｜二线打三线没办法 (x8)｜Donk加油啊！狠狠的杀。 (x4)｜donk让bb来虐一虐就老实了 (x4)｜可惜天禄TOP50开外，最多+个基础RT (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:09</span><span class="timeline-text">谁在说话 (x16)｜让另外一个解说闭嘴吧 (x10)｜0个 (x6)｜0 (x4)｜ace 了 (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:10</span><span class="timeline-text">jee＞ponk (x8)｜业余 (x6)｜恭喜潇洒哥成功宫走mo (x6)｜mo? (x4)｜为了给donk刷rt天禄尽力了 (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:11</span><span class="timeline-text">jee＞ponk (x8)｜2分够荣了吧 (x4)｜乱枪打死老师傅 (x4)｜准 (x4)｜12~1 (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:12</span><span class="timeline-text">正义必胜 (x18)｜菊神 (x14)｜【这声音有点像前VG的潇洒哥啊】 (x12)｜除了这小菊 这4头就是猪 (x10)｜菜啊 (x8)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:13</span><span class="timeline-text">史上最菜TOP1，最菜majorMVP，步枪最臭的河，洞可 (x10)｜所有弱队只有tyloo是真的大比分输昨天，其它要么焦灼要么爆 (x8)｜刚来，donk今天吓哭云√了没？？ (x6)｜菜啊 (x6)｜刚来，donk今天吓哭云√了没？ (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:14</span><span class="timeline-text">刚来，请问donk开特了没 (x4)｜另一个是谁 (x4)｜莫思雨是人吗 (x4)｜默斯与又摊了，哈哈哈。 (x4)｜E两把起一把 (x2)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:15</span><span class="timeline-text">完了 (x21)｜史上最菜TOP1，最菜majorMVP，步枪最臭的河，洞可 (x14)｜坏了 (x10)｜正义必胜 (x10)｜ponk (x8)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:16</span><span class="timeline-text">坏了 (x775)｜完了 (x134)｜送狙战术 (x39)｜故意的 (x22)｜阳谋 (x18)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:17</span><span class="timeline-text">注意！季东凯先生拿狙了！ (x12)｜你看这狙有什么用啊！！！！！ (x6)｜拿狙走路都掉血 (x6)｜jee得到狙击枪就像niko得到了背身 (x4)｜pee (x4)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:18</span><span class="timeline-text">经典 (x14)｜这是好事啊 (x12)｜让他保 (x11)｜好事 (x10)｜shiro送狙这招太阴了 (x8)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:19</span><span class="timeline-text">天禄 (x116)｜你就看我j哥怎么狙吧 (x8)｜我去玩狙都能走两步 (x8)｜为什么所有人都知道jee狙不行 只有tyloo不知道 (x6)｜天禄被研究透了 (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:20</span><span class="timeline-text">马西西你说个实话，进攻狙是管理层要求打的，还是jee自己想打 (x24)｜开了 (x22)｜真的墨迹啊 (x8)｜mo要不开个变声器吧 (x6)｜也太紧张了哥哥们 (x6)</span></div>
+                <div class="timeline-item"><span class="timeline-time">16:21</span><span class="timeline-text">整天混日子进不去major了哈 (x4)｜jee就是出生 (x2)｜jee这头猪 (x2)｜mo变声期了吗 (x2)｜不知道的以为这是奶妈冰墙，原来是烟？ (x2)</span></div>
+            </div>
+        </details>
+    </div>
+    <!-- ==================== 8 队伍/人员画像 ==================== -->
+    <div class="card">
+        <h2><span class="no">8</span>队伍/人员画像 <span class="badge">带提及量</span></h2>
+        <div style="font-weight:600; font-size:14px; margin-bottom:8px;">队伍提及 TOP</div>
+        <div class="mention-list">
+            <div class="mention-item"><span class="name">Spirit</span><span class="count">39</span><span class="pos">正0</span><span class="neg">负8</span></div>
+            <div class="mention-item"><span class="name">BoomBoys</span><span class="count">28</span><span class="pos">正0</span><span class="neg">负4</span></div>
+            <div class="mention-item"><span class="name">FLC</span><span class="count">18</span><span class="pos">正0</span><span class="neg">负0</span></div>
+            <div class="mention-item"><span class="name">Vitality</span><span class="count">6</span><span class="pos">正0</span><span class="neg">负0</span></div>
+            <div class="mention-item"><span class="name">G2</span><span class="count">6</span><span class="pos">正0</span><span class="neg">负2</span></div>
+            <div class="mention-item"><span class="name">FURIA</span><span class="count">6</span><span class="pos">正0</span><span class="neg">负0</span></div>
+            <div class="mention-item"><span class="name">Navi</span><span class="count">4</span><span class="pos">正0</span><span class="neg">负0</span></div>
+            <div class="mention-item"><span class="name">NAVI</span><span class="count">4</span><span class="pos">正0</span><span class="neg">负0</span></div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-weight:600; font-size:14px; margin-bottom:8px;">选手提及 TOP</div>
+        <div class="mention-list">
+            <div class="mention-item"><span class="name">donk</span><span class="count">292</span><span class="pos">正5</span><span class="neg">负20</span></div>
+            <div class="mention-item"><span class="name">sh1ro</span><span class="count">20</span><span class="pos">正2</span><span class="neg">负2</span></div>
+            <div class="mention-item"><span class="name">Niko</span><span class="count">10</span><span class="pos">正0</span><span class="neg">负0</span></div>
+            <div class="mention-item"><span class="name">Zywoo</span><span class="count">10</span><span class="pos">正0</span><span class="neg">负0</span></div>
+            <div class="mention-item"><span class="name">Chovy</span><span class="count">4</span><span class="pos">正0</span><span class="neg">负0</span></div>
+        </div>
+        <details>
+            <summary>队伍特质统计（折叠）</summary>
+            <div class="details-content">
+                <div class="kv-list">
+                    <div class="row"><span class="k">被翻守不住</span><span class="v">11</span></div>
+                    <div class="row"><span class="k">心态摆烂</span><span class="v">5</span></div>
+                    <div class="row"><span class="k">打法风格</span><span class="v">294</span></div>
+                    <div class="row"><span class="k">选手特质</span><span class="v">9</span></div>
+                </div>
+                <div class="small-note" style="margin-top:8px;">以上为长期画像统计，非本局专属。</div>
+            </div>
+        </details>
+    </div>
+    <!-- ==================== 9 联赛规律与版本 ==================== -->
+    <div class="card">
+        <h2><span class="no">9</span>联赛规律与版本</h2>
+        <div class="kv-list">
+            <div class="row"><span class="k">当前版本</span><span class="v">CS2 2026-10 版本（具体待官方确认）</span></div>
+            <div class="row"><span class="k">联赛规律</span><span class="v">弹幕提及“亚洲剧情”“二线打三线没办法”等，反映观众对实力差距的认知</span></div>
+            <div class="row"><span class="k">版本影响</span><span class="v">样本不足，暂无法提炼有效版本规律</span></div>
+        </div>
+    </div>
+    <!-- ==================== 10 预测验证回填 ==================== -->
+    <div class="card">
+        <h2><span class="no">10</span>预测验证回填</h2>
+        <div class="kv-list">
+            <div class="row"><span class="k">前局预测</span><span class="v">无前局预测记录</span></div>
+            <div class="row"><span class="k">本局预测</span><span class="v">局中信号偏空，等待官方数据验证</span></div>
+            <div class="row"><span class="k">回填状态</span><span class="v">待官方数据回填后更新</span></div>
+        </div>
+    </div>
+    <!-- ==================== 11 数据与溯源 ==================== -->
+    <div class="card">
+        <h2><span class="no">11</span>数据与溯源</h2>
+        <div class="grid-2">
+            <div>
+                <div style="font-weight:600; font-size:14px; margin-bottom:8px;">实际数据源</div>
+                <div class="kv-list">
+                    <div class="row"><span class="k">规则层情报</span><span class="v">vps_intel/cs2-hupu-1441778164564991678_g3_mid_intel.json</span></div>
+                    <div class="row"><span class="k">弹幕切片</span><span class="v">intel_slices/cs2-hupu-1441778164564991678_g3_mid.jsonl</span></div>
+                    <div class="row"><span class="k">官方源</span><span class="v">HLTV-Liquipedia（待回填）</span></div>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight:600; font-size:14px; margin-bottom:8px;">预期数据源</div>
+                <div class="kv-list">
+                    <div class="row"><span class="k">官方小局状态</span><span class="v">HLTV-Liquipedia</span></div>
+                    <div class="row"><span class="k">阵容校准</span><span class="v">开局后1分钟校准</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-weight:600; font-size:14px; margin-bottom:8px;">缺口</div>
+        <div class="kv-list">
+            <div class="row"><span class="k">官方比分</span><span class="v">未回填，当前进度以弹幕口径为准</span></div>
+            <div class="row"><span class="k">本局阵容</span><span class="v">官方未同步，待回填</span></div>
+            <div class="row"><span class="k">盘口数据</span><span class="v">样本仅5条，不足</span></div>
+        </div>
+        <div class="small-note" style="margin-top:12px;">情报输出时间：2026-10-25 16:30 北京</div>
+        <div class="small-note">数据完整性：缺源不交付完整结论，当前结论仅基于弹幕样本。</div>
+    </div>
+    <!-- ==================== 长期沉淀点 ==================== -->
+    <div class="card" style="background: #fafafa;">
+        <h2 style="font-size:16px;"><span class="no" style="background:#6e6e73;">★</span>本场长期沉淀点</h2>
+        <div class="kv-list">
+            <div class="row"><span class="k">沉淀1</span><span class="v">donk负向提及占比高（负20/正5），需持续跟踪其状态与舆论风向。</span></div>
+            <div class="row"><span class="k">沉淀2</span><span class="v">“天胡开局→虽败犹荣”剧本梗成为本场高频共识，可作为后续情绪指标。</span></div>
+            <div class="row"><span class="k">沉淀3</span><span class="v">灰信号“送狙战术”集中出现，若后续官方数据证实，可纳入战术质疑库。</span></div>
+        </div>
+    </div>
+    <div class="footer-note">
+        局中·非终局，结果待定 · 数据来源：弹幕切片 + 规则层统计 · 情报输出时间：2026-10-25 16:30 北京
+    </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
