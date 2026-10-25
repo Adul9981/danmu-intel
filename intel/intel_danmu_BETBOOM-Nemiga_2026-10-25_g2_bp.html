@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · BETBOOM vs Nemiga · G2</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --sub: #6e6e73;
+    --muted: #8e8e93;
+    --line: #e5e5ea;
+    --soft: #f8f8fa;
+    --accent: #0071e3;
+    --accent-soft: #eaf3ff;
+    --warn: #9a6700;
+    --warn-soft: #fff8e7;
+    --risk: #b42318;
+    --risk-soft: #fff1f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.62;
+    padding: 24px 12px 56px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; }
+  .hero, .card {
+    background: var(--card);
+    border-radius: 18px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+  }
+  .hero { padding: 26px 28px 22px; }
+  .eyebrow { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+  .badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .b-live { background: var(--risk-soft); color: var(--risk); }
+  .b-accent { background: var(--accent-soft); color: var(--accent); }
+  .b-gap { background: var(--warn-soft); color: var(--warn); }
+  h1 { font-size: 28px; line-height: 1.22; letter-spacing: -.5px; }
+  .subtitle { color: var(--sub); font-size: 13px; margin-top: 7px; }
+  .status-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 16px;
+    border: 1px solid #f1d3ce;
+    background: var(--risk-soft);
+    border-radius: 13px;
+    padding: 11px 14px;
+    color: #6f261f;
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .status-alert .dot {
+    flex: 0 0 8px;
+    height: 8px;
+    margin-top: 7px;
+    border-radius: 50%;
+    background: var(--risk);
+  }
+  .status-detail {
+    display: block;
+    margin-top: 2px;
+    color: #87534d;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .meta-item {
+    min-width: 0;
+    background: var(--soft);
+    border-radius: 11px;
+    padding: 9px 11px;
+  }
+  .meta-item .k { color: var(--muted); font-size: 10.5px; }
+  .meta-item .v {
+    font-size: 12.5px;
+    font-weight: 650;
+    margin-top: 2px;
+    overflow-wrap: anywhere;
+  }
+  .card { padding: 20px 22px; margin: 13px 0; }
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  h2 .no {
+    flex: 0 0 23px;
+    height: 23px;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  h3 { font-size: 13px; margin: 0 0 7px; }
+  p { font-size: 13px; }
+  .note { color: var(--sub); font-size: 12px; margin-top: 6px; }
+  .source {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: #f1f3f6;
+    color: #55555a;
+    font-size: 10.5px;
+    font-weight: 650;
+  }
+  .empty, .evidence, .system, .direction-block {
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .empty {
+    background: var(--soft);
+    border: 1px solid var(--line);
+  }
+  .empty strong, .evidence strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .evidence {
+    background: #f5f9ff;
+    border: 1px solid #cbdff4;
+  }
+  .system {
+    border: 1px solid #dbe5f5;
+    background: #f5f9ff;
+    font-size: 12.5px;
+  }
+  .system-row {
+    display: grid;
+    grid-template-columns: 156px minmax(0, 1fr);
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed #dce5f2;
+  }
+  .system-row:last-child { border-bottom: 0; }
+  .system-row b { color: #39536f; }
+  .direction-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .direction-block {
+    min-width: 0;
+    border: 1px solid var(--line);
+    background: var(--soft);
+  }
+  .direction-block .label {
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 750;
+    margin-bottom: 4px;
+  }
+  .direction-block strong { font-size: 14px; }
+  .direction-block dl {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 2px 7px;
+    margin-top: 8px;
+    font-size: 11.5px;
+  }
+  .direction-block dt { color: var(--muted); }
+  .direction-block dd { color: #4f4f54; }
+  .source-gap, .discipline {
+    margin-top: 10px;
+    border-radius: 0 10px 10px 0;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  .source-gap {
+    border-left: 3px solid var(--warn);
+    background: var(--warn-soft);
+    color: #70451e;
+  }
+  .discipline {
+    border-left: 3px solid var(--risk);
+    background: var(--risk-soft);
+    color: #6d302b;
+  }
+  .footer {
+    color: var(--sub);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 17px;
+    padding: 0 12px;
+  }
+  .footer code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #55555a;
+  }
+  @media (max-width: 700px) {
+    body { padding: 14px 8px 40px; }
+    .hero { padding: 20px 18px; border-radius: 16px; }
+    h1 { font-size: 23px; }
+    .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { padding: 17px 16px; }
+    .direction-grid { grid-template-columns: 1fr; }
+    .system-row { grid-template-columns: 1fr; gap: 2px; }
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">BETBOOM-Nemiga 2026-10-25 g2 bp</b></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">
+      <span class="badge b-live">局中·非终局，结果待定</span>
+      <span class="badge b-accent">G2｜BP 后/开局｜EARLY-GAME</span>
+      <span class="badge b-gap">样本不足</span>
+    </div>
+    <h1>BETBOOM vs Nemiga</h1>
+    <p class="subtitle">CS2 · PGL 大师赛 布加勒斯特 · 局中弹幕情报快照（G2） · 2026-10-25</p>
+    <div class="status-alert">
+      <span class="dot" aria-hidden="true"></span>
+      <span>
+        局中·非终局，结果待定
+        <span class="status-detail">进度以弹幕口径为准：本节点有效弹幕 0 条，暂无法独立确认本小局比分、地图、回合数或阶段推进；任务上下文节点为 G2 BP 后/开局。</span>
+      </span>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="k">联赛与赛段</div>
+        <div class="v">CS2 · PGL 大师赛 布加勒斯特</div>
+      </div>
+      <div class="meta-item">
+        <div class="k">节点</div>
+        <div class="v">G2 · BP 后/开局</div>
+      </div>
+      <div class="meta-item">
+        <div class="k">数据窗口</div>
+        <div class="v">未形成有效窗口（等待首条弹幕）</div>
+      </div>
+      <div class="meta-item">
+        <div class="k">弹幕采集截止</div>
+        <div class="v">19:45（北京）</div>
+        <div class="note">规则层 0 条 / 0 人</div>
+      </div>
+    </div>
+  </header>
+  <section class="card">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <div class="evidence">
+      <strong>地图与阵容：样本不足</strong>
+      BETBOOM 与 Nemiga 本小局均未形成可核验的地图、首发或选手英雄/角色讨论；不根据 G1 或历史信息补写 G2 阵容。阵容若后续出现，仍须标注“弹幕口径·待官方”。
+      <span class="source">证据来源：本场弹幕 0 条 · 样本不足 · 弹幕口径·待官方</span>
+    </div>
+    <p class="note"><b>BP 后战绩情报：</b>无战绩情报提及。当前没有“队伍×地图”或“选手×英雄/角色”的历史战绩、胜率及熟练度依据。</p>
+    <p class="note"><b>BP 锚点：</b>样本不足，暂不形成正锚或负锚。未出现可验证的地图池、选图权、阵容强弱或对位评价。</p>
+    <div class="source-gap">
+      <b>来源缺口：</b>指定规则层 JSON 为 <code>total=0</code>、<code>sample_status=insufficient</code>；指定切片为 0 行。核心情报必须来自本场弹幕，因此不引用前局内容冒充 G2 事实。
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <div class="system" data-system-injected="true">
+      <div class="system-row">
+        <b>两队胜率（弹幕口径·非结论）</b>
+        <span>样本不足：BETBOOM 0 条 / Nemiga 0 条，合计 0 条，低于 10 条阈值，暂不给出胜率。</span>
+      </div>
+      <div class="system-row">
+        <b>当前进度</b>
+        <span>任务上下文为 G2 BP 后/开局；弹幕样本不足以独立确认比分、回合数或阶段推进。</span>
+      </div>
+      <div class="system-row">
+        <b>队员评分（虎扑）</b>
+        <span>暂未获取到本局选手评分；评分数据源当前无可用结果。</span>
+      </div>
+      <div class="system-row">
+        <b>系统状态</b>
+        <span>本段仅展示规则层注入结果，不加入额外模型判断。</span>
+      </div>
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">3</span>方向性情报板</h2>
+    <div class="direction-grid">
+      <div class="direction-block">
+        <div class="label">正锚点 · 看好谁赢</div>
+        <strong>今日无锚点</strong>
+        <dl>
+          <dt>对象</dt><dd>无</dd>
+          <dt>依据</dt><dd>本场弹幕 0 条，无看好表述</dd>
+          <dt>时间</dt><dd>截至 19:45（北京）</dd>
+          <dt>验证</dt><dd>待更多样本；当前不判定</dd>
+        </dl>
+        <span class="source">证据来源：本场弹幕 · 样本不足 · 单源待验证</span>
+      </div>
+      <div class="direction-block">
+        <div class="label">负锚点 · 看衰谁输</div>
+        <strong>今日无锚点</strong>
+        <dl>
+          <dt>对象</dt><dd>无</dd>
+          <dt>依据</dt><dd>本场弹幕 0 条，无看衰表述</dd>
+          <dt>时间</dt><dd>截至 19:45（北京）</dd>
+          <dt>验证</dt><dd>待更多样本；不作败方推断</dd>
+        </dl>
+        <span class="source">证据来源：本场弹幕 · 样本不足 · 单源待验证</span>
+      </div>
+      <div class="direction-block">
+        <div class="label">群体共识</div>
+        <strong>共识不足</strong>
+        <dl>
+          <dt>样本量</dt><dd>0 条 / 0 名活跃用户 / 0 条·分</dd>
+          <dt>共识</dt><dd>无法形成多数派</dd>
+          <dt>分歧</dt><dd>无法判定</dd>
+          <dt>叙事</dt><dd><code>narrative</code> 无共识、时间线与转折点</dd>
+        </dl>
+        <span class="source">证据来源：本场弹幕 · 样本不足</span>
+      </div>
+      <div class="direction-block">
+        <div class="label">灰信号条件预测</div>
+        <strong>今日无灰信号</strong>
+        <dl>
+          <dt>对象</dt><dd>无</dd>
+          <dt>条件</dt><dd>无可验证质疑条件</dd>
+          <dt>方向</dt><dd>不指向 BETBOOM 或 Nemiga</dd>
+          <dt>验证</dt><dd>当前不判定</dd>
+        </dl>
+        <span class="source">证据来源：本场弹幕 0 条 · gray_signals.count=0</span>
+      </div>
+    </div>
+    <div class="discipline">
+      中性弹幕二次判定：<code>neutral_salvage</code> 候选 0 条，没有可逐条复核对象；本节点不套用情绪，也不生成推测性方向。
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="empty">
+      <strong>今日无灰信号（样本不足，不等于确认无风险）</strong>
+      当前可审计窗口未形成假赛、剧本、卡盘或故意送类质疑条目，无法指出 BETBOOM、Nemiga、选手或市场的风险对象。
+      <span class="source">证据来源：本场弹幕 0 条 · gray_signals.count=0 · 风险等级：不适用</span>
+    </div>
+    <p class="note"><b>指向对象：</b>无。<b>条件方向：</b>不生成。<b>市场含义：</b>不作盘口推断或交易建议。</p>
+    <div class="discipline">
+      纪律：灰信号只作风险标注与盘口对照。后续若出现相关质疑，必须逐条标注“观众质疑，非结论”、指向对象与风险等级，禁止写成实锤。
+    </div>
+  </section>
+  <footer class="footer">
+    BETBOOM vs Nemiga · G2 局中快照 · 局中·非终局，结果待定 · slug: <code>cs2-hupu-1441778164564995314</code>
+    <br>
+    溯源：规则层 <code>runtime/vps_intel/cs2-hupu-1441778164564995314_g2_bp_intel.json</code>；弹幕切片 <code>data/intel_slices/cs2-hupu-1441778164564995314_g2_bp.jsonl</code>（0 行）。
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
