@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · G2 vs NaVi · 第2小局（局末/局间）</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --accent: #0071e3;
+    --accent-soft: #e8f0fe;
+    --border: #d2d2d7;
+    --risk: #d70015;
+    --risk-bg: #fff0f0;
+    --anchor: #0071e3;
+    --anchor-bg: #eef4ff;
+    --gray: #86868b;
+    --gray-bg: #f2f2f4;
+    --positive: #1a7f37;
+    --positive-bg: #eaf7ee;
+    --warning: #b25000;
+    --warning-bg: #fff4e5;
+    --radius: 14px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding: 24px 16px 60px;
+  }
+  .container { max-width: 980px; margin: 0 auto; }
+  /* Header */
+  .page-header {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .page-header .badge-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+  }
+  .badge-live { background: var(--warning-bg); color: var(--warning); }
+  .badge-pending { background: var(--gray-bg); color: var(--gray); }
+  .badge-accent { background: var(--accent-soft); color: var(--accent); }
+  .page-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .page-header .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .page-header .meta-line {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex; flex-wrap: wrap; gap: 16px;
+  }
+  .page-header .meta-line span { white-space: nowrap; }
+  /* Section */
+  section {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+    margin-bottom: 18px;
+  }
+  h2 {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 18px 0 10px;
+    color: var(--text);
+  }
+  h3:first-of-type { margin-top: 0; }
+  p { font-size: 14px; margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+  .muted { color: var(--text-secondary); font-size: 13px; }
+  .small { font-size: 12px; }
+  /* Cards / grids */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    section { padding: 18px 16px; }
+    .page-header { padding: 20px 18px; }
+  }
+  .mini-card {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+  .mini-card .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .mini-card .value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .mini-card .value.big { font-size: 22px; letter-spacing: -0.02em; }
+  /* Signal list */
+  .signal-list { list-style: none; }
+  .signal-list li {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    align-items: flex-start;
+  }
+  .signal-list li:last-child { border-bottom: none; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tag-risk { background: var(--risk-bg); color: var(--risk); }
+  .tag-anchor { background: var(--anchor-bg); color: var(--anchor); }
+  .tag-market { background: var(--warning-bg); color: var(--warning); }
+  .tag-consensus { background: var(--positive-bg); color: var(--positive); }
+  .tag-gray { background: var(--gray-bg); color: var(--gray); }
+  .tag-info { background: var(--accent-soft); color: var(--accent); }
+  .signal-list .src {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  /* Decision box */
+  .decision-box {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .decision-box .tag { margin-right: 6px; }
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  th, td {
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    background: var(--bg);
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* Details */
+  details {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+  details summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    list-style: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before {
+    content: "▸";
+    font-size: 11px;
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details .details-body {
+    padding: 0 16px 16px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  details .details-body p { font-size: 13px; }
+  /* Danmu quote */
+  .danmu-quote {
+    background: #fff;
+    border-left: 3px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 6px 0;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .danmu-quote .ts {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    margin-right: 8px;
+  }
+  .danmu-quote .user {
+    font-weight: 600;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+  /* Timeline */
+  .timeline { list-style: none; position: relative; padding-left: 20px; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 5px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+  .timeline li {
+    position: relative;
+    padding: 6px 0 6px 4px;
+    font-size: 13px;
+  }
+  .timeline li::before {
+    content: "";
+    position: absolute;
+    left: -19px; top: 12px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--card);
+  }
+  .timeline .t-ts {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  /* Integrity 3-col */
+  .integrity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 720px) { .integrity-grid { grid-template-columns: 1fr; } }
+  .integrity-col {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+  .integrity-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .integrity-col ul { list-style: none; font-size: 13px; }
+  .integrity-col ul li { padding: 3px 0; }
+  .integrity-col ul li::before { content: "· "; color: var(--gray); }
+  /* Footer */
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .pill {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .pill strong { color: var(--text); }
+  .callout {
+    background: var(--warning-bg);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--warning);
+    margin: 12px 0;
+    border-left: 3px solid var(--warning);
+  }
+  .callout-gray {
+    background: var(--gray-bg);
+    border-left-color: var(--gray);
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2-NaVi 2026-10-24 g2 end</b></div>
+<div class="container">
+  <!-- ============ PAGE HEADER ============ -->
+  <header class="page-header">
+    <div class="badge-row">
+      <span class="badge badge-live">局中 · 非终局</span>
+      <span class="badge badge-pending">结果待定 · 官方待回填</span>
+      <span class="badge badge-accent">GAME-REVIEW · 第2小局</span>
+    </div>
+    <h1>G2 vs NaVi · 第2小局 局中弹幕情报快照</h1>
+    <div class="subtitle">CS2 · 2026-10-24 · slug=cs2-hupu-1441778164564991678 · 节点=G2｜局末/局间</div>
+    <div class="meta-line">
+      <span>📅 比赛日期：2026-10-24</span>
+      <span>🕒 情报输出：北京时间 2026-10-25 15:50</span>
+      <span>📊 弹幕口径：1 条 / 1 活跃用户 / 密度 1.0 条/分</span>
+    </div>
+  </header>
+  <!-- ============ 0 核心情报速览 ============ -->
+  <section>
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="mini-card" style="margin-bottom:16px;">
+      <div class="label">比分 / 进度（弹幕口径 · 官方待回填）</div>
+      <div class="value big">第2小局 · 局末/局间 · 结果待官方核对</div>
+      <div class="muted small" style="margin-top:4px;">弹幕样本仅 1 条，无法从弹幕推断比分；本页所有结论均标注来源层级。</div>
+    </div>
+    <h3>TOP 信号（风险 → 锚点 → 盘口 → 共识）</h3>
+    <ul class="signal-list">
+      <li>
+        <span class="tag tag-risk">风险</span>
+        <span>弹幕样本量极低（仅1条），情报置信度受限，任何方向性结论均需谨慎。<span class="src">→ 详 §2 / §11</span></span>
+      </li>
+      <li>
+        <span class="tag tag-anchor">锚点</span>
+        <span>唯一弹幕提及 yekindar，指向选手个人表现讨论，非战术/盘口信号。<span class="src">→ 详 §3 / §8</span></span>
+      </li>
+      <li>
+        <span class="tag tag-market">盘口</span>
+        <span>本节点无盘口讨论样本，市场信号缺失，不硬造。<span class="src">→ 详 §4</span></span>
+      </li>
+      <li>
+        <span class="tag tag-consensus">共识</span>
+        <span>样本不足，无法形成有效群体共识，今日无共识信号。<span class="src">→ 详 §5</span></span>
+      </li>
+    </ul>
+    <div class="decision-box">
+      <span class="tag tag-info">决策落点</span>
+      样本不足，本节点不产出方向性 LONG/SHORT 建议；仅记录 yekindar 选手讨论为待观察锚点，等待后续局弹幕放量后再校准。
+    </div>
+  </section>
+  <!-- ============ 1 比赛信息与结果总览 ============ -->
+  <section>
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="callout">
+      ⚠️ 本页为「局中·非终局」快照，第2小局结果待官方核对，比分与胜负均未确认。
+    </div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <div class="label">比赛</div>
+        <div class="value">G2 vs NaVi</div>
+        <div class="muted small">CS2 · 2026-10-24</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">当前小局</div>
+        <div class="value">第 2 小局 · 局末/局间</div>
+        <div class="muted small">节点：GAME-REVIEW</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">结果状态</div>
+        <div class="value" style="color:var(--warning);">待官方核对</div>
+        <div class="muted small">弹幕口径，非终局</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">数据源</div>
+        <div class="value">HLTV-Liquipedia</div>
+        <div class="muted small">官方源待回填</div>
+      </div>
+    </div>
+    <h3>状态核验清单</h3>
+    <table>
+      <thead>
+        <tr><th>核验项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>小局是否结束</td><td>待确认</td><td>按时间窗估计已结束，局末·待结算校准</td></tr>
+        <tr><td>比分是否确认</td><td>否</td><td>禁止从弹幕推断比分，等待官方回填</td></tr>
+        <tr><td>BP/阵容是否确认</td><td>待回填</td><td>官方源 HLTV-Liquipedia 待同步</td></tr>
+        <tr><td>弹幕样本量</td><td>1 条</td><td>密度 1.0 条/分，样本不足</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <!-- ============ 2 灰信号汇总 ============ -->
+  <section>
+    <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <p class="muted">灰信号词表统计：演员 / 演 / 明演 / 菠菜 / 收米 / 剧本 / 假赛 / 322 / 送人头 / 买了 / 故意送 —— 本节点弹幕样本中<b>命中 0 条</b>（基于词表扫描，非印象判断）。</p>
+    <div class="callout callout-gray">
+      观众质疑，非结论。本节点无灰信号样本，不代表比赛无异常，仅代表弹幕未提及。
+    </div>
+    <h3>灰信号词表扫描结果</h3>
+    <table>
+      <thead>
+        <tr><th>词类</th><th>命中条数</th><th>样本</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>演员 / 演 / 明演</td><td class="num">0</td><td>—</td></tr>
+        <tr><td>菠菜 / 收米 / 盘口操纵</td><td class="num">0</td><td>—</td></tr>
+        <tr><td>剧本 / 假赛 / 322</td><td class="num">0</td><td>—</td></tr>
+        <tr><td>送人头 / 买了 / 故意送</td><td class="num">0</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>灰信号原始弹幕摘录（折叠 · 本节点全量 1 条）</summary>
+      <div class="details-body">
+        <div class="danmu-quote">
+          <span class="ts">10-25 15:43 北京</span>
+          <span class="user">马总</span>
+          能谈谈yekindar不
+        </div>
+        <p class="muted small">该条弹幕为选手讨论请求，未命中任何灰信号词表，不计入灰信号。</p>
+      </div>
+    </details>
+  </section>
+  <!-- ============ 3 BP 锚点与选人情报 ============ -->
+  <section>
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <p class="muted">本节点弹幕样本中<b>无 BP/选人相关讨论</b>，官方 BP 数据待 HLTV-Liquipedia 回填。以下为占位结构，待官方数据同步后填充。</p>
+    <div class="grid-2">
+      <div class="mini-card">
+        <div class="label">G2 本局阵容</div>
+        <div class="value" style="color:var(--gray);">待官方回填</div>
+        <div class="muted small">英雄+选手，无弹幕样本</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">NaVi 本局阵容</div>
+        <div class="value" style="color:var(--gray);">待官方回填</div>
+        <div class="muted small">英雄+选手，无弹幕样本</div>
+      </div>
+    </div>
+    <h3>BP 后战绩情报</h3>
+    <p class="muted">无战绩情报提及。</p>
+    <h3>选人锚点（弹幕口径）</h3>
+    <p>唯一弹幕提及选手 <b>yekindar</b>，但为泛化讨论请求（“能谈谈yekindar不”），未涉及本局具体选人/英雄/位置，不构成选人锚点。</p>
+    <details>
+      <summary>BP/选人相关弹幕原文（折叠 · 本节点全量）</summary>
+      <div class="details-body">
+        <div class="danmu-quote">
+          <span class="ts">10-25 15:43 北京</span>
+          <span class="user">马总</span>
+          能谈谈yekindar不
+        </div>
+        <p class="muted small">该条弹幕为选手个人讨论请求，非 BP 锚点，仅记录为人员画像触发信号。</p>
+      </div>
+    </details>
+  </section>
+  <!-- ============ 4 盘口与市场讨论 ============ -->
+  <section>
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p class="muted">本节点弹幕样本中<b>无盘口/市场相关讨论</b>，无让分、大小分、胜负盘口提及。</p>
+    <div class="callout callout-gray">
+      盘口信号缺失，不硬造。市场讨论需等待后续局弹幕放量或官方盘口数据源接入。
+    </div>
+    <table>
+      <thead>
+        <tr><th>盘口类型</th><th>弹幕提及</th><th>状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>胜负盘</td><td class="num">0</td><td>无样本</td></tr>
+        <tr><td>让分盘</td><td class="num">0</td><td>无样本</td></tr>
+        <tr><td>大小分</td><td class="num">0</td><td>无样本</td></tr>
+        <tr><td>选手数据盘</td><td class="num">0</td><td>无样本</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <!-- ============ 5 方向性情报板 ============ -->
+  <section>
+    <h2><span class="no">5</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <div class="grid-2">
+      <div class="mini-card">
+        <div class="label">正锚（利好信号）</div>
+        <div class="value" style="color:var(--gray);">今日无正锚</div>
+        <div class="muted small">样本不足，无有效利好信号</div>
+      </div>
+      <div class="mini-card">
+        <div class="label">负锚（利空信号）</div>
+        <div class="value" style="color:var(--gray);">今日无负锚</div>
+        <div class="muted small">样本不足，无有效利空信号</div>
+      </div>
+    </div>
+    <h3>群体共识</h3>
+    <p class="muted">样本不足（1 条），无法形成群体共识。分歧与样本量均不满足提炼门槛（≥5 行带量）。</p>
+    <h3>灰信号条件预测</h3>
+    <p class="muted">今日无灰信号条件预测（灰信号命中 0 条，无触发条件）。</p>
+    <h3>方向性结论</h3>
+    <div class="callout callout-gray">
+      样本不足，本节点不产出方向性 LONG/SHORT 建议。等待后续局弹幕放量后重新评估。
+    </div>
+  </section>
+  <!-- ============ 6 情报含义与决策落点 ============ -->
+  <section>
+    <h2><span class="no">6</span>情报含义与决策落点（LONG / SHORT）</h2>
+    <table>
+      <thead>
+        <tr><th>决策类型</th><th>结论</th><th>依据</th><th>置信度</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>LONG（看多）</td>
+          <td>不适用</td>
+          <td>无正锚、无共识、无盘口信号</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>SHORT（看空）</td>
+          <td>不适用</td>
+          <td>无负锚、无灰信号、无盘口信号</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>观望（HOLD）</td>
+          <td>建议观望</td>
+          <td>样本不足，等待后续局弹幕放量</td>
+          <td>低</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="decision-box">
+      <span class="tag tag-info">决策落点</span>
+      本节点唯一可执行落点为「观望」：不基于 1 条弹幕样本做任何方向性判断；将 yekindar 选手讨论记录为待观察锚点，后续局若弹幕放量再校准。
+    </div>
+  </section>
+  <!-- ============ 7 逐局复盘 ============ -->
+  <section>
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>第 2 小局 · 已发生片段</h3>
+    <p class="muted">按时间窗估计本小局已结束（局末·待结算校准），但官方结果待核对。以下为弹幕口径时间线。</p>
+    <ul class="timeline">
+      <li>
+        <span class="t-ts">10-25 15:43 北京</span>
+        弹幕「马总」提问：能谈谈yekindar不 —— 选手个人讨论请求，非战术/盘口信号。
+      </li>
+      <li>
+        <span class="t-ts">局末/局间</span>
+        本节点弹幕样本仅 1 条，无其他时间线事件可记录。
+      </li>
+    </ul>
+    <h3>未发生片段</h3>
+    <p class="muted">待观察：第 3 小局及后续局弹幕放量情况、官方比分回填、BP 数据同步。</p>
+    <details>
+      <summary>G2 完整弹幕时间线（折叠 · 本节点全量 1 条）</summary>
+      <div class="details-body">
+        <ul class="timeline">
+          <li>
+            <span class="t-ts">10-25 15:43 北京</span>
+            <div class="danmu-quote" style="margin-top:4px;">
+              <span class="user">马总</span> 能谈谈yekindar不
+            </div>
+          </li>
+        </ul>
+        <p class="muted small">本节点时间窗内全量弹幕样本 1 条，无遗漏。</p>
+      </div>
+    </details>
+    <h3>密度时间线</h3>
+    <table>
+      <thead>
+        <tr><th>时间（北京）</th><th>弹幕条数</th><th>密度（条/分）</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>10-25 15:43</td><td class="num">1</td><td class="num">1.0</td><td>唯一有弹幕分钟段</td></tr>
+        <tr><td>其他分钟段</td><td class="num">0</td><td class="num">0.0</td><td>无样本</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <!-- ============ 8 队伍/人员画像 ============ -->
+  <section>
+    <h2><span class="no">8</span>队伍 / 人员画像（带提及量）</h2>
+    <h3>本节点提及统计</h3>
+    <table>
+      <thead>
+        <tr><th>对象</th><th>类型</th><th>提及量</th><th>样本</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>yekindar</td><td>选手</td><td class="num">1</td><td>「能谈谈yekindar不」</td></tr>
+        <tr><td>G2</td><td>队伍</td><td class="num">0</td><td>—</td></tr>
+        <tr><td>NaVi</td><td>队伍</td><td class="num">0</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <h3>yekindar 画像（长期库 · 带提及量）</h3>
+    <p class="muted">长期库提及量：本节点 1 条（样本不足，仅记录触发）。以下为通用画像占位，待长期库数据接入后填充。</p>
+    <details>
+      <summary>yekindar 长画像（折叠 · 长期库待接入）</summary>
+      <div class="details-body">
+        <p><b>选手：</b>yekindar</p>
+        <p><b>本节点提及量：</b>1 条（弹幕「马总」提问）</p>
+        <p><b>长期库提及量：</b>待接入（当前无长期库数据源）</p>
+        <p><b>画像状态：</b>样本不足，不硬造。等待后续局弹幕放量或长期库数据接入后补全。</p>
+        <p class="muted small">注：本节点唯一弹幕为泛化讨论请求，未涉及具体表现/数据/战术，不构成有效画像信号。</p>
+      </div>
+    </details>
+    <h3>队伍画像</h3>
+    <p class="muted">G2 / NaVi 本节点均无弹幕提及，队伍画像样本不足。</p>
+  </section>
+  <!-- ============ 9 联赛规律与版本 ============ -->
+  <section>
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <p class="muted">本节点弹幕样本中<b>无联赛规律/版本相关讨论</b>。以下为占位结构，待后续样本放量后填充。</p>
+    <table>
+      <thead>
+        <tr><th>维度</th><th>弹幕提及</th><th>状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>版本强势英雄/地图</td><td class="num">0</td><td>无样本</td></tr>
+        <tr><td>联赛历史交锋规律</td><td class="num">0</td><td>无样本</td></tr>
+        <tr><td>赛程/背靠背影响</td><td class="num">0</td><td>无样本</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-gray">
+      样本不足，不硬造联赛规律结论。等待后续局弹幕放量后重新评估。
+    </div>
+  </section>
+  <!-- ============ 10 预测验证回填 ============ -->
+  <section>
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <p class="muted">本节点为局中快照，尚无历史预测可回填。以下为回填结构占位。</p>
+    <table>
+      <thead>
+        <tr><th>预测项</th><th>预测内容</th><th>实际结果</th><th>验证状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>第2小局胜负</td><td>—</td><td>待官方回填</td><td>待验证</td></tr>
+        <tr><td>方向性 LONG/SHORT</td><td>本节点不产出</td><td>—</td><td>不适用</td></tr>
+        <tr><td>灰信号条件预测</td><td>今日无</td><td>—</td><td>不适用</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-gray">
+      预测验证需等待官方结果回填后执行，本节点不产出可验证预测。
+    </div>
+  </section>
+  <!-- ============ 11 数据与溯源 ============ -->
+  <section>
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性三栏</h3>
+    <div class="integrity-grid">
+      <div class="integrity-col">
+        <h4>实际数据源</h4>
+        <ul>
+          <li>规则层情报 JSON（已读取）</li>
+          <li>弹幕切片 JSONL（1 条）</li>
+          <li>本节点弹幕样本（真实时间戳）</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <h4>预期数据源</h4>
+        <ul>
+          <li>HLTV-Liquipedia 官方 BP/比分</li>
+          <li>Riot 小局状态（CS2 不适用）</li>
+          <li>长期库选手画像</li>
+          <li>盘口数据源</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <h4>缺口</h4>
+        <ul>
+          <li>官方比分未回填</li>
+          <li>BP/阵容未同步</li>
+          <li>长期库画像未接入</li>
+          <li>盘口数据缺失</li>
+          <li>弹幕样本量极低（1 条）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      ⚠️ 缺源不交付完整结论。本页所有方向性结论均标注「样本不足」，等待官方数据回填与弹幕放量后重新评估。
+    </div>
+    <h3>情报来源分层</h3>
+    <table>
+      <thead>
+        <tr><th>结论</th><th>来源标签</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>yekindar 选手讨论</td><td>本场弹幕</td><td>10-25 15:43 北京，1 条</td></tr>
+        <tr><td>灰信号 0 条</td><td>本场弹幕（词表扫描）</td><td>词表命中 0 条</td></tr>
+        <tr><td>比分/结果待定</td><td>官方源待回填</td><td>HLTV-Liquipedia 未同步</td></tr>
+        <tr><td>方向性结论不产出</td><td>推测·待验证</td><td>样本不足，显式标注</td></tr>
+      </tbody>
+    </table>
+    <h3>关键信息 TOP（5-7 条）</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-risk">风险</span> 弹幕样本仅 1 条，情报置信度极低。<span class="src">来源：本场弹幕 / 置信：高（事实）</span></li>
+      <li><span class="tag tag-anchor">锚点</span> 唯一弹幕提及 yekindar，为选手讨论请求。<span class="src">来源：本场弹幕 / 置信：高（事实）</span></li>
+      <li><span class="tag tag-gray">灰信号</span> 词表扫描命中 0 条，无灰信号样本。<span class="src">来源：本场弹幕 / 置信：高（事实）</span></li>
+      <li><span class="tag tag-market">盘口</span> 无盘口讨论样本，市场信号缺失。<span class="src">来源：本场弹幕 / 置信：高（事实）</span></li>
+      <li><span class="tag tag-consensus">共识</span> 样本不足，无法形成群体共识。<span class="src">来源：本场弹幕 / 置信：高（事实）</span></li>
+      <li><span class="tag tag-info">状态</span> 第2小局结果待官方核对，非终局。<span class="src">来源：官方源待回填 / 置信：高</span></li>
+      <li><span class="tag tag-info">决策</span> 本节点建议观望，不产出 LONG/SHORT。<span class="src">来源：推测·待验证 / 置信：低</span></li>
+    </ul>
+    <h3>弹幕共识提炼表</h3>
+    <table>
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数</th><th>关键样本</th><th>多源状态</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>yekindar 选手讨论</td>
+          <td>中性（讨论请求）</td>
+          <td class="num">1</td>
+          <td>「能谈谈yekindar不」</td>
+          <td>单源（本场弹幕），无背离</td>
+        </tr>
+        <tr>
+          <td>BP/阵容</td>
+          <td>无</td>
+          <td class="num">0</td>
+          <td>—</td>
+          <td>无样本</td>
+        </tr>
+        <tr>
+          <td>盘口/市场</td>
+          <td>无</td>
+          <td class="num">0</td>
+          <td>—</td>
+          <td>无样本</td>
+        </tr>
+        <tr>
+          <td>灰信号</td>
+          <td>无</td>
+          <td class="num">0</td>
+          <td>—</td>
+          <td>词表扫描 0 命中</td>
+        </tr>
+        <tr>
+          <td>联赛规律/版本</td>
+          <td>无</td>
+          <td class="num">0</td>
+          <td>—</td>
+          <td>无样本</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted small">共识→信号链：样本不足，无法形成同向强信号或背离分歧信号；当前为共识盲区。</p>
+    <h3>本场长期沉淀点</h3>
+    <p>yekindar 选手讨论触发 1 条弹幕，可作为后续局人员画像的观察锚点；但样本量极低，需等待弹幕放量后验证是否为持续关注点。</p>
+    <h3>情报输出时间</h3>
+    <p class="muted">北京时间 2026-10-25 15:50（UTC+8）</p>
+    <details>
+      <summary>完整弹幕样本与溯源（折叠 · 本节点全量）</summary>
+      <div class="details-body">
+        <div class="danmu-quote">
+          <span class="ts">10-25 15:43 北京</span>
+          <span class="user">马总</span>
+          能谈谈yekindar不
+        </div>
+        <p class="muted small">来源：/opt/danmu-intel/data/intel_slices/cs2-hupu-1441778164564991678_g2_end.jsonl</p>
+        <p class="muted small">规则层：/opt/danmu-intel/runtime/vps_intel/cs2-hupu-1441778164564991678_g2_end_intel.json</p>
+        <p class="muted small">弹幕总数=1，活跃用户=1，密度=1.0 条/分。</p>
+      </div>
+    </details>
+  </section>
+  <div class="footer-note">
+    局中弹幕情报快照 · G2 vs NaVi 第2小局 · 非终局 · 结果待官方回填 · 情报输出北京时间 2026-10-25 15:50
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
