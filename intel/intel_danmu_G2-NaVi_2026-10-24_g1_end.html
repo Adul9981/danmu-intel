@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · G2 vs NaVi · G1｜局末/局间</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: #1d1d1f;
+    line-height: 1.6;
+    padding: 24px 16px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1080px; margin: 0 auto; }
+  .page-header {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px 32px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+  }
+  .page-header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .page-header .subtitle {
+    font-size: 14px;
+    color: #6e6e73;
+    margin-bottom: 14px;
+  }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
+  }
+  .badge-live { background: #fff3e0; color: #b25000; }
+  .badge-pending { background: #e8e8ed; color: #6e6e73; }
+  .badge-accent { background: #e8f0fe; color: #1a56db; }
+  .badge-warn { background: #fdecea; color: #b3261e; }
+  .badge-ok { background: #e6f4ea; color: #137333; }
+  .card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 24px 28px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+  }
+  h2 {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1d1d1f;
+  }
+  h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #1d1d1f;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 18px 0 10px;
+    color: #1d1d1f;
+  }
+  h3:first-child { margin-top: 0; }
+  p { font-size: 14px; color: #3a3a3c; margin-bottom: 10px; }
+  .muted { color: #6e6e73; font-size: 13px; }
+  .small { font-size: 12px; }
+  .score-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f5f5f7;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .score-line .score {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .score-line .score .team { color: #1d1d1f; }
+  .score-line .score .vs { color: #aeaeb2; font-weight: 400; margin: 0 6px; }
+  .score-line .note { font-size: 12px; color: #6e6e73; }
+  .signal-list { list-style: none; margin: 0; padding: 0; }
+  .signal-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f2;
+    font-size: 14px;
+  }
+  .signal-list li:last-child { border-bottom: none; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tag-risk { background: #fdecea; color: #b3261e; }
+  .tag-anchor { background: #e8f0fe; color: #1a56db; }
+  .tag-market { background: #fff3e0; color: #b25000; }
+  .tag-consensus { background: #e6f4ea; color: #137333; }
+  .tag-gray { background: #f3e8fd; color: #6b21a8; }
+  .tag-info { background: #e8e8ed; color: #3a3a3c; }
+  .signal-list .src { color: #6e6e73; font-size: 12px; margin-left: 4px; }
+  .decision-box {
+    background: #1d1d1f;
+    color: #f5f5f7;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .decision-box .label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #aeaeb2;
+    margin-bottom: 4px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0 6px;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: #6e6e73;
+    font-size: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e8e8ed;
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #f0f0f2;
+    vertical-align: top;
+    color: #3a3a3c;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  details {
+    margin: 12px 0;
+    border: 1px solid #e8e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fafafa;
+  }
+  details summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a56db;
+    list-style: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before {
+    content: "▸";
+    font-size: 11px;
+    transition: transform 0.15s;
+    color: #6e6e73;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details .details-body {
+    padding: 4px 16px 16px;
+    font-size: 13px;
+    color: #3a3a3c;
+    border-top: 1px solid #e8e8ed;
+  }
+  details .details-body p { font-size: 13px; }
+  .timeline { list-style: none; padding: 0; margin: 8px 0 0; }
+  .timeline li {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #ececf0;
+    font-size: 13px;
+  }
+  .timeline li:last-child { border-bottom: none; }
+  .timeline .ts {
+    color: #6e6e73;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    font-size: 12px;
+    min-width: 118px;
+  }
+  .timeline .txt { color: #3a3a3c; }
+  .timeline .cnt {
+    color: #1a56db;
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .card { padding: 18px 16px; }
+    .page-header { padding: 20px 18px; }
+    .score-line .score { font-size: 18px; }
+  }
+  .kv { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; }
+  .kv .k { color: #6e6e73; }
+  .kv .v { color: #1d1d1f; font-weight: 500; }
+  .integrity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  @media (max-width: 720px) { .integrity-grid { grid-template-columns: 1fr; } }
+  .integrity-col {
+    background: #f5f5f7;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+  .integrity-col .title {
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #1d1d1f;
+  }
+  .integrity-col ul { margin: 0; padding-left: 16px; color: #3a3a3c; }
+  .integrity-col li { margin-bottom: 3px; }
+  .footnote {
+    font-size: 12px;
+    color: #6e6e73;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f2;
+  }
+  .highlight { background: #fff8e1; padding: 1px 4px; border-radius: 4px; }
+  .mono { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2-NaVi 2026-10-24 g1 end</b></div>
+<div class="container">
+  <!-- ============ PAGE HEADER ============ -->
+  <div class="page-header">
+    <h1>局中弹幕情报快照 · G1｜局末/局间</h1>
+    <div class="subtitle">G2 vs NaVi · 2026-10-24 · slug=cs2-hupu-1441778164564991678 · 节点=GAME-REVIEW</div>
+    <div class="badge-row">
+      <span class="badge badge-live">局中 · 非终局</span>
+      <span class="badge badge-pending">结果待定 · 官方待回填</span>
+      <span class="badge badge-accent">弹幕口径 · 进度以弹幕为准</span>
+      <span class="badge badge-warn">灰信号 45 条 · 观众质疑非结论</span>
+    </div>
+    <p class="muted" style="margin-top:14px;margin-bottom:0;">
+      本页为该小局唯一页面，覆盖 BP/选人、对线、关键团战、结局片段。所有时间均为北京时间（UTC+8）。
+      情报输出时间：2026-10-25 01:35 北京。
+    </p>
+  </div>
+  <!-- ============ 0 核心情报速览 ============ -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="score-line">
+      <div class="score">
+        <span class="team">G2</span>
+        <span class="vs">vs</span>
+        <span class="team">NaVi</span>
+      </div>
+      <span class="note">G1 · 地图 Nuke（核子危机）· 弹幕口径·官方待回填 · 局中·非终局，结果待定</span>
+    </div>
+    <ul class="signal-list">
+      <li>
+        <span class="tag tag-risk">风险</span>
+        <span>灰信号 45 条集中质疑“故意送分/买了/剧本”，G2 负向提及 115 条，情绪偏空 <span class="src">→ 详 §2</span></span>
+      </li>
+      <li>
+        <span class="tag tag-anchor">锚点</span>
+        <span>G2 选 Nuke 引发大面积困惑（“G2不是不打核子吗”反复刷屏），BP 锚点偏负 <span class="src">→ 详 §3</span></span>
+      </li>
+      <li>
+        <span class="tag tag-market">盘口</span>
+        <span>8 条盘口讨论聚焦 IM 跑打送人头、NAVI 换人头、18 分 18 人头，市场情绪偏“丑陋” <span class="src">→ 详 §4</span></span>
+      </li>
+      <li>
+        <span class="tag tag-consensus">共识</span>
+        <span>“G2 进攻菜/图烂/企业文化不捡包”形成群体共识，弹幕密度峰值 01:17 前后 <span class="src">→ 详 §5/§7</span></span>
+      </li>
+      <li>
+        <span class="tag tag-gray">灰信号</span>
+        <span>“天禄剧本”“故意送狙击枪拿一分”“b点故意不守”等条件预测型质疑出现 <span class="src">→ 详 §2/§5</span></span>
+      </li>
+    </ul>
+    <div class="decision-box">
+      <div class="label">一句话决策落点</div>
+      G1 局中弹幕情绪偏空、灰信号密集，BP 锚点（G2 选 Nuke）与盘口“丑陋”叙事共振，短期倾向 SHORT G2 叙事；但结果待官方回填，灰信号仅为观众质疑，不构成结论。
+    </div>
+  </div>
+  <!-- ============ 1 比赛信息与结果总览 ============ -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览</h2>
+    <div class="grid-2">
+      <div>
+        <h3>比赛元数据</h3>
+        <div class="kv">
+          <span class="k">对阵</span><span class="v">G2 vs NaVi</span>
+          <span class="k">日期</span><span class="v">2026-10-24</span>
+          <span class="k">小局</span><span class="v">G1（第 1 小局）</span>
+          <span class="k">地图</span><span class="v">Nuke（核子危机）</span>
+          <span class="k">节点</span><span class="v">GAME-REVIEW（局末/局间）</span>
+          <span class="k">slug</span><span class="v">cs2-hupu-1441778164564991678</span>
+        </div>
+      </div>
+      <div>
+        <h3>状态核验</h3>
+        <p style="margin-bottom:6px;">
+          <span class="badge badge-live">局中 · 非终局</span>
+          <span class="badge badge-pending">结果待定</span>
+        </p>
+        <p class="muted" style="margin-bottom:0;">
+          第 1 小局按时间窗估计已结束（局末·待结算校准），官方比分/结果待回填。
+          进度以弹幕口径为准，本页不展示未经官方确认的比分结论。
+        </p>
+      </div>
+    </div>
+    <h3>结果总览（弹幕口径 · 官方待回填）</h3>
+    <table>
+      <thead>
+        <tr><th>项目</th><th>弹幕口径</th><th>官方状态</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>小局结果</td><td>待定（局中·非终局）</td><td>待回填</td><td>弹幕出现“GG”“c2应该输了”等情绪化判断，非官方结论</td></tr>
+        <tr><td>地图</td><td>Nuke</td><td>待回填</td><td>弹幕高频“g2打nuke？”“G2不是不打核子吗”</td></tr>
+        <tr><td>比分</td><td>不展示（禁止从弹幕推断比分）</td><td>待回填</td><td>弹幕出现“5分锁住了”“7分了”等碎片，不作比分依据</td></tr>
+        <tr><td>关键节点</td><td>01:17 前后弹幕密度峰值</td><td>—</td><td>“变态”“牛逼”“亚洲剧情”集中刷屏</td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">硬信息：人员画像带提及量见 §8；本局阵容见 §3；BP 后战绩情报：无战绩情报提及；密度时间线见 §7；跨源一致性提示见 §11。</p>
+  </div>
+  <!-- ============ 2 灰信号汇总 ============ -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <p>
+      规则层词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）共命中
+      <strong>45 条</strong>灰信号。以下为观众质疑，<span class="highlight">非结论</span>，仅作风险提示。
+    </p>
+    <table>
+      <thead>
+        <tr><th>灰信号原文（节选）</th><th>类型</th><th>指向</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>故意送分给navi</td><td>故意送分</td><td>G2 / NaVi</td></tr>
+        <tr><td>故意送分</td><td>故意送分</td><td>G2</td></tr>
+        <tr><td>几千不至于逃 几十万那是故意的</td><td>动机质疑</td><td>泛化</td></tr>
+        <tr><td>天禄剧本</td><td>剧本</td><td>泛化</td></tr>
+        <tr><td>故意送狙击枪拿一分</td><td>故意送</td><td>G2</td></tr>
+        <tr><td>买了</td><td>买/菠菜</td><td>泛化</td></tr>
+        <tr><td>他妈故意的吧，我操</td><td>故意</td><td>G2</td></tr>
+        <tr><td>b点故意不守啊</td><td>故意不守</td><td>G2 防守</td></tr>
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:10px;">
+      灰信号与“G2又给nv卖分。。。。”弹幕（01:06/01:08/01:10 多次出现）形成弱共振，但均为观众情绪表达，
+      无官方证据支撑。按纪律标注为“观众质疑，非结论”。
+    </p>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠 · 45 条词表命中节选）</summary>
+      <div class="details-body">
+        <ul class="timeline">
+          <li><span class="ts">10-25 00:57 北京</span><span class="txt">G2又给nv卖分。。。。</span></li>
+          <li><span class="ts">10-25 01:06 北京</span><span class="txt">G2又给nv卖分。。。。</span></li>
+          <li><span class="ts">10-25 01:08 北京</span><span class="txt">G2又给nv卖分。。。。</span></li>
+          <li><span class="ts">10-25 01:10 北京</span><span class="txt">G2又给nv卖分。。。。</span></li>
+          <li><span class="ts">10-25 00:36 北京</span><span class="txt">4打5保枪？懦夫</span></li>
+          <li><span class="ts">10-25 01:15 北京</span><span class="txt">不敢赢这就是g2（x5）</span></li>
+          <li><span class="ts">10-25 01:18 北京</span><span class="txt">G2企业文化 不捡包不下包不拆包</span></li>
+          <li><span class="ts">10-25 00:44 北京</span><span class="txt">G2找的这把狙简直是败笔</span></li>
+        </ul>
+        <p class="muted" style="margin-top:10px;">注：以上为词表命中与高相关弹幕节选，完整 45 条灰信号以规则层 JSON 为准。观众质疑，非结论。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 3 BP 锚点与选人情报 ============ -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <h3>本局阵容（地图 Nuke · 弹幕口径）</h3>
+    <table>
+      <thead>
+        <tr><th>队伍</th><th>地图</th><th>弹幕关键提及</th><th>BP 锚点判断</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>G2</td>
+          <td>Nuke</td>
+          <td>“g2打nuke？”“G2不是不打核子吗”“G2放核子 navi放沙二”“G2多久不打核子了”</td>
+          <td>负向锚点：观众普遍认为 Nuke 非 G2 强图，选图引发困惑</td>
+        </tr>
+        <tr>
+          <td>NaVi</td>
+          <td>Nuke</td>
+          <td>“navi不打沙二你猜当时怎么七擒的尼尼孩孩”“NAVI要赢自己的选图了吗”</td>
+          <td>正向锚点：弹幕认为 Nuke 更利于 NaVi 防守体系</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>BP 后战绩情报</h3>
+    <p class="muted">无战绩情报提及（弹幕未提供可核验的 BP 后历史战绩数据）。</p>
+    <h3>选人/换人讨论</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-info">换人</span><span>“为什么换阳叔”“阳叔为什么不回G2？”——观众对 G2 阵容调整存在疑问 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">选手</span><span>“小李子缓刑四个月”“小李子避税被查出来了”——围绕 NaVi 选手的场外讨论密集 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">选手</span><span>“IM？”“im卧槽你的”“IM适合打瓦”——IM 表现被集中吐槽 <span class="src">本场弹幕</span></span></li>
+    </ul>
+    <details>
+      <summary>BP/选人相关弹幕原文摘录（折叠）</summary>
+      <div class="details-body">
+        <ul class="timeline">
+          <li><span class="ts">10-25 00:24 北京</span><span class="txt">g2打nuke？（x3）</span></li>
+          <li><span class="ts">10-25 00:24 北京</span><span class="txt">g2不是不玩nuke吗（x2）</span></li>
+          <li><span class="ts">10-25 00:28 北京</span><span class="txt">G2不是不打核子吗（x2）</span></li>
+          <li><span class="ts">10-25 00:28 北京</span><span class="txt">G2放核子 navi放沙二</span></li>
+          <li><span class="ts">10-25 00:31 北京</span><span class="txt">为什么选nuke啊（x2）</span></li>
+          <li><span class="ts">10-25 00:37 北京</span><span class="txt">G2不ban这图是有点秀</span></li>
+          <li><span class="ts">10-25 00:37 北京</span><span class="txt">NAVI要赢自己的选图了吗</span></li>
+          <li><span class="ts">10-25 00:50 北京</span><span class="txt">G2不是永办核子吗</span></li>
+          <li><span class="ts">10-25 00:51 北京</span><span class="txt">g2不是不打核子吗</span></li>
+          <li><span class="ts">10-25 00:53 北京</span><span class="txt">g2不是不打核子吗？</span></li>
+          <li><span class="ts">10-25 01:07 北京</span><span class="txt">G2怎么打nuke了？</span></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 4 盘口与市场讨论 ============ -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p>规则层盘口相关讨论共 <strong>8 条</strong>，整体情绪偏“丑陋”“换人头”，未见明确盘口方向性结论。</p>
+    <table>
+      <thead>
+        <tr><th>盘口讨论原文（节选）</th><th>指向</th><th>情绪</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>这im肯定脑子有问题,玩跑打ak还给敌人送人头</td><td>IM / G2</td><td>负向</td></tr>
+        <tr><td>这tm十五分钟七个人头，什么玩意</td><td>节奏</td><td>负向</td></tr>
+        <tr><td>他妈的，十几分钟了，要不要打一下了？一个人头都没有</td><td>节奏</td><td>负向</td></tr>
+        <tr><td>跳别人头上去了</td><td>操作</td><td>负向</td></tr>
+        <tr><td>这比赛打的也太丑陋了吧，疯狂摸烟偷人头这一块</td><td>整体</td><td>负向</td></tr>
+        <tr><td>NAVI这进攻就是换人头</td><td>NaVi</td><td>中性偏负</td></tr>
+        <tr><td>搁中路下打人头，喜欢放包点，变态</td><td>战术</td><td>负向</td></tr>
+        <tr><td>18分18个人头</td><td>数据</td><td>中性</td></tr>
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:10px;">
+      盘口讨论与灰信号“买了/故意送”存在语义邻近，但盘口样本量小（8 条），不足以形成市场共识。
+      标注为“盘口讨论，非投注建议”。
+    </p>
+  </div>
+  <!-- ============ 5 方向性情报板 ============ -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板</h2>
+    <h3>正锚（支持 G2 / 正向信号）</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-anchor">正锚</span><span>“G2练图呢”——部分观众认为选 Nuke 是练兵/长线布局 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-anchor">正锚</span><span>“navi没分咯（x4）”“5分锁住了有感觉吗”——阶段性乐观 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-anchor">正锚</span><span>“道歉（x5）”“大错哥，我们b了（x7）”——对 G2 个别回合的认可 <span class="src">本场弹幕</span></span></li>
+    </ul>
+    <h3>负锚（支持 NaVi / 负向信号）</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-risk">负锚</span><span>“G2这图是真烂”“G2进攻更加菜”——对 G2 Nuke 能力的直接否定 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-risk">负锚</span><span>“G2也要成0图队”“G2=GG（x3）”——身份化贬低 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-risk">负锚</span><span>“不敢赢这就是g2（x5）”“亚洲剧情（x8）”——对 G2 心态的质疑 <span class="src">本场弹幕</span></span></li>
+    </ul>
+    <h3>群体共识（含分歧与样本量）</h3>
+    <table>
+      <thead>
+        <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>G2 选 Nuke 不合理</td><td>负向</td><td>≥12 条</td><td>“g2不是不打核子吗”“为什么选nuke啊”</td><td>本场弹幕 + 历史画像（G2 不常打 Nuke）一致</td></tr>
+        <tr><td>G2 进攻菜/图烂</td><td>负向</td><td>≥8 条</td><td>“G2进攻更加菜”“G2这图是真烂”</td><td>本场弹幕为主，历史画像“心态摆烂 84”弱共振</td></tr>
+        <tr><td>灰信号/卖分质疑</td><td>负向</td><td>45 条（词表）</td><td>“故意送分给navi”“买了”</td><td>本场弹幕，无官方证据</td></tr>
+        <tr><td>NaVi 防守强</td><td>正向（NaVi）</td><td>≥5 条</td><td>“navi强的是防守”“NAVI要赢自己的选图了吗”</td><td>本场弹幕 + 历史画像（被翻守不住 26）背离</td></tr>
+        <tr><td>比赛“丑陋”</td><td>负向</td><td>8 条（盘口）</td><td>“这比赛打的也太丑陋了吧”</td><td>盘口讨论，样本量小</td></tr>
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:8px;">
+      <strong>共识→信号链：</strong>“G2 选 Nuke 不合理”与“G2 进攻菜”同向，形成强负向信号；
+      “NaVi 防守强”与历史画像“被翻守不住 26”背离，构成分歧信号/共识盲区。
+    </p>
+    <h3>灰信号条件预测</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-gray">条件预测</span><span>若 G2 在 Nuke 进攻方持续低效，弹幕“卖分/故意送”灰信号可能进一步放大 <span class="src">推测·待验证</span></span></li>
+      <li><span class="tag tag-gray">条件预测</span><span>若 NaVi 防守端连续拿分，“NAVI要赢自己的选图”将转为群体共识 <span class="src">推测·待验证</span></span></li>
+    </ul>
+  </div>
+  <!-- ============ 6 情报含义与决策落点 ============ -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+    <table>
+      <thead>
+        <tr><th>方向</th><th>情报含义</th><th>证据来源</th><th>置信</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-warn">SHORT G2 叙事</span></td>
+          <td>BP 锚点负向（选 Nuke 困惑）+ 灰信号密集 + 盘口“丑陋”叙事，短期情绪偏空</td>
+          <td>本场弹幕（§2/§3/§4）</td>
+          <td>中</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-ok">LONG NaVi 防守</span></td>
+          <td>弹幕认为 Nuke 利于 NaVi 防守体系，与“NAVI要赢自己的选图”共振</td>
+          <td>本场弹幕（§3/§5）</td>
+          <td>中低</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-pending">观望</span></td>
+          <td>结果待官方回填，灰信号仅为观众质疑，不构成结论；盘口样本量小</td>
+          <td>规则层 JSON / 官方源</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="decision-box">
+      <div class="label">决策落点</div>
+      短期倾向 SHORT G2 叙事（情绪面），但严格标注“局中·非终局，结果待定”；灰信号不升级为结论，等待官方比分回填后再校准。
+    </div>
+  </div>
+  <!-- ============ 7 逐局复盘 ============ -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 · Nuke · 已发生片段（弹幕口径）</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-info">开局</span><span>00:23 前后“开了开了开了”刷屏，比赛开始；00:24 起“g2打nuke？”集中出现 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">对线/节奏</span><span>00:36-00:44 “G2这图是真烂”“G2进攻更加菜”“G2找的这把狙简直是败笔” <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">关键团战</span><span>01:17 前后弹幕密度峰值：“变态（x16）”“牛逼（x9）”“亚洲剧情（x8）”“神了（x6）” <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">局末</span><span>01:15-01:18 “不敢赢这就是g2（x5）”“G2企业文化 不捡包不下包不拆包” <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-pending">待观察</span><span>官方比分、经济曲线、选手数据待回填 <span class="src">官方源</span></span></li>
+    </ul>
+    <h3>密度时间线（分钟级抽样 · 北京时间）</h3>
+    <table>
+      <thead>
+        <tr><th>时间（北京）</th><th>弹幕密度/事件</th><th>代表弹幕</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">00:23-00:25</td><td>开局刷屏</td><td>“开了开了开了（x8）”“g2打nuke？（x3）”</td></tr>
+        <tr><td class="num">00:36-00:44</td><td>负向情绪上升</td><td>“G2这图是真烂”“G2进攻更加菜”</td></tr>
+        <tr><td class="num">00:57-01:10</td><td>灰信号/卖分质疑</td><td>“G2又给nv卖分。。。。”</td></tr>
+        <tr><td class="num">01:17</td><td>密度峰值</td><td>“变态（x16）”“牛逼（x9）”“亚洲剧情（x8）”</td></tr>
+        <tr><td class="num">01:18-01:22</td><td>局末情绪</td><td>“G2企业文化 不捡包不下包不拆包”</td></tr>
+      </tbody>
+    </table>
+    <details>
+      <summary>G2 vs NaVi G1 完整弹幕时间线（折叠 · 分钟级抽样）</summary>
+      <div class="details-body">
+        <ul class="timeline">
+          <li><span class="ts">10-25 00:23 北京</span><span class="txt">开了开了开了（x8）</span><span class="cnt">x8</span></li>
+          <li><span class="ts">10-25 00:24 北京</span><span class="txt">g2打nuke？（x3）</span><span class="cnt">x3</span></li>
+          <li><span class="ts">10-25 00:25 北京</span><span class="txt">两个三线队闹麻了（x4）</span><span class="cnt">x4</span></li>
+          <li><span class="ts">10-25 00:28 北京</span><span class="txt">G2不是不打核子吗（x2）</span><span class="cnt">x2</span></li>
+          <li><span class="ts">10-25 00:31 北京</span><span class="txt">为什么选nuke啊（x2）</span><span class="cnt">x2</span></li>
+          <li><span class="ts">10-25 00:36 北京</span><span class="txt">G2这图是真烂</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 00:37 北京</span><span class="txt">G2进攻更加菜</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 00:44 北京</span><span class="txt">G2找的这把狙简直是败笔</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 00:57 北京</span><span class="txt">G2又给nv卖分。。。。</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 01:06 北京</span><span class="txt">G2又给nv卖分。。。。</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 01:08 北京</span><span class="txt">G2又给nv卖分。。。。</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 01:10 北京</span><span class="txt">G2又给nv卖分。。。。</span><span class="cnt">x1</span></li>
+          <li><span class="ts">10-25 01:15 北京</span><span class="txt">不敢赢这就是g2（x5）</span><span class="cnt">x5</span></li>
+          <li><span class="ts">10-25 01:17 北京</span><span class="txt">变态（x16）</span><span class="cnt">x16</span></li>
+          <li><span class="ts">10-25 01:17 北京</span><span class="txt">牛逼（x9）</span><span class="cnt">x9</span></li>
+          <li><span class="ts">10-25 01:17 北京</span><span class="txt">亚洲剧情（x8）</span><span class="cnt">x8</span></li>
+          <li><span class="ts">10-25 01:18 北京</span><span class="txt">G2企业文化 不捡包不下包不拆包</span><span class="cnt">x1</span></li>
+        </ul>
+        <p class="muted" style="margin-top:10px;">注：以上为分钟级抽样节选，完整 360 条样本见弹幕切片 JSONL。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 8 队伍/人员画像 ============ -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（真实）</h3>
+    <table>
+      <thead>
+        <tr><th>队伍</th><th>提及</th><th>正/负</th><th>画像标签</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>G2</td><td class="num">860</td><td>正 26 / 负 115</td><td>负向主导，心态摆烂 84</td></tr>
+        <tr><td>NaVi / NAVI</td><td class="num">410</td><td>正 18 / 负 48</td><td>防守强，被翻守不住 26</td></tr>
+        <tr><td>AL</td><td class="num">60</td><td>正 4 / 负 1</td><td>跨项目提及（LoL）</td></tr>
+        <tr><td>FURIA</td><td class="num">54</td><td>正 0 / 负 1</td><td>弱提及</td></tr>
+        <tr><td>FLC</td><td class="num">52</td><td>正 5 / 负 7</td><td>弱提及</td></tr>
+        <tr><td>NIP</td><td class="num">30</td><td>正 0 / 负 4</td><td>弱提及</td></tr>
+        <tr><td>TES</td><td class="num">19</td><td>正 2 / 负 1</td><td>跨项目提及（LoL）</td></tr>
+      </tbody>
+    </table>
+    <h3>选手提及 TOP（真实）</h3>
+    <table>
+      <thead>
+        <tr><th>选手</th><th>提及</th><th>正/负</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Niko</td><td class="num">33</td><td>正 3 / 负 0</td><td>G2 核心，提及最高</td></tr>
+        <tr><td>Zywoo</td><td class="num">21</td><td>正 0 / 负 2</td><td>跨队提及</td></tr>
+        <tr><td>donk</td><td class="num">13</td><td>正 0 / 负 2</td><td>跨队提及</td></tr>
+        <tr><td>33</td><td class="num">5</td><td>正 0 / 负 0</td><td>中性</td></tr>
+        <tr><td>Chovy</td><td class="num">4</td><td>正 1 / 负 1</td><td>跨项目</td></tr>
+        <tr><td>Yatoro</td><td class="num">3</td><td>正 1 / 负 0</td><td>跨项目</td></tr>
+        <tr><td>ropz</td><td class="num">2</td><td>正 0 / 负 0</td><td>中性</td></tr>
+        <tr><td>Collapse</td><td class="num">1</td><td>正 0 / 负 0</td><td>中性</td></tr>
+      </tbody>
+    </table>
+    <h3>队伍特质统计（真实）</h3>
+    <div class="kv" style="gap:8px 20px;">
+      <span><span class="k">顺风隐身</span> <span class="v">4</span></span>
+      <span><span class="k">被翻守不住</span> <span class="v">26</span></span>
+      <span><span class="k">韧性逆转</span> <span class="v">5</span></span>
+      <span><span class="k">心态摆烂</span> <span class="v">84</span></span>
+      <span><span class="k">慢热手热</span> <span class="v">3</span></span>
+      <span><span class="k">打法风格</span> <span class="v">65</span></span>
+      <span><span class="k">选手特质</span> <span class="v">23</span></span>
+    </div>
+    <details>
+      <summary>G2 / NaVi 长画像与历史特质（折叠）</summary>
+      <div class="details-body">
+        <p><strong>G2：</strong>本场提及 860 条，负向 115 条显著高于正向 26 条。历史特质“心态摆烂 84”为最高频标签，与本场“不敢赢这就是g2”“G2企业文化”等弹幕形成跨源共振。BP 层面“G2 不常打 Nuke”为长期画像，本场选 Nuke 构成负向锚点。</p>
+        <p><strong>NaVi：</strong>本场提及 410 条，负向 48 条。历史特质“被翻守不住 26”与弹幕“navi强的是防守”存在背离，构成分歧信号。选手层面“小李子避税”场外讨论密集，属噪音型提及。</p>
+        <p class="muted">以上画像引用长期库，带提及量；本场弹幕为即时证据层。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 9 联赛规律与版本 ============ -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <ul class="signal-list">
+      <li><span class="tag tag-info">地图池</span><span>弹幕反复提及“G2 不玩 Nuke”“G2 放核子 navi 放沙二”，反映 CS2 当前地图池中 Nuke 对 G2 属非常规选择 <span class="src">本场弹幕 + 历史画像</span></span></li>
+      <li><span class="tag tag-info">版本</span><span>弹幕出现“跑打ak”“跑打之神”“IM适合打瓦”等，指向当前版本跑打/道具经济讨论 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">赛制</span><span>“后4场才是重头戏”“明天天禄打谁”显示观众关注多场次赛程，本场为其中一场 <span class="src">本场弹幕</span></span></li>
+      <li><span class="tag tag-info">跨项目</span><span>弹幕大量串台 LoL（“看s赛”“AL”“369”“塔赞”），属直播生态噪音，非本场情报 <span class="src">本场弹幕</span></span></li>
+    </ul>
+    <p class="muted" style="margin-top:10px;">
+      版本/联赛规律层面，本场弹幕未提供可核验的版本更新或联赛积分数据，标注为“样本不足”，不硬造。
+    </p>
+  </div>
+  <!-- ============ 10 预测验证回填 ============ -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <table>
+      <thead>
+        <tr><th>预测/信号</th><th>提出时间</th><th>验证状态</th><th>回填结果</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>G2 选 Nuke 为负向锚点</td>
+          <td>00:24 起</td>
+          <td><span class="badge badge-pending">待验证</span></td>
+          <td>官方比分待回填，暂无法验证</td>
+        </tr>
+        <tr>
+          <td>灰信号“卖分”可能放大</td>
+          <td>00:57 起</td>
+          <td><span class="badge badge-pending">待验证</span></td>
+          <td>需结合后续小局弹幕密度</td>
+        </tr>
+        <tr>
+          <td>NaVi 防守强于 G2 进攻</td>
+          <td>00:52 起</td>
+          <td><span class="badge badge-pending">待验证</span></td>
+          <td>官方数据待回填</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:10px;">
+      本页为局中快照，预测验证回填将在官方比分/数据回填后更新。当前所有预测均标注“待验证”。
+    </p>
+  </div>
+  <!-- ============ 11 数据与溯源 ============ -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性（三栏）</h3>
+    <div class="integrity-grid">
+      <div class="integrity-col">
+        <div class="title">实际数据源</div>
+        <ul>
+          <li>规则层情报 JSON（vps_intel）</li>
+          <li>弹幕切片 JSONL（g1_end）</li>
+          <li>本场弹幕样本 360 条</li>
+          <li>队伍/选手提及统计</li>
+          <li>灰信号词表命中 45 条</li>
+          <li>盘口讨论 8 条</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <div class="title">预期数据源</div>
+        <ul>
+          <li>官方源：HLTV-Liquipedia（CS2）</li>
+          <li>Riot 小局状态（LoL 对照）</li>
+          <li>官方比分/经济/选手数据</li>
+          <li>BP 后战绩情报</li>
+        </ul>
+      </div>
+      <div class="integrity-col">
+        <div class="title">缺口</div>
+        <ul>
+          <li>官方比分未回填</li>
+          <li>BP 后战绩情报缺失</li>
+          <li>经济曲线/选手数据缺失</li>
+          <li>盘口样本量小（8 条）</li>
+          <li>版本/联赛数据样本不足</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:10px;">
+      缺源不交付完整结论；本页结论均标注证据来源与置信度。
+    </p>
+    <h3>跨源一致性提示</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-ok">一致</span><span>“G2 不常打 Nuke”本场弹幕与历史画像一致 <span class="src">本场弹幕 + 历史画像</span></span></li>
+      <li><span class="tag tag-warn">背离</span><span>“NaVi 防守强”本场弹幕与历史画像“被翻守不住 26”背离，构成分歧信号 <span class="src">本场弹幕 + 历史画像</span></span></li>
+      <li><span class="tag tag-info">噪音</span><span>弹幕大量串台 LoL（AL/369/塔赞），与本场 CS2 情报无关，已剔除 <span class="src">本场弹幕</span></span></li>
+    </ul>
+    <h3>情报输出时间</h3>
+    <p class="mono">2026-10-25 01:35 北京（UTC+8）</p>
+    <h3>本场长期沉淀点</h3>
+    <ul class="signal-list">
+      <li><span class="tag tag-info">沉淀</span><span>G2 在 Nuke 上的 BP 选择持续引发负向弹幕，可作为后续“G2 地图池”画像的补充样本 <span class="src">本场弹幕 + 历史画像</span></span></li>
+      <li><span class="tag tag-info">沉淀</span><span>灰信号“卖分/故意送”与“G2又给nv卖分”高频共现，建议纳入 G2 相关场次的灰信号监控词表 <span class="src">本场弹幕</span></span></li>
+    </ul>
+    <p class="footnote">
+      溯源文件：/opt/danmu-intel/runtime/vps_intel/cs2-hupu-1441778164564991678_g1_end_intel.json；
+      弹幕切片：/opt/danmu-intel/data/intel_slices/cs2-hupu-1441778164564991678_g1_end.jsonl。
+      本页为局中快照，非终局，结果待官方回填。
+    </p>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
