@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局中弹幕情报快照 · KC vs LYON · G1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        /* 卡片通用 */
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1d1d1f;
+        }
+        h2 .no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: #0071e3;
+            color: #fff;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 16px 0 10px;
+            color: #1d1d1f;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            margin-right: 6px;
+        }
+        .tag-risk { background: #ffe8e8; color: #c41e3a; }
+        .tag-anchor { background: #e8f0fe; color: #1a5bbf; }
+        .tag-market { background: #fff3e0; color: #b85e00; }
+        .tag-consensus { background: #e6f7ed; color: #0e6b3e; }
+        .tag-gray { background: #f0f0f2; color: #6e6e73; }
+        .tag-spec { background: #f3e8ff; color: #6b21a8; }
+        .tag-source { background: #f5f5f7; color: #6e6e73; font-weight: 500; }
+        .badge {
+            display: inline-block;
+            background: #f5f5f7;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            color: #6e6e73;
+            font-weight: 500;
+        }
+        .badge-blue {
+            background: #e8f0fe;
+            color: #1a5bbf;
+        }
+        .badge-warn {
+            background: #fff3e0;
+            color: #b85e00;
+        }
+        .badge-gray {
+            background: #f0f0f2;
+            color: #6e6e73;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            margin: 8px 0;
+        }
+        .stat-item {
+            font-size: 0.9rem;
+        }
+        .stat-item strong {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        .muted {
+            color: #6e6e73;
+            font-size: 0.85rem;
+        }
+        .divider {
+            height: 1px;
+            background: #e8e8ed;
+            margin: 18px 0;
+        }
+        details {
+            margin: 12px 0;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fafafc;
+        }
+        details summary {
+            padding: 12px 18px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #0071e3;
+            background: #ffffff;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details summary::before {
+            content: "▸";
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+            color: #0071e3;
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        details .details-content {
+            padding: 16px 18px;
+            border-top: 1px solid #e8e8ed;
+            font-size: 0.85rem;
+            color: #3a3a3c;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bullet-list li {
+            padding: 6px 0 6px 20px;
+            position: relative;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .bullet-list li:last-child {
+            border-bottom: none;
+        }
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: #0071e3;
+            font-weight: 700;
+        }
+        .signal-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        .signal-row:last-child {
+            border-bottom: none;
+        }
+        .signal-label {
+            flex-shrink: 0;
+            min-width: 70px;
+        }
+        .signal-text {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        .signal-source {
+            flex-shrink: 0;
+            font-size: 0.75rem;
+            color: #6e6e73;
+            white-space: nowrap;
+        }
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .table-mini th {
+            text-align: left;
+            padding: 8px 6px;
+            font-weight: 600;
+            color: #6e6e73;
+            border-bottom: 1px solid #e8e8ed;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .table-mini td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
+        }
+        .table-mini tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight-box {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 12px 0;
+        }
+        .decision-box {
+            background: #e8f0fe;
+            border-left: 4px solid #0071e3;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 0.95rem;
+        }
+        .decision-box strong {
+            color: #0071e3;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .small-note {
+            font-size: 0.75rem;
+            color: #8e8e93;
+            margin-top: 4px;
+        }
+        .status-banner {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            color: #8d6e00;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-banner .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f5a623;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .chip {
+            display: inline-block;
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            color: #3a3a3c;
+            margin: 2px 4px 2px 0;
+        }
+        .chip-blue {
+            background: #e8f0fe;
+            color: #1a5bbf;
+        }
+        .chip-red {
+            background: #ffe8e8;
+            color: #c41e3a;
+        }
+        .chip-green {
+            background: #e6f7ed;
+            color: #0e6b3e;
+        }
+        .chip-orange {
+            background: #fff3e0;
+            color: #b85e00;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            h2 {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">KC-LYON 2026-10-24 g1 bp</b></div>
+    <div class="container">
+        <!-- 状态横幅 -->
+        <div class="status-banner">
+            <span class="dot"></span>
+            <span><strong>局中 · 非终局，结果待定</strong> · 进度以弹幕口径为准 · 官方数据待回填</span>
+        </div>
+        <!-- ==================== 0 核心情报速览 ==================== -->
+        <div class="card">
+            <h2><span class="no">0</span>核心情报速览</h2>
+            <div class="flex-between" style="margin-bottom: 14px;">
+                <div>
+                    <span class="badge badge-blue" style="font-size:0.85rem; padding:4px 12px;">KC vs LYON · G1</span>
+                    <span class="badge badge-gray" style="font-size:0.85rem; padding:4px 12px; margin-left:6px;">BP后/开局</span>
+                </div>
+                <div class="muted" style="font-size:0.8rem;">弹幕口径 · 官方待回填</div>
+            </div>
+            <div class="signal-row">
+                <div class="signal-label"><span class="tag tag-risk">风险</span></div>
+                <div class="signal-text">优势放龙争议：多条弹幕质疑KC资源控制，提及“优势放龙就是被翻盘的开始”</div>
+                <div class="signal-source">→ §2 · 本场弹幕</div>
+            </div>
+            <div class="signal-row">
+                <div class="signal-label"><span class="tag tag-anchor">锚点</span></div>
+                <div class="signal-text">BP讨论集中：兰博/加里奥对位、卡烈组合强度、云露体系被提及</div>
+                <div class="signal-source">→ §3 · 本场弹幕</div>
+            </div>
+            <div class="signal-row">
+                <div class="signal-label"><span class="tag tag-market">盘口</span></div>
+                <div class="signal-text">观众倾向分歧：“我看好右边” vs “KC阵容像自选”，无统一盘口共识</div>
+                <div class="signal-source">→ §4 · 本场弹幕</div>
+            </div>
+            <div class="signal-row">
+                <div class="signal-label"><span class="tag tag-consensus">共识</span></div>
+                <div class="signal-text">对线期观察：多条弹幕提及“三路对线劣势”“下三路”，指向KC对线压力</div>
+                <div class="signal-source">→ §5 · 本场弹幕</div>
+            </div>
+            <div class="signal-row">
+                <div class="signal-label"><span class="tag tag-gray">灰信号</span></div>
+                <div class="signal-text">5条灰信号：涉及选手历史评价（saint/雅虎）及出装细节质疑</div>
+                <div class="signal-source">→ §2 · 本场弹幕</div>
+            </div>
+            <div class="decision-box" style="margin-top: 16px;">
+                <strong>一句话决策落点：</strong>局中信息以对线劣势与资源控制争议为核心矛盾，KC前期节奏面临考验；盘口讨论分歧，暂无明显方向性共识，建议观望至首个关键资源团。
+            </div>
+        </div>
+        <!-- ==================== 1 比赛信息与结果总览 ==================== -->
+        <div class="card">
+            <h2><span class="no">1</span>比赛信息与结果总览</h2>
+            <div class="grid-2">
+                <div>
+                    <div class="stat-item"><strong>比赛：</strong>KC vs LYON</div>
+                    <div class="stat-item"><strong>小局：</strong>G1（第1小局）</div>
+                    <div class="stat-item"><strong>节点：</strong>BP后 / 开局（EARLY-GAME）</div>
+                    <div class="stat-item"><strong>日期：</strong>2026-10-24（北京时间）</div>
+                    <div class="stat-item"><strong>赛事slug：</strong>lol-hupu-1693138568577024</div>
+                </div>
+                <div>
+                    <div class="stat-item"><strong>状态：</strong><span class="badge badge-warn">局中 · 非终局，结果待定</span></div>
+                    <div class="stat-item"><strong>进度口径：</strong>弹幕口径（官方数据待回填）</div>
+                    <div class="stat-item"><strong>弹幕总数：</strong>341条（活跃用户133，密度12.3条/分）</div>
+                    <div class="stat-item"><strong>本节点样本：</strong>131条（覆盖28个有弹幕分钟段）</div>
+                    <div class="stat-item"><strong>官方源：</strong>LoL=Riot 小局状态（阵容窗口，开局后1分钟校准）</div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="muted" style="font-size:0.85rem;">
+                <strong>跨源一致性提示：</strong>弹幕讨论与规则层统计方向基本一致（KC提及9次，AL提及4次，IG提及2次），未发现明显矛盾；官方比分/经济数据待回填，当前结论仅基于弹幕样本。
+            </div>
+        </div>
+        <!-- ==================== 2 灰信号汇总 ==================== -->
+        <div class="card">
+            <h2><span class="no">2</span>灰信号汇总（风险·观众质疑非结论）</h2>
+            <div class="muted" style="margin-bottom: 12px;">词表统计结果：演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送 —— 本节点命中 <strong>5条</strong>灰信号（去重后）。</div>
+            <table class="table-mini">
+                <thead>
+                    <tr><th style="width:40%">灰信号内容</th><th style="width:15%">出现次数</th><th style="width:20%">类型</th><th style="width:25%">来源</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>请记住雅虎在次级就是saint的玩具</td><td>2</td><td><span class="tag tag-gray">选手历史评价</span></td><td>本场弹幕 · 04:13</td></tr>
+                    <tr><td>你就看saint怎么爆打雅虎的吧</td><td>1</td><td><span class="tag tag-gray">选手对抗预期</span></td><td>本场弹幕 · 04:14</td></tr>
+                    <tr><td>他出门买了个50的血瓶回去卖了来了个红水晶</td><td>2</td><td><span class="tag tag-gray">出装细节质疑</span></td><td>本场弹幕 · 04:17</td></tr>
+                </tbody>
+            </table>
+            <div class="muted" style="margin-top: 10px; font-size:0.8rem;">
+                ⚠️ 以上均为观众质疑/调侃，非事实结论。灰信号指向：① 对LYON选手saint与雅虎的历史交手评价存在负面预期；② 对某选手出门装操作存在疑问。需结合官方数据与后续赛况验证。
+            </div>
+            <details>
+                <summary>灰信号原始弹幕摘录（折叠）</summary>
+                <div class="details-content">
+                    <ul class="bullet-list">
+                        <li>[04:13北京] 请记住雅虎在次级就是saint的玩具（x2）</li>
+                        <li>[04:14北京] 你就看saint怎么爆打雅虎的吧</li>
+                        <li>[04:17北京] 他出门买了个50的血瓶回去卖了来了个红水晶（x2）</li>
+                    </ul>
+                    <div class="small-note" style="margin-top:8px;">注：以上为观众发言原文，不代表事实判断。</div>
+                </div>
+            </details>
+        </div>
+        <!-- ==================== 3 BP 锚点与选人情报 ==================== -->
+        <div class="card">
+            <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top:0;">本局阵容（英雄+选手）</h3>
+                    <div class="muted" style="font-size:0.85rem; margin-bottom:8px;">官方Riot窗口阵容，开局后1分钟校准；当前弹幕讨论指向以下选人：</div>
+                    <ul class="bullet-list">
+                        <li><strong>KC：</strong>兰博（Canna）、猴子、发条、卡莉斯塔+烈娜塔（卡烈组合）—— 弹幕提及“canna的兰博还可以”“卡烈t0组合”“一抢猴”</li>
+                        <li><strong>LYON：</strong>加里奥、盲僧（一颗）、云露/卢米体系 —— 弹幕提及“右边加里奥吗”“一颗的盲僧真的会让你笑”“云露感觉这版本都没人玩了”</li>
+                    </ul>
+                    <div class="small-note">注：以上阵容基于弹幕讨论拼合，最终以官方数据为准。</div>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">BP 后战绩情报</h3>
+                    <div class="muted" style="font-size:0.85rem;">无战绩情报提及（本节点弹幕未涉及两队历史交手具体战绩数据）。</div>
+                    <div class="divider" style="margin:12px 0;"></div>
+                    <h3>BP 讨论焦点</h3>
+                    <ul class="bullet-list">
+                        <li>兰博 vs 加里奥对位：“兰博被加里奥压刀吗”“兰博胜率是不是很低啊”</li>
+                        <li>打野选择：“一颗的瞎子很菜的”“猴子发条”</li>
+                        <li>下路组合：“卡烈t0组合”“ez卡尔玛”“云露”</li>
+                        <li>整体评价：“kc阵容像自选”“不是这什么bp”</li>
+                    </ul>
+                </div>
+            </div>
+            <details>
+                <summary>BP相关弹幕原文摘录（折叠）</summary>
+                <div class="details-content">
+                    <ul class="bullet-list">
+                        <li>[04:08北京] canna的兰博还可以，右边加里奥吗</li>
+                        <li>[04:08北京] 不可能先出冰鸟的。</li>
+                        <li>[04:08北京] 猴子发条</li>
+                        <li>[04:09北京] 一颗的盲僧真的会让你笑</li>
+                        <li>[04:12北京] 不是这什么bp</li>
+                        <li>[04:13北京] kc阵容像自选</li>
+                        <li>[04:13北京] 一颗的瞎子很菜的</li>
+                        <li>[04:13北京] 二哥，LPL玩了一个赛季的组合:云路 卢米 冰纷。</li>
+                        <li>[04:13北京] 云露感觉这版本都没人玩了</li>
+                        <li>[04:16北京] 兰博被加里奥压刀吗</li>
+                        <li>[04:16北京] 那他一抢猴的意义何在</li>
+                        <li>[04:18北京] 卡烈t0组合</li>
+                        <li>[04:18北京] 可惜了毛哥，小火龙这种英雄连欧洲都不选了</li>
+                        <li>[04:19北京] 卡列还是强势</li>
+                        <li>[04:23北京] ez也行</li>
+                        <li>[04:23北京] ez卡尔玛</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+        <!-- ==================== 4 盘口与市场讨论 ==================== -->
+        <div class="card">
+            <h2><span class="no">4</span>盘口与市场讨论</h2>
+            <div class="muted" style="margin-bottom: 12px;">本节点弹幕中未出现明确盘口/赔率数据讨论，但存在方向性倾向发言：</div>
+            <table class="table-mini">
+                <thead>
+                    <tr><th>讨论方向</th><th>关键样本</th><th>条数</th><th>倾向</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>看好LYON（右边）</td><td>“我看好右边”</td><td>1</td><td><span class="chip chip-blue">偏LYON</span></td></tr>
+                    <tr><td>看好KC阵容</td><td>“kc阵容像自选”</td><td>1</td><td><span class="chip chip-green">偏KC</span></td></tr>
+                    <tr><td>质疑KC决策</td><td>“优势放龙就是被翻盘的开始 我开始不看好kc了”</td><td>1</td><td><span class="chip chip-red">偏LYON</span></td></tr>
+                    <tr><td>询问主播看法</td><td>“主播阵容那边好？”“主播你看好哪边呀”</td><td>2</td><td><span class="chip">中性</span></td></tr>
+                </tbody>
+            </table>
+            <div class="muted" style="margin-top: 10px; font-size:0.8rem;">
+                盘口讨论样本量不足（仅5条相关），无统一市场共识；观众观点分歧，暂无法形成有效盘口信号。
+            </div>
+        </div>
+        <!-- ==================== 5 方向性情报板 ==================== -->
+        <div class="card">
+            <h2><span class="no">5</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top:0;">正锚（利好KC）</h3>
+                    <ul class="bullet-list">
+                        <li>“KC下路欧洲第一ADC，你以为跟你开玩笑啊” — 对KC下路个人能力认可</li>
+                        <li>“KC这个队从入围赛看过来，打得越来越稳，不会做风险很高的决策” — 队伍稳定性正面评价</li>
+                        <li>“canna的兰博还可以” — 上单英雄池正面评价</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">负锚（利空KC）</h3>
+                    <ul class="bullet-list">
+                        <li>“三路对线劣势” — 对线期整体压力</li>
+                        <li>“优势放龙就是被翻盘的开始 我开始不看好kc了” — 资源控制决策质疑</li>
+                        <li>“lc可能会因为放龙输掉” — 放龙后果担忧</li>
+                        <li>“yike果然开始放龙了 熟悉了” — 打野节奏负面评价</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <h3>群体共识（+分歧+样本量）</h3>
+            <table class="table-mini">
+                <thead>
+                    <tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>对线期劣势</td><td>利空KC</td><td>3条（“下三路”“三路对线劣势”“优势放龙”）</td><td>“三路对线劣势”</td><td>本场弹幕同向</td></tr>
+                    <tr><td>资源控制质疑</td><td>利空KC</td><td>4条（“这小龙能放的啊？”“优势放龙就是被翻盘的开始”等）</td><td>“这小龙竟然不要”</td><td>本场弹幕同向</td></tr>
+                    <tr><td>KC下路能力</td><td>利好KC</td><td>1条</td><td>“KC下路欧洲第一ADC”</td><td>单一来源</td></tr>
+                    <tr><td>BP阵容评价</td><td>分歧</td><td>2条（“kc阵容像自选” vs “不是这什么bp”）</td><td>“kc阵容像自选”</td><td>背离信号</td></tr>
+                </tbody>
+            </table>
+            <div class="highlight-box" style="margin-top: 14px;">
+                <strong>共识→信号链：</strong>对线劣势与资源控制质疑形成同向利空信号（强信号），指向KC前期节奏被动；但KC下路能力评价构成反向锚点，形成分歧。综合判断：KC需在首个关键资源团证明决策能力，否则负面共识可能自我强化。
+            </div>
+            <h3 style="margin-top: 16px;">灰信号条件预测</h3>
+            <div class="muted" style="font-size:0.85rem;">
+                若saint（LYON）在对位中取得优势，灰信号中“saint爆打雅虎”的调侃可能被观众放大为舆论压力；若KC放龙后成功置换资源，则“优势放龙”质疑将减弱。当前灰信号未形成明确预测方向，需观察首个小龙团结果。
+            </div>
+        </div>
+        <!-- ==================== 6 情报含义与决策落点 ==================== -->
+        <div class="card">
+            <h2><span class="no">6</span>情报含义与决策落点（LONG/SHORT）</h2>
+            <div class="grid-2">
+                <div class="decision-box" style="background:#e6f7ed; border-left-color:#0e6b3e;">
+                    <strong style="color:#0e6b3e;">LONG（看多KC）依据：</strong>
+                    <ul class="bullet-list" style="margin-top:8px;">
+                        <li>KC下路个人能力被弹幕认可（“欧洲第一ADC”）</li>
+                        <li>队伍稳定性评价正面（“打得越来越稳”）</li>
+                        <li>BP阵容被部分观众认为“像自选”（选人舒适）</li>
+                    </ul>
+                </div>
+                <div class="decision-box" style="background:#ffe8e8; border-left-color:#c41e3a;">
+                    <strong style="color:#c41e3a;">SHORT（看空KC）依据：</strong>
+                    <ul class="bullet-list" style="margin-top:8px;">
+                        <li>对线期三路劣势被多次提及</li>
+                        <li>资源控制决策遭集中质疑（放龙争议）</li>
+                        <li>打野yike节奏被负面评价（“开始放龙了”）</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 16px;">
+                <strong>决策落点：</strong>当前局中信息呈现“对线劣势+资源争议”的利空组合，但KC下路能力构成潜在翻盘点。建议<strong>短期观望</strong>，等待首个关键资源团（小龙/先锋）结果验证资源控制争议；若KC成功控龙并稳住对线，则LONG逻辑增强；若继续放资源且对线劣势扩大，则SHORT逻辑强化。
+            </div>
+            <div class="muted" style="margin-top: 8px; font-size:0.8rem;">
+                情报来源分层：本场弹幕（主要）· 规则层统计（辅助）· 推测·待验证（决策落点为分析推断，非事实结论）。
+            </div>
+        </div>
+        <!-- ==================== 7 逐局复盘 ==================== -->
+        <div class="card">
+            <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+            <div class="muted" style="margin-bottom: 12px;">当前局（G1）已发生片段 + 时间线（北京时间），未发生部分标注“待观察”。</div>
+            <h3>G1 时间线（BP后/开局阶段）</h3>
+            <table class="table-mini">
+                <thead>
+                    <tr><th style="width:15%">时间（北京）</th><th style="width:55%">弹幕/事件</th><th style="width:30%">阶段</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>04:00-04:05</td><td>BP讨论、选手评价、直播间互动</td><td>BP后 / 开局前</td></tr>
+                    <tr><td>04:06-04:10</td><td>阵容分析、选手历史讨论、兰博/加里奥对位</td><td>开局 / 对线初期</td></tr>
+                    <tr><td>04:11-04:15</td><td>BP评价、云露体系讨论、灰信号出现（saint/雅虎）</td><td>对线期</td></tr>
+                    <tr><td>04:16-04:20</td><td>对线细节（兰博被压刀）、出装质疑、下三路提及</td><td>对线期</td></tr>
+                    <tr><td>04:21-04:25</td><td>三路对线劣势、资源控制质疑（放龙）、yike节奏</td><td>对线期 / 资源争夺</td></tr>
+                    <tr><td>04:26-04:27</td><td>KC稳定性评价、优势放资源讨论</td><td>资源争夺 / 中期过渡</td></tr>
+                </tbody>
+            </table>
+            <div class="muted" style="margin-top: 10px; font-size:0.85rem;">
+                <strong>未发生片段：</strong>首个关键团战结果、经济差、小龙/先锋归属、后续推进节奏 —— <span class="badge badge-gray">待观察</span>
+            </div>
+            <details>
+                <summary>G1 完整弹幕时间线（折叠 · 131条样本节选）</summary>
+                <div class="details-content">
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <div>[04:00] 冰杖出一个多好｜扇巴掌不要？</div>
+                        <div>[04:01] 好接｜完成任务了，不亏｜毛神能来一首《还有什么可以送给你》吗？听完睡觉了｜没重伤难搞</div>
+                        <div>[04:02] 亏了｜头像｜甚至不用投</div>
+                        <div>[04:03] lpl至暗时刻｜守护毛➗钱包计划｜就有了｜换头像｜换那个头像就有了</div>
+                        <div>[04:04] kc什么东西啊｜一碗水端平是吧｜半成品｜对｜就这个意思</div>
+                        <div>[04:05] 世界是个巨大的草台班子｜印度神王听说30多了｜印度肾脏听说30多了｜因斯皮绝对要把yike这种小心脏干爆｜国服设计师也是设计师</div>
+                        <div>[04:06] 1（x7）｜介绍都看不完｜刚睡醒，谁赢了｜前天还看人吐槽官网，翻译也有问题｜可以甩锅给实习生</div>
+                        <div>[04:07] 主要是广府，潮汕，客家｜后面四把更好看｜客家人｜广东很多说客家话的吧｜毛神，不是所有广东人都讲粤语</div>
+                        <div>[04:08] canna的兰博还可以，右边加里奥吗｜不可能先出冰鸟的。｜无路吗？ 二路都没有？｜猴子发条｜豹子？</div>
+                        <div>[04:09] 一颗的盲僧真的会让你笑｜二哥压抑了｜你给二哥一次。｜压抑｜可以兔子</div>
+                        <div>[04:10] lyon这队服没广告感觉挺好看｜主播，晚上好｜二哥 LPL 今年要凉啊｜二哥下面给你们吃｜二哥不丑，就是不持久。</div>
+                        <div>[04:11] @苇名雾岛少帅 TL第一｜@苇名雾岛少帅 老二｜LION是美洲第几｜二哥你还能扛得住吗？｜兰博胜率是不是很低啊</div>
+                        <div>[04:12] 不是这什么bp｜专业｜云露｜卧槽泽元上身了？｜肯定是弱的 不然不会没人出啊</div>
+                        <div>[04:13] 请记住雅虎在次级就是saint的玩具（x2）｜kc阵容像自选｜一颗的瞎子很菜的｜二哥，LPL玩了一个赛季的组合:云路 卢米 冰纷。｜云露感觉这版本都没人玩了</div>
+                        <div>[04:14] 一看二哥就经常去（x2）｜主播阵容那边好？｜你就看saint怎么爆打雅虎的吧｜听着快睡着了｜喝了睡不着</div>
+                        <div>[04:15] 一级学q的盖伦随便拆｜二哥平时这时候也在98听这些歌｜想蹲就说｜我看好右边｜毛哥你的画质太差了 14m和主舞台4m一样</div>
+                        <div>[04:16] 兰博被加里奥压刀吗｜那他一抢猴的意义何在</div>
+                        <div>[04:17] 他出门买了个50的血瓶回去卖了来了个红水晶（x2）｜[哈欠]｜e是推啊｜w｜你刚才说的E</div>
+                        <div>[04:18] k婶婶滑板鞋又要被砍了｜二哥什么卖肉松饼｜卡烈t0组合｜可惜了毛哥，小火龙这种英雄连欧洲都不选了｜时候</div>
+                        <div>[04:19] 为啥就中路补兵头上不冒金币｜主要电刀太赖了｜你对面是谁｜刚醒，二哥，这他妈的al怎么办啊[臭臭]｜卡列还是强势</div>
+                        <div>[04:20] 下三路｜主播你看好哪边呀｜二哥，好困啊，都有点坚持不到看IG了｜你懂吗｜别把直播间搞没了</div>
+                        <div>[04:21] 助眠（x2）｜讲讲老张追鼓鼓的过程吧，天天看老张直播间里弹幕说他在追鼓鼓（x2）｜on真的。。。好多次了。。｜三路对线劣势｜不攒劲我举报哦</div>
+                        <div>[04:22] 你最近股票怎么样了（x2）｜不如讲一下m78星云｜二哥你要去美国吗｜二哥双子男喜欢什么星座的女生｜你把碳基和硅基搞清楚，这是不融合的。</div>
+                        <div>[04:23] ez也行｜ez卡尔玛｜二哥穿的ig衣服吗｜二哥谈过几个｜二哥问个游戏问题，冰纷，卡列和云路这三个组合那个前期更厉害</div>
+                        <div>[04:24] yike果然开始放龙了 熟悉了｜为什么没人玩女警呢｜什么时候看少爷打LCK的队伍了｜劫男刀感觉中路出不了｜昨天大狗都玩亚飞了，小火龙还有机会上场吗</div>
+                        <div>[04:25] Inspired 世界赛还会开麦压力队友吗，h哈哈哈哈😂｜al是不是在藏东西啊｜lc可能会因为放龙输掉｜不打架的，他妈的｜世界赛龙的节奏好快</div>
+                        <div>[04:26] KC下路欧洲第一ADC，你以为跟你开玩笑啊｜KC这个队从入围赛看过来，打得越来越稳，不会做风险很高的决策｜KC遇到一次AL，虐一次｜bo1就是很懦的｜kc要回家了</div>
+                        <div>[04:27] k｜二哥阵容哪边好｜二哥，梅尔的W真的改了吗？｜二哥，用什么好打琪亚娜啊｜优势情况下可以适当给对面经济 资源绝对不能放</div>
+                    </div>
+                </div>
+            </details>
+        </div>
+        <!-- ==================== 8 队伍/人员画像 ==================== -->
+        <div class="card">
+            <h2><span class="no">8</span>队伍/人员画像（带提及量）</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top:0;">队伍提及 TOP（本节点）</h3>
+                    <table class="table-mini">
+                        <thead><tr><th>队伍</th><th>提及</th><th>正/负</th></tr></thead>
+                        <tbody>
+                            <tr><td>KC</td><td>9</td><td><span class="chip chip-green">正2</span> <span class="chip chip-red">负1</span></td></tr>
+                            <tr><td>AL</td><td>4</td><td><span class="chip chip-green">正1</span> <span class="chip">负0</span></td></tr>
+                            <tr><td>IG</td><td>2</td><td><span class="chip">正0</span> <span class="chip">负0</span></td></tr>
+                            <tr><td>BLG</td><td>1</td><td><span class="chip">正0</span> <span class="chip">负0</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">选手提及 TOP（本节点）</h3>
+                    <table class="table-mini">
+                        <thead><tr><th>选手</th><th>提及</th><th>正/负</th></tr></thead>
+                        <tbody>
+                            <tr><td>Canna</td><td>1</td><td><span class="chip chip-green">正1</span> <span class="chip">负0</span></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="muted" style="margin-top:8px; font-size:0.8rem;">其他选手（saint、雅虎、yike、一颗等）在弹幕中被提及但未进入规则层TOP统计。</div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <h3>队伍特质统计（长期库）</h3>
+            <div class="stat-row">
+                <span class="chip chip-orange">被翻守不住: 1</span>
+            </div>
+            <details>
+                <summary>长画像与历史提及（折叠）</summary>
+                <div class="details-content">
+                    <p><strong>KC：</strong>弹幕正面评价集中于下路个人能力（“欧洲第一ADC”）与队伍稳定性（“打得越来越稳”）；负面评价集中于资源控制决策（“优势放龙”）。长期特质库显示“被翻守不住”1次，需关注优势局稳定性。</p>
+                    <p><strong>LYON：</strong>弹幕讨论涉及队服外观（“没广告感觉挺好看”）、赛区排名（“LION是美洲第几”），以及选手saint的历史评价（灰信号）。</p>
+                    <p><strong>Canna（KC上单）：</strong>本节点唯一进入选手提及TOP的选手，正面评价“兰博还可以”。</p>
+                    <p><strong>其他人员：</strong>yike（打野）被提及“开始放龙了”；一颗（LYON打野）被评价“瞎子很菜”；saint与雅虎的历史交手被灰信号提及。</p>
+                </div>
+            </details>
+        </div>
+        <!-- ==================== 9 联赛规律与版本 ==================== -->
+        <div class="card">
+            <h2><span class="no">9</span>联赛规律与版本</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 style="margin-top:0;">版本相关讨论</h3>
+                    <ul class="bullet-list">
+                        <li>“云露感觉这版本都没人玩了” — 云露体系版本强度存疑</li>
+                        <li>“卡烈t0组合”“卡列还是强势” — 卡莉斯塔+烈娜塔仍被视为强势组合</li>
+                        <li>“小火龙这种英雄连欧洲都不选了” — 小火龙版本优先级下降</li>
+                        <li>“主要电刀太赖了” — 电刀装备强度讨论</li>
+                        <li>“世界赛龙的节奏好快” — 世界赛版本资源节奏偏快</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">联赛/赛区讨论</h3>
+                    <ul class="bullet-list">
+                        <li>“lpl至暗时刻”“二哥 LPL 今年要凉啊” — 对LPL赛区表现的担忧</li>
+                        <li>“LION是美洲第几” — 对LYON赛区背景的询问</li>
+                        <li>“KC遇到一次AL，虐一次” — 历史交手印象（非本场数据）</li>
+                        <li>“bo1就是很懦的” — 对BO1赛制下队伍风格的评论</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="muted" style="margin-top: 12px; font-size:0.85rem;">
+                <strong>版本规律提炼：</strong>当前弹幕讨论指向“资源节奏快”与“卡烈组合强势”的版本特征，KC的放龙决策与版本强调资源控制的趋势形成矛盾，构成负面信号。
+            </div>
+        </div>
+        <!-- ==================== 10 预测验证回填 ==================== -->
+        <div class="card">
+            <h2><span class="no">10</span>预测验证回填</h2>
+            <div class="muted" style="margin-bottom: 12px;">本节点为局中快照，尚无终局结果可回填。以下为待验证预测项：</div>
+            <table class="table-mini">
+                <thead>
+                    <tr><th>预测项</th><th>当前信号</th><th>验证条件</th><th>状态</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>KC能否稳住对线期</td><td>弹幕提及“三路对线劣势”</td><td>10分钟经济差 / 补刀差</td><td><span class="badge badge-gray">待观察</span></td></tr>
+                    <tr><td>资源控制争议走向</td><td>“优势放龙”质疑集中</td><td>首个小龙/先锋归属</td><td><span class="badge badge-gray">待观察</span></td></tr>
+                    <tr><td>saint vs 雅虎对位结果</td><td>灰信号调侃</td><td>对位经济/击杀参与</td><td><span class="badge badge-gray">待观察</span></td></tr>
+                    <tr><td>KC下路能否打出优势</td><td>“欧洲第一ADC”正面评价</td><td>下路对线补刀/击杀</td><td><span class="badge badge-gray">待观察</span></td></tr>
+                </tbody>
+            </table>
+            <div class="muted" style="margin-top: 10px; font-size:0.8rem;">
+                预测验证需等待官方数据回填及后续赛况，当前不构成确定性结论。
+            </div>
+        </div>
+        <!-- ==================== 11 数据与溯源 ==================== -->
+        <div class="card">
+            <h2><span class="no">11</span>数据与溯源</h2>
+            <div class="grid-3">
+                <div>
+                    <h3 style="margin-top:0;">实际数据源</h3>
+                    <ul class="bullet-list" style="font-size:0.85rem;">
+                        <li>规则层情报JSON（lol-hupu-1693138568577024_g1_bp_intel.json）</li>
+                        <li>弹幕切片（lol-hupu-1693138568577024_g1_bp.jsonl）</li>
+                        <li>本节点弹幕样本131条（28个分钟段）</li>
+                        <li>规则层统计：弹幕总数341，活跃用户133，密度12.3条/分</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">预期数据源</h3>
+                    <ul class="bullet-list" style="font-size:0.85rem;">
+                        <li>官方LoL=Riot小局状态（阵容窗口，开局后1分钟校准）</li>
+                        <li>官方经济/击杀/资源数据（待回填）</li>
+                        <li>盘口赔率数据（本节点无）</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">缺口</h3>
+                    <ul class="bullet-list" style="font-size:0.85rem;">
+                        <li>官方比分/经济数据未回填</li>
+                        <li>盘口赔率数据缺失</li>
+                        <li>选手对位详细数据缺失</li>
+                        <li>历史交手战绩数据未提及</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="flex-between">
+                <div class="muted" style="font-size:0.8rem;">
+                    <strong>情报输出时间：</strong>2026-10-25 04:30 北京时间（UTC+8）
+                </div>
+                <div class="muted" style="font-size:0.8rem;">
+                    数据完整性：缺源不交付完整结论 · 当前结论基于弹幕样本
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 16px;">
+                <strong>本场长期沉淀点：</strong>KC在优势局中的资源控制决策（放龙）引发观众集中质疑，结合长期特质库“被翻守不住”1次，建议后续持续跟踪KC在领先局面下的资源置换效率，作为队伍稳定性评估的关键指标。
+            </div>
+        </div>
+    </div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
