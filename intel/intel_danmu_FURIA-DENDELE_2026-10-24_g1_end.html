@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · FURIA vs DENDELE · G1</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1d1d1f;
+    line-height: 1.5;
+    padding: 24px 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1080px; margin: 0 auto; }
+  .card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+  }
+  .header-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    border-left: 4px solid #0071e3;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #86868b;
+    margin-bottom: 14px;
+  }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
+  }
+  .badge-live { background: #fff3e0; color: #e65100; }
+  .badge-pending { background: #fce4ec; color: #c62828; }
+  .badge-info { background: #e3f2fd; color: #0d47a1; }
+  .badge-warn { background: #fff8e1; color: #f57f17; }
+  .badge-gray { background: #f5f5f5; color: #616161; }
+  .badge-green { background: #e8f5e9; color: #2e7d32; }
+  h2 {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f2;
+  }
+  h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #0071e3;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+    color: #1d1d1f;
+  }
+  p { font-size: 14px; color: #424245; margin-bottom: 10px; }
+  .muted { color: #86868b; font-size: 13px; }
+  .small { font-size: 12px; }
+  .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .card { padding: 18px 16px; }
+  }
+  .stat-box {
+    background: #f5f5f7;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat-box .label { font-size: 12px; color: #86868b; margin-bottom: 4px; }
+  .stat-box .value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat-box .value.sm { font-size: 16px; }
+  .stat-box .sub { font-size: 12px; color: #86868b; margin-top: 2px; }
+  .signal-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f2;
+    align-items: flex-start;
+  }
+  .signal-item:last-child { border-bottom: none; }
+  .signal-tag {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-top: 1px;
+    white-space: nowrap;
+  }
+  .tag-risk { background: #fce4ec; color: #c62828; }
+  .tag-anchor { background: #e3f2fd; color: #0d47a1; }
+  .tag-market { background: #fff8e1; color: #f57f17; }
+  .tag-consensus { background: #e8f5e9; color: #2e7d32; }
+  .tag-gray { background: #f5f5f5; color: #616161; }
+  .signal-text { font-size: 14px; color: #1d1d1f; }
+  .signal-src { font-size: 12px; color: #86868b; margin-top: 2px; }
+  .decision-box {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    border-left: 3px solid #0071e3;
+  }
+  .decision-box .title { font-size: 13px; font-weight: 700; color: #0071e3; margin-bottom: 6px; }
+  .decision-box .text { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: #86868b;
+    font-size: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e8e8ed;
+    background: #fafafa;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #f0f0f2;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  details {
+    margin: 12px 0;
+    border: 1px solid #e8e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0071e3;
+    background: #fafafa;
+    list-style: none;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  details[open] summary { border-bottom: 1px solid #e8e8ed; }
+  .details-body { padding: 14px 16px; }
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed #f0f0f2;
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-time {
+    flex-shrink: 0;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: #0071e3;
+    font-weight: 600;
+    width: 90px;
+  }
+  .timeline-text { color: #424245; }
+  .timeline-count { color: #86868b; font-size: 11px; margin-left: 4px; }
+  .divider { height: 1px; background: #f0f0f2; margin: 16px 0; }
+  .footnote {
+    font-size: 12px;
+    color: #86868b;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f2;
+  }
+  .pill-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .pill {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    background: #f5f5f7;
+    color: #424245;
+  }
+  .pill.blue { background: #e3f2fd; color: #0d47a1; }
+  .pill.red { background: #fce4ec; color: #c62828; }
+  .pill.green { background: #e8f5e9; color: #2e7d32; }
+  .pill.orange { background: #fff3e0; color: #e65100; }
+  .kv-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f5f5f7; }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-key { color: #86868b; }
+  .kv-val { font-weight: 600; color: #1d1d1f; text-align: right; }
+  .note { font-size: 12px; color: #86868b; font-style: italic; margin-top: 6px; }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">FURIA-DENDELE 2026-10-24 g1 end</b></div>
+<div class="container">
+  <!-- ============ 头部 ============ -->
+  <div class="card header-card">
+    <h1>局中弹幕情报快照 · G1</h1>
+    <div class="subtitle">FURIA vs DENDELE · CS2 · 2026-10-24 · slug=cs2-hupu-1441778164564991679</div>
+    <div class="badge-row">
+      <span class="badge badge-live">● 局中·非终局</span>
+      <span class="badge badge-pending">结果待定 · 官方待回填</span>
+      <span class="badge badge-info">节点：G1｜局末/局间（GAME-REVIEW）</span>
+      <span class="badge badge-gray">弹幕口径 · 北京时间</span>
+    </div>
+    <p class="muted">本页为该小局唯一页面，覆盖 BP/选人、对线、关键团战、结局。进度以弹幕口径为准，结果待官方核对。无样本处标注「样本不足」，不硬造。</p>
+  </div>
+  <!-- ============ 0 核心情报速览 ============ -->
+  <div class="card">
+    <h2><span class="no">0</span>核心情报速览</h2>
+    <div class="stat-box" style="margin-bottom:16px;">
+      <div class="label">比分 / 进度（弹幕口径 · 官方待回填）</div>
+      <div class="value sm">G1 局末 · 待结算校准 · 结果待官方核对</div>
+      <div class="sub">弹幕密度 34.8 条/分 · 总弹幕 15,951 · 活跃用户 3,962</div>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag tag-risk">风险</span>
+      <div>
+        <div class="signal-text">灰信号 45 条集中指向「故意送分/买了/剧本」，观众质疑比赛真实性</div>
+        <div class="signal-src">本场弹幕 · 灰信号词表统计 → 详 §2</div>
+      </div>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag tag-anchor">锚点</span>
+      <div>
+        <div class="signal-text">G2 提及 862 条（正 26 / 负 115），负向情绪显著，Nuke 选图争议为焦点</div>
+        <div class="signal-src">本场弹幕 · 队伍提及 TOP → 详 §3/§8</div>
+      </div>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag tag-market">盘口</span>
+      <div>
+        <div class="signal-text">8 条盘口讨论，聚焦 IM 跑打 AK 送人头、15 分钟 7 人头等异常节奏</div>
+        <div class="signal-src">本场弹幕 · 盘口词表 → 详 §4</div>
+      </div>
+    </div>
+    <div class="signal-item">
+      <span class="signal-tag tag-consensus">共识</span>
+      <div>
+        <div class="signal-text">「G2 不打 Nuke」反复刷屏，观众对选图逻辑高度困惑，形成群体共识</div>
+        <div class="signal-src">本场弹幕 · 共识提炼 → 详 §5</div>
+      </div>
+    </div>
+    <div class="decision-box">
+      <div class="title">一句话决策落点</div>
+      <div class="text">G1 局末灰信号密集 + 选图争议，建议观望至官方结算，不基于弹幕口径做方向性重仓。</div>
+    </div>
+  </div>
+  <!-- ============ 1 比赛信息与结果总览 ============ -->
+  <div class="card">
+    <h2><span class="no">1</span>比赛信息与结果总览 / 状态核验</h2>
+    <div class="grid-2">
+      <div class="stat-box">
+        <div class="label">比赛</div>
+        <div class="value sm">FURIA vs DENDELE</div>
+        <div class="sub">CS2 · 2026-10-24 · G1</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">当前状态</div>
+        <div class="value sm" style="color:#c62828;">局中·非终局，结果待定</div>
+        <div class="sub">局末/局间（GAME-REVIEW）· 待官方结算校准</div>
+      </div>
+    </div>
+    <h3>状态核验</h3>
+    <div class="kv-row"><span class="kv-key">节点</span><span class="kv-val">G1｜局末/局间（GAME-REVIEW）</span></div>
+    <div class="kv-row"><span class="kv-key">时间窗估计</span><span class="kv-val">第 1 小局已结束（局末·待结算校准）</span></div>
+    <div class="kv-row"><span class="kv-key">结果状态</span><span class="kv-val" style="color:#c62828;">待官方核对 · 弹幕口径非终局</span></div>
+    <div class="kv-row"><span class="kv-key">官方源</span><span class="kv-val">CS2 = HLTV-Liquipedia（禁止从弹幕推断比分）</span></div>
+    <div class="kv-row"><span class="kv-key">弹幕样本</span><span class="kv-val">15,951 条 · 活跃用户 3,962 · 密度 34.8 条/分</span></div>
+    <div class="kv-row"><span class="kv-key">覆盖分钟段</span><span class="kv-val">181 个有弹幕分钟段（全窗口分钟级抽样）</span></div>
+    <p class="note">⚠ 本页所有比分/进度均为弹幕口径，官方结果待回填。局中页面，不构成终局结论。</p>
+  </div>
+  <!-- ============ 2 灰信号汇总 ============ -->
+  <div class="card">
+    <h2><span class="no">2</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <p>灰信号词表统计（演员/演/明演/菠菜/收米/剧本/假赛/322/送人头/买了/故意送）共命中 <strong>45 条</strong>。以下为观众质疑，<strong>非结论</strong>，需官方数据核验。</p>
+    <table>
+      <thead>
+        <tr><th>灰信号样本（节选）</th><th>类型</th><th>条数</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>故意送分给 navi</td><td>故意送分</td><td>—</td></tr>
+        <tr><td>故意送分</td><td>故意送分</td><td>—</td></tr>
+        <tr><td>几千不至于逃 几十万那是故意的</td><td>故意/金额</td><td>—</td></tr>
+        <tr><td>天禄剧本</td><td>剧本</td><td>—</td></tr>
+        <tr><td>故意送狙击枪拿一分</td><td>故意送</td><td>—</td></tr>
+        <tr><td>买了</td><td>买了</td><td>—</td></tr>
+        <tr><td>他妈故意的吧，我操</td><td>故意</td><td>—</td></tr>
+        <tr><td>b 点故意不守啊</td><td>故意不守</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">灰信号合计 45 条 · 来源：本场弹幕词表统计 · 观众质疑，非结论</p>
+    <details>
+      <summary>灰信号完整弹幕原文摘录（折叠）</summary>
+      <div class="details-body">
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">故意送分给navi</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">故意送分</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">几千不至于逃 几十万那是故意的</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">天禄剧本</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">故意送狙击枪拿一分</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">买了</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">他妈故意的吧，我操</span></div>
+        <div class="timeline-item"><span class="timeline-time">—</span><span class="timeline-text">b点故意不守啊</span></div>
+        <p class="note">以上为灰信号词表命中样本节选，完整 45 条已计入统计。观众质疑，非结论。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 3 BP 锚点与选人情报 ============ -->
+  <div class="card">
+    <h2><span class="no">3</span>BP 锚点与选人情报</h2>
+    <h3>本局地图 / 选图争议</h3>
+    <p>弹幕高频讨论选图为 <strong>Nuke（核子）</strong>，观众反复质疑「G2 不是不打 Nuke 吗」「G2 不是永办核子吗」，形成选图逻辑争议。同时出现「G2 放核子 navi 放沙二」的 BP 解读。</p>
+    <div class="pill-list">
+      <span class="pill blue">Nuke（核子）</span>
+      <span class="pill blue">沙二（Dust2）</span>
+      <span class="pill orange">CT 图</span>
+      <span class="pill">G2 练图</span>
+      <span class="pill">G2 不 ban 这图</span>
+    </div>
+    <h3>本局阵容（选手 · 队伍）</h3>
+    <p class="muted">官方 window 阵容待回填；弹幕提及选手如下（带提及量）：</p>
+    <table>
+      <thead><tr><th>选手</th><th>提及量</th><th>正/负</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>Niko</td><td>33</td><td>正 3 / 负 0</td><td>弹幕讨论指挥/表现</td></tr>
+        <tr><td>Zywoo</td><td>21</td><td>正 0 / 负 2</td><td>TOP1 讨论</td></tr>
+        <tr><td>donk</td><td>13</td><td>正 0 / 负 2</td><td>TOP1 讨论</td></tr>
+        <tr><td>33</td><td>5</td><td>正 0 / 负 0</td><td>—</td></tr>
+        <tr><td>Chovy</td><td>4</td><td>正 1 / 负 1</td><td>—</td></tr>
+        <tr><td>Yatoro</td><td>3</td><td>正 1 / 负 0</td><td>—</td></tr>
+        <tr><td>ropz</td><td>2</td><td>正 0 / 负 0</td><td>—</td></tr>
+        <tr><td>Collapse</td><td>1</td><td>正 0 / 负 0</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <h3>BP 后战绩情报</h3>
+    <p class="muted">无战绩情报提及（本节点弹幕未出现 BP 后战绩数据）。</p>
+    <details>
+      <summary>BP / 选图相关弹幕原文摘录（折叠）</summary>
+      <div class="details-body">
+        <div class="timeline-item"><span class="timeline-time">00:24</span><span class="timeline-text">g2打nuke？<span class="timeline-count">×3</span></span></div>
+        <div class="timeline-item"><span class="timeline-time">00:24</span><span class="timeline-text">g2不是不玩nuke吗<span class="timeline-count">×2</span></span></div>
+        <div class="timeline-item"><span class="timeline-time">00:28</span><span class="timeline-text">G2不是不打核子吗<span class="timeline-count">×2</span></span></div>
+        <div class="timeline-item"><span class="timeline-time">00:28</span><span class="timeline-text">G2放核子 navi放沙二</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:31</span><span class="timeline-text">为什么选nuke啊<span class="timeline-count">×2</span></span></div>
+        <div class="timeline-item"><span class="timeline-time">00:31</span><span class="timeline-text">CT图</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:36</span><span class="timeline-text">G2这图是真烂</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:37</span><span class="timeline-text">G2不ban这图是有点秀</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">G2不是永办核子吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:57</span><span class="timeline-text">G2不是不打盒子了吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:07</span><span class="timeline-text">G2怎么打nuke了？</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:07</span><span class="timeline-text">nuke一年没打了 哪有数据啊</span></div>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 4 盘口与市场讨论 ============ -->
+  <div class="card">
+    <h2><span class="no">4</span>盘口与市场讨论</h2>
+    <p>盘口相关讨论共 <strong>8 条</strong>，聚焦异常节奏与选手操作质疑：</p>
+    <table>
+      <thead><tr><th>盘口讨论样本</th><th>指向</th></tr></thead>
+      <tbody>
+        <tr><td>这im肯定脑子有问题,玩跑打ak还给敌人送人头</td><td>IM 操作质疑</td></tr>
+        <tr><td>这tm十五分钟七个人头，什么玩意</td><td>节奏异常</td></tr>
+        <tr><td>他妈的，十几分钟了，要不要打一下了？一个人头都没有</td><td>节奏异常</td></tr>
+        <tr><td>跳别人头上去了</td><td>操作失误</td></tr>
+        <tr><td>这比赛打的也太丑陋了吧，疯狂摸烟偷人头这一块</td><td>比赛观感</td></tr>
+        <tr><td>NAVI这进攻就是换人头</td><td>战术质疑</td></tr>
+        <tr><td>搁中路下打人头，喜欢放包点，变态</td><td>战术质疑</td></tr>
+        <tr><td>18分18个人头</td><td>数据节奏</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">盘口讨论 8 条 · 来源：本场弹幕盘口词表 · 观众讨论，非投注建议</p>
+  </div>
+  <!-- ============ 5 方向性情报板 ============ -->
+  <div class="card">
+    <h2><span class="no">5</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <h3>正锚</h3>
+    <div class="pill-list">
+      <span class="pill green">Niko 提及 33 条（正 3 / 负 0）</span>
+      <span class="pill green">WDF 进化讨论（正向前景）</span>
+      <span class="pill green">「5 分锁住了」防守韧性讨论</span>
+    </div>
+    <h3>负锚</h3>
+    <div class="pill-list">
+      <span class="pill red">G2 提及 862 条（正 26 / 负 115）</span>
+      <span class="pill red">「G2 进攻更加菜」「G2 这图是真烂」</span>
+      <span class="pill red">「G2 又给 nv 卖分」反复出现</span>
+      <span class="pill red">「不敢赢这就是 g2」</span>
+    </div>
+    <h3>群体共识（+分歧 + 样本量）</h3>
+    <table>
+      <thead><tr><th>主题</th><th>方向</th><th>条数（带量）</th><th>关键样本</th><th>多源状态</th></tr></thead>
+      <tbody>
+        <tr><td>G2 不打 Nuke</td><td>质疑选图</td><td>高频（×2~×3 多组）</td><td>「g2不是不玩nuke吗」「G2不是永办核子吗」</td><td>同向=强信号</td></tr>
+        <tr><td>G2 进攻菜</td><td>负向</td><td>多条</td><td>「G2进攻更加菜」「G2这图是真烂」</td><td>同向=强信号</td></tr>
+        <tr><td>故意送分/买了</td><td>灰信号</td><td>45 条灰信号</td><td>「故意送分给navi」「买了」</td><td>背离=分歧信号</td></tr>
+        <tr><td>NAVI 防守强</td><td>正向</td><td>多条</td><td>「navi强的是防守」「NAVI要赢自己的选图了吗」</td><td>同向=强信号</td></tr>
+        <tr><td>5 分锁住</td><td>中性偏正</td><td>多条</td><td>「5分锁住了有感觉吗」「5分够了」</td><td>同向=强信号</td></tr>
+      </tbody>
+    </table>
+    <p class="note">共识→信号链：G2 负向情绪 + 选图争议同向叠加 → 强负向信号；灰信号 45 条与比赛观感背离 → 分歧信号/共识盲区。</p>
+    <h3>灰信号条件预测</h3>
+    <p>若官方结算确认 G1 结果与弹幕口径一致，则灰信号（故意送分/买了）可能进一步发酵；若官方数据与弹幕质疑背离，则灰信号视为观众情绪噪音。当前<strong>样本不足以支撑方向性重仓</strong>。</p>
+  </div>
+  <!-- ============ 6 情报含义与决策落点 ============ -->
+  <div class="card">
+    <h2><span class="no">6</span>情报含义与决策落点（LONG / SHORT）</h2>
+    <div class="grid-2">
+      <div class="stat-box" style="border-left:3px solid #2e7d32;">
+        <div class="label">LONG 侧（正向）</div>
+        <div class="value sm">NAVI 防守韧性 / Niko 正向提及</div>
+        <div class="sub">「navi强的是防守」「5分锁住了」— 本场弹幕</div>
+      </div>
+      <div class="stat-box" style="border-left:3px solid #c62828;">
+        <div class="label">SHORT 侧（负向）</div>
+        <div class="value sm">G2 负向情绪 115 条 / 选图争议</div>
+        <div class="sub">「G2进攻更加菜」「G2又给nv卖分」— 本场弹幕</div>
+      </div>
+    </div>
+    <h3>决策落点</h3>
+    <p><strong>1. 观望为主：</strong>G1 局末灰信号 45 条密集，官方结果待回填，不基于弹幕口径做方向性重仓。</p>
+    <p><strong>2. 负向锚点明确：</strong>G2 负向提及 115 条 vs 正向 26 条，负向情绪显著，若后续局延续可关注 G2 相关 SHORT 侧。</p>
+    <p><strong>3. 灰信号需官方核验：</strong>「故意送分/买了」等 45 条灰信号为观众质疑，非结论，需 HLTV-Liquipedia 官方数据核验后再定。</p>
+    <p><strong>4. 样本不足处：</strong>BP 后战绩情报无提及，官方阵容待回填，相关结论标注缺口。</p>
+  </div>
+  <!-- ============ 7 逐局复盘 ============ -->
+  <div class="card">
+    <h2><span class="no">7</span>逐局复盘（证据层）</h2>
+    <h3>G1 已发生片段 + 时间线</h3>
+    <p class="muted">以下为弹幕口径时间线（北京时间），覆盖本节点阶段时间窗。未发生部分标注「待观察」。</p>
+    <details>
+      <summary>G1 完整弹幕时间线（折叠 · 真实时间戳 + 原文带量）</summary>
+      <div class="details-body">
+        <div class="timeline-item"><span class="timeline-time">00:18</span><span class="timeline-text">逆天 ×3｜这个doc打得过navi的pdf么 ×2｜这是人啊 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:19</span><span class="timeline-text">天生赢家 ×3｜右边谁是指挥 ×2｜DENDELE指挥谁啊｜Navi 啥时候开</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:20</span><span class="timeline-text">💃🏻💃🏻💃🏻💃 ×4｜MOLODOY步枪进步很多｜NAVI</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:21</span><span class="timeline-text">ECO说这么多</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:22</span><span class="timeline-text">被打死了 ×3｜上次的赏金赛 蜜蜂黑豹猎鹰都输了 ×2｜G2有画面了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:23</span><span class="timeline-text">开了开了开了 ×8｜考拉不是在shark吗 ×4</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:24</span><span class="timeline-text">g2打nuke？×3｜g2不是不玩nuke吗 ×2｜top1 ×2｜两个三线队闹麻了 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:25</span><span class="timeline-text">两个三线队闹麻了 ×4｜我们eco了吧 ×2｜G2练图呢</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:26</span><span class="timeline-text">top1 ×4｜navi不打沙二你猜当时怎么七擒的尼尼孩孩 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:27</span><span class="timeline-text">洞克以前的top1，载物现在的top1，马卡泽未来的TOP1 ×3｜天禄明天几点打 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:28</span><span class="timeline-text">为什么换阳叔 ×3｜G2不是不打核子吗 ×2｜zao哥1v4了 ×2｜G2放核子 navi放沙二</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:29</span><span class="timeline-text">主播帅 ×5｜李子快跑 债务来了！！！×4｜小李子避税被查出来了 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:30</span><span class="timeline-text">李神快跑，这个比赛有债务 ×2｜0比12｜4颗防炸？</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:31</span><span class="timeline-text">为什么选nuke啊 ×2｜神了 ×2｜CT图</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:32</span><span class="timeline-text">navi王朝了有感觉吗 ×2｜小李子被债务大调查出避税了 ×2｜+83, 爽死了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:33</span><span class="timeline-text">马西西明天天禄打谁 ×4｜IM？×2｜G兔现在纯吃老本｜im卧槽你的</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:34</span><span class="timeline-text">换位置了 ×3｜重奶的尬子 ×3｜pdf打得过doc么 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:35</span><span class="timeline-text">坐中间可以喷两边 ×2｜黑豹也干了 ×2｜G2多久不打核子了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:36</span><span class="timeline-text">4打5保枪？懦夫｜G2这图是真烂｜G2进攻更加菜</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:37</span><span class="timeline-text">G2不ban这图是有点秀｜G2也要成0图队｜NAVI要赢自己的选图了吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:38</span><span class="timeline-text">法尔孔哪个流 ×7｜5分够够的了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:39</span><span class="timeline-text">黑豹被虐了 ×3｜5分锁住了有感觉吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:40</span><span class="timeline-text">马西西生日快乐 ×7｜5分锁住了了啊</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:41</span><span class="timeline-text">你们eco了吧 ×2｜已经搞到！×2｜打了4.98个 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:42</span><span class="timeline-text">navi没分咯 ×4｜夯特斯德哥尔摩就打这图了 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:43</span><span class="timeline-text">刚来 帽子提a了吗？×2｜小李子因被查出避税而眉头紧锁 ×2｜im跑打</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:44</span><span class="timeline-text">jeeplay ×2｜2回合杀6个 后面杀一个｜G2找的这把狙简直是败笔</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:45</span><span class="timeline-text">变态 ×5｜bt ×4｜漂漂漂 ×4</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:46</span><span class="timeline-text">小李子随便换个人不是纯加强吗 ×2｜5分够了｜g2有自己的j神</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:47</span><span class="timeline-text">jee ×7｜又快又快 ×5｜快 ×4</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:48</span><span class="timeline-text">JL是不想在NAVI打了 ×2｜7分了｜G2最菜的狙</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:49</span><span class="timeline-text">bt ×2｜勾神神了 ×2｜3打5？</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:50</span><span class="timeline-text">🏀🦍🏀🦍 ×4｜G2不是永办核子吗</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:51</span><span class="timeline-text">下把是什么图 ×2｜g2不是不打核子吗｜g2的进攻方我觉得不用看了</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:52</span><span class="timeline-text">GG｜Niko在hunter目前就是个弟弟｜navi强的是防守</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:53</span><span class="timeline-text">🦍🏀🦍🏀 ×3｜g2不是不打核子吗？</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:54</span><span class="timeline-text">跑打之神 ×3｜c+兄弟来了 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:55</span><span class="timeline-text">我们eco了是吧 ×3｜IM适合打瓦</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:56</span><span class="timeline-text">变态 ×3｜自古ct不抬头 ×3｜没有人类了 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:57</span><span class="timeline-text">G2上次连天禄都打不过｜G2又给nv卖分。。。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:58</span><span class="timeline-text">1点 ×3｜5点 ×2｜这俩队伍半斤八两 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">00:59</span><span class="timeline-text">还是得靠重神 ×3｜各种放人的 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:00</span><span class="timeline-text">navi现在就二线中水平 ×4｜恐怖乱摸人 ×3｜瞎摸进攻vs瞎子防守 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:01</span><span class="timeline-text">fwlpl ×8｜这波niko指挥的 ×5</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:02</span><span class="timeline-text">牛逼 ×3｜superpPIN ×2｜反向super nip ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:03</span><span class="timeline-text">super pin ×5｜super g2 ×4｜苏卡布雷德 ×4</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:04</span><span class="timeline-text">跟回家一样 ×6｜im ×3｜管道最速传说 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:05</span><span class="timeline-text">吹风什么 ×8｜一把吹风机吧 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:06</span><span class="timeline-text">navi 今年 major 完绝对要换阵容 ×2｜G2又给nv卖分。。。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:07</span><span class="timeline-text">wdf真是进化了啊 ×2｜G2怎么打nuke了？｜WDF一直厉害的</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:08</span><span class="timeline-text">A都摸透还不下铁板｜G2又给nv卖分。。。。</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:09</span><span class="timeline-text">bot ×13｜b0t ×3｜BOT ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:10</span><span class="timeline-text">2垃圾队 给猎鹰炸一下就老实 ×2｜Aleksib神了</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:11</span><span class="timeline-text">大错哥，我们b了 ×7｜道歉 ×5｜nb ×4</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:12</span><span class="timeline-text">nb ×4｜G2=GG ×3｜开了 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:13</span><span class="timeline-text">pdf ×2｜森像尽显 ×2｜NV赶紧躺下</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:14</span><span class="timeline-text">pdf ×4｜C了整场，关键枪空了 ×2｜GG</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:15</span><span class="timeline-text">不敢赢这就是g2 ×5｜亚洲剧情 ×5｜漂！漂！漂！×5</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:16</span><span class="timeline-text">4打3，墨迹半天，然后还压进去，离谱</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:17</span><span class="timeline-text">变态 ×16｜牛逼 ×9｜亚洲剧情 ×8｜神了 ×6</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:18</span><span class="timeline-text">回放一下 ×4｜G2企业文化 不捡包不下包不拆包</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:19</span><span class="timeline-text">互相丢枪没绷住 ×2｜im好关门</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:20</span><span class="timeline-text">NZ伸头故意搞点动静都能拖两秒</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:21</span><span class="timeline-text">看看数据 ×3｜谁举报谁儿子啊 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:22</span><span class="timeline-text">塔赞 ×7｜看黑豹 ×6</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:23</span><span class="timeline-text">没有 ×9｜全华班 ×6</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:24</span><span class="timeline-text">开一局 ×6｜左边是华语金曲班 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:25</span><span class="timeline-text">洛克 ×10｜听见你说 ×9｜新英雄 ×9</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:26</span><span class="timeline-text">模拟一下 ×4｜navi和g2的数据 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:27</span><span class="timeline-text">LOL 真无聊阿 ×2｜怎么不放爆能器啊 ×2</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:28</span><span class="timeline-text">AL ×4｜al ×4｜你别急 这不是首胜来了 ×3</span></div>
+        <div class="timeline-item"><span class="timeline-time">01:29</span><span class="timeline-text">mo模拟一下呗 ×4｜16分钟经济差不多 两波团战见分晓</span></div>
+        <p class="note">时间线为分钟级抽样，覆盖 181 个有弹幕分钟段。未发生部分（G1 结算后）标注「待观察」。</p>
+      </div>
+    </details>
+    <h3>关键团战 / 节奏片段</h3>
+    <p>弹幕提及「3打5」「4打5保枪」「4打3，墨迹半天」等关键局面；「5分锁住了」反复出现，指向防守方韧性讨论。具体团战细节待官方数据回填。</p>
+    <p class="muted">未发生部分：G1 结算结果、后续小局 → 待观察。</p>
+  </div>
+  <!-- ============ 8 队伍/人员画像 ============ -->
+  <div class="card">
+    <h2><span class="no">8</span>队伍 / 人员画像（带提及量）</h2>
+    <h3>队伍提及 TOP（真实）</h3>
+    <table>
+      <thead><tr><th>队伍</th><th>提及量</th><th>正/负</th></tr></thead>
+      <tbody>
+        <tr><td>G2</td><td>862</td><td>正 26 / 负 115</td></tr>
+        <tr><td>Navi / NAVI</td><td>422</td><td>正 18 / 负 48</td></tr>
+        <tr><td>FURIA</td><td>67</td><td>正 1 / 负 1</td></tr>
+        <tr><td>AL</td><td>60</td><td>正 4 / 负 1</td></tr>
+        <tr><td>FLC</td><td>54</td><td>正 5 / 负 7</td></tr>
+        <tr><td>NIP</td><td>30</td><td>正 0 / 负 4</td></tr>
+        <tr><td>TES</td><td>19</td><td>正 2 / 负 1</td></tr>
+      </tbody>
+    </table>
+    <h3>队伍特质统计（真实）</h3>
+    <div class="pill-list">
+      <span class="pill orange">顺风隐身 4</span>
+      <span class="pill red">被翻守不住 26</span>
+      <span class="pill green">韧性逆转 5</span>
+      <span class="pill red">心态摆烂 86</span>
+      <span class="pill blue">慢热手热 3</span>
+      <span class="pill">打法风格 65</span>
+      <span class="pill">选手特质 23</span>
+    </div>
+    <details>
+      <summary>队伍 / 人员长画像（折叠 · 带提及量）</summary>
+      <div class="details-body">
+        <h3>G2（提及 862 · 正 26 / 负 115）</h3>
+        <p>负向情绪显著，弹幕高频出现「G2进攻更加菜」「G2这图是真烂」「G2又给nv卖分」「不敢赢这就是g2」。选图 Nuke 争议为负向焦点。特质统计中「心态摆烂 86」为最高项，与弹幕负向情绪一致。</p>
+        <h3>NAVI（提及 422 · 正 18 / 负 48）</h3>
+        <p>弹幕讨论「navi强的是防守」「NAVI要赢自己的选图了吗」「navi王朝了有感觉吗」。负向提及 48 条，含「navi现在就二线中水平」等质疑。</p>
+        <h3>FURIA（提及 67 · 正 1 / 负 1）</h3>
+        <p>本场提及量较低，弹幕样本不足，画像待后续局补充。</p>
+        <h3>选手画像</h3>
+        <p>Niko 提及 33（正 3 / 负 0），弹幕讨论「这波niko指挥的」「Niko在hunter目前就是个弟弟」。Zywoo 提及 21（正 0 / 负 2），donk 提及 13（正 0 / 负 2），均为 TOP1 讨论语境。</p>
+        <p class="note">画像引用长期库 + 本场弹幕，带提及量。样本不足处标注。</p>
+      </div>
+    </details>
+  </div>
+  <!-- ============ 9 联赛规律与版本 ============ -->
+  <div class="card">
+    <h2><span class="no">9</span>联赛规律与版本</h2>
+    <h3>本场弹幕反映的联赛/版本讨论</h3>
+    <p>弹幕出现「nuke一年没打了 哪有数据啊」「G2不是不打核子吗」等选图版本讨论，指向 Nuke 在当前版本/队伍图池中的边缘地位。同时出现「navi不打沙二你猜当时怎么七擒的尼尼孩孩」等历史对阵规律讨论。</p>
+    <h3>队伍特质规律（长期库）</h3>
+    <div class="kv-row"><span class="kv-key">心态摆烂</span><span class="kv-val">86（最高项）</span></div>
+    <div class="kv-row"><span class="kv-key">打法风格</span><span class="kv-val">65</span></div>
+    <div class="kv-row"><span class="kv-key">被翻守不住</span><span class="kv-val">26</span></div>
+    <div class="kv-row"><span class="kv-key">韧性逆转</span><span class="kv-val">5</span></div>
+    <div class="kv-row"><span class="kv-key">顺风隐身</span><span class="kv-val">4</span></div>
+    <div class="kv-row"><span class="kv-key">慢热手热</span><span class="kv-val">3</span></div>
+    <p class="note">版本/联赛规律样本有限，部分为弹幕讨论，非官方版本数据。样本不足处不硬造。</p>
+  </div>
+  <!-- ============ 10 预测验证回填 ============ -->
+  <div class="card">
+    <h2><span class="no">10</span>预测验证回填</h2>
+    <h3>本节点预测状态</h3>
+    <table>
+      <thead><tr><th>预测项</th><th>状态</th><th>验证结果</th></tr></thead>
+      <tbody>
+        <tr><td>G1 结果（弹幕口径）</td><td>待官方回填</td><td>—</td></tr>
+        <tr><td>G2 负向情绪延续</td><td>本场弹幕已观察</td><td>负向 115 条 vs 正向 26 条，待后续局验证</td></tr>
+        <tr><td>灰信号（故意送分/买了）</td><td>待官方核验</td><td>45 条灰信号，非结论</td></tr>
+        <tr><td>选图 Nuke 争议</td><td>本场弹幕已观察</td><td>高频刷屏，待官方 BP 数据回填</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">本页为局中页面，预测验证需待官方结算与后续局数据回填。当前不交付完整结论。</p>
+  </div>
+  <!-- ============ 11 数据与溯源 ============ -->
+  <div class="card">
+    <h2><span class="no">11</span>数据与溯源</h2>
+    <h3>数据完整性（三栏）</h3>
+    <div class="grid-3">
+      <div class="stat-box">
+        <div class="label">实际数据源</div>
+        <div class="value sm" style="font-size:13px;">规则层情报 JSON + 弹幕切片 + 本场弹幕样本 360 条</div>
+        <div class="sub">15,951 条弹幕 · 3,962 活跃用户 · 181 分钟段</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">预期数据源</div>
+        <div class="value sm" style="font-size:13px;">HLTV-Liquipedia 官方小局状态 / 阵容 / 比分</div>
+        <div class="sub">官方 window 阵容，开局后 1 分钟校准</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">缺口</div>
+        <div class="value sm" style="font-size:13px;">官方比分待回填 · BP 后战绩情报无提及 · 官方阵容待校准</div>
+        <div class="sub">缺源不交付完整结论</div>
+      </div>
+    </div>
+    <h3>关键信息 TOP（5-7 条）</h3>
+    <table>
+      <thead><tr><th>类型</th><th>一句话</th><th>来源 / 置信</th></tr></thead>
+      <tbody>
+        <tr><td><span class="signal-tag tag-risk">风险</span></td><td>灰信号 45 条集中指向故意送分/买了/剧本</td><td>本场弹幕词表 · 中</td></tr>
+        <tr><td><span class="signal-tag tag-anchor">锚点</span></td><td>G2 提及 862 条，负向 115 条显著</td><td>本场弹幕 · 高</td></tr>
+        <tr><td><span class="signal-tag tag-market">盘口</span></td><td>8 条盘口讨论聚焦 IM 跑打 AK 与异常节奏</td><td>本场弹幕 · 中</td></tr>
+        <tr><td><span class="signal-tag tag-consensus">共识</span></td><td>「G2 不打 Nuke」反复刷屏，选图争议</td><td>本场弹幕 · 高</td></tr>
+        <tr><td><span class="signal-tag tag-gray">灰信号</span></td><td>「G2 又给 nv 卖分」多次出现</td><td>本场弹幕 · 中</td></tr>
+        <tr><td><span class="signal-tag tag-anchor">锚点</span></td><td>NAVI 防守韧性讨论（「5 分锁住了」）</td><td>本场弹幕 · 中</td></tr>
+        <tr><td><span class="signal-tag tag-risk">风险</span></td><td>官方结果待回填，局中非终局</td><td>规则层 · 高</td></tr>
+      </tbody>
+    </table>
+    <h3>情报来源分层</h3>
+    <div class="pill-list">
+      <span class="pill blue">本场弹幕（核心）</span>
+      <span class="pill">前局弹幕</span>
+      <span class="pill">历史画像</span>
+      <span class="pill orange">盘口</span>
+      <span class="pill red">推测·待验证</span>
+    </div>
+    <h3>溯源文件</h3>
+    <div class="kv-row"><span class="kv-key">规则层情报 JSON</span><span class="kv-val mono">/opt/danmu-intel/runtime/vps_intel/cs2-hupu-1441778164564991679_g1_end_intel.json</span></div>
+    <div class="kv-row"><span class="kv-key">弹幕切片</span><span class="kv-val mono">/opt/danmu-intel/data/intel_slices/cs2-hupu-1441778164564991679_g1_end.jsonl</span></div>
+    <div class="kv-row"><span class="kv-key">官方源</span><span class="kv-val">CS2 = HLTV-Liquipedia（禁止从弹幕推断比分）</span></div>
+    <div class="kv-row"><span class="kv-key">情报输出时间</span><span class="kv-val">2026-10-25 01:30 北京时间（UTC+8）</span></div>
+    <div class="footnote">
+      <p>本页为局中·非终局快照，结果待官方回填。所有时间均为北京时间（UTC+8）。灰信号为观众质疑，非结论。样本不足处标注「样本不足」，不硬造。</p>
+    </div>
+  </div>
+  <!-- ============ 本场长期沉淀点 ============ -->
+  <div class="card" style="border-left:4px solid #0071e3;">
+    <h2 style="border-bottom:none;margin-bottom:8px;"><span class="no" style="background:#0071e3;">★</span>本场长期沉淀点</h2>
+    <p><strong>1. G2 负向情绪锚点：</strong>本场 G2 提及 862 条中负向 115 条 vs 正向 26 条，负向比约 4.4:1，选图 Nuke 争议为焦点，可作为后续 G2 相关局的情绪基线参考。</p>
+    <p><strong>2. 灰信号密集度：</strong>45 条灰信号（故意送分/买了/剧本）在局末集中出现，需与官方数据交叉核验，若后续局重复出现则升级为长期观察项。</p>
+    <p><strong>3. 队伍特质「心态摆烂 86」：</strong>长期库最高项，与本场 G2 负向情绪一致，可作为队伍画像长期沉淀。</p>
+    <p class="note">以上沉淀点基于本场弹幕真实统计，样本不足处不硬造。</p>
+  </div>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
