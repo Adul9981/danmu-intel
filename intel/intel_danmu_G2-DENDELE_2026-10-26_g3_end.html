@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>G2 vs DENDELE · G3 局末弹幕情报快照</title>
+  <style>
+    :root{
+      --bg:#f5f5f7;
+      --card:#fff;
+      --text:#1d1d1f;
+      --muted:#6e6e73;
+      --line:#e5e5ea;
+      --soft:#f9f9fb;
+      --accent:#0071e3;
+      --accent-soft:#eaf4ff;
+      --warn:#9a5b00;
+      --warn-soft:#fff5df;
+      --risk:#a52a1f;
+      --risk-soft:#fff0ee;
+      --ok:#176b45;
+      --ok-soft:#edf8f2;
+      --radius:18px;
+      --shadow:0 1px 2px rgba(0,0,0,.035),0 8px 28px rgba(0,0,0,.045);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 8% -8%,rgba(0,113,227,.09),transparent 28rem),
+        var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size:15px;
+      line-height:1.62;
+      -webkit-font-smoothing:antialiased;
+    }
+    .page{width:min(1060px,calc(100% - 32px));margin:30px auto 42px}
+    .hero,.card{
+      background:rgba(255,255,255,.96);
+      border:1px solid rgba(0,0,0,.045);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:26px;overflow:hidden}
+    .card{padding:23px 24px;margin-top:16px}
+    .badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
+    .badge,.tag{
+      display:inline-flex;align-items:center;gap:5px;
+      border-radius:999px;line-height:1.35;white-space:nowrap
+    }
+    .badge{padding:5px 10px;background:#f1f1f4;color:#48484d;font-size:12px;font-weight:650}
+    .badge.status{background:var(--warn-soft);color:var(--warn);border:1px solid #f0d9ae}
+    .badge.progress{background:var(--accent-soft);color:var(--accent)}
+    .tag{padding:3px 8px;background:#f1f1f4;color:#55555b;font-size:11px;font-weight:600;margin:2px 3px 2px 0}
+    .tag.blue{background:var(--accent-soft);color:var(--accent)}
+    .tag.ok{background:var(--ok-soft);color:var(--ok)}
+    .tag.warn{background:var(--warn-soft);color:var(--warn)}
+    .tag.risk{background:var(--risk-soft);color:var(--risk)}
+    h1{margin:0;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.035em}
+    .subtitle{margin:8px 0 0;color:var(--muted);font-size:13px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .status-banner{
+      margin:18px 0;
+      padding:15px 16px;
+      background:linear-gradient(180deg,#fffaf0,#fff6e6);
+      border:1px solid #efd8ab;
+      border-radius:14px;
+      color:#6d4305;
+      font-size:13.5px;
+    }
+    .status-banner strong{display:block;color:var(--warn);font-size:15px;margin-bottom:3px}
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:9px;
+    }
+    .meta>div{
+      padding:12px 13px;
+      background:var(--soft);
+      border:1px solid #efeff2;
+      border-radius:12px;
+      min-height:78px;
+    }
+    .meta span{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}
+    .meta b{display:block;font-size:13.5px;line-height:1.45;font-weight:650}
+    .meta small{color:var(--muted);font-weight:400}
+    .source-strip{
+      margin-top:11px;padding:12px 14px;
+      border-left:3px solid var(--accent);
+      background:#f7fbff;border-radius:9px;
+      color:#404047;font-size:12.5px
+    }
+    h2{
+      display:flex;align-items:center;gap:10px;
+      margin:0 0 15px;
+      font-size:21px;line-height:1.3;letter-spacing:-.02em
+    }
+    h2 .no{
+      display:inline-grid;place-items:center;
+      width:29px;height:29px;flex:0 0 29px;
+      border-radius:9px;
+      background:var(--accent);
+      color:#fff;font-size:14px;font-weight:750
+    }
+    h3{margin:0 0 8px;font-size:15px;line-height:1.4}
+    p{margin:0 0 10px}
+    .lead{color:#4c4c51;font-size:14px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+    th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+    th{background:#f8f8fa;color:#55555b;font-size:11.5px;font-weight:700;white-space:nowrap}
+    tr:last-child td{border-bottom:0}
+    td b{font-weight:650}
+    .fact-list{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:9px;margin:12px 0 0
+    }
+    .fact{
+      padding:11px 12px;background:var(--soft);
+      border:1px solid #eeeeF2;border-radius:11px;
+      font-size:12.5px;color:#4c4c51
+    }
+    .fact b{display:block;color:var(--text);font-size:11px;margin-bottom:2px}
+    .note{
+      padding:12px 13px;border-radius:11px;
+      background:#f7f7f9;color:#55555b;font-size:12.5px;
+      border:1px solid #ececf0
+    }
+    .system-slot{
+      padding:14px;border:1px dashed #cfd9e5;border-radius:13px;background:#fbfdff
+    }
+    .system-label{
+      color:var(--muted);font-size:11.5px;margin-bottom:9px
+    }
+    .system-slot h3{font-size:13px;margin:4px 0 7px}
+    .direction-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:11px
+    }
+    .direction{
+      padding:15px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff
+    }
+    .direction.positive{border-top:3px solid var(--ok)}
+    .direction.negative{border-top:3px solid var(--risk)}
+    .direction.consensus{border-top:3px solid var(--accent)}
+    .direction.conditional{border-top:3px solid var(--warn)}
+    .answer{
+      margin:0 0 9px;
+      font-size:16px;font-weight:700;line-height:1.45;letter-spacing:-.01em
+    }
+    .direction p.body{color:#55555b;font-size:12.8px}
+    .facts{display:grid;gap:6px;margin:11px 0}
+    .facts .fact{padding:8px 9px;background:#fafafd}
+    .facts .fact span{color:#55555b}
+    .narrative{
+      margin-top:12px;padding:14px;
+      border-radius:13px;background:#f8fafc;
+      border:1px solid #e6edf4
+    }
+    .timeline{
+      display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:7px;margin-top:10px
+    }
+    .slot{
+      padding:9px;border-radius:10px;background:#fff;border:1px solid #e9edf2
+    }
+    .slot time{display:block;color:var(--muted);font-size:10.5px}
+    .slot strong{display:block;font-size:17px;line-height:1.35}
+    .slot span{display:block;color:var(--muted);font-size:10.5px}
+    details{
+      margin-top:12px;border:1px solid var(--line);
+      border-radius:12px;background:#fbfbfc
+    }
+    summary{
+      cursor:pointer;padding:12px 13px;
+      font-size:12.5px;font-weight:650;color:#45454a
+    }
+    details .inner{padding:0 13px 13px}
+    .source-line{
+      margin-top:11px;color:var(--muted);
+      font-size:11.5px;line-height:1.55
+    }
+    .risk-box{
+      padding:13px 14px;border-radius:12px;
+      background:var(--risk-soft);border:1px solid #f0cbc7;
+      color:#6b2720;font-size:12.8px;margin-bottom:11px
+    }
+    .risk-box b{display:block;color:var(--risk);margin-bottom:2px}
+    .discipline{
+      margin-top:11px;padding:12px 13px;border-radius:11px;
+      background:#f7f7f9;color:#505057;font-size:12px
+    }
+    footer{
+      padding:20px 4px 0;color:var(--muted);
+      font-size:11.5px;line-height:1.65;text-align:center
+    }
+    @media (max-width:850px){
+      .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .direction-grid{grid-template-columns:1fr}
+      .timeline{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+    @media (max-width:560px){
+      .page{width:min(100% - 20px,1060px);margin:12px auto 28px}
+      .hero{padding:19px 17px}
+      .card{padding:18px 16px;margin-top:11px;border-radius:16px}
+      h2{font-size:18px;align-items:flex-start}
+      h2 .no{width:26px;height:26px;flex-basis:26px;border-radius:8px;font-size:13px}
+      .meta,.fact-list{grid-template-columns:1fr}
+      .meta>div{min-height:0}
+      .timeline{grid-template-columns:1fr}
+      th,td{min-width:118px}
+      .status-banner{font-size:12.5px}
+    }
+    @media print{
+      body{background:#fff}
+      .page{width:100%;margin:0}
+      .hero,.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">G2-DENDELE 2026-10-26 g3 end</b></div>
+<div class="page">
+  <header class="hero">
+    <div class="badges">
+      <span class="badge status">局中·非终局，结果待定</span>
+      <span class="badge progress">G3 · 局末/局间（GAME-REVIEW）</span>
+      <span class="badge">CS2</span>
+      <span class="badge">进度以弹幕口径为准</span>
+    </div>
+    <h1>G2 vs DENDELE · 局中弹幕情报快照（G3）</h1>
+    <p class="subtitle">PGL 大师赛·布加勒斯特 · 比赛日 2026-10-26 · slug：<span class="mono">cs2-hupu-1441778164564995446</span></p>
+    <div class="status-banner" role="status" aria-label="节点状态">
+      <strong>局中·非终局，结果待定</strong>
+      第 3 小局按时间窗已进入局末/局间，03:39（北京）后出现“G2 走掉了/回家了”等弹幕终局候选；当前未取得官方结算价、官方比分或权威战报确认，因此不把该证据写成系列终局，也不展示最终比分。
+    </div>
+    <div class="meta">
+      <div><span>节点</span><b>G3 · 局末/局间<br><small>待结算校准</small></b></div>
+      <div><span>弹幕窗口</span><b>10-27 02:52–03:48（北京）<br><small>UTC 10-26 18:52–19:48</small></b></div>
+      <div><span>采集截止</span><b>03:48（北京）<br><small>精确到分钟</small></b></div>
+      <div><span>弹幕规模</span><b>4,212 条 / 1,335 人<br><small>75.2 条·分</small></b></div>
+      <div><span>G2 直接提及</span><b>367 条 / 235 人<br><small>全节点，未做情绪分类</small></b></div>
+      <div><span>DENDELE 直接提及</span><b>6 条 / 6 人<br><small>含赛后赛程讨论</small></b></div>
+      <div><span>实际数据源</span><b>虎牙 CSBOY 官方 + CSBOY-Mo<br><small>3,952 / 260 条</small></b></div>
+      <div><span>显式胜负样本</span><b>9 条，低于阈值 10<br><small>系统不出胜率</small></b></div>
+    </div>
+    <div class="source-strip">
+      <b>来源与缺口：</b>实际为虎牙同平台两房；CS2 默认采集集还包含 BLAST 官方房与 KICK，本节点缺失，不能声称跨平台共振。公共直播间混有 NAVI/BB、后续赛程与 LoL 闲聊，以下只在明确指向 G2、DENDELE 或本局地图时计入，不用全房情绪替代本场共识。
+    </div>
+  </header>
+  <main>
+    <section class="card">
+      <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+      <p class="lead">CS2 不存在“英雄＋选手”的选人映射，本段的 BP 锚点是地图/禁选与队伍阵容。弹幕可支持当前图为“小镇（Inferno）”，但完整 veto、选边、比分和官方五人名单均未取得。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>检查项</th><th>本节点证据</th><th>时间 / 样本</th><th>证据来源</th><th>验证状态</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>G3 地图 / 禁选</b></td>
+              <td>
+                <b>小镇（Inferno），弹幕口径。</b>03:18 出现“DDL 要赢 G2 小镇基本赢不了了”；03:36 转评“小镇防守不好”；03:45 复盘“不是 G2 不会打小镇”。03:16–03:28 另有 5 条、5 人围绕香蕉道控制，和“小镇”形成同图线索。
+              </td>
+              <td>小镇 3 条 / 3 人<br>香蕉道 5 条 / 5 人<br>03:16–03:45</td>
+              <td><span class="tag blue">本场弹幕</span><span class="tag">两房混合</span></td>
+              <td><span class="tag warn">弹幕口径·待官方</span><br>完整 veto / 选边缺失</td>
+            </tr>
+            <tr>
+              <td><b>双方选手阵容</b></td>
+              <td>
+                <b>样本不足。</b>弹幕出现 r1nkle、NertZ、表哥/亨特相关称谓，以及“包浆”“重尬”等社区称呼；没有可靠 ID—选手—位置—首发关系表。DENDELE 侧未见可直接核验的选手 ID。不能把这些称谓拼成官方阵容，更不能生成“英雄＋选手”配对。
+              </td>
+              <td>G3 官方五人名单 0 套</td>
+              <td><span class="tag blue">本场弹幕</span><span class="tag">对象仅到队伍/选手称谓</span></td>
+              <td><span class="tag warn">待官方</span></td>
+            </tr>
+            <tr>
+              <td><b>BP 后战绩情报</b></td>
+              <td>
+                <b>无战绩情报提及。</b>没有“G2 / DENDELE × 小镇 × 历史比分 / 胜率”的可核验记录。03:18 的“图二手感打回来了”是观众对前局状态的延续判断，不是小镇历史战绩。
+              </td>
+              <td>有效战绩样本 0 条</td>
+              <td><span class="tag blue">本场弹幕</span><span class="tag">历史画像未补强</span></td>
+              <td><span class="tag">无战绩情报提及</span></td>
+            </tr>
+            <tr>
+              <td><b>BP 判断变化</b></td>
+              <td>
+                早期有观众把小镇视作 G2 相对优势；03:27 与 03:34 又连续反问“说好的强图”“就这还强图”，说明本场执行已明显削弱该判断。该变化只评价本局表现，不反向补写赛前历史胜率。
+              </td>
+              <td>正向后转弱<br>03:18 → 03:27/03:34</td>
+              <td><span class="tag blue">本场弹幕</span><span class="tag">单源待验证</span></td>
+              <td><span class="tag warn">结果待官方</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="source-line">证据来源：本场弹幕；盘口样本 0；官方地图 veto、选手名单与地图比分缺失。地图判断为“弹幕口径·待官方”，不是实际选图确认。</p>
+    </section>
+    <section class="card">
+      <h2><span class="no">2</span>比赛局势</h2>
+      <div class="system-slot">
+        <div class="system-label">系统注入位 · 规则层数据 · 本段不由 AI 补写</div>
+        <h3>两队胜率（观众口径·非结论）</h3>
+        <!-- SITUATION:WIN:BEGIN -->
+        <div class="note">样本不足：系统识别显式胜负弹幕 9 条，低于 10 条阈值，暂不计算胜率。进度以弹幕口径为准，结果待官方。</div>
+        <!-- SITUATION:WIN:END -->
+        <h3 style="margin-top:13px">队员评分（虎扑·实时）</h3>
+        <!-- SITUATION:RATINGS:BEGIN -->
+        <div class="note">暂未获取到本场/本局虎扑选手评分；保留系统注入位。</div>
+        <!-- SITUATION:RATINGS:END -->
+      </div>
+    </section>
+    <section class="card">
+      <h2><span class="no">3</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+      <div class="direction-grid">
+        <article class="direction positive">
+          <h3>正锚点 · 看好谁赢</h3>
+          <p class="answer">G2 · 小镇：前局手感延续带来的条件性正锚</p>
+          <p class="body">03:16–03:18（北京），弹幕先记录 G2 拿下一分、“血战香蕉道”，随后出现“G2 图二手感打回来了，DDL 要赢 G2 小镇基本赢不了了”。这是本节点最明确的正向判断，但它把前图状态直接外推到小镇，只有单房强样本。</p>
+          <div class="facts">
+            <div class="fact"><b>对象</b><span>G2 的小镇执行与前图手感</span></div>
+            <div class="fact"><b>依据</b><span>拿下回合、香蕉道交火、前图逆转余势；无地图历史战绩</span></div>
+            <div class="fact"><b>时间</b><span>03:16–03:18（北京）</span></div>
+            <div class="fact"><b>验证</b><span>后续防守与香蕉道连续被质疑，当前呈“未兑现迹象”；官方待定</span></div>
+          </div>
+          <span class="tag blue">本场弹幕</span><span class="tag">单源待验证</span><span class="tag warn">局中·非终局</span>
+        </article>
+        <article class="direction negative">
+          <h3>负锚点 · 看衰谁输</h3>
+          <p class="answer">G2 · 防守、香蕉道控制与团队纪律被持续看衰</p>
+          <p class="body">03:22–03:39（北京）出现连续、独立的多用户负评：CT 香蕉道控不住、防守烂、3B 守不住、“强图”失效、枪法变形，直至“G2 走掉了”。它不是一条口误，而是本局后段的主方向。</p>
+          <div class="facts">
+            <div class="fact"><b>对象</b><span>G2 防守结构、香蕉道控制、残局与团队执行</span></div>
+            <div class="fact"><b>依据</b><span>至少 8 组独立负评样本，覆盖防守、强图、经济和枪法</span></div>
+            <div class="fact"><b>时间</b><span>03:22、03:27、03:30、03:31、03:36、03:39（北京）</span></div>
+            <div class="fact"><b>验证</b><span>局末出现离场/GG 类候选；官方比分与结算仍缺失</span></div>
+          </div>
+          <span class="tag blue">本场弹幕</span><span class="tag">多用户·单平台</span><span class="tag warn">观众口径·待官方</span>
+        </article>
+        <article class="direction consensus">
+          <h3>群体共识 · 分歧与样本量</h3>
+          <p class="answer">胜方共识不足；局末方向明显偏向 G2 负向</p>
+          <p class="body">规则层 narrative 将全窗情绪计为 196 正 / 109 负、净 +87；但情绪在尾段翻转，03:37–03:48 为 20 正 / 32 负、净 −12。全房前半段混入 NAVI/BB、后续赛程与主播互动，因此不能把总正值算成 G2 支持率。</p>
+          <div class="facts">
+            <div class="fact"><b>G2 对象量</b><span>03:08–03:39 直接命中 249 条 / 160 人（未做情绪分类）</span></div>
+            <div class="fact"><b>DENDELE 对象量</b><span>同窗仅 3 条 / 3 人；无成规模的胜方应援</span></div>
+            <div class="fact"><b>分歧</b><span>早期“小镇可打”×后段“强图失效 / 防守崩”</span></div>
+            <div class="fact"><b>置信</b><span>G2 负向可见；DENDELE 胜方共识不足；单平台待验证</span></div>
+          </div>
+          <span class="tag blue">本场弹幕</span><span class="tag">narrative + 对象复核</span><span class="tag warn">共识不足</span>
+        </article>
+        <article class="direction conditional">
+          <h3>灰信号条件预测</h3>
+          <p class="answer">若“开送/收钱”成立，条件方向指向 G2 负向</p>
+          <p class="body">03:20–03:45（北京）出现“拿几分然后开送”“这是收了多少钱 G2”“把积分送完美美回家”等质疑。若未来由回放、官方沟通或可靠旁证确认，条件方向为 G2 执行力与结果可信度承压、DENDELE 相对受益；当前没有任何实锤。</p>
+          <div class="facts">
+            <div class="fact"><b>G2 向</b><span>故意失误或投入度异常被证实 → G2 负向</span></div>
+            <div class="fact"><b>DENDELE 向</b><span>仅承接相对受益，不等于 DENDELE 必胜结论</span></div>
+            <div class="fact"><b>盘口对照</b><span>可用价格/让分样本 0，无法验证价格失真</span></div>
+            <div class="fact"><b>纪律</b><span>条件式留痕，等待赛后回填；不作假赛判断</span></div>
+          </div>
+          <span class="tag blue">本场弹幕</span><span class="tag risk">观众质疑·非结论</span><span class="tag warn">推测·待验证</span>
+        </article>
+      </div>
+      <div class="narrative">
+        <h3>narrative 群体叙事主线</h3>
+        <p class="lead">主线是“转换期正向 → 局末负向”，而不是单边看衰或单边看好。03:01 的峰值 230 条/分与 03:13 的 155 条/分均包含大量跨比赛与主播互动，峰值本身不能替代本场胜负证据。</p>
+        <div class="timeline" aria-label="规则层全房情绪分段（北京时间）">
+          <div class="slot"><time>02:52–03:02</time><strong>+35</strong><span>1,194 条 · 正面</span></div>
+          <div class="slot"><time>03:03–03:13</time><strong>+5</strong><span>993 条 · 正面</span></div>
+          <div class="slot"><time>03:14–03:24</time><strong>+48</strong><span>748 条 · 正面</span></div>
+          <div class="slot"><time>03:25–03:36</time><strong>+11</strong><span>523 条 · 正面</span></div>
+          <div class="slot"><time>03:37–03:48</time><strong>−12</strong><span>754 条 · 负面</span></div>
+        </div>
+        <p class="source-line">证据来源：规则层 narrative（本场切片）· 全房口径已做对象降级 · 尾段与本场 G2 负评同向加强。</p>
+      </div>
+      <details>
+        <summary>neutral_salvage 二次判定：40 组候选逐条复核，6 组保留真实情绪</summary>
+        <div class="inner">
+          <p class="lead">纯队名、问播、表情、其他比赛和下一场赛程不硬套情绪；同一用户连续重复只记一个声音。以下为“模型二次判定”结果。</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>候选聚合</th><th>时间 / 数量</th><th>模型二次判定</th><th>处理</th></tr></thead>
+              <tbody>
+                <tr><td>“G2 加油”类</td><td>03:05 前后，4 条</td><td>真实正向支持，但没有战术依据。</td><td>纳入弱正向背景；不抵消后段负评。</td></tr>
+                <tr><td>“G2 就是被西西看死的”</td><td>03:15，2 条 / 2 人</td><td>真实负向情绪，归因于主播“毒奶”。</td><td>纳入弱负向叙事；不是比赛表现证据。</td></tr>
+                <tr><td>“马大手一来 G2 就开始丢分”</td><td>03:25，2 条 / 2 人</td><td>真实负向情绪，同样属于场外关注叙事。</td><td>与上一条合并观察；单源待验证。</td></tr>
+                <tr><td>“阳叔兜残局也被踢”</td><td>03:45，4 条 / 1 人重复</td><td>真实负向，对象为 G2 阵容管理决策。</td><td>纳入赛后负评；重复计数不放大。</td></tr>
+                <tr><td>“G2 怎么老把好队员往外赶”</td><td>03:32，2 条 / 1 人重复</td><td>真实负向，指向 G2 人员管理。</td><td>作为同一管理层质疑的弱旁证。</td></tr>
+                <tr><td>纯队名 / 其他比赛 / 赛程问句</td><td>其余 34 组</td><td>无稳定情绪或对象不属于本场 G3。</td><td>不写入方向板，避免跨场污染。</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="source-line">证据来源：本场弹幕 + neutral_salvage · 聚合计数，不展示用户身份。</p>
+        </div>
+      </details>
+      <div class="discipline">
+        <b>来源分层：</b>正锚与负锚来自本场弹幕；早期手感判断属于前局延续的本场语境；没有引用历史画像，也没有盘口佐证。所有未获官方确认的终局与灰信号兑现均为“推测·待验证”。
+      </div>
+    </section>
+    <section class="card">
+      <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <div class="risk-box">
+        <b>G3 局末保留 2 个风险簇：G2 比赛投入度质疑、G2 队内协同质疑。</b>
+        两者均只在虎牙同平台两房出现，缺少官方回放、队内信息、KICK/BLAST 跨源或盘口价格共振。以下只作风险标注与赛后回填线索，不构成假赛、放水、内讧或故意输赛证据。
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>观众质疑（聚合）</th><th>北京时间</th><th>指向对象</th><th>风险</th><th>条件方向 / 纪律</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>“G2 开送 / 收了多少钱 / 把积分送回家”</b><br>
+                <small>3 条 / 3 人；另有 03:41“图二故意的”属同系列前图追述，单独降级。</small>
+              </td>
+              <td>03:20–03:45<br><small>集中在局末</small></td>
+              <td>G2 比赛投入度与结果可信度</td>
+              <td><span class="tag warn">中</span></td>
+              <td><span class="tag risk">观众质疑，非结论</span><br>若被可靠旁证确认 → G2 负向、DENDELE 相对受益；当前不可交易化。<br><span class="tag blue">本场弹幕</span><span class="tag">单平台</span></td>
+            </tr>
+            <tr>
+              <td>
+                <b>“r1nkle 被孤立 / 冷暴力 / 教练瞪人 / 队内不在一个频道”</b><br>
+                <small>8 条 / 7 人；同一用户连续重复已合并。</small>
+              </td>
+              <td>03:08–03:47</td>
+              <td>G2 选手关系、教练沟通与队内氛围</td>
+              <td><span class="tag warn">中</span></td>
+              <td><span class="tag risk">观众质疑，非结论</span><br>若被可靠旁证确认 → G2 沟通与残局协同承压、DENDELE 相对受益；当前仅作风险画像。<br><span class="tag blue">本场弹幕</span><span class="tag">两房混合但集中于主房</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:11px">
+        <b>已排除的伪归因：</b>02:59–03:02 的“胖球故意 / 暂停控盘 / 像是买了”处于 NAVI/BB 语境，不能归到本场；03:15 的“故意的”没有对象；03:18 的“纯纯送分”缺少故意性；03:23 的“马西西故意不来”指向主播出现状态，不是队伍行为。
+      </p>
+      <p><b>证据缺口：</b>无官方地图比分、完整 veto、选手首发表、关键回放与可信盘口数字；实际采集为虎牙两房，BLAST 官方与 KICK 缺失。任何“收钱、开送、剧本、内讧”表述都必须保持观众质疑身份。</p>
+      <span class="tag blue">本场弹幕逐条语境复核</span><span class="tag">规则层 gray_signals 审计</span><span class="tag">盘口可用样本 0</span>
+      <div class="discipline">
+        <b>纪律声明：</b>灰信号只用于风险留痕、盘口对照素材和赛后兑现统计，不用于起诉行为或直接反向下单。G3 结果待官方结算，页面状态仍为“局中·非终局，结果待定”。
+      </div>
+    </section>
+  </main>
+  <footer>
+    页面时间均为北京时间（UTC+8），UTC 仅在窗口处作括号备注。局中·非终局，结果待定；样本不足不硬造，观众质疑非结论。<br>
+    输入：<span class="mono">runtime/vps_intel/cs2-hupu-1441778164564995446_g3_end_intel.json</span>；<span class="mono">data/intel_slices/cs2-hupu-1441778164564995446_g3_end.jsonl</span>。<br>
+    弹幕采集截止：2026-10-27 03:48（北京）· 实际数据源：虎牙 CSBOY 官方与 CSBOY-Mo 两房 · 预期源缺口：BLAST 官方、KICK。
+  </footer>
+</div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
