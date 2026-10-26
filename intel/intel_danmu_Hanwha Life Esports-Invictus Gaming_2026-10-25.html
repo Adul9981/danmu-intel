@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Hanwha Life Esports vs Invictus Gaming · 整场弹幕情报页</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --sub: #6e6e73;
+    --line: #e5e5ea;
+    --soft: #f8f8fa;
+    --accent: #0071e3;
+    --accent-soft: #eef5fd;
+    --accent-line: #b9d7f5;
+    --warn: #8a5300;
+    --warn-soft: #fff7e8;
+    --risk: #8f2638;
+    --risk-soft: #fff1f3;
+    --positive: #1b6e3a;
+    --positive-soft: #eef8f1;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    padding: 22px 12px 42px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    line-height: 1.58;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header, section.card {
+    background: var(--card);
+    border: 1px solid rgba(0, 0, 0, .04);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .045);
+  }
+  header { padding: 24px 26px 21px; }
+  section.card { padding: 21px 23px; margin: 13px 0; }
+  .badges { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+  .badge, .tag {
+    display: inline-block;
+    border-radius: 999px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+  .badge {
+    padding: 3px 10px;
+    border: 1px solid var(--accent-line);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .badge.dark {
+    border-color: #d8d8dd;
+    background: #f1f1f3;
+    color: var(--ink);
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 27px;
+    line-height: 1.25;
+    letter-spacing: -.025em;
+  }
+  .subtitle { margin: 0; color: var(--sub); font-size: 14px; }
+  .result {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 9px;
+    margin-top: 16px;
+  }
+  .result-box {
+    min-width: 0;
+    padding: 12px 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--soft);
+  }
+  .result-box.primary {
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+  }
+  .result-box span {
+    display: block;
+    color: var(--sub);
+    font-size: 11px;
+    font-weight: 650;
+  }
+  .result-box b {
+    display: block;
+    margin-top: 2px;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+  .result-box.primary b { color: var(--accent); font-size: 20px; }
+  .source-strip {
+    margin-top: 11px;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--sub);
+    font-size: 12.5px;
+  }
+  .source-strip b { color: var(--ink); }
+  .source-strip.warn { border-color: #ead2aa; background: var(--warn-soft); }
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 14px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid var(--line);
+    font-size: 18px;
+    line-height: 1.4;
+    letter-spacing: -.012em;
+  }
+  h2 .no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 27px;
+    height: 27px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  h3 { margin: 17px 0 7px; font-size: 14px; font-weight: 700; }
+  h3.first { margin-top: 0; }
+  p { margin: 0 0 10px; font-size: 14px; }
+  .lead { color: var(--sub); font-size: 13.5px; }
+  .tag {
+    margin: 3px 5px 2px 0;
+    padding: 2px 8px;
+    background: #f0f0f2;
+    color: var(--sub);
+    font-size: 11px;
+  }
+  .tag.blue { background: var(--accent-soft); color: var(--accent); }
+  .tag.dark { background: #ececf0; color: var(--ink); }
+  .tag.warn { background: var(--warn-soft); color: var(--warn); }
+  .tag.risk { background: var(--risk-soft); color: var(--risk); }
+  .tag.pos { background: var(--positive-soft); color: var(--positive); }
+  .tag.model { background: #eef2ff; color: #3d4f91; }
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    width: 100%;
+    min-width: 720px;
+    margin: 9px 0;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  th {
+    padding: 8px 9px;
+    border-bottom: 1px solid var(--line);
+    background: var(--soft);
+    color: var(--sub);
+    text-align: left;
+    font-size: 11px;
+    font-weight: 650;
+  }
+  td { padding: 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .nowrap { white-space: nowrap; }
+  .empty, .system-slot, .riskbox, .discipline {
+    padding: 12px 13px;
+    border-radius: 11px;
+    font-size: 13px;
+  }
+  .empty {
+    margin: 10px 0;
+    border: 1px dashed #c8c8cd;
+    background: #fafafc;
+    color: var(--sub);
+  }
+  .empty b { display: block; margin-bottom: 3px; color: var(--ink); font-size: 14px; }
+  .system-slot {
+    margin: 8px 0;
+    border: 1px dashed #c7c7cc;
+    background: #fbfbfc;
+    color: var(--sub);
+  }
+  .system-slot strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: 14px; }
+  .riskbox {
+    margin-bottom: 10px;
+    border: 1px solid #efd2d7;
+    border-left: 4px solid var(--risk);
+    border-radius: 0 11px 11px 0;
+    background: var(--risk-soft);
+  }
+  .riskbox b { color: var(--risk); }
+  .discipline {
+    margin-top: 11px;
+    border: 1px solid var(--line);
+    background: var(--soft);
+    color: var(--sub);
+  }
+  .discipline b { color: var(--ink); }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .metric {
+    min-width: 0;
+    padding: 10px 11px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--soft);
+  }
+  .metric b { display: block; font-size: 16px; }
+  .metric span { display: block; margin-top: 2px; color: var(--sub); font-size: 11px; }
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 7px;
+    margin: 10px 0 12px;
+  }
+  .slot {
+    min-width: 0;
+    padding: 10px 9px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 12px;
+  }
+  .slot time { display: block; color: var(--sub); font-size: 10.5px; }
+  .slot b { display: block; margin: 3px 0 1px; font-size: 14px; }
+  .slot.negative { border-color: #ead2aa; background: var(--warn-soft); }
+  .answer {
+    margin: 6px 0 8px;
+    padding: 11px 12px;
+    border: 1px solid var(--accent-line);
+    border-radius: 11px;
+    background: var(--accent-soft);
+    font-size: 14px;
+    font-weight: 650;
+  }
+  @media (max-width: 760px) {
+    body { padding: 12px 8px 30px; }
+    header { padding: 19px 16px 17px; }
+    section.card { padding: 17px 15px; margin: 10px 0; }
+    h1 { font-size: 23px; }
+    .result { grid-template-columns: 1fr; }
+    .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Hanwha Life Esports-Invictus Gaming 2026-10-25</b></div>
+<main class="wrap">
+  <header>
+    <div class="badges">
+      <span class="badge">FINAL · SERIES-REVIEW</span>
+      <span class="badge dark">整场弹幕情报</span>
+      <span class="badge dark">单一直播源</span>
+    </div>
+    <h1>Hanwha Life Esports vs Invictus Gaming<br>整场弹幕情报页</h1>
+    <p class="subtitle">英雄联盟 · 赛程日 2026-10-25 · slug：lol-hle1-ig1-2026-10-25</p>
+    <div class="result">
+      <div class="result-box primary">
+        <span>系列结果</span>
+        <b>IG 1-0 HLE</b>
+      </div>
+      <div class="result-box">
+        <span>结果来源</span>
+        <b>Polymarket 结算</b>
+      </div>
+      <div class="result-box">
+        <span>官方口径</span>
+        <b>赛果与阵容待回填</b>
+      </div>
+    </div>
+    <div class="source-strip">
+      <b>弹幕采集截止：</b>2026-10-26 01:53（北京）· 数据窗口 01:00–01:53（北京；UTC 2026-10-25 17:00–17:53 备注）<br>
+      <b>样本：</b>50,716 条 / 19,854 活跃用户 / 平均 939.2 条每分钟 · 时间轴桶与情绪统计来自规则层。
+    </div>
+    <div class="source-strip warn">
+      <b>数据完整性：</b>实际仅虎牙官方 LoL 直播间 660000；没有第二个独立平台或房间进入本切片。SOOP / Twitch / KICK 等未覆盖部分按缺口处理，以上结论统一为“单源待验证”。
+    </div>
+  </header>
+  <section class="card">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <p class="lead">
+      仅列本场可形成“选手—英雄”直接关联的候选。所有阵容均为
+      <span class="tag dark">弹幕口径·待官方</span>；观众建议、纯英雄讨论与路位冲突不用于补齐十人名单。
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>阵营 / 位置</th>
+            <th>选手</th>
+            <th>英雄</th>
+            <th>本场弹幕依据</th>
+            <th>来源 / 置信</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="nowrap">HLE · 上</td>
+            <td><b>Zeus</b></td>
+            <td>奥拉夫</td>
+            <td>直接关联 13 条 / 7 人，01:12–01:46；含单用户重复，01:12 出现“克烈 counter 宙斯的奥拉夫”。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag dark">待官方</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">HLE · 野</td>
+            <td><b>Kanavi</b></td>
+            <td>奇亚娜（琪亚娜）</td>
+            <td>直接关联 3 条 / 3 人，01:11–01:48；同时存在“奇亚娜玩得很垃圾”等负评。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag dark">待官方</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">HLE · 中</td>
+            <td><b>Zeka</b></td>
+            <td>冰女（丽桑卓）</td>
+            <td>直接关联 6 条 / 2 人，01:13–01:51；重复度偏高，只作候选。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">重复偏高</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">IG · 上</td>
+            <td><b>TheShy</b></td>
+            <td>克烈</td>
+            <td>直接关联 7 条 / 7 人，01:12–01:30；“克烈：TheShy”“克烈王来了”相互印证。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag dark">待官方</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">IG · 中</td>
+            <td><b>Rookie</b></td>
+            <td>安妮</td>
+            <td>直接关联 3 条 / 2 人，01:11–01:12；同窗另有“上单安妮”说法，路位待官方。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">路位待核</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">IG · 辅</td>
+            <td><b>Meiko</b></td>
+            <td>璐璐（弹幕写“露露”）</td>
+            <td>直接关联 4 条 / 4 人，01:27–01:52；正负评价并存。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag dark">待官方</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">IG · 下路</td>
+            <td>佳琪（弹幕写法）</td>
+            <td>芸阿娜（云阿娜）</td>
+            <td>仅 1 条 / 1 人在 01:40 同句关联，样本不足，不独立确认阵容。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">样本不足</span></td>
+          </tr>
+          <tr>
+            <td class="nowrap">HLE 下路 / IG 打野</td>
+            <td>选手未闭环</td>
+            <td>卡莉丝塔＋烈娜塔；梦魇（魔腾）</td>
+            <td>英雄被持续讨论，但未完成同句“选手—英雄”绑定；不按观众建议补配。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">缺口</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="empty">
+      <b>阵容完整度：样本不足。</b>
+      当前只能形成部分选手与英雄的直接关联，且安妮存在中上位置歧义。完整十人阵容、分路与禁用均待官方回填；本页没有把弹幕讨论当成实际选人。
+      <span class="tag blue">本场弹幕</span><span class="tag dark">官方待确认</span>
+    </div>
+    <h3>BP 后战绩情报</h3>
+    <p>
+      <b>无战绩情报提及。</b>
+      切片中有“IG 安妮胜率多少”“感觉安妮没赢过”“奥拉夫上路就没赢过”“TheShy 最近两年玩过克烈吗”等追问或评价，但没有可核验的赛前“选手×英雄 X 胜 Y 负”记录。01:47 的“安妮 7-1”“琪亚娜 0-5”属于本局即时计分语境，不计作 BP 后历史战绩。
+      <span class="tag blue">本场弹幕</span><span class="tag dark">无可用战绩数字</span>
+    </p>
+  </section>
+  <section class="card">
+    <h2><span class="no">2</span>比赛局势（系统注入，本段不写）</h2>
+    <div class="system-slot">
+      <strong>系统注入占位</strong>
+      本段固定用于规则层注入“两队胜率（弹幕口径·非结论）”与“虎扑队员评分”。生成端不补写比分、胜率或阶段过程，避免与系统数据重复或冲突。
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <h3 class="first">正锚点 · 看好谁赢</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>对象 / 方向</th>
+            <th>弹幕锚点</th>
+            <th>依据与时间（北京）</th>
+            <th>共振 / 置信</th>
+            <th>赛后验证</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag pos">看好</span><b>IG · 佳琪</b></td>
+            <td>“带飞、接管、敢打、世一 AD、保佳琪”形成正向个体评价。</td>
+            <td>97 条 / 66 人，01:21–01:53。<span class="tag blue">本场弹幕</span></td>
+            <td>单一直播源；<span class="tag warn">单源待验证</span></td>
+            <td>IG 团队方向应验；个人输出与对位数据仍待官方。</td>
+          </tr>
+          <tr>
+            <td><span class="tag pos">局部看好</span><b>IG.TheShy·克烈 对 HLE.Zeus·奥拉夫</b></td>
+            <td>克烈被视作可反制、能开团的对位答案；“克烈王来了”集中出现。</td>
+            <td>正评 37 条 / 33 人，核心期 01:12–01:31，延续至终局；另有 10 条 / 10 人质疑。</td>
+            <td>同房间应援共振；<span class="tag warn">单源待验证</span></td>
+            <td>IG 赢下系列，但仅支持方向同向；个人对位质量待官方统计。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>负锚点 · 看衰谁输</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>对象 / 方向</th>
+            <th>弹幕锚点</th>
+            <th>依据与时间（北京）</th>
+            <th>共振 / 置信</th>
+            <th>赛后验证</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag risk">看衰</span><b>IG.Rookie·安妮</b></td>
+            <td>“没伤害、少一只、一坨、选出来就没了、安妮赢过吗”。</td>
+            <td>负评 27 条 / 22 人，01:10–01:50；直接绑定 Rookie / 宋义进仅 4 条 / 3 人。</td>
+            <td>单源、存在路位分歧；<span class="tag warn">单源待验证</span></td>
+            <td><b>团队级未应验</b>：IG 1-0 获胜；英雄与个人数据待官方回填。</td>
+          </tr>
+          <tr>
+            <td><span class="tag risk">看衰</span><b>IG 的 BP：放奇亚娜与卡列</b></td>
+            <td>“为什么放、处理不了、版本答案、后排压力大”。</td>
+            <td>奇亚娜负评 42 条 / 27 人；卡莉丝塔＋烈娜塔负评 20 条 / 17 人；主要集中于 01:08–01:19。</td>
+            <td>同窗多点讨论；<span class="tag warn">单源待验证</span></td>
+            <td><b>“BP 直接判负”未应验</b>：IG 获胜，但局部决策质量仍待官方复盘。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>群体共识 · 应援明显偏 IG，胜负共识仍有分歧</h3>
+    <div class="metrics">
+      <div class="metric"><b>50,716</b><span>全窗弹幕 / 19,854 活跃用户</span></div>
+      <div class="metric"><b>3,342 : 219</b><span>IG : HLE 队伍提及</span></div>
+      <div class="metric"><b>+2,808</b><span>规则情绪净得分（正 3,514 / 负 706）</span></div>
+      <div class="metric"><b>939.2 / 分</b><span>平均弹幕密度</span></div>
+    </div>
+    <div class="timeline" aria-label="北京时间情绪走势">
+      <div class="slot"><time>01:00–01:09</time><b>+52</b>正面 · 4,901 条</div>
+      <div class="slot negative"><time>01:10–01:20</time><b>−23</b>负面 · 13,789 条</div>
+      <div class="slot"><time>01:21–01:31</time><b>+736</b>正面 · 7,599 条</div>
+      <div class="slot"><time>01:32–01:42</time><b>+207</b>正面 · 10,627 条</div>
+      <div class="slot"><time>01:43–01:53</time><b>+1,836</b>正面 · 13,800 条</div>
+    </div>
+    <p>
+      <b>结论：</b>IG 应援与队伍提及显著占优，01:21 后情绪持续回正，终局段庆祝集中；但唯一直播间内既有 BP 负评、暂停期转负，也有 TheShy 个体争议，不能把应援量直接当胜率。
+      <span class="tag blue">本场弹幕</span><span class="tag warn">单源待验证</span>
+    </p>
+    <p>
+      <b>分歧：</b>“克烈好打奥拉夫”“克烈打不过”并存；“IG BP 被爆”“IG 阵容扎实”并存；“这 AD 我们 T1 要了”有 32 条但仅来自 1 名用户，只算个体夸奖，不计入群体共识；“大姜坑货 / 早赢了”36 条同样只来自 1 名用户，不升格为群体负锚。
+      <span class="tag blue">本场弹幕</span><span class="tag warn">重复偏差已降级</span>
+    </p>
+    <h3>中性弹幕二次判定 · 40 组候选逐条复核</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>候选类别</th>
+            <th>二次判定</th>
+            <th>纳入口径</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>“IG 加油”及大小写、空格、重复写法</td>
+            <td>真实应援情绪，不是中性聊天。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>纳入群体共识，不当作胜负概率。</td>
+          </tr>
+          <tr>
+            <td>“IG 必胜 / 肯定赢 / 速通 / 不斩无名之辈”</td>
+            <td>明确看好 IG。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>纳入正方向应援，保留单源置信限制。</td>
+          </tr>
+          <tr>
+            <td>“IG 牛壁 / 阵容扎实 / 勇往直前”</td>
+            <td>对队伍或 BP 的正向评价。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>纳入正评，但因短句与重复而低权重。</td>
+          </tr>
+          <tr>
+            <td>“这 AD 我们 T1 要了”</td>
+            <td>是对佳琪的个体夸奖。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>纳入“佳琪”个体锚点；32 条 / 1 用户，明确去除刷屏放大。</td>
+          </tr>
+          <tr>
+            <td>“大姜这个坑货不送……IG 早赢了” / “宙斯尽力了”</td>
+            <td>前者是对 TheShy 的失误批评，后者是对 Zeus 的个体肯定。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>作为分歧样本：前者 36 条 / 1 用户，后者 9 条 / 6 人。</td>
+          </tr>
+          <tr>
+            <td>“HLE 加油” / “恭喜 IG”</td>
+            <td>前者是真实少数派应援；后者是赛后庆祝。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>HLE 应援纳入分歧；赛后庆祝只用于结果佐证，不计入赛前方向。</td>
+          </tr>
+          <tr>
+            <td>“IG 玩具选拔赛”、纯“IG”、纯“T1”、纯表情或无语义短句</td>
+            <td>对象、情绪或比赛归属不明；纯队名不含胜负面。</td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag model">模型二次判定</span>不纳入方向板，避免硬套情绪。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>灰信号条件预测</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>条件</th>
+            <th>若兑现指向哪边</th>
+            <th>赛后状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>若官方日志或第二个独立源确认暂停异常只发生在 HLE 一侧，并存在非技术性拖延。</td>
+            <td>风险条件指向 HLE 操作 / 赛事执行异常；技术设备故障则归中性。</td>
+            <td><span class="tag warn">推测·待验证</span>当前归因同时出现 HLE、IG 与主办方，不能定向。</td>
+          </tr>
+          <tr>
+            <td>若 Kanavi 的 F6、惩戒或加载异常被官方认定为游戏 Bug，并在另一独立源复现。</td>
+            <td>只能指向 HLE 野区技术风险；不得外推假赛或故意送。</td>
+            <td><span class="tag warn">推测·待验证</span>IG 胜出不能作为灰信号兑现证据。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="riskbox">
+      <b>存在灰信号，但没有实锤。</b>
+      规则层命中 72 条灰信号样本，含重复刷屏与“AL 为了避开 LCK 故意 0-2”等跨场噪声。本场可归因风险主要是一次暂停被资金化解读、HLE.Kanavi 的 F6 / 惩戒 / 加载异常质疑，以及少量分散的个人指控。全部只作风险标注与盘口对照素材。
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>风险主题</th>
+            <th>指向对象</th>
+            <th>本场样本与时间（北京）</th>
+            <th>风险等级</th>
+            <th>条件方向 / 验证</th>
+            <th>来源</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag risk">观众质疑，非结论</span><br>暂停被解读为“打钱 / 到账 / 剧本”</td>
+            <td>暂停事件本身；HLE、IG 与主办方均被点名，指向不唯一</td>
+            <td>
+              “打钱 / 收钱 / 转账”类 578 条 / 354 人，01:15 峰值 164 条；“到账”类 94 条 / 56 人；设备 / 暂停抱怨 1,019 条 / 731 人，01:15 峰值 269 条。
+            </td>
+            <td><span class="tag risk">中</span></td>
+            <td>
+              若官方或独立源确认异常只属 HLE 侧，风险才条件指向 HLE；若为场馆设备问题，则降级为技术事件。
+            </td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">单源待核</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag risk">观众质疑，非结论</span><br>Kanavi 的 F6、惩戒与加载异常</td>
+            <td>HLE.Kanavi / HLE 野区</td>
+            <td>
+              F6 / 惩戒 / 加载相关 152 条 / 127 人；直接 Kanavi 异常关联 29 条 / 26 人，01:19 最集中。另有“设备没加载 / 游戏 Bug”等技术解释并存。
+            </td>
+            <td><span class="tag warn">低–中</span></td>
+            <td>
+              若官方确认 Bug，则按技术异常处理；只有跨节点、跨源重复且伴随可核验盘口异动，才保留为 HLE 野区执行风险。
+            </td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">归因冲突</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag risk">观众质疑，非结论</span><br>个人“收钱 / 演 / 开挂”指控</td>
+            <td>HLE.Kanavi、IG.TheShy、HLE.Zeus 等分散对象</td>
+            <td>
+              直接个人化资金 / 表演关联 9 条 / 9 人；另有零星“开挂 / 脚本”语句，时间分散，未形成连续同向聚集。
+            </td>
+            <td><span class="tag">低</span></td>
+            <td>
+              当前样本不足；需后续节点、独立源与盘口异常共同验证，暂不转化为交易方向。
+            </td>
+            <td><span class="tag blue">本场弹幕</span><span class="tag warn">样本不足</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="empty">
+      <b>结果核对：IG 1-0 获胜，但不能反向证明灰信号。</b>
+      Polymarket 结算使团队结果与“风险条件指向 HLE”表面同向；暂停、设备故障、Kanavi 异常与高密度刷屏均可有中性解释。结果回填不构成打钱、剧本、假赛、控盘或故意送局的证据。
+      <span class="tag blue">盘口 / 结果</span><span class="tag warn">不可倒推</span>
+    </div>
+    <div class="discipline">
+      <b>纪律声明：</b>以上均为“观众质疑，非结论”。本场只有虎牙单一直播间，缺少跨平台共振与可核验价格失真样本，因此不提供基于灰信号的反手方向。历史画像未用于补强本场结论；所有条件式外推均标“推测·待验证”。
+    </div>
+  </section>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>

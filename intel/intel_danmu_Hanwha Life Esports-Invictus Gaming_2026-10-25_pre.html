@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赛前弹幕情报 · Hanwha Life Esports vs Invictus Gaming</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #e5e5ea;
+      --soft: #f9f9fb;
+      --accent: #0071e3;
+      --accent-soft: #eef6ff;
+      --risk: #9a6700;
+      --risk-soft: #fff9eb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      padding: 24px 14px 48px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+        "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.62;
+    }
+    .page { width: min(980px, 100%); margin: 0 auto; }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.045);
+    }
+    .hero {
+      padding: 30px 32px 26px;
+      border-radius: 24px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    h1 {
+      margin-top: 14px;
+      font-size: clamp(25px, 4.8vw, 36px);
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+    .subtitle { margin-top: 7px; color: var(--sub); font-size: 14px; }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--line);
+    }
+    .meta-item { padding: 14px 16px; background: var(--soft); }
+    .meta-key {
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .meta-value { margin-top: 3px; font-size: 14px; font-weight: 650; }
+    .guard {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      background: var(--soft);
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .data-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--line);
+    }
+    .data-item { padding: 12px; background: var(--soft); }
+    .data-value { font-size: 18px; font-weight: 740; line-height: 1.25; }
+    .data-label { margin-top: 3px; color: var(--sub); font-size: 11.5px; }
+    .section { margin-top: 24px; }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px;
+      font-size: 21px;
+      letter-spacing: -0.02em;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      border-radius: 9px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .card { padding: 20px 22px; border-radius: 18px; }
+    .card + .card, .grid + .card, .card + .grid, .grid + .grid { margin-top: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    h3 { margin-bottom: 9px; font-size: 16px; }
+    p + p { margin-top: 8px; }
+    .empty {
+      font-size: 18px;
+      font-weight: 720;
+      letter-spacing: -0.015em;
+    }
+    .muted { color: var(--sub); font-size: 13px; }
+    .evidence {
+      display: block;
+      margin-top: 10px;
+      color: var(--sub);
+      font-size: 11.5px;
+    }
+    .tag {
+      display: inline-block;
+      margin: 0 6px 6px 0;
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--sub);
+      font-size: 11.5px;
+    }
+    .tag-blue { border-color: #c7dff7; background: var(--accent-soft); color: var(--accent); }
+    .tag-risk { border-color: #ead8ac; background: var(--risk-soft); color: var(--risk); }
+    .callout {
+      margin-top: 12px;
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 13px;
+    }
+    .risk-card { border-color: #ead8ac; background: var(--risk-soft); }
+    .table-wrap { margin-top: 12px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--sub); background: var(--soft); font-size: 11.5px; }
+    tr:last-child td { border-bottom: 0; }
+    .quote { font-weight: 650; }
+    .system-slot { min-height: 0; }
+    footer {
+      margin-top: 22px;
+      padding: 15px 4px 0;
+      border-top: 1px solid var(--line);
+      color: var(--sub);
+      font-size: 11.5px;
+      word-break: break-all;
+    }
+    footer p + p { margin-top: 4px; }
+    @media (max-width: 680px) {
+      body { padding: 12px 8px 32px; }
+      .hero { padding: 23px 20px 20px; border-radius: 20px; }
+      .meta, .grid, .data-strip { grid-template-columns: 1fr; }
+      .card { padding: 17px; }
+      h2 { font-size: 19px; }
+      th, td { min-width: 112px; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Hanwha Life Esports-Invictus Gaming 2026-10-25 pre</b></div>
+<main class="page">
+  <header class="hero">
+    <div class="status">赛前 · 未开赛 · PRE-MATCH</div>
+    <h1>Hanwha Life Esports vs Invictus Gaming</h1>
+    <div class="subtitle">2026-10-25 · LoL · Worlds Group Stage · BO1 · 节点 S0｜赛前｜PRE-MATCH</div>
+    <div class="meta" aria-label="赛程与采集时间">
+      <div class="meta-item">
+        <div class="meta-key">比赛状态</div>
+        <div class="meta-value">赛前·未开赛；无 BP、无比分、无赛果</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">赛程标注</div>
+        <div class="meta-value">2026-10-25（slug 日期）；官方开赛时刻未在输入中提供</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">弹幕数据窗口</div>
+        <div class="meta-value">2026-10-25 23:30–2026-10-26 00:59（北京）<br><span class="muted">UTC 2026-10-25 15:30–16:59</span></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">弹幕采集截止</div>
+        <div class="meta-value">2026-10-26 00:59（北京）</div>
+      </div>
+    </div>
+    <div class="data-strip" aria-label="弹幕样本概览">
+      <div class="data-item">
+        <div class="data-value">3,496</div>
+        <div class="data-label">弹幕记录</div>
+      </div>
+      <div class="data-item">
+        <div class="data-value">1,787</div>
+        <div class="data-label">活跃用户口径</div>
+      </div>
+      <div class="data-item">
+        <div class="data-value">39.0 / 分</div>
+        <div class="data-label">窗口平均密度</div>
+      </div>
+      <div class="data-item">
+        <div class="data-value">1 路</div>
+        <div class="data-label">实际数据源</div>
+      </div>
+    </div>
+    <div class="guard">
+      本页只归纳赛前弹幕中的选人讨论、群体预期、队伍状态、历史对阵口径与盘口讨论，不输出赛果或系列赛走向结论。当前仅覆盖虎牙官方直播间单一数据源；SOOP、Twitch、KICK 等跨平台源未出现在切片中，属显式数据缺口，所有方向信号均按“单源待验证”处理。
+    </div>
+  </header>
+  <section class="section" aria-labelledby="section-1">
+    <h2 id="section-1"><span class="no">1</span>BP 锚点与选人情报</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>阵容与选人</h3>
+        <p class="empty">暂无已锁定阵容</p>
+        <p class="muted">赛前没有官方 BP。弹幕中可见 TheShy 上路潘森的建议，以及 Zeus 可能选奥拉夫的预测；两者均是观众口径，不能当作实际选人。</p>
+        <span class="evidence">证据来源：本场弹幕（00:44、00:55，北京）· 阵容状态：弹幕口径·待官方 · 单源待验证</span>
+      </div>
+      <div class="card">
+        <h3>英雄关注点</h3>
+        <p>临近开赛的讨论集中在阿卡丽、奇亚娜、洛/洛克、亚索、剑魔与盲僧；有“禁阿卡丽、奇亚娜、洛克”等建议，也有“剑魔”等单条选角猜测。</p>
+        <p class="muted">没有出现可核验的 Ban/Pick 顺序、分路归属或选手锁定。</p>
+        <span class="evidence">证据来源：本场弹幕（约 00:54–00:59，北京）· 弹幕口径·待官方 · 单源待验证</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>BP 后战绩情报</h3>
+      <p class="empty">无战绩情报提及</p>
+      <p class="muted">赛前没有锁定 Pick，未出现可用于 BP 后校验的“本场选手 × 英雄 × 胜率/战绩”证据链。个别英雄战绩式说法未绑定本场选手，故不纳入 BP 事实。</p>
+      <span class="evidence">证据来源：本场弹幕（有效 BP 后战绩链 0）· 当前无官方 BP 可校验</span>
+    </div>
+    <div class="callout">
+      <strong>边界：</strong>“TheShy 潘森”“Zeus 奥拉夫”仅是观众建议或预测；在官方 BP 公布前，不得写成双方已经选出的阵容。
+    </div>
+  </section>
+  <section class="section system-slot" aria-labelledby="section-2">
+    <h2 id="section-2"><span class="no">2</span>比赛局势</h2>
+    <!-- 系统注入：两队胜率与虎扑队员评分由规则层注入，本页不生成内容。 -->
+  </section>
+  <section class="section" aria-labelledby="section-3">
+    <h2 id="section-3"><span class="no">3</span>方向性情报板</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>正锚点 · HLE / Zeus</h3>
+        <p><span class="tag tag-blue">看好 HLE 胜面</span>00:55–00:58（北京）出现“Zeus 才是世一上、太厉害”和“HLE 太强”等直接评价；对位叙事集中于 Zeus vs TheShy。</p>
+        <p class="muted">对象：HLE / Zeus；依据：选手能力与上路口径；验证：待赛果回填“HLE 是否获胜、Zeus 对位是否占优”。</p>
+        <span class="evidence">证据来源：本场弹幕 · 单源待验证 · 样本量小</span>
+      </div>
+      <div class="card">
+        <h3>正锚点 · IG 爆冷路径</h3>
+        <p><span class="tag tag-blue">看好 IG 有机会</span>00:50–00:59（北京）出现“IG 肯定赢，HLE 像五个路人在打”“我相信 IG 能赢”等判断，同时有“打爆 Zeus”的上路对抗期待。</p>
+        <p class="muted">其中“HLE 没有节奏”文案高度重复，去重后仅 1 类文本，存在刷屏放大；不能视作独立多源确认。验证：待赛果回填 IG 是否取胜。</p>
+        <span class="evidence">证据来源：本场弹幕 · 单源待验证 · 刷屏风险</span>
+      </div>
+      <div class="card">
+        <h3>负锚点 · IG</h3>
+        <p><span class="tag">看衰 IG</span>00:32–00:59（北京）出现“抽陀螺”“IG 必输”“打不过”“HLE 太强”等表达，核心指向 IG 上路与整体强度不足。</p>
+        <p class="muted">对象：IG；依据：对 Zeus/TheShy 对位、HLE 强度与 IG 失误风险；验证：待赛果回填是否应验。</p>
+        <span class="evidence">证据来源：本场弹幕 · 单源待验证 · 50 条记录 / 25 类文本</span>
+      </div>
+      <div class="card">
+        <h3>负锚点 · HLE</h3>
+        <p><span class="tag">看衰 HLE 节奏</span>00:50–00:56（北京）有观众称 HLE“两天看下来没有节奏，像五个路人在打”，据此看衰 HLE 的团队协同。</p>
+        <p class="muted">对象：HLE；依据：近两日观感与团队节奏；验证：待赛果回填 HLE 是否出现协同问题。该判断来自重复文案，置信度低。</p>
+        <span class="evidence">证据来源：本场弹幕 + 推测·待验证 · 单源待验证 · 刷屏放大</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>群体共识</h3>
+      <p><span class="tag tag-blue">助威侧明显偏向 IG</span>约 375 条加油、助威或“IG 打爆对手”式弹幕，覆盖 75 类文本；规则层叙事为正 75% / 负 25%、净值 +50，情绪方向为正面。</p>
+      <p><span class="tag">但胜负预期并不一致</span>直接看衰 IG 或看好 HLE 的记录约 50 条、25 类文本；“55开”讨论 9 条，00:57（北京）仍出现“真是 55开”。</p>
+      <p class="muted">结论：IG 的声量优势主要来自助威与主场式支持，不能等同于多数观众预测 IG 获胜。更稳妥的口径是“IG 人气/情绪占优，胜负预期分歧且略有 HLE 强度反向声量”。</p>
+      <span class="evidence">证据来源：本场弹幕（3,496 条 / 1,787 个活跃用户口径）· 单一虎牙源 · 多源确认不足</span>
+    </div>
+    <div class="card">
+      <h3>规则层叙事时间线</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>北京时间</th>
+              <th>记录量</th>
+              <th>正 / 负</th>
+              <th>基调</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>23:30–23:41</td><td>50</td><td>8 / 0</td><td>正面</td></tr>
+            <tr><td>23:48–23:59</td><td>216</td><td>4 / 0</td><td>正面</td></tr>
+            <tr><td>00:06–00:17</td><td>238</td><td>5 / 2</td><td>正面</td></tr>
+            <tr><td>00:24–00:35</td><td>278</td><td>6 / 5</td><td>分歧</td></tr>
+            <tr><td>00:42–00:53</td><td>2,714</td><td>52 / 18</td><td>正面</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin-top:10px;">00:59（北京）为窗口峰值，达 414 条；00:58、00:57、00:56（北京）分别为 251、219、215 条。整体从正面转向 00:24（北京）的分歧后，在开赛前最后 20 分钟重新由助威声量主导。</p>
+      <span class="evidence">证据来源：规则层 narrative + 本场弹幕密度 · 时间已由原始 UTC 换算为北京时间</span>
+    </div>
+    <div class="card">
+      <h3>中性弹幕二次判定</h3>
+      <p>对 <code>neutral_salvage</code> 的 40 条候选（归并计数 441）逐条复查：将“IG 加油 / 加油 IG”等判为真实助威，“ig 必输 / 要被 Zeus 抽了”等纳入负向，“IG 肯定赢 / 打爆 Zeus”等纳入正向竞争预期。</p>
+      <p class="muted">纯队名、宣传语、无关的 GEN 算命文案和“老婆”刷屏不纳入情绪；重复同一文案按一个语义簇处理，不把刷屏数量当成多人独立共识。</p>
+      <span class="evidence">证据来源：本场弹幕 · 模型二次判定 · 单源待验证</span>
+    </div>
+    <div class="card">
+      <h3>队伍状态、历史对阵与盘口讨论</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>可呈现信息</th>
+              <th>来源与置信</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>队伍近期状态</td>
+              <td>历史画像显示 IG 在 2026-10-24 胜 Team Secret Whales；HLE 在 2026-10-24 负 Gen.G、在 2026-10-23 胜 Top Esports。该状态不代表本场胜负。</td>
+              <td>历史画像（结构化赛果库，2026-10-23/24）</td>
+            </tr>
+            <tr>
+              <td>历史对阵</td>
+              <td>本库未找到 HLE 与 IG 的可用直接 H2H 记录。弹幕提到“上次对决还在 1-16”“23 年的债”，但未说明赛事、日期与上下文，不能作为已验证交手事实。</td>
+              <td>历史画像（无直接匹配）+ 本场弹幕（00:59，北京）· 单源待验证</td>
+            </tr>
+            <tr>
+              <td>队伍观感</td>
+              <td>支持 IG 者强调 HLE“两天没有节奏”；反向声量强调 HLE 强度、Zeus 对位优势与 IG 上路承压。</td>
+              <td>本场弹幕（00:50–00:58，北京）· 单源、存在重复文案</td>
+            </tr>
+            <tr>
+              <td>盘口讨论</td>
+              <td>规则层 <code>odds_discussion.count=0</code>；“永远不亏”等属于玩梗，没有形成可识别的盘口数字、让分或价格方向。</td>
+              <td>本场弹幕 + 规则层 · 盘口讨论缺失</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>预期落点：</strong>IG 的助威共识强，但比赛预期并非单向；HLE 侧主要有 Zeus 对位能力与强度叙事，IG 侧主要有 HLE 近期节奏批评与爆冷期待。全部为单源待验证。若兑现，两条方向分别是：Zeus 对位占优 → 利好 HLE；HLE 协同失序 → 利好 IG。
+      <span class="evidence">证据来源：本场弹幕 · 推测·待验证 · 条件式预测 · 赛后回填</span>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="section-4">
+    <h2 id="section-4"><span class="no">4</span>灰信号汇总</h2>
+    <div class="card risk-card">
+      <h3>低风险条件质疑 · HLE</h3>
+      <p><span class="tag tag-risk">观众质疑，非结论</span><span class="tag tag-risk">风险等级：低</span>00:38（北京）出现“IG 能赢，除非……HLE 放一局水”的假设式表达，指向 HLE，属于对比赛投入度的调侃。</p>
+      <p class="muted">仅 1 条、单一虎牙源，没有时间集中、多人共振或盘口重合，不能推出假赛、剧本或故意送分。条件方向：若出现明确放任比赛的盘口/过程共振，才意味着 IG 相对受益；本页不把假设当事实。</p>
+      <span class="evidence">证据来源：本场弹幕 · 单源待验证 · 观众质疑，非结论</span>
+    </div>
+    <div class="card">
+      <h3>规则层候选审计</h3>
+      <p>另 3 条规则层灰信号候选均不纳入本场：一条指向 GEN 与 T1 的晋级关系，一条“爱吃菠菜”没有比赛主体，另一条“去年 AL 的剧本”指向 AL 的旧赛程。三者均非针对 HLE 或 IG 的集中质疑。</p>
+      <span class="evidence">证据来源：本场弹幕候选审计 + 规则层 gray_signals · 本场有效对象 1 条</span>
+    </div>
+    <div class="callout">
+      <strong>纪律：</strong>以上内容只作风险标注与盘口对照素材。“放水”属于观众质疑，非结论；不得据此认定战队、选手或赛事存在异常。本场未发现中、高风险灰信号，也未出现可用于反手交易的盘口共振。
+    </div>
+  </section>
+  <footer>
+    <p>输入：runtime/vps_intel/lol-hle1-ig1-2026-10-25_pre_intel.json；data/intel_slices/lol-hle1-ig1-2026-10-25_pre.jsonl。</p>
+    <p>数据源：huya_lol_official（room_id 660000）1 路；弹幕采集截止 2026-10-26 00:59（北京）。SOOP、Twitch、KICK 等跨平台源缺失，关键共识均为单源待验证。</p>
+    <p>状态：赛前·未开赛。所有时间以北京时间为准；UTC 仅作为数据窗口括号备注。</p>
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
