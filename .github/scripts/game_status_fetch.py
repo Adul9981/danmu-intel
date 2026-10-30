@@ -164,11 +164,12 @@ HUPU_HEADERS = {
     "Accept": "application/json, text/plain, */*",
 }
 HUPU_BUSINESSES = {"lol": "LoL", "cs2": "CS2"}
-# 官方 Riot 已覆盖（由 Polymarket / 官方赛程源处理）的 LoL 联赛 + 世界赛
-_HUPU_LOL_SKIP_KEYS = (
-    "lck", "lpl", "lec", "lcp",
-    "全球总决赛", "world championship", "worlds", "瑞士轮", "swiss",
-)
+# 官方 Riot / 官方赛程源已覆盖的 LoL 联赛（恒跳过，虎扑不补）
+_HUPU_LOL_SKIP_KEYS = ("lck", "lpl", "lec", "lcp")
+# 世界赛：Polymarket 只挂牌部分场次（国际场），中国内战等无盘场次需虎扑补齐；
+# 是否放行由 _hupu_skip_lol 结合 team_names.json 可用性决定（可用则放行并去重，
+# 否则跳过宁缺勿重，避免跨源重复行）。
+_HUPU_WORLDS_KEYS = ("全球总决赛", "world championship", "worlds", "瑞士轮", "swiss")
 
 
 def _hupu_iso(ms) -> str:
@@ -253,22 +254,71 @@ def fetch_hupu() -> list[dict]:
     return out
 
 
-def _team_norm(name: str) -> str:
-    """队伍名归一化去重键（小写 + 去非字母数字，容忍 Gen.G/GEN、BC.Game/BCGame 等写法）。"""
+_TEAM_CANON: dict[str, str] | None = None  # 惰性缓存：归一化名称 -> 归一化规范缩写
+
+
+def _norm_key(name: str) -> str:
+    """统一归一化：小写 + 去非字母数字（表键与回退共用，保证一致）。"""
     return re.sub(r"[^a-z0-9]", "", str(name or "").lower())
 
 
+def _load_team_canon() -> dict[str, str]:
+    """加载 team_names.json（名称/别名/全名 -> 规范缩写），与本脚本同目录打包。
+
+    让 Polymarket 全名（Hanwha Life Esports）与虎扑缩写（HLE）归一到同一键，
+    避免跨源重复行（AGENTS.md 队伍命名统一标准）。缺失/损坏返回空表，
+    调用方据此降级（世界赛宁缺勿重，见 _hupu_skip_lol）。
+    """
+    p = Path(__file__).resolve().parent / "team_names.json"
+    try:
+        teams = json.loads(p.read_text(encoding="utf-8")).get("teams", [])
+    except Exception:  # noqa: BLE001
+        return {}
+    norm: dict[str, str] = {}
+    for t in teams:
+        abbr = _norm_key(t.get("abbr") or "")
+        if not abbr:
+            continue
+        for k in [t.get("abbr") or "", t.get("full") or "", *(t.get("aliases") or [])]:
+            kk = _norm_key(k)
+            if kk:
+                norm[kk] = abbr
+    return norm
+
+
+def _team_canon() -> dict[str, str]:
+    global _TEAM_CANON
+    if _TEAM_CANON is None:
+        _TEAM_CANON = _load_team_canon()
+    return _TEAM_CANON
+
+
+def _team_norm(name: str) -> str:
+    """队伍名归一化去重键：优先 team_names.json 规范缩写，回退到归一化键。"""
+    return _team_canon().get(_norm_key(name)) or _norm_key(name)
+
+
 def _hupu_skip_lol(tournament: str) -> bool:
+    """虎扑 LoL 场次是否跳过。
+
+    LCK/LPL/LEC/LCP 恒跳过（官方赛程源覆盖）；世界赛仅当 team_names.json 可用
+    （能可靠去重）才放行，否则跳过——让虎扑补齐 Polymarket 未挂牌场次，同时
+    不因去重失效产生跨源重复行（教训：2026-10-30 BLG vs TES 缺场）。
+    """
     t = (tournament or "").lower()
-    return any(k in t for k in _HUPU_LOL_SKIP_KEYS)
+    if any(k in t for k in _HUPU_LOL_SKIP_KEYS):
+        return True
+    if any(k in t for k in _HUPU_WORLDS_KEYS):
+        return not _team_canon()
+    return False
 
 
 def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_tomorrow: str) -> int:
-    """合并虎扑场次（CS2 全部 + 官方/世界赛未覆盖的 LoL），返回新增条数。
+    """合并虎扑场次（CS2 全部 + Polymarket 未覆盖的 LoL），返回新增条数。
 
-    与 tools/export_today_matches.py merge_hupu 同口径（2026-10-25 上云）：
-    世界赛 / LCK / LPL / LEC / LCP 由 Polymarket（白名单已修复）覆盖，虎扑跳过；
-    虎扑只补 CS2 + 其他 LoL（德玛西亚杯等）。按归一化队伍名去重。
+    LCK/LPL/LEC/LCP 恒跳过（官方赛程源覆盖）；世界赛在 team_names.json 可用时放行，
+    补 Polymarket 未挂牌的中国内战等场次（靠规范缩写去重，避免与 Polymarket 全名重行，
+    2026-10-30 修 BLG vs TES 缺场）。按归一化队伍名去重。
     """
     known = {tuple(sorted(_team_norm(t) for t in (m.get("teams") or []))) for m in today_matches}
     added = 0
