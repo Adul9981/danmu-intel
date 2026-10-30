@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Team Liquid vs LOS · G3 局中弹幕情报快照</title>
+  <style>
+    :root{
+      --bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--sub:#6e6e73;--line:#e5e5ea;
+      --blue:#0071e3;--blue-soft:#eaf3ff;--warn:#a55b00;--warn-soft:#fff6e7;
+      --risk:#b42318;--risk-soft:#fff0ee;--muted:#f0f1f3;--radius:20px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      -webkit-font-smoothing:antialiased;line-height:1.62;
+    }
+    .wrap{max-width:1040px;margin:0 auto;padding:28px 18px 52px}
+    .hero{
+      position:relative;overflow:hidden;background:linear-gradient(145deg,#fff 0%,#fbfcff 58%,#eef6ff 100%);
+      border:1px solid rgba(0,113,227,.12);border-radius:28px;padding:30px 30px 26px;
+      box-shadow:0 18px 48px rgba(0,0,0,.055)
+    }
+    .hero:after{
+      content:"";position:absolute;right:-80px;top:-110px;width:290px;height:290px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,113,227,.14),rgba(0,113,227,0) 68%);pointer-events:none
+    }
+    .eyebrow{font-size:12px;font-weight:750;letter-spacing:.09em;color:var(--blue);text-transform:uppercase}
+    h1{margin:7px 0 5px;font-size:clamp(29px,5vw,48px);line-height:1.12;letter-spacing:-.04em}
+    h1 .vs{font-weight:420;color:#8e8e93;margin:0 6px}
+    .meta{color:var(--sub);font-size:14px}
+    .status{
+      display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:8px 13px;border-radius:999px;
+      background:var(--warn-soft);color:var(--warn);font-size:13px;font-weight:800;
+      border:1px solid rgba(165,91,0,.18)
+    }
+    .status:before{content:"";width:8px;height:8px;border-radius:50%;background:#ff9f0a;box-shadow:0 0 0 4px rgba(255,159,10,.13)}
+    .hero-note{margin:14px 0 0;max-width:790px;font-size:14px;color:#424245}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}
+    .metric{background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:15px;padding:12px 14px}
+    .metric strong{display:block;font-size:21px;line-height:1.2;letter-spacing:-.02em}
+    .metric span{display:block;color:var(--sub);font-size:12px;margin-top:3px}
+    .sourcebar{
+      display:grid;grid-template-columns:1.3fr 1fr;gap:10px;margin-top:10px
+    }
+    .sourcebox{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:15px;padding:12px 14px;font-size:13px}
+    .sourcebox b{display:block;margin-bottom:3px}
+    .gap{color:var(--warn)}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      padding:26px 28px;margin-top:16px;box-shadow:0 8px 28px rgba(0,0,0,.035)
+    }
+    h2{
+      display:flex;align-items:center;gap:11px;margin:0 0 18px;
+      font-size:clamp(21px,3.2vw,28px);line-height:1.25;letter-spacing:-.025em
+    }
+    h2 .no{
+      display:inline-grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:11px;
+      background:var(--blue);color:#fff;font-size:15px;font-weight:800
+    }
+    h3{font-size:16px;line-height:1.35;margin:22px 0 9px;letter-spacing:-.01em}
+    h3:first-of-type{margin-top:4px}
+    p{margin:8px 0}
+    .lead{font-size:15px;color:#424245}
+    .callout,.warnbox,.riskbox,.empty,.reserved{
+      border-radius:15px;padding:14px 16px;margin:12px 0;font-size:14px
+    }
+    .callout{background:var(--blue-soft);border:1px solid rgba(0,113,227,.12)}
+    .warnbox{background:var(--warn-soft);border:1px solid rgba(165,91,0,.14);color:#5c3908}
+    .riskbox{background:var(--risk-soft);border:1px solid rgba(180,35,24,.14)}
+    .empty{background:#f8f8fa;border:1px dashed #cfd0d5;color:#515154}
+    .reserved{background:#fafafa;border:1px solid var(--line);color:var(--sub)}
+    .tag{
+      display:inline-block;margin:4px 5px 0 0;padding:2px 7px;border-radius:6px;
+      background:#f0f1f3;color:#515154;font-size:11px;font-weight:650;line-height:1.65;white-space:nowrap
+    }
+    .tag.source{background:#eef5ff;color:#0062c4}
+    .tag.model{background:#f3edff;color:#6440a8}
+    .tag.pending{background:#fff6e7;color:#945400}
+    .tag.neg{background:#fff0ee;color:#a61b13}
+    .tag.pos{background:#eaf8ef;color:#15763a}
+    .tag.low{background:#fff6e7;color:#945400}
+    .tag.mid{background:#ffe9e7;color:#a61b13}
+    .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:14px;margin:11px 0}
+    table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}
+    th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}
+    th{background:#f8f8fa;color:#515154;font-size:12px;font-weight:750;white-space:nowrap}
+    tr:last-child td{border-bottom:0}
+    td b{font-weight:750}
+    .muted{color:var(--sub)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .box{background:#fafafa;border:1px solid var(--line);border-radius:15px;padding:14px 15px;font-size:14px}
+    .box b{display:block;margin-bottom:4px}
+    .metrics-inline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:8px 0 16px}
+    .mini{background:#f8f8fa;border:1px solid var(--line);border-radius:13px;padding:11px 12px}
+    .mini strong{display:block;font-size:18px;line-height:1.2}
+    .mini span{display:block;font-size:11px;color:var(--sub);margin-top:3px}
+    details{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:0 14px;background:#fbfbfc}
+    summary{cursor:pointer;padding:13px 0;font-weight:750;font-size:14px}
+    details table{min-width:660px;margin-bottom:14px}
+    .footer{margin:20px 2px 0;color:var(--sub);font-size:12px;text-align:center}
+    .champ{display:inline-block;background:#f2f4f7;border-radius:6px;padding:1px 6px;margin:2px 4px 2px 0;font-weight:650;color:#333}
+    @media(max-width:760px){
+      .wrap{padding:14px 10px 36px}.hero{padding:24px 18px 20px;border-radius:22px}
+      .card{padding:21px 17px;border-radius:17px}.metrics,.metrics-inline{grid-template-columns:1fr 1fr}
+      .sourcebar,.grid2{grid-template-columns:1fr}h2 .no{width:31px;height:31px;flex-basis:31px}
+      .hero-note,.lead{font-size:14px}.table-wrap{border-radius:11px}
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Liquid-LOS 2026-10-30 g3 mid</b></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Live Intelligence · G3 Mid-Game</div>
+    <h1>Team Liquid <span class="vs">vs</span> LOS</h1>
+    <div class="meta">赛事日期 2026-10-30 · Polymarket slug：lol-tl2-los-2026-10-30 · 节点 G3｜局中</div>
+    <div class="status">局中·非终局，结果待定</div>
+    <p class="hero-note"><b>进度（弹幕口径）：</b>G3 已进入前中期至中期，样本出现对线、控龙、巢虫与大龙节奏讨论；弹幕未提供可信的小局时钟，具体分钟不作补齐。</p>
+    <div class="metrics">
+      <div class="metric"><strong>1,265</strong><span>弹幕原始样本</span></div>
+      <div class="metric"><strong>540</strong><span>活跃用户</span></div>
+      <div class="metric"><strong>78.5</strong><span>条 / 分钟</span></div>
+      <div class="metric"><strong>3</strong><span>实际采集房间</span></div>
+    </div>
+    <div class="sourcebar">
+      <div class="sourcebox">
+        <b>数据窗口与截止</b>
+        2026-10-31 05:56–06:12（北京；UTC 2026-10-30 21:56–22:12）<br>
+        弹幕采集截止：06:12（北京）
+      </div>
+      <div class="sourcebox">
+        <b>来源完整性</b>
+        虎牙官方一路 952 条 / 记得 200 条 / 硕硕 113 条。<br>
+        <span class="gap">缺口：SOOP、Twitch、KICK 未进入本节点，跨平台共振不可判定。</span>
+      </div>
+    </div>
+  </header>
+  <section class="card">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <div class="callout">
+      <b>完整五人阵容：样本不足。</b>
+      本窗口只能辨认若干英雄碎片和方位/队伍讨论，无法可靠补齐“队伍 × 位置 × 选手 × 英雄”。以下均为弹幕口径·待官方，不把观众建议、亮英雄或零散反应当成实际选人。
+      <span class="tag source">本场弹幕</span><span class="tag pending">弹幕口径·待官方</span>
+    </div>
+    <h3>弹幕可辨识的阵容碎片</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>对象 / 方位</th><th>英雄碎片</th><th>依据与时间（北京）</th><th>置信与缺口</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>上路对位</b><br><span class="muted">队伍归属待官方</span></td>
+            <td><span class="champ">崔丝塔娜／小炮</span> 对 <span class="champ">纳尔</span></td>
+            <td>05:58–06:11 多条直接讨论“小炮上单”“纳尔打不了小炮”“小炮打纳尔”“纳尔开始坐牢”；06:11“小炮前面军训纳尔太正常了”。</td>
+            <td>对位轮廓较清晰；哪队拿小炮、哪队拿纳尔仍待官方。<br><span class="tag source">本场弹幕</span><span class="tag pending">待官方</span></td>
+          </tr>
+          <tr>
+            <td><b>潘森相关方</b><br><span class="muted">队伍/位置待官方</span></td>
+            <td><span class="champ">潘森</span>；与纳尔/摩根相邻出现</td>
+            <td>06:04–06:12 反复出现“潘森没大”“潘森不飞”“潘森不做事”“潘森军训摩根”。</td>
+            <td>可确认弹幕在讨论潘森实际局内表现；不能由相邻语句硬绑摩根与潘森的英雄关系。<br><span class="tag source">本场弹幕</span></td>
+          </tr>
+          <tr>
+            <td><b>右方三人组合</b><br><span class="muted">右方对应队伍待官方</span></td>
+            <td><span class="champ">梦魇</span><span class="champ">炸弹人</span><span class="champ">塞拉斯</span></td>
+            <td>06:01 一名用户连续发送 4 次“右边阵容是人？梦魇炸弹人塞拉斯”。</td>
+            <td>英雄串可读，但来源单一且刷屏，不能升级为完整阵容事实。<br><span class="tag source">本场弹幕</span><span class="tag pending">单源待验证</span></td>
+          </tr>
+          <tr>
+            <td><b>其他候选英雄</b><br><span class="muted">混有实际选角与观众建议</span></td>
+            <td><span class="champ">维克托</span><span class="champ">卡莉斯塔</span><span class="champ">猪妹</span><span class="champ">岩雀</span><span class="champ">烈娜塔</span><span class="champ">大树</span></td>
+            <td>05:56–06:11 相继出现；“选大树”“拿杰斯”“选安妮”等含明显的建议/假设，不当作已选。</td>
+            <td>仅保留与本局对线、团战或技能表现相连的英雄；选手归属均待官方。<br><span class="tag source">本场弹幕</span><span class="tag pending">待官方</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2">
+      <div class="box">
+        <b>被点名选手</b>
+        <p><b>摩根：</b>06:05–06:07 被多次提及，并与“TL 上路以前在 WE 打过吧”“潘森军训摩根”相邻。只能确认存在本场选手评价，不能把英雄归属补成确定事实。<br>
+        <b>QUID：</b>05:58 被评价“只能玩混子，大核玩不明白”；没有同一句内的队伍/英雄绑定。<br>
+        <span class="tag source">本场弹幕</span><span class="tag pending">选手×英雄待官方</span></p>
+      </div>
+      <div class="box">
+        <b>BP 后战绩情报</b>
+        <p><b>无选手 × 英雄战绩提及。</b>窗口内只有“选维克托的都没赢过”“卡莉斯塔必输”等英雄泛化负评，以及“大树像德杯 WE 决赛被抽烂”的跨队类比，均不足以构成熟练度战绩。<br><span class="tag source">本场弹幕</span></p>
+      </div>
+    </div>
+    <p class="lead"><b>BP 结构解读：</b>弹幕把“小炮上单打纳尔”视为上路强压制点；同时集中质疑右侧脆皮、无前排与资源控制。两套判断尚未与官方阵容和经济资源数据闭合，暂不升级为正式 BP 胜负结论。<span class="tag source">本场弹幕</span><span class="tag pending">推测·待验证</span></p>
+  </section>
+  <section class="card">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">Team Liquid</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:25%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">25%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">LOS</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:75%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">75%</span></div><div class="note">显式胜负弹幕仅 8 条（样本较少，< 阈值 10），按实际比例展示，随弹幕更新。</div><!-- SITUATION:WIN:END -->
+    <!-- SITUATION:RATINGS:BEGIN -->
+    <!-- System-injected Hupu player ratings belong here. -->
+    <!-- SITUATION:RATINGS:END -->
+  </section>
+  <section class="card">
+    <h2><span class="no">3</span>方向性情报板</h2>
+    <div class="metrics-inline">
+      <div class="mini"><strong>+12</strong><span>整窗情绪净值（正 59 / 负 47）</span></div>
+      <div class="mini"><strong>6</strong><span>明确队伍胜负口径</span></div>
+      <div class="mini"><strong>低</strong><span>样本置信</span></div>
+      <div class="mini"><strong>1</strong><span>本场灰信号候选</span></div>
+    </div>
+    <h3>正锚点（看好谁赢）</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>对象</th><th>依据</th><th>时间（北京）</th><th>验证状态</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>LOS · 弱人气正锚</b><br><span class="tag pos">看好 LOS</span></td>
+            <td>规则层明确胜负口径 5/6 指向 LOS，样本含“LOS 独赢”“巴西稳了”“LOS 要赢”“巴西拿下”；另有“LOS 打得有模有样”的过程正向评价。</td>
+            <td>05:58–06:11</td>
+            <td>样本低于 10 条，且多数来自虎牙官方一路；<b>单源待验证</b>。人气偏好不等于局势领先。</td>
+          </tr>
+          <tr>
+            <td><b>TL · 条件正锚</b><br><span class="tag pos">后期可拖</span></td>
+            <td>“液体拿后期阵容拖住自动赢”给出 TL 的后期发育路径；另有“TL 稳了”的单条即时判断。</td>
+            <td>06:00–06:01</td>
+            <td>条件锚，必须看到 TL 成功拖过强势期才成立；<span class="tag pending">推测·待验证</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>负锚点（看衰谁输）</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>对象</th><th>依据</th><th>时间（北京）</th><th>验证状态</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Team Liquid · 对线与中路负锚</b><br><span class="tag neg">看衰 TL</span></td>
+            <td>“TL 三条线对线被巴西虐”“TL 中单太菜”“维克托又没闪现”“TL 在本土被虐杀”等，分别来自官方一路与硕硕；负面集中在对线、AP 中路与资源执行。</td>
+            <td>06:04–06:10</td>
+            <td>多房间同向、但缺少官方经济/资源数据；<span class="tag pending">待局面数据验证</span></td>
+          </tr>
+          <tr>
+            <td><b>LOS · 资源兑现条件负锚</b><br><span class="tag neg">若断节奏则看衰</span></td>
+            <td>“上 LOS 这个阵容前期没有优势控很多资源，后期打不了”直接指出资源依赖；“LOS 绝对赢不了”出现 2 次，另有右侧“不控龙/潘森不做事”的集中质疑。</td>
+            <td>05:59–06:11</td>
+            <td>与“弱偏 LOS”的人气信号方向背离；<span class="tag pending">分歧信号</span></td>
+          </tr>
+          <tr>
+            <td><b>选大树的一方 · 条件负锚</b><br><span class="tag neg">模型二次判定</span></td>
+            <td>05:59“选大树就跟德杯 WE 决赛一样，被抽烂”，并在 06:00 延伸出“选大树输得快”；属于真实负评，但当前讲话没有绑定唯一队伍。</td>
+            <td>05:59–06:00</td>
+            <td><span class="tag model">模型二次判定</span> 仅对“大树选角方”成立，若官方确认归属后可回填。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>群体共识：弱偏 LOS，但共识不足</h3>
+    <div class="callout">
+      <p><b>情绪走势：</b>05:56–06:00 净 −1（正 11 / 负 12）→ 06:01–06:05 净 +4（正 16 / 负 12）→ 06:06–06:10 净 +9（正 32 / 负 23）。后段转暖是事实，但整窗统计混入 BLG、HLE、AL、T1 等跨场聊天，不能直接等同 TL/LOS 局势。<span class="tag source">本场弹幕</span></p>
+      <p><b>方向口径：</b>明确胜负样本仅 6 条，LOS 5 / TL 1；<b>只能写“低样本弱偏 LOS”</b>，低于 10 条阈值，不构成稳定群体共识。TL 的三线负评与 LOS 的资源执行负评同时存在，方向分歧明显。<span class="tag source">本场弹幕</span><span class="tag pending">共识不足</span></p>
+    </div>
+    <h3>灰信号条件预测</h3>
+    <div class="empty">
+      <b>条件风险偏低，暂不映射为赛果。</b>
+      06:08“维克托故意距离”只有 1 条，指向维克托使用者的站位/参团动机；若官方阵容确认其属于 TL，且后续独立局面数据同样显示持续脱离团队，则条件下偏向“TL 风险侧”。当前队伍归属与“故意”动机均未闭合，<b>不得升级为故意送或假赛判断</b>。
+      <span class="tag source">本场弹幕</span><span class="tag pending">推测·待验证</span>
+    </div>
+    <details>
+      <summary>中性弹幕候选逐条二次判定（40 条；点击展开）</summary>
+      <p class="muted">判定只回答两件事：是否有真实情绪，是否能唯一指向本场 TL/LOS 或当前 BP。广告、纯问句、抽签路径、旁场闲聊和跨队玩梗不强行升格。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>北京时间</th><th>候选与原计数</th><th>二次判定</th></tr></thead>
+          <tbody>
+            <tr><td>01</td><td>06:03</td><td>IG 赛事模拟广告 ×5</td><td>广告，无本局情绪，排除。</td></tr>
+            <tr><td>02</td><td>06:01</td><td>都是 T1 的玩具罢了 ×4</td><td>跨队玩梗，无法唯一绑定 TL/LOS，排除。</td></tr>
+            <tr><td>03</td><td>06:10</td><td>谁赢了 HLE，必须打 BLG ×4</td><td>抽签路径闲聊，排除。</td></tr>
+            <tr><td>04</td><td>06:04</td><td>TES 和 IG 应该打得过，BLG 有点悬</td><td>跨场实力判断，排除。</td></tr>
+            <tr><td>05</td><td>06:04</td><td>IG 这把又没了</td><td>旁场负评，无本局对象，排除。</td></tr>
+            <tr><td>06</td><td>05:56</td><td>怎么还有一把我超威</td><td>Chovy 旁场玩梗，排除。</td></tr>
+            <tr><td>07</td><td>05:57</td><td>IG 会抽哪几个队</td><td>抽签问题，排除。</td></tr>
+            <tr><td>08</td><td>05:57</td><td>BLG 要夺冠了</td><td>BLG 旁场判断，排除。</td></tr>
+            <tr><td>09</td><td>05:59</td><td>主播看好 HLE 还是 G2</td><td>下一场预测问题，排除。</td></tr>
+            <tr><td>10</td><td>05:59</td><td>选大树像德杯 WE 决赛一样被抽烂</td><td><b>真实负评</b>；对象仅限“大树选角方”，纳入条件负锚。<span class="tag model">模型二次判定</span></td></tr>
+            <tr><td>11</td><td>06:00</td><td>能看到宙斯的乌鸦吗</td><td>其他选手/英雄愿望，排除。</td></tr>
+            <tr><td>12</td><td>06:00</td><td>巴西赢了的话，救活了 BLG</td><td>抽签路径偏好，不是本局过程判断，排除。</td></tr>
+            <tr><td>13</td><td>06:01</td><td>TL 赢了 BLG 只能打韩华或狮子</td><td>假设赛果后的路径讨论，排除。</td></tr>
+            <tr><td>14</td><td>06:02</td><td>现在 BLG 最想 LOS 赢</td><td>旁队利益讨论，不指向 LOS 局内优势，排除。</td></tr>
+            <tr><td>15</td><td>06:02</td><td>小宙斯</td><td>选手绰号，无本局情绪，排除。</td></tr>
+            <tr><td>16</td><td>06:02</td><td>BLG 现在压力大</td><td>BLG 旁场调侃，排除。</td></tr>
+            <tr><td>17</td><td>06:02</td><td>HLE 不会出局</td><td>HLE 跨场判断，排除。</td></tr>
+            <tr><td>18</td><td>06:03</td><td>BLG 状态已经走远</td><td>BLG 跨场负评，排除。</td></tr>
+            <tr><td>19</td><td>06:05</td><td>TL 上路以前在 WE 打过吧</td><td>选手履历问句，可作身份线索，不作方向。</td></tr>
+            <tr><td>20</td><td>06:05</td><td>这把 TL 赢了只能打 G2/HLE</td><td>假设赛果后的路径讨论，排除。</td></tr>
+            <tr><td>21</td><td>06:06</td><td>LOS 赢了对 BLG 是好事</td><td>旁队抽签利益，排除。</td></tr>
+            <tr><td>22</td><td>06:06</td><td>彬哥下来逮宙斯</td><td>跨队选手梗，排除。</td></tr>
+            <tr><td>23</td><td>06:06</td><td>初生牛犊首次世界赛跟 T1 打</td><td>其他比赛经历，排除。</td></tr>
+            <tr><td>24</td><td>06:07</td><td>T1 要 7 冠了</td><td>T1 跨场判断，排除。</td></tr>
+            <tr><td>25</td><td>06:07</td><td>看看人家 BLG</td><td>跨队比较，无具体本局依据，排除。</td></tr>
+            <tr><td>26</td><td>06:08</td><td>T1 比赛为什么没有二路</td><td>直播内容询问，排除。</td></tr>
+            <tr><td>27</td><td>06:08</td><td>IG 跟 LOS 打会好看</td><td>未来对局想象，不评价当前 G3，排除。</td></tr>
+            <tr><td>28</td><td>06:08</td><td>LOS 赢了 BLG 就能抽到</td><td>抽签路径问句，排除。</td></tr>
+            <tr><td>29</td><td>06:09</td><td>BLG 能不能抽 HLE</td><td>抽签闲聊，排除。</td></tr>
+            <tr><td>30</td><td>06:10</td><td>LOS 赢后 BLG 能否抽到 LOS</td><td>抽签路径问句，排除。</td></tr>
+            <tr><td>31</td><td>06:10</td><td>一群人口头抵制 T1</td><td>粉丝文化讨论，排除。</td></tr>
+            <tr><td>32</td><td>06:10</td><td>BLG 又做签</td><td>对抽签的质疑，不是 TL/LOS 局内操纵信号，排除。</td></tr>
+            <tr><td>33</td><td>06:11</td><td>IG 加油</td><td>旁队应援，排除。</td></tr>
+            <tr><td>34</td><td>06:11</td><td>钢背兽要打 HLE</td><td>旁场赛程，排除。</td></tr>
+            <tr><td>35</td><td>06:11</td><td>都是 BLG 的玩具</td><td>跨队贬低/玩梗，无唯一对象，排除。</td></tr>
+            <tr><td>36</td><td>06:11</td><td>T1 解说偏好</td><td>主播/解说话题，排除。</td></tr>
+            <tr><td>37</td><td>06:11</td><td>AL 被 T1 教育后一蹶不振</td><td>AL 历史评价，排除。</td></tr>
+            <tr><td>38</td><td>06:11</td><td>老张 T1 铁粉</td><td>主播粉丝属性，排除。</td></tr>
+            <tr><td>39</td><td>06:12</td><td>AL 等明晚和 BLG 一起走</td><td>旁队玩梗，排除。</td></tr>
+            <tr><td>40</td><td>06:00</td><td>污渍来全杀了 ×30</td><td>复读梗，无 TL/LOS 或具体操作对象，排除。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+  <section class="card">
+    <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="riskbox">
+      <b>低风险候选｜“维克托故意距离”</b><br>
+      <b>观众质疑，非结论。</b>指向对象：维克托使用者；当前仅能从阵容碎片暂记为“TL 中路候选”，队伍归属仍待官方。风险等级：<span class="tag low">低</span>。若质疑兑现，条件方向为“TL 为风险侧”；若官方归属不同，则同步修正，不能由这一条推导假赛、故意送或赛果。
+      <span class="tag source">本场弹幕</span><span class="tag pending">单源待验证</span>
+    </div>
+    <div class="warnbox">
+      <b>规则层误召排除：</b>06:12“二哥 买了 iPhone duo 吗”是主播闲聊，不含盘口、选手或比赛操纵语义，不计入灰信号。
+      <span class="tag source">本场弹幕</span>
+    </div>
+    <div class="callout">
+      <b>执行异常留痕，不升级为灰信号：</b>06:09–06:12 多条“右边不控龙”“虫不拿龙不控”“潘森不做事”“这打野逛街”构成资源节奏质疑，但均为纯竞技操作批评，未出现收钱、剧本、假赛或故意送指控。若右侧确认是 LOS，则只提示 LOS 的资源兑现风险；当前不作队伍定论。
+      <span class="tag source">本场弹幕</span><span class="tag pending">观众质疑·非结论</span>
+    </div>
+    <p class="lead"><b>盘口对照：</b>规则层盘口讨论计数为 0，本节点没有可用的 Polymarket 价格或让分/人头盘样本，不能完成“灰信号 × 盘口”交叉验证。<span class="tag source">盘口</span><span class="tag pending">样本不足</span></p>
+    <div class="empty">
+      <b>风险结论：</b>当前无中、高风险灰信号；仅保留 1 条低风险单源质疑。观众质疑不得写成实锤，也不得单独映射任一队胜负。
+      <span class="tag source">本场弹幕</span><span class="tag pending">观众质疑非结论</span>
+    </div>
+  </section>
+  <footer class="footer">
+    弹幕采集截止：2026-10-31 06:12（北京；UTC 2026-10-30 22:12，括号备注）<br>
+    G3 局中快照 · 非终局 · 阵容、进度与结果待官方及后续多源信号回填
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
