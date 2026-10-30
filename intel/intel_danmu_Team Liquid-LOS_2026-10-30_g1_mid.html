@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Liquid vs LOS · G1 局中弹幕情报快照</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --sub: #6e6e73;
+    --line: #e5e5ea;
+    --soft: #f7f8fa;
+    --accent: #0071e3;
+    --accent-soft: #edf5ff;
+    --good: #237a3b;
+    --bad: #b42318;
+    --warn: #a65700;
+    --warn-soft: #fff7e8;
+    --risk-soft: #fff1ef;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.62;
+    padding: 24px 12px 56px;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  .hero, .card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 1px 5px rgba(0,0,0,.05);
+  }
+  .hero { padding: 24px; }
+  .card { padding: 22px; margin-top: 14px; }
+  .eyebrow {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .05em;
+  }
+  h1 {
+    font-size: clamp(23px, 5vw, 32px);
+    line-height: 1.25;
+    letter-spacing: -.025em;
+    margin-top: 6px;
+  }
+  .subtitle { color: var(--sub); font-size: 13px; margin-top: 7px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .pill, .tag {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pill {
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .pill.live { background: var(--risk-soft); color: var(--bad); }
+  .pill.pending { background: var(--warn-soft); color: var(--warn); }
+  .banner {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 1px solid #f2c6bf;
+    border-radius: 14px;
+    background: #fff5f2;
+    color: #8f2d20;
+    font-size: 13.5px;
+  }
+  .banner strong { font-size: 16px; }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .meta-grid div {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .meta-grid b { display: block; font-size: 12.5px; }
+  .meta-grid span { display: block; color: var(--sub); font-size: 11.5px; margin-top: 2px; }
+  h2 {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 14px;
+    font-size: 18px;
+    line-height: 1.42;
+    letter-spacing: -.01em;
+  }
+  h2 .no {
+    flex: 0 0 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+  }
+  h3 { font-size: 14px; margin: 18px 0 8px; }
+  h3:first-of-type { margin-top: 4px; }
+  p { font-size: 13.5px; margin: 7px 0; }
+  ul { margin: 7px 0 7px 20px; }
+  li { margin: 5px 0; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
+  th {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--line);
+    color: var(--sub);
+    font-size: 11px;
+    font-weight: 650;
+    text-align: left;
+  }
+  td { padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .tag {
+    padding: 1px 7px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .tag.neg { background: var(--risk-soft); color: var(--bad); }
+  .tag.mix { background: #f3f0fa; color: #6547b6; }
+  .tag.pending { background: var(--warn-soft); color: var(--warn); }
+  .tag.source { background: #f1f2f4; color: #55555a; }
+  .note, .callout, .warnbox, .empty {
+    border-radius: 12px;
+    padding: 11px 13px;
+    margin-top: 10px;
+    font-size: 12.5px;
+  }
+  .note { background: var(--soft); border: 1px solid var(--line); color: #424245; }
+  .callout { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+  .warnbox { background: var(--warn-soft); border-left: 3px solid var(--warn); }
+  .empty { background: #fbfbfc; border: 1px dashed #d7d7dc; color: var(--sub); text-align: center; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .box {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--soft);
+    padding: 12px;
+  }
+  .box b { font-size: 13px; }
+  .box p { color: #424245; font-size: 12.5px; }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .metric {
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--soft);
+  }
+  .metric strong { display: block; font-size: 18px; line-height: 1.3; }
+  .metric span { display: block; margin-top: 1px; color: var(--sub); font-size: 10.5px; }
+  .trend {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .trend div { padding: 9px 10px; border-radius: 10px; background: var(--soft); border: 1px solid var(--line); }
+  .trend b { display: block; font-size: 13px; }
+  .trend span { color: var(--sub); font-size: 11px; }
+  .system-placeholder {
+    border: 1px dashed #d7d7dc;
+    border-radius: 12px;
+    background: #fbfbfc;
+    padding: 18px;
+    color: var(--sub);
+    text-align: center;
+    font-size: 13px;
+  }
+  details {
+    margin-top: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  summary {
+    cursor: pointer;
+    padding: 10px 13px;
+    background: #fbfbfc;
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 650;
+  }
+  .details-body { padding: 10px 13px; border-top: 1px solid var(--line); }
+  .source-line { color: var(--sub); font-size: 11.5px; }
+  .risk-title { font-weight: 750; color: var(--bad); }
+  .footer { margin-top: 18px; color: var(--sub); font-size: 11.5px; text-align: center; }
+  @media (max-width: 680px) {
+    body { padding: 14px 8px 40px; }
+    .hero, .card { padding: 17px; border-radius: 16px; }
+    .meta-grid, .grid2, .metrics, .trend { grid-template-columns: 1fr; }
+    table { display: block; overflow-x: auto; }
+    th, td { min-width: 120px; }
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Team Liquid-LOS 2026-10-30 g1 mid</b></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">局中弹幕情报快照 · G1 · MID-GAME</div>
+    <h1>Team Liquid <span style="color:#8e8e93">vs</span> LOS</h1>
+    <div class="subtitle">2026-10-30 赛程 · 节点 G1｜局中 · Polymarket slug：lol-tl2-los-2026-10-30</div>
+    <div class="pills">
+      <span class="pill live">局中 · 非终局，结果待定</span>
+      <span class="pill pending">进度与方向均为弹幕口径</span>
+      <span class="pill">阵容：弹幕口径 · 待官方</span>
+    </div>
+    <div class="banner">
+      <strong>局中 · 非终局，结果待定。</strong>
+      本页仅反映第 1 小局截至采集截止时的弹幕样本；不判胜负，后续弹幕和官方数据可能修正当前口径。
+    </div>
+    <div class="meta-grid">
+      <div>
+        <b>数据窗口与采集截止</b>
+        <span>2026-10-31 04:13–04:30（北京；UTC 2026-10-30 20:13–20:30）<br>弹幕采集截止：04:30（北京）</span>
+      </div>
+      <div>
+        <b>样本量</b>
+        <span>1,672 条 · 783 个活跃用户 · 98.2 条/分<br>有效来源：虎牙官方 1,042、记得 386、硕硕 244</span>
+      </div>
+      <div>
+        <b>弹幕进度口径</b>
+        <span>第 1 小局已从对线推进至资源/中期团战讨论；具体游戏时钟未唯一确认。04:18:08 出现“5分钟还没拿一血”，04:22:55 出现“十分钟没开过大”，此后集中讨论小龙与巨魔团战。</span>
+      </div>
+    </div>
+  </header>
+  <section class="card" aria-labelledby="section-1">
+    <h2 id="section-1"><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <p>
+      <span class="tag pending">阵容口径·待官方</span>
+      本窗口无法从弹幕唯一还原完整五人阵容及全部“英雄×选手”对应。下表仅列本场有时间和语境支撑的碎片；选手不明、边路冲突或只出现在假设阵容中的英雄均不硬配。
+    </p>
+    <h3>本场可辨识的阵容碎片</h3>
+    <table>
+      <thead>
+        <tr><th>弹幕主口径</th><th>英雄 / 位置 / 选手</th><th>依据与验证</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Team Liquid</b><br><span class="tag">左侧主口径</span></td>
+          <td>杰斯 · 上路候选 · 选手待确认</td>
+          <td>04:13:15“你选杰斯打不出来，优势没有用的”；04:18:03“杰斯这拿出来没压多少啊”；04:21:14“杰斯助攻都没有”。<br><span class="tag source">本场弹幕</span> <span class="tag pending">官方待确认</span></td>
+        </tr>
+        <tr>
+          <td><b>Team Liquid</b><br><span class="tag">左侧主口径</span></td>
+          <td>寒冰 · 下路候选 · 选手待确认</td>
+          <td>04:14:34“左边控制太不稳定了，只能靠寒冰大招抽奖”；04:20:45“这寒冰对线有问题”；后续多次讨论寒冰箭。<br><span class="tag source">本场弹幕</span> <span class="tag pending">官方待确认</span></td>
+        </tr>
+        <tr>
+          <td><b>Team Liquid</b><br><span class="tag">左侧主口径</span></td>
+          <td>CoreJJ × 泰坦 · 辅助候选</td>
+          <td>04:28:51 直接出现“泰坦是扣JJ”；此前 04:19:38 有泰坦钩子的对线讨论。<br><span class="tag source">本场弹幕</span> <span class="tag pending">单条点名·官方待确认</span></td>
+        </tr>
+        <tr>
+          <td><b>LOS</b><br><span class="tag">右侧主口径</span></td>
+          <td>辛德拉 · 中路候选 · 选手待确认</td>
+          <td>04:15:02“中单应该选蛇女，克制辛德拉”；04:23:40“辛德拉的推”；04:26:40“后期艾希辛德拉”。<br><span class="tag source">本场弹幕</span> <span class="tag pending">官方待确认</span></td>
+        </tr>
+        <tr>
+          <td><b>LOS</b><br><span class="tag">右侧主口径</span></td>
+          <td>炸弹人 · 下路候选 · 选手待确认</td>
+          <td>04:20:43“右边选炸弹人是啥哦”；04:27:29“炸弹人随便中个下路大招怎么跑”；04:28:38“炸弹人空大了”。<br><span class="tag source">本场弹幕</span> <span class="tag pending">官方待确认</span></td>
+        </tr>
+        <tr>
+          <td><b>左方口径</b><br><span class="tag">队伍归属待核</span></td>
+          <td>巨魔 · 分路与选手待确认</td>
+          <td>04:13:07 首次出现；04:25:28“左边巨魔，不知道右边怎么处理”；04:25–04:30 共 72 条提及，虎牙三路均出现。<br><span class="tag source">本场弹幕</span> <span class="tag pending">左右口径·待官方</span></td>
+        </tr>
+        <tr>
+          <td><b>归属待确认</b><br><span class="tag">不作已确认阵容</span></td>
+          <td>梦魇 · 打野候选 · 选手待确认</td>
+          <td>04:21:18“梦魇很菜啊”；04:26:59“一抢个梦魇玩成这样”。窗口内未把英雄唯一绑定到一队选手。<br><span class="tag source">本场弹幕</span> <span class="tag pending">归属未闭合</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">
+      <b>样本不足：</b>TL 打野、中路及其他位置的选手绑定，LOS 上路、打野、辅助及当前可辨英雄的选手绑定，均无法由本窗口唯一确认。04:25:31 的“潘森鳄鱼加里奥，寒冰萨勒芬妮是一套完美阵容”属于观众假设阵容，不纳入实际选人。04:29:40 出现一条“右边液体”，与该场 BP 节点的 TL=左主口径冲突，因此仍保留左右歧义，不据此硬改队伍归属。
+    </p>
+    <div class="grid2">
+      <div class="box">
+        <b>杰斯与塞拉斯先受压，巨魔后成焦点</b>
+        <p>早段“杰斯打不出来”04:13:15、“塞拉斯选的太垃圾了”04:15:20；后段转为“左边巨魔，不知道右边怎么处理”04:25:28、“右边这个阵容，现在来看谁来弄巨魔啊”04:26:06。<br><span class="tag source">本场弹幕</span> <span class="tag mix">看法随时间转向</span></p>
+      </div>
+      <div class="box">
+        <b>右侧阵容评价先分歧后转负</b>
+        <p>04:14:32 仍有人认为 LOS 阵容“可以全线压”，但 04:17:27 出现“右边BP已经炸了”，04:29:53 又称“右边这个阵容很垃圾”。<br><span class="tag source">本场弹幕</span> <span class="tag neg">单场情绪·待官方</span></p>
+      </div>
+    </div>
+    <div class="callout">
+      <b>BP 后战绩情报：无战绩情报提及。</b>
+      “狼母这个皮肤最近的比赛都赢了”04:14:04 未绑定本局选手与队伍；“0-7 阿卡丽”相关弹幕主要指向 AL 或其他上下文。两者均不能当作本局“选手×英雄”历史战绩锚点。
+      <span class="tag source">本场弹幕</span>
+    </div>
+  </section>
+  <div class="card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">Team Liquid</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:0%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">0%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">LOS</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:100%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">100%</span></div><div class="note">显式胜负弹幕仅 4 条（样本较少，< 阈值 10），按实际比例展示，随弹幕更新。</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div class="note">暂未获取到虎扑选手评分（本场/本局评分尚未生成，或数据源缺失）。</div><!-- SITUATION:RATINGS:END --></div>
+  <section class="card" aria-labelledby="section-3">
+    <h2 id="section-3"><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <p>
+      规则层叙事为“早段负面 → 中段负幅收窄 → 04:24 后转正 → 04:29 尾段回落”。但这 17 分钟窗口中大量讨论流向 BLG、HLE、AL 等跨场话题，不能把全天跨场情绪当成 TL–LOS 单边共识。
+      <span class="tag source">本场弹幕</span> <span class="tag pending">单平台·待验证</span>
+    </p>
+    <div class="metrics" aria-label="方向板样本概况">
+      <div class="metric"><strong>1,672</strong><span>本窗弹幕</span></div>
+      <div class="metric"><strong>783</strong><span>活跃用户</span></div>
+      <div class="metric"><strong>85 / 91</strong><span>规则层正 / 负情绪</span></div>
+      <div class="metric"><strong>3 / 10</strong><span>显式胜负表态 / 阈值</span></div>
+    </div>
+    <h3>正锚点（看好谁赢）</h3>
+    <table>
+      <thead><tr><th>对象</th><th>锚点与依据</th><th>时间 / 样本</th><th>验证</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>左方阵容</b><br><span class="tag">主口径对应 TL</span></td>
+          <td>“左边稳赢了”04:24:17；“左边巨魔，不知道右边怎么处理”04:25:28；“25分钟tl就随便赢了”04:27:44；尾段“巨魔无敌了/没人打得动”集中复现。<br><span class="tag source">本场弹幕</span></td>
+          <td>04:24–04:30；巨魔共 72 条提及，虎牙三路均有；左右归属仍待官方。</td>
+          <td><span class="tag pending">局中待定·过程锚点</span></td>
+        </tr>
+        <tr>
+          <td><b>LOS</b></td>
+          <td>早段阵容与支持声：“放心看家人们右边包赢的”04:14:18；“los这阵容不是可以全线压”04:14:32；显式胜负样本“Los加油啊”“Los赢了对BLG是好消息”“Los去救救blg”。<br><span class="tag source">本场弹幕</span></td>
+          <td>04:13–04:29；显式胜负仅 3 条，全部按规则层计入 LOS，低于 10 条阈值。</td>
+          <td><span class="tag pending">单源待验证·样本不足</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>负锚点（看衰谁输）</h3>
+    <table>
+      <thead><tr><th>对象</th><th>锚点与依据</th><th>时间 / 样本</th><th>验证</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Team Liquid</b></td>
+          <td>早段集中看衰：“TL 是真菜”04:15:24、“tl没了”04:19:44、“tl大势已去”04:20:33、“TL这一看就是来吃菜的”04:27:55、“tl伪强队”04:28:39。<br><span class="tag source">本场弹幕</span></td>
+          <td>04:15–04:29；虎牙官方、记得、硕硕三路均有零散负评，但中途与巨魔正向过程锚冲突。</td>
+          <td><span class="tag pending">局中待定·分歧</span></td>
+        </tr>
+        <tr>
+          <td><b>LOS</b></td>
+          <td>右侧持续负评：“右边bp已经炸了”04:17:27、“右边纯菜”04:23:40、“LOS已经慢慢的不对劲了”04:28:40、“这los确实差点意思”04:28:39、“右边这个阵容很垃圾”04:29:53。<br><span class="tag source">本场弹幕</span></td>
+          <td>04:17–04:29；至少两个虎牙房间出现右侧负评，另有零星反向看法。</td>
+          <td><span class="tag pending">局中待定·多房间、单平台</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>群体共识（含分歧与样本量）</h3>
+    <div class="trend">
+      <div><b>04:13–04:18 · 负面</b><span>419 条；正 2 / 负 19；净 −17</span></div>
+      <div><b>04:18–04:24 · 负面收窄</b><span>534 条；正 28 / 负 35；净 −7</span></div>
+      <div><b>04:24–04:30 · 正面转段</b><span>719 条；正 55 / 负 37；净 +18；04:29 尾段再转负</span></div>
+    </div>
+    <p>
+      <b>共识不足，方向分歧。</b>整窗规则层正 85 / 负 91、净 −6，情绪走势三次转向；显式胜负表态只有 3 条且低于 10 条阈值。过程弹幕更偏向“左侧巨魔成型”，但队伍和左右映射仍有冲突，不能写成 TL 或 LOS 已形成稳定胜势。
+      <span class="tag mix">分歧</span> <span class="tag source">本场弹幕</span> <span class="tag pending">弹幕口径·待官方</span>
+    </p>
+    <details>
+      <summary>中性弹幕二次判定：仅列真正带有情绪或方向含义的候选</summary>
+      <div class="details-body">
+        <ul>
+          <li><b>04:22 “为了BLG，被迫当LOS粉丝”×5：</b>模型二次判定为支持 LOS，但动机与抽签路径相关，只作弱正向锚点。<span class="tag source">本场弹幕</span> <span class="tag source">模型二次判定</span></li>
+          <li><b>04:13 “Los加油啊，拿下给BLG抽”×1：</b>模型二次判定为支持 LOS；属于显式胜负表态，已计入 3 条样本。<span class="tag source">本场弹幕</span> <span class="tag source">模型二次判定</span></li>
+          <li><b>04:19 “TL一定要赢啊，让HLE把BLG送走”×1：</b>模型二次判定为支持 TL，但同样受抽签动机驱动，作为弱反向锚点。<span class="tag source">本场弹幕</span> <span class="tag source">模型二次判定</span></li>
+          <li><b>04:15 “不会吧，LOS上去要给BLG送温暖了”×1：</b>模型二次判定为看衰 LOS 的后续竞争力，纳入 LOS 负向情绪。<span class="tag source">本场弹幕</span> <span class="tag source">模型二次判定</span></li>
+          <li><b>04:13 “队名遮住我以为是BLG”×6：</b>模型二次判定为负向调侃，说明阵容观感差，但未锁定 TL 或 LOS，不进入方向判定。<span class="tag source">本场弹幕</span> <span class="tag source">模型二次判定</span></li>
+        </ul>
+        <p class="note">其余中性候选主要是跨场抽签讨论、其他比赛问句、赛事模拟广告、纯表情或无对象重复句；二次判定不纳入本局情绪。模型判定不替代官方事实。</p>
+      </div>
+    </details>
+    <h3>灰信号条件预测</h3>
+    <div class="warnbox">
+      <b>条件式：</b>若 04:27:55“TL 这一看就是来吃菜的”所指质疑后续被多源或盘口验证，则方向指向 TL 输掉 G1。当前仅 1 条、1 个房间，风险等级低，不能据此判断故意送或假赛。<br>
+      <span class="tag neg">观众质疑·非结论</span> <span class="tag source">本场弹幕</span> <span class="tag pending">推测·待验证</span>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="section-4">
+    <h2 id="section-4"><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="warnbox">
+      <span class="risk-title">观众质疑，非结论。</span><br>
+      <b>指向对象：Team Liquid</b> · <b>风险等级：低</b><br>
+      04:27:55“TL这一看就是来吃菜的”。当前仅见 1 条、来自虎牙官方一路，没有多房间共振，也没有盘口价格或官方异常可作交叉验证。只能标记为风险，不能写成故意送、假赛或收钱结论。若该质疑后续兑现，条件方向指向 TL 输掉本小局。
+      <br><span class="tag source">本场弹幕</span> <span class="tag pending">赛后验证</span>
+    </div>
+    <h3>候选过滤</h3>
+    <table>
+      <thead><tr><th>规则层候选</th><th>处理</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>“一号种子肯定收钱了”“AL故意输的”“A是收钱了吗”</td>
+          <td>不计入本场灰信号</td>
+          <td>语境与 AL/LPL 一号种子相关，不是 TL 或 LOS 的本局行为指向。<span class="tag source">本场弹幕</span></td>
+        </tr>
+        <tr>
+          <td>“会不会买了”“他不想杀，演戏”</td>
+          <td>归属不明，不计数</td>
+          <td>没有可唯一归属的战队、选手或动作；不得硬套到本场任一方。<span class="tag source">本场弹幕</span></td>
+        </tr>
+        <tr>
+          <td>“最好的剧本是los和g2都赢”</td>
+          <td>不计入灰信号</td>
+          <td>属于抽签路径愿望，不是假赛、收钱、故意送或卡盘质疑。<span class="tag source">本场弹幕</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">
+      纪律：灰信号只作风险标注与盘口对照，不作事实认定或下单结论。当前本场可直接归属的灰信号为 <b>1 条</b>，且为单源低风险；无多源确认。
+    </p>
+  </section>
+  <footer class="footer">
+    局中快照 · 非终局 · 结果待定 · 弹幕为低可信度聚合信号 · 灰信号只作风险提示
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
