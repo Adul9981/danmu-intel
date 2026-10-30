@@ -313,7 +313,8 @@ def _hupu_skip_lol(tournament: str) -> bool:
     return False
 
 
-def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_tomorrow: str) -> int:
+def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_tomorrow: str,
+               candidates: dict[str, dict] | None = None) -> int:
     """合并虎扑场次（CS2 全部 + Polymarket 未覆盖的 LoL），返回新增条数。
 
     LCK/LPL/LEC/LCP 恒跳过（官方赛程源覆盖）；世界赛在 team_names.json 可用时放行，
@@ -321,6 +322,14 @@ def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_to
     2026-10-30 修 BLG vs TES 缺场）。按归一化队伍名去重。
     """
     known = {tuple(sorted(_team_norm(t) for t in (m.get("teams") or []))) for m in today_matches}
+    # 2026-10-30 修 KC-CFO 跨源重号：known 并入 Polymarket 候选集（近 3 天已挂牌/
+    # 已结束场次，含 UTC/北京日期错位致 date 不在 today/tomorrow 的已结束场次），
+    # 避免虎扑把"已存在同队 PM slug"的比赛重新补成 hupu-... 新号（流水线因此看不到
+    # 旧 slug 的节点状态，误判"从未生成节点"跳过补发）。
+    for c in (candidates or {}).values():
+        cteams = c.get("teams") or []
+        if len(cteams) == 2:
+            known.add(tuple(sorted(_team_norm(t) for t in cteams)))
     added = 0
     for e in rows:
         league = str(e.get("league") or "").upper()
@@ -471,7 +480,7 @@ def main() -> None:
     bj_tomorrow = (bj_now + datetime.timedelta(days=1)).date().isoformat()
     try:
         hupu_rows = fetch_hupu()
-        hupu_added = merge_hupu(hupu_rows, today_matches, bj_today, bj_tomorrow)
+        hupu_added = merge_hupu(hupu_rows, today_matches, bj_today, bj_tomorrow, candidates)
     except Exception as e:  # noqa: BLE001
         hupu_added = -1
         print(f"::warning::虎扑赛程抓取失败，仅保留 Polymarket 场次：{type(e).__name__}: {e}", flush=True)
