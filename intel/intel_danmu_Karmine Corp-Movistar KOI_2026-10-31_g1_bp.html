@@ -577,5 +577,36 @@
     本页为 G1 BP 后/开局局中快照，非终局；进度、锚点与共识均为弹幕口径，结果待官方确认。所有时间为北京时间。
   </div>
 </div>
-<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+<script>
+(function () {
+  if (window.__sitPoll) return;
+  window.__sitPoll = true;
+  function tsOf(el) {
+    if (!el) return null;
+    var w = el.querySelector("[data-sit-ts]");
+    var r = el.querySelector("[data-rat-ts]");
+    var tw = w ? (+w.getAttribute("data-sit-ts") || 0) : 0;
+    var tr = r ? (+r.getAttribute("data-rat-ts") || 0) : 0;
+    var t = Math.max(tw, tr);
+    return t > 0 ? t : null;
+  }
+  function swap() {
+    fetch(window.location.href.split("#")[0], { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (html) {
+        if (!html) return;
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var fresh = doc.getElementById("situation-card");
+        var cur = document.getElementById("situation-card");
+        if (!fresh || !cur) return;
+        var tNew = tsOf(fresh), tCur = tsOf(cur);
+        // 单调守卫：当前已有时间戳时，新卡缺失或更旧则跳过（防 CDN 多节点回跳）
+        if (tCur != null && (tNew == null || tNew <= tCur)) return;
+        cur.outerHTML = fresh.outerHTML;
+      })
+      .catch(function () {});
+  }
+  setInterval(swap, 60000);
+})();
+</script><script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
 </html>
