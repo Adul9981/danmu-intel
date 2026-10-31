@@ -265,27 +265,6 @@
   }
   details .table-wrap { margin: 0 12px 12px; background: #fff; }
   details td:first-child { white-space: nowrap; }
-  .system-slot .win-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 7px 0;
-  }
-  .system-slot .team {
-    flex: 0 0 120px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .system-slot .bar {
-    flex: 1;
-    height: 18px;
-    overflow: hidden;
-    border-radius: 8px;
-    background: #eef0f3;
-  }
-  .system-slot .fill { height: 100%; border-radius: 8px; background: var(--accent); }
-  .system-slot .fill.right { background: #ff3b30; }
-  .system-slot .pct { flex: 0 0 48px; text-align: right; font-size: 13px; font-weight: 750; }
   footer {
     margin: 22px 4px 0;
     color: var(--faint);
@@ -308,7 +287,6 @@
     .status > div { border-right: 0; border-bottom: 1px solid var(--line); }
     .status > div:last-child { border-bottom: 0; }
     .metrics { grid-template-columns: 1fr; }
-    .system-slot .team { flex-basis: 88px; }
   }
 </style>
 </head>
@@ -462,28 +440,38 @@
       当前阵容只用于理解弹幕语境，不作为胜负事实或交易依据。
     </div>
   </section>
-  <div class="card system-slot" id="situation-card">
-    <h2><span class="no">2</span>比赛局势</h2>
-    <h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3>
-    <!-- SITUATION:WIN:BEGIN -->
-    <div class="win-row">
-      <span class="team" style="color:var(--accent)">Karmine Corp</span>
-      <div class="bar"><div class="fill" style="width:50%"></div></div>
-      <span class="pct" style="color:var(--accent)">50%</span>
-    </div>
-    <div class="win-row">
-      <span class="team" style="color:#ff3b30">Movistar KOI</span>
-      <div class="bar"><div class="fill right" style="width:50%"></div></div>
-      <span class="pct" style="color:#ff3b30">50%</span>
-    </div>
-    <div class="note">规则层无显式胜负样本，暂按 50:50 占位；这是系统注入口径，不是胜负预测。</div>
-    <div class="note" data-sit-ts="1793467906" style="color:var(--faint);font-size:11px;margin-top:2px">胜率更新于 01:31:46（北京时间）</div>
-    <!-- SITUATION:WIN:END -->
-    <h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3>
-    <!-- SITUATION:RATINGS:BEGIN -->
-    <div class="note">暂未获取到虎扑选手评分（本场/本局评分尚未生成，或数据源缺失）。</div>
-    <!-- SITUATION:RATINGS:END -->
-  </div>
+  <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">Karmine Corp</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:50%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">50%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">Movistar KOI</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:50%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">50%</span></div><div class="note">暂无显式胜负弹幕样本，暂按 50:50 展示（观众口径·非结论），随弹幕更新。</div><div class="note" data-sit-ts="1793468233" style="color:#8a8f98;font-size:11px;margin-top:2px">胜率更新于 01:37:13（北京时间）</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div class="note">暂未获取到虎扑选手评分（本场/本局评分尚未生成，或数据源缺失）。</div><!-- SITUATION:RATINGS:END --></div><script>
+(function () {
+  if (window.__sitPoll) return;
+  window.__sitPoll = true;
+  function tsOf(el) {
+    if (!el) return null;
+    var w = el.querySelector("[data-sit-ts]");
+    var r = el.querySelector("[data-rat-ts]");
+    var tw = w ? (+w.getAttribute("data-sit-ts") || 0) : 0;
+    var tr = r ? (+r.getAttribute("data-rat-ts") || 0) : 0;
+    var t = Math.max(tw, tr);
+    return t > 0 ? t : null;
+  }
+  function swap() {
+    fetch(window.location.href.split("#")[0], { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (html) {
+        if (!html) return;
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var fresh = doc.getElementById("situation-card");
+        var cur = document.getElementById("situation-card");
+        if (!fresh || !cur) return;
+        var tNew = tsOf(fresh), tCur = tsOf(cur);
+        // 单调守卫：当前已有时间戳时，新卡缺失或更旧则跳过（防 CDN 多节点回跳）
+        if (tCur != null && (tNew == null || tNew <= tCur)) return;
+        cur.outerHTML = fresh.outerHTML;
+      })
+      .catch(function () {});
+  }
+  setInterval(swap, 60000);
+})();
+</script>
   <section class="card" id="direction">
     <h2><span class="no">3</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
     <p class="lead">
@@ -730,34 +718,4 @@
     弹幕是低可信度群体信号；灰信号只作风险标注，不作事实结论。
   </footer>
 </main>
-<script>
-(function () {
-  if (window.__sitPoll) return;
-  window.__sitPoll = true;
-  function tsOf(el) {
-    if (!el) return null;
-    var w = el.querySelector("[data-sit-ts]");
-    var r = el.querySelector("[data-rat-ts]");
-    var tw = w ? (+w.getAttribute("data-sit-ts") || 0) : 0;
-    var tr = r ? (+r.getAttribute("data-rat-ts") || 0) : 0;
-    var t = Math.max(tw, tr);
-    return t > 0 ? t : null;
-  }
-  function swap() {
-    fetch(window.location.href.split("#")[0], { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.text() : null; })
-      .then(function (html) {
-        if (!html) return;
-        var doc = new DOMParser().parseFromString(html, "text/html");
-        var fresh = doc.getElementById("situation-card");
-        var cur = document.getElementById("situation-card");
-        if (!fresh || !cur) return;
-        var tNew = tsOf(fresh), tCur = tsOf(cur);
-        if (tCur != null && (tNew == null || tNew <= tCur)) return;
-        cur.outerHTML = fresh.outerHTML;
-      })
-      .catch(function () {});
-  }
-  setInterval(swap, 60000);
-})();
-</script><script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body></html>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body></html>
