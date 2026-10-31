@@ -424,7 +424,16 @@ def main() -> None:
                         0 if len(prices) >= 2 and prices[0] >= 0.99
                         else (1 if len(prices) >= 2 and prices[1] >= 0.99 else None)
                     )
-                    gs[gi] = {"closed": bool(mk.get("closed")), "prices": prices, "winner": wi}
+                    # 2026-10-31：官方结果回填——小局多存 outcomes 全称队名数组
+                    # （顺序与 prices 一致），供 VPS 侧把 winner=0/1 映射到具体队名，
+                    # end 页胜率改官方结算 100:0。outcomes 是 JSON 字符串，需解析。
+                    outs = mk.get("outcomes") or [None, None]
+                    if isinstance(outs, str):
+                        try:
+                            outs = json.loads(outs)
+                        except json.JSONDecodeError:
+                            outs = [None, None]
+                    gs[gi] = {"closed": bool(mk.get("closed")), "prices": prices, "winner": wi, "outcomes": outs}
                     continue
                 # 系列赢家市场：slug 与事件相同（如 lol-drxc-foxy-2026-08-25）
                 if mk.get("slug") == slug and len(prices) >= 2:
