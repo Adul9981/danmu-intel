@@ -313,23 +313,20 @@ def _hupu_skip_lol(tournament: str) -> bool:
     return False
 
 
-def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_tomorrow: str,
-               candidates: dict[str, dict] | None = None) -> int:
+def merge_hupu(rows: list[dict], today_matches: list[dict],
+               utc_yesterday: str, utc_today: str, utc_tomorrow: str) -> int:
     """合并虎扑场次（CS2 全部 + Polymarket 未覆盖的 LoL），返回新增条数。
 
     LCK/LPL/LEC/LCP 恒跳过（官方赛程源覆盖）；世界赛在 team_names.json 可用时放行，
     补 Polymarket 未挂牌的中国内战等场次（靠规范缩写去重，避免与 Polymarket 全名重行，
     2026-10-30 修 BLG vs TES 缺场）。按归一化队伍名去重。
+
+    时间基准统一 UTC（2026-10-31 起）：窗口用 start_iso 的 UTC 开赛日期，与 PM slug
+    日期同口径，消除跨午夜场次（UTC 深夜开赛）翻天后 PM/虎扑两源判"今天"不一致、
+    导致场次两头漏掉的问题（教训：G2 vs HLE 2026-10-30 23:00 UTC 开赛，PM slug 落在
+    10-30 被判"昨天不纳入"，虎扑又因 candidates 去重被误堵）。
     """
     known = {tuple(sorted(_team_norm(t) for t in (m.get("teams") or []))) for m in today_matches}
-    # 2026-10-30 修 KC-CFO 跨源重号：known 并入 Polymarket 候选集（近 3 天已挂牌/
-    # 已结束场次，含 UTC/北京日期错位致 date 不在 today/tomorrow 的已结束场次），
-    # 避免虎扑把"已存在同队 PM slug"的比赛重新补成 hupu-... 新号（流水线因此看不到
-    # 旧 slug 的节点状态，误判"从未生成节点"跳过补发）。
-    for c in (candidates or {}).values():
-        cteams = c.get("teams") or []
-        if len(cteams) == 2:
-            known.add(tuple(sorted(_team_norm(t) for t in cteams)))
     added = 0
     for e in rows:
         league = str(e.get("league") or "").upper()
@@ -347,8 +344,9 @@ def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_to
         hid = str(e.get("hupu_match_id") or "").strip()
         if not hid:
             continue
-        # 只取今明两天（北京时间），与本地 export 同口径；跨日凌晨场次由 start_iso 归并
-        if e.get("date") not in (bj_today, bj_tomorrow):
+        # 统一时间基准：用 UTC 开赛日期判窗口（与 PM slug 日期同口径）
+        start_day = (e.get("start_iso") or "")[:10]
+        if not start_day or start_day not in (utc_yesterday, utc_today, utc_tomorrow):
             continue
         tkey = tuple(sorted(_team_norm(t) for t in teams))
         if tkey in known:
@@ -376,6 +374,8 @@ def merge_hupu(rows: list[dict], today_matches: list[dict], bj_today: str, bj_to
 
 def main() -> None:
     today = datetime.date.today().isoformat()
+    yesterday = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+    tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     horizon = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
     backfill_from = (datetime.date.today() - datetime.timedelta(days=3)).isoformat()
     try:
@@ -447,7 +447,7 @@ def main() -> None:
                     "date": meta["date"],
                     "title": meta["title"],
                 }
-            if meta["date"] in (today, (datetime.date.today() + datetime.timedelta(days=1)).isoformat()):
+            if meta["date"] in (yesterday, today, tomorrow):
                 try:
                     start_dt = datetime.datetime.fromisoformat(str(game_start).replace("Z", "+00:00"))
                     end_dt = start_dt + datetime.timedelta(hours=6)
@@ -474,13 +474,11 @@ def main() -> None:
             continue
         time.sleep(0.3)
 
-    # 虎扑补漏（2026-10-25）：CS2 全部 + 官方/世界赛未覆盖的 LoL；失败仅降级，不阻断
-    bj_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
-    bj_today = bj_now.date().isoformat()
-    bj_tomorrow = (bj_now + datetime.timedelta(days=1)).date().isoformat()
+    # 虎扑补漏（2026-10-25）：CS2 全部 + 官方/世界赛未覆盖的 LoL；失败仅降级，不阻断。
+    # 时间基准统一 UTC：窗口用 start_iso 的 UTC 开赛日期，与 PM slug 日期同口径。
     try:
         hupu_rows = fetch_hupu()
-        hupu_added = merge_hupu(hupu_rows, today_matches, bj_today, bj_tomorrow, candidates)
+        hupu_added = merge_hupu(hupu_rows, today_matches, yesterday, today, tomorrow)
     except Exception as e:  # noqa: BLE001
         hupu_added = -1
         print(f"::warning::虎扑赛程抓取失败，仅保留 Polymarket 场次：{type(e).__name__}: {e}", flush=True)
