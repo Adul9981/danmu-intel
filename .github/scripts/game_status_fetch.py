@@ -327,14 +327,18 @@ def merge_hupu(rows: list[dict], today_matches: list[dict],
     10-30 被判"昨天不纳入"，虎扑又因 candidates 去重被误堵）。
     """
     known = {tuple(sorted(_team_norm(t) for t in (m.get("teams") or []))) for m in today_matches}
+    # 已有场次按队伍名索引，用于把虎扑评分 key 补挂到官方已覆盖场次（2026-11-01）
+    by_key: dict = {}
+    for m in today_matches:
+        tk = tuple(sorted(_team_norm(t) for t in (m.get("teams") or [])))
+        if tk not in by_key:
+            by_key[tk] = m
     added = 0
     for e in rows:
         league = str(e.get("league") or "").upper()
         if league == "CS2":
             game = "cs2"
         elif league == "LOL":
-            if _hupu_skip_lol(e.get("tournament") or ""):
-                continue
             game = "lol"
         else:
             continue
@@ -349,6 +353,19 @@ def merge_hupu(rows: list[dict], today_matches: list[dict],
         if not start_day or start_day not in (utc_yesterday, utc_today, utc_tomorrow):
             continue
         tkey = tuple(sorted(_team_norm(t) for t in teams))
+        biz = str((e.get("score_item_key") or {}).get("out_biz_no") or "")
+        # 官方已覆盖 / 已在 today_matches 的场次：不新增行，只把虎扑评分 key 补挂
+        # 到已有场次（按队伍名反查），让官方 LCK/LPL/LEC/LCP 场次也能出选手评分
+        # （2026-11-01）。
+        existing = by_key.get(tkey)
+        if existing is not None:
+            if biz and not existing.get("hupu_score_out_biz_no"):
+                existing["hupu_score_out_biz_no"] = biz
+                existing["hupu_score_out_biz_type"] = str((e.get("score_item_key") or {}).get("out_biz_type") or "")
+                existing["hupu_member_ids"] = e.get("member_ids") or []
+            continue
+        if league == "LOL" and _hupu_skip_lol(e.get("tournament") or ""):
+            continue
         if tkey in known:
             continue
         mid = f"{game}-hupu-{hid}"
@@ -368,6 +385,7 @@ def merge_hupu(rows: list[dict], today_matches: list[dict],
             "hupu_member_ids": e.get("member_ids") or [],
         })
         known.add(tkey)
+        by_key[tkey] = today_matches[-1]
         added += 1
     return added
 
