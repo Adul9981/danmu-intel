@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HLE vs G2 · G2 局末/局间弹幕情报快照｜2026-10-30</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --sub: #6e6e73;
+    --line: #e5e5ea;
+    --accent: #0071e3;
+    --accent-soft: #eaf4ff;
+    --risk: #a65a00;
+    --risk-soft: #fff7ed;
+    --neg: #8e3b46;
+    --quiet: #f7f7f9;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    padding: 24px 14px 48px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+      "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  .hero, .card {
+    background: var(--card);
+    border: 1px solid rgba(0, 0, 0, .045);
+    border-radius: 21px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .035);
+  }
+  .hero { padding: 24px; }
+  .card { padding: 22px; margin-top: 14px; }
+  .eyebrow, .tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+  }
+  .eyebrow { margin-bottom: 12px; }
+  .badge, .src {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+  .badge.primary { background: var(--accent-soft); color: var(--accent); }
+  .badge.risk { background: var(--risk-soft); color: var(--risk); }
+  .badge.plain { background: #f2f2f4; color: #515154; }
+  .src {
+    border: 1px solid #d6e8fb;
+    border-radius: 6px;
+    background: #f3f8fe;
+    color: #1766ad;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+  .src.risk { border-color: #f2dfc6; background: #fffaf3; color: var(--risk); }
+  .src.muted { border-color: #e1e1e6; background: #f7f7f9; color: var(--sub); }
+  h1 {
+    margin: 0;
+    font-size: clamp(23px, 4.2vw, 34px);
+    line-height: 1.18;
+    letter-spacing: -.03em;
+  }
+  .vs { color: var(--sub); font-weight: 500; }
+  .lead {
+    margin: 9px 0 0;
+    color: var(--sub);
+    font-size: 13px;
+  }
+  .status-banner {
+    margin-top: 17px;
+    padding: 13px 15px;
+    border: 1px solid #f0d8b8;
+    border-radius: 14px;
+    background: var(--risk-soft);
+    color: #754000;
+    font-size: 13px;
+  }
+  .status-banner strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--risk);
+    font-size: 15px;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 13px;
+  }
+  .fact {
+    padding: 10px 12px;
+    border-radius: 13px;
+    background: var(--quiet);
+  }
+  .fact .k { color: var(--sub); font-size: 10.5px; }
+  .fact .v {
+    margin-top: 1px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .scope {
+    margin-top: 11px;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    color: var(--sub);
+    font-size: 11.8px;
+  }
+  .scope b { color: var(--ink); }
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 14px;
+    font-size: 18px;
+    line-height: 1.35;
+    letter-spacing: -.015em;
+  }
+  h2 .no {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 750;
+  }
+  .section-note {
+    margin: -8px 0 13px 35px;
+    color: var(--sub);
+    font-size: 11.5px;
+  }
+  h3 {
+    margin: 18px 0 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    letter-spacing: .01em;
+  }
+  h3:first-of-type { margin-top: 0; }
+  p { margin: 7px 0; }
+  .notice {
+    margin: 0 0 13px;
+    padding: 10px 13px;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 11px 11px 0;
+    background: #f8f8fa;
+    font-size: 12.5px;
+  }
+  .notice.risk {
+    border-left-color: var(--risk);
+    background: var(--risk-soft);
+  }
+  .lineup-grid, .anchor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .lineup, .anchor {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 13px;
+  }
+  .lineup .team, .anchor .label {
+    margin-bottom: 7px;
+    color: var(--sub);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .03em;
+  }
+  .lineup ul { list-style: none; margin: 0; padding: 0; }
+  .lineup li {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 8px;
+    padding: 6px 0;
+    border-top: 1px solid var(--line);
+    font-size: 12.3px;
+  }
+  .lineup li:first-child { border-top: 0; padding-top: 0; }
+  .lineup li b { font-weight: 650; }
+  .muted { color: var(--sub); }
+  .negative { color: var(--neg); }
+  .positive { color: var(--accent); }
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+  }
+  table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--line);
+    background: var(--quiet);
+    color: var(--sub);
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  .anchor .headline {
+    margin: 3px 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .anchor p { margin: 5px 0; font-size: 12.2px; }
+  .anchor .meta {
+    margin-top: 8px;
+    color: var(--sub);
+    font-size: 10.8px;
+  }
+  .narrative {
+    margin-top: 10px;
+    padding: 11px 13px;
+    border-radius: 13px;
+    background: var(--quiet);
+    font-size: 12.2px;
+  }
+  .narrative p:first-child { margin-top: 0; }
+  .narrative p:last-child { margin-bottom: 0; }
+  details {
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: #fbfbfc;
+  }
+  summary {
+    padding: 11px 13px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+  }
+  .details-body { padding: 0 13px 13px; }
+  .mini {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    font-size: 11.5px;
+  }
+  .mini th, .mini td { padding: 7px 8px; }
+  .risk-table td:nth-child(4) { white-space: nowrap; }
+  .risk-low { color: var(--risk); font-weight: 700; }
+  .risk-mid { color: #8e3b46; font-weight: 700; }
+  .closing {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #f8f8fa;
+    color: var(--sub);
+    font-size: 11.5px;
+  }
+  footer {
+    padding: 18px 4px 0;
+    color: var(--sub);
+    text-align: center;
+    font-size: 10.5px;
+  }
+  @media (max-width: 720px) {
+    body { padding: 14px 10px 34px; }
+    .hero, .card { padding: 17px; border-radius: 17px; }
+    .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .lineup-grid, .anchor-grid { grid-template-columns: 1fr; }
+    h2 { align-items: flex-start; }
+  }
+</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Hanwha Life Esports-G2 Esports 2026-10-30 g2 end</b></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">
+      <span class="badge primary">GAME-REVIEW · G2 局末/局间</span>
+      <span class="badge plain">LoL · Worlds Group Stage</span>
+      <span class="badge risk">结果待官方核对</span>
+    </div>
+    <h1>Hanwha Life Esports <span class="vs">vs</span> G2 Esports</h1>
+    <p class="lead">2026-10-30 · Polymarket slug：lol-hle1-g2-2026-10-30 · 局中弹幕情报快照（G2）</p>
+    <div class="status-banner">
+      <strong>局中·非终局，结果待定</strong>
+      第 2 小局已按任务输入由 Polymarket Game 2 Winner 市场结算确认结束；当前处于 G2 局间，官方赛果仍待核对。本页不把“结束 / 没了 / 回家 / GG”等弹幕反应替代官方终局，也不把本页外推到整场最终赛果。
+    </div>
+    <div class="facts">
+      <div class="fact"><div class="k">本节点主证据窗</div><div class="v">5,393 条</div></div>
+      <div class="fact"><div class="k">活跃用户</div><div class="v">2,342</div></div>
+      <div class="fact"><div class="k">实际采集房间</div><div class="v">3 路虎牙</div></div>
+      <div class="fact"><div class="k">窗口密度</div><div class="v">251.7 条 / 分钟</div></div>
+    </div>
+    <div class="scope">
+      <b>北京时间：</b>2026-10-31 07:58:34–08:20:00（UTC+8）。<b>弹幕采集截止：08:20（北京）</b>。
+      原始切片共 37,364 条并延伸至赛后抽签段；本页仅用 G2 对局主窗作核心证据，赛后抽签与 BLG 话题只用于排除混源。
+      <br><b>实际来源：</b>虎牙官方 4,267 条 / 记得 806 条 / 硕硕 320 条。
+      <b>缺口：</b>本切片未包含 SOOP、Twitch、KICK，不能称跨平台多源确认；因此强结论降级为“三路虎牙共振，跨平台待验证”。
+    </div>
+  </header>
+  <section class="card">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <div class="section-note">以下阵容均来自本场弹幕的角色位与英雄共现，统一标记为「弹幕口径·待官方」；不把选人建议、赛后英雄评价或跨场讨论写成官方阵容。</div>
+    <div class="notice risk">
+      <span class="src">本场弹幕</span>
+      <span class="src muted">弹幕口径·待官方</span>
+      本窗能形成较完整的“队伍 × 英雄轴”，但选手名与分路仍有推测项。HLE 的“乌鸦 / 朗姆”存在短暂位置摇摆讨论，最终按赛后过程评价归为 Zeka 乌鸦、Zeus 兰博，仍待官方 window 校准。
+    </div>
+    <div class="lineup-grid">
+      <article class="lineup">
+        <div class="team">HLE · 弹幕可辨识五人</div>
+        <ul>
+          <li><b>Zeus · 上</b><span>兰博（弹幕“朗姆”）；“世一朗姆怎么输”出现在 08:02:25。选手—英雄仍待官方。</span></li>
+          <li><b>Kanavi · 野</b><span>皇子；本窗可闭合到 HLE 打野位，但未出现选手名直连。待官方。</span></li>
+          <li><b>Zeka · 中</b><span>乌鸦；“神王zeka”出现在 08:19:20，结合 08:02–08:19 乌鸦过程评价。待官方。</span></li>
+          <li><b>Gumayusi · 下</b><span>卢锡安；“鸡蛋 / 姑妈”与 HLE 下路表现同窗出现。待官方。</span></li>
+          <li><b>Delight · 辅</b><span>米利欧（弹幕“卢米 / 米粒”）；08:17:14 出现 Delight 大招讨论。待官方。</span></li>
+        </ul>
+      </article>
+      <article class="lineup">
+        <div class="team">G2 · 弹幕可辨识五人</div>
+        <ul>
+          <li><b>BB · 上</b><span>青钢影 / 卡蜜尔；08:02:03“BB还敢玩青钢影”，选手—英雄直连。待官方。</span></li>
+          <li><b>打野位 · 待官方</b><span>琪亚娜 / 奇亚娜；仅角色位可闭合，本窗未出现选手名。待官方。</span></li>
+          <li><b>Caps · 中</b><span>加里奥；08:19:50“Caps玩个加里奥一直不打架”，选手—英雄直连。待官方。</span></li>
+          <li><b>Hans Sama · 下</b><span>霞；下路与 Hans 评价同窗出现，选手—英雄仍待官方。</span></li>
+          <li><b>辅助位 · 待官方</b><span>洛；与“霞洛”下路组合及辅助负评同窗闭环，选手名待官方。</span></li>
+        </ul>
+      </article>
+    </div>
+    <h3>BP 结构与弹幕裁决</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>对象</th><th>弹幕证据（北京时间）</th><th>情报含义</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>G2 · 霞洛 / 青钢影加里奥</b></td>
+            <td>07:59:41“霞洛正常就拿下，明送除外”；08:00:00“霞洛拖住后期不知道怎么输”；08:02:03 出现 BB 青钢影；08:06:31“霞洛前期就是打不了卢米”。</td>
+            <td><span class="src">本场弹幕</span> 早期是“G2 后期可打”的正锚，随后被下路对线与中路不参团评价覆盖，属于 BP 评价的方向反转。</td>
+          </tr>
+          <tr>
+            <td><b>HLE · 乌鸦 / 皇子 / 朗姆</b></td>
+            <td>08:02:25“世一朗姆怎么输”；08:02:49“乌鸦一出已经赢了”；08:03:21“乌鸦完克青钢影加里奥”；08:18:08“对面乌鸦朗姆就是跟你打团的”。</td>
+            <td><span class="src">本场弹幕</span> HLE 更早形成正面 BP 与团战结构评价。英雄轴跨三路出现：乌鸦 118 条 / 85 人、皇子 46 条 / 41 人。</td>
+          </tr>
+          <tr>
+            <td><b>BP 后战绩情报</b></td>
+            <td>08:04:56“卢米就没赢过”；08:05:00 与 08:18:25 出现“琪亚娜这次世界赛输多赢少 / 版本陷阱”。08:11:46“欧龙琪亚娜什么胜率”只是提问，不构成战绩。</td>
+            <td><span class="src">本场弹幕</span> 有泛化历史口径，但没有可核验的完整“选手 × 英雄 × 场次 / 胜率”数字；全部标为待官方战绩核验。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <div class="section-note">系统注入段</div>
+    <div class="notice">
+      本段由规则层系统注入，AI 不写本段；页面生成阶段保留结构，不补充弹幕推导的胜率或队员评分。
+    </div>
+  </section>
+  <section class="card">
+    <h2><span class="no">3</span>方向性情报板</h2>
+    <div class="section-note">正锚 × 负锚 × 群体共识 × 灰信号条件预测；所有判断只约束本小局，非官方终局。</div>
+    <div class="notice risk">
+      <span class="src">盘口</span>
+      <span class="src">本场弹幕·规则层聚合</span>
+      任务输入确认 Polymarket Game 2 Winner 市场已结算，但无逐时价格、成交序列与完整市场明细，不能做“灰信号 × 价格异动”闭环。规则层 5 分钟胜负票为 0 / 0，<b>样本不足</b>；页面不应把占位的 50% / 50% 当作观众胜率。
+    </div>
+    <h3>叙事主线与证据窗校正</h3>
+    <div class="narrative">
+      <p><span class="src">本场弹幕</span> 规则层完整切片主线为：07:58–08:38 正 764 / 负 1,135，净值 −371，早期偏负；08:38–09:18 正 1,394 / 负 229，净值 +1,165，明显转正；08:41–08:44 形成密度峰。</p>
+      <p><b>校正：</b>08:38 后的转正与峰值主要来自 G2 淘汰后的抽签、BLG vs HLE 讨论，不能冒充 G2 局内共识。G2 主证据窗内，G2 相关消息 261 条 / 192 人；显式竞技负评 97 条 / 77 人，其中 43 条集中在 08:16–08:17。故本局方向主线应读作：<b>早期 G2 后期可打 → 中后期 G2 中下野连续负评 → HLE 过程占优</b>。</p>
+    </div>
+    <h3>正锚点（看好谁赢）</h3>
+    <div class="anchor-grid">
+      <article class="anchor">
+        <div class="label">POSITIVE 01</div>
+        <div class="headline positive">HLE · Zeka / 乌鸦</div>
+        <p><span class="src">本场弹幕</span> 08:02:49“乌鸦一出已经赢了”；08:09:41“zeka的局这把是”；08:19:20 乌鸦一打三后出现“神王zeka”。</p>
+        <p><b>依据：</b>BP 后正面预期 + 08:19 终段过程兑现。乌鸦全窗 118 条 / 85 人 / 三路；选手名直接共现较晚但明确。</p>
+        <div class="meta">验证：Polymarket Game 2 结算方向与 HLE 占优同向；官方赛果待核对。</div>
+      </article>
+      <article class="anchor">
+        <div class="label">POSITIVE 02</div>
+        <div class="headline positive">HLE · Zeus / 兰博（朗姆）</div>
+        <p><span class="src">本场弹幕</span> 08:02:25“世一朗姆怎么输”；08:16–08:19 出现“神王宙斯 / 宙斯还是细 / 这宙斯太强了”。</p>
+        <p><b>依据：</b>Zeus 全窗 176 条 / 118 人 / 三路；正向措辞命中 22 条 / 10 人，但其中 5 条来自同一刷屏用户，且正向样本主要来自官方直播间单路。</p>
+        <div class="meta">置信：本场弹幕·中；验证：盘口方向同向，官方待核对。</div>
+      </article>
+    </div>
+    <h3>负锚点（看衰谁输）</h3>
+    <div class="anchor-grid">
+      <article class="anchor">
+        <div class="label">NEGATIVE 01</div>
+        <div class="headline negative">G2 · Caps / 加里奥</div>
+        <p><span class="src">本场弹幕</span> 08:16–08:19 集中出现“加里奥不参团 / 不支援 / 15分钟一次大没放 / Caps不是送就是不参团”。英雄负评 14 条 / 14 人 / 三路。</p>
+        <p><b>依据：</b>不是单条辱骂，而是多个独立用户围绕同一执行问题；但属于竞技失误解释，不是动机判断。</p>
+        <div class="meta">验证：市场结算方向与“G2 风险侧”同向；官方待核对。</div>
+      </article>
+      <article class="anchor">
+        <div class="label">NEGATIVE 02</div>
+        <div class="headline negative">G2 · 霞 / 洛下路组</div>
+        <p><span class="src">本场弹幕</span> 08:06:31“霞洛前期就是打不了卢米”；08:08:29“霞漏了太多经验”；08:17–08:19 持续出现“霞没伤害 / 太穷 / 攻速鞋呢 / 洛熟练度不高”。</p>
+        <p><b>依据：</b>早段“后期可打”被过程评价反转；霞负评 18 条 / 17 人，覆盖三路。</p>
+        <div class="meta">验证：过程负锚与盘口方向一致；官方待核对。</div>
+      </article>
+      <article class="anchor">
+        <div class="label">NEGATIVE 03</div>
+        <div class="headline negative">G2 · 打野位 / 琪亚娜</div>
+        <p><span class="src">本场弹幕</span> 08:16:40 后出现“琪亚娜被皇子单杀 / 刷不过皇子 / 0作用”；琪亚娜 50 条 / 34 人，奇亚娜变体 16 条 / 12 人。</p>
+        <p><b>依据：</b>方向明确但集中在 08:16–08:19 的单次对抗与结果评价，独立事件支撑弱于加里奥负锚。</p>
+        <div class="meta">置信：单源方向清晰、事件样本偏窄；官方待核对。</div>
+      </article>
+      <article class="anchor">
+        <div class="label">DIVERGENCE</div>
+        <div class="headline">G2 · BB / 青钢影短暂正反互斥</div>
+        <p><span class="src">本场弹幕</span> 08:08:33–08:08:46 有 7 名不同用户围绕“单杀宙斯”形成正向短峰；但 08:17:24 又出现“就是 BB 不走送的”。</p>
+        <p><b>含义：</b>单杀带来短暂 G2 上单正锚，未能扩展为队伍共识；后续 G2 中下野负锚仍占优。</p>
+        <div class="meta">结论：分歧信号；不单独构成 G2 队伍胜势。</div>
+      </article>
+    </div>
+    <h3>群体共识（含分歧与样本量）</h3>
+    <div class="narrative">
+      <p><span class="src">本场弹幕</span> <b>后段共识：G2 负向。</b>08:16–08:17 两分钟出现 43 条显式 G2 竞技负评，覆盖三路虎牙；全 G2 主证据窗显式负评为 97 条 / 77 人。正向声量主要是 BB 单杀宙斯的短峰与少量“G2 加油”，没有形成稳定反攻共识。</p>
+      <p><span class="src">前局弹幕</span> 同系列 G1 的 07:18–07:46 已出现“Zeus / 奎桑提正面、G2 中上负评”框架；G2 再次落入“G2 中下野执行问题 → HLE 前排与核心接管”的同类叙事，但本页主结论仍以本局证据为主。</p>
+      <p><b>分歧：</b>07:59–08:03 的“霞洛后期可打 / G2 阵容不错”与 08:16 后的“G2 不会打团 / 加里奥不参团”方向相反。前者发生更早且未兑现，后者在时间和独立用户维度更集中。</p>
+    </div>
+    <h3>灰信号条件预测</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>条件</th><th>若兑现指向</th><th>当前纪律</th></tr></thead>
+        <tbody>
+          <tr><td>若 Zeus/HLE 的“演员 / 收钱 / 故意送”质疑成立</td><td>HLE 风险侧，G2 相对受益</td><td><span class="src risk">观众质疑·非结论</span> 目前只能由对线失误、被抓和团战选择解释；无动机或资金证据。</td></tr>
+          <tr><td>若 G2 决策层“内鬼”质疑成立</td><td>G2 风险侧，HLE 相对受益</td><td><span class="src risk">观众质疑·非结论</span> 仅 1 条，无对象闭环；当前只作低风险留痕。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details>
+      <summary>中性弹幕候选逐条二次判定（40 条；点击展开）</summary>
+      <div class="details-body">
+        <p class="muted">判定只保留能指向本场 HLE/G2、当前选手或英雄的真实情绪；跨队抽签、BLG 玩梗、广告、纯对象和无语境短句不升格。次数按原始切片统计，不把单人复读伪装成群体共识。</p>
+        <div class="table-wrap">
+          <table class="mini">
+            <thead><tr><th>#</th><th>北京时间</th><th>候选 / 原始次数</th><th>二次判定</th></tr></thead>
+            <tbody>
+              <tr><td>01</td><td>07:58</td><td>BLG 玩具选拔赛 ×321</td><td>跨队玩梗，排除。</td></tr>
+              <tr><td>02</td><td>08:29</td><td>BLG ×119</td><td>纯对象且节点外，排除。</td></tr>
+              <tr><td>03</td><td>08:01</td><td>IG 赛事模拟广告 ×100</td><td>广告，排除。</td></tr>
+              <tr><td>04</td><td>07:58</td><td>BLG 玩具选拔赛 ×52</td><td>跨队玩梗，排除。</td></tr>
+              <tr><td>05</td><td>09:04</td><td>BLG 明天回家 ×39</td><td>赛后抽签话题，排除。</td></tr>
+              <tr><td>06</td><td>08:03</td><td>奖励一个 BLG ×38</td><td>节点内但讨论后续抽签，排除。</td></tr>
+              <tr><td>07</td><td>08:29</td><td>BLG ×32</td><td>纯对象且节点外，排除。</td></tr>
+              <tr><td>08</td><td>08:33</td><td>Zeus 等 Bin ×32</td><td>节点外、单人复读，排除。</td></tr>
+              <tr><td>09</td><td>10:47</td><td>都是 BLG 的玩具 ×32</td><td>跨队玩梗，排除。</td></tr>
+              <tr><td>10</td><td>08:30</td><td>抽 BLG ×31</td><td>节点外抽签，排除。</td></tr>
+              <tr><td>11</td><td>08:37</td><td>HLE ×30</td><td>纯对象，排除。</td></tr>
+              <tr><td>12</td><td>08:50</td><td>BLG 明天回家 ×30</td><td>节点外、重复，排除。</td></tr>
+              <tr><td>13</td><td>09:20</td><td>AL 机场 ×28</td><td>跨队话题，排除。</td></tr>
+              <tr><td>14</td><td>08:17</td><td>BLG 玩具选拔赛 ×27</td><td>节点内但跨队玩梗、单人复读，排除。</td></tr>
+              <tr><td>15</td><td>08:03</td><td>IG ×26</td><td>纯对象，排除。</td></tr>
+              <tr><td>16</td><td>08:07</td><td>BLG 和 IG 抽签 ×23</td><td>跨队抽签，排除。</td></tr>
+              <tr><td>17</td><td>08:25</td><td>G2 打不过 HLE ×23</td><td><b>模型二次判定：</b>真实看衰 G2；但发生于节点结束后且 23 条来自 1 人，只作赛后语境，不入局内群体共识。</td></tr>
+              <tr><td>18</td><td>08:53</td><td>BLG 打 HLE 已抽出 ×23</td><td>赛后抽签，排除。</td></tr>
+              <tr><td>19</td><td>08:24</td><td>BLG 随便虐两队 ×22</td><td>节点外、跨队，排除。</td></tr>
+              <tr><td>20</td><td>08:02</td><td>HLE 被 AL 虐过 ×21</td><td><b>模型二次判定：</b>真实 HLE 历史负评；但 21 条来自 1 人，仅作单源弱负锚，不入群体共识。</td></tr>
+              <tr><td>21</td><td>08:25</td><td>G2 从未赢过 HLE ×21</td><td><b>模型二次判定：</b>真实看衰 G2；节点外且单人复读，只作赛后历史口号。</td></tr>
+              <tr><td>22</td><td>08:29</td><td>奖励一个 BLG ×21</td><td>赛后抽签，排除。</td></tr>
+              <tr><td>23</td><td>08:48</td><td>IG 打 T1 ×20</td><td>跨队抽签，排除。</td></tr>
+              <tr><td>24</td><td>08:14</td><td>离开 Faker 后 Zeus 原形毕露 ×19</td><td><b>模型二次判定：</b>真实负向 Zeus 口径；但 19 条来自 1 人、属历史化评价，仅作低权重反锚。</td></tr>
+              <tr><td>25</td><td>08:30</td><td>抽 BLG ×19</td><td>节点外抽签，排除。</td></tr>
+              <tr><td>26</td><td>08:34</td><td>HLE ×19</td><td>纯对象，排除。</td></tr>
+              <tr><td>27</td><td>08:25</td><td>恭喜 BLG ×17</td><td>节点外跨队，排除。</td></tr>
+              <tr><td>28</td><td>08:28</td><td>BLG 吓哭了 ×18</td><td>赛后抽签玩梗，排除。</td></tr>
+              <tr><td>29</td><td>08:30</td><td>BLG 打狮子 ×17</td><td>赛后抽签，排除。</td></tr>
+              <tr><td>30</td><td>08:32</td><td>IG 打 T1 ×17</td><td>跨队抽签，排除。</td></tr>
+              <tr><td>31</td><td>08:35</td><td>BLG 来抽韩华 ×17</td><td>赛后抽签，排除。</td></tr>
+              <tr><td>32</td><td>08:48</td><td>谁夺冠不好说 ×16</td><td>跨场冠军讨论，排除。</td></tr>
+              <tr><td>33</td><td>08:01</td><td>BLG 抚养权争夺战 ×15</td><td>节点内但跨队玩梗，排除。</td></tr>
+              <tr><td>34</td><td>08:55</td><td>IG/T1 谁赢都行 ×15</td><td>跨队话题，排除。</td></tr>
+              <tr><td>35</td><td>10:39</td><td>BLG 被做局 ×15</td><td>节点外、对象为 BLG；不混入本场灰信号。</td></tr>
+              <tr><td>36</td><td>10:56</td><td>Bin 故意输去狙击 Zeus ×15</td><td>节点外、对象为 BLG；不混入本场灰信号。</td></tr>
+              <tr><td>37</td><td>08:43</td><td>BLG 游太平洋 ×14</td><td>赛后跨队，排除。</td></tr>
+              <tr><td>38</td><td>08:13</td><td>BLG 赛事模拟广告 ×14</td><td>广告，排除。</td></tr>
+              <tr><td>39</td><td>08:36</td><td>HLE 快去逮捕 BLG ×13</td><td>赛后抽签话题，排除。</td></tr>
+              <tr><td>40</td><td>08:36</td><td>hle 快去逮捕 blg ×13</td><td>与 #39 同义重复，排除。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </section>
+  <section class="card">
+    <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="section-note">只作风险标注与盘口对照素材，不作假赛、剧本、收钱、故意送或任何选手动机结论。</div>
+    <div class="notice risk">
+      <span class="src risk">观众质疑·非结论</span>
+      本节点主窗显式灰词命中 16 条 / 12 人；人工去重后形成 4 个风险组、0 条经核实的操纵结论。规则层全切片 gray_signals=97 包含大量 BLG、TES 与赛后抽签讨论，不能整体当作本场风险条数。
+    </div>
+    <div class="table-wrap">
+      <table class="risk-table">
+        <thead><tr><th>指向对象</th><th>观众证据（北京时间）</th><th>风险等级</th><th>条件方向</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>HLE · Zeus</b></td>
+            <td>08:07:25–08:08:45 出现“演员 / 故意送？ / 又收钱了宙斯？ / 演我神王”，来自 5 名不同用户，集中在官方直播间单路约 80 秒。</td>
+            <td><span class="risk-mid">中低</span><br>单路、短时簇集</td>
+            <td>若质疑成立 → HLE 风险侧，G2 相对受益。<br><b>观众质疑，非结论；</b>也可由被抓、对线冒进和团战选择解释。</td>
+          </tr>
+          <tr>
+            <td><b>HLE · Zeus / “测试鸡蛋”玩笑</b></td>
+            <td>08:09:23–08:14:30 出现“宙斯故意看看鸡蛋能不能c / 寿司故意的，测试鸡蛋”，其中后一句 4 次复读来自同一用户。</td>
+            <td><span class="risk-low">低</span><br>玩笑化、单人复读</td>
+            <td>若成立 → HLE 风险侧；但语义更像观众调侃，不升级为群体风险。<br><b>观众质疑，非结论。</b></td>
+          </tr>
+          <tr>
+            <td><b>G2 · 决策层 / 被称“阿P”</b></td>
+            <td>08:03:39“啊p是不是内鬼”，仅 1 条，本窗无对象、职责或行为细节闭环。</td>
+            <td><span class="risk-low">低</span><br>单条、歧义</td>
+            <td>若成立 → G2 风险侧，HLE 相对受益。<br><b>观众质疑，非结论；</b>不足以支持任何动机判断。</td>
+          </tr>
+          <tr>
+            <td><b>无唯一对象</b></td>
+            <td>08:03:09“昨天故意让TES进去下来逮捕HLE”属系列赛路径与历史讨论；08:17:03“拿了钱不回家买装备”无明确指向。</td>
+            <td><span class="risk-low">低</span><br>跨场 / 对象不明</td>
+            <td>不能映射单队胜负；只留“本局可信度风险”观察。<br><b>观众质疑，非结论。</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>盘口对照与排除留痕</h3>
+    <div class="narrative">
+      <p><span class="src">盘口</span> 任务输入只提供 Polymarket Game 2 Winner“已结算”状态；切片没有逐时 outcomePrice、成交量或市场异动序列，无法验证灰信号是否与价格同步。任何“反手机会”均不成立。</p>
+      <p><span class="src muted">排除</span> “G2 太菜 / 回家 / 加里奥不参团 / 霞没伤害 / 琪亚娜 0 作用”属于竞技表现评价，不是灰信号；“BLG 被做局 / Bin 故意输”发生在赛后抽签语境，不作为本场灰信号。</p>
+      <p><b>风险结论：</b>最集中的显式质疑落在 HLE · Zeus，但只覆盖单路短时和少量独立用户；G2“内鬼”与无对象质疑更弱。没有可核实证据支持操纵、剧本、收钱或故意送，灰信号不改变“官方赛果待核对”的状态。</p>
+    </div>
+  </section>
+  <div class="closing">
+    弹幕采集截止：08:20（北京） · 有效证据窗：2026-10-31 07:58:34–08:20:00（UTC+8） ·
+    第 2 小局已结束，当前局间 · Polymarket Game 2 Winner 已结算，官方赛果待核对 ·
+    核心来源：本场三路虎牙弹幕；SOOP / Twitch / KICK 缺源，跨平台结论待补采。
+  </div>
+  <footer>弹幕情报库 · G2 局末/局间快照 · 2026-10-30</footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
