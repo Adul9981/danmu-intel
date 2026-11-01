@@ -86,6 +86,16 @@ select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,110,209,.1)}
   function gameLabel(g) {
     return g === "lol" ? "英雄联盟" : (g === "cs2" ? "CS2" : "-");
   }
+  function bjDate(iso) {
+    var t = Date.parse(iso);
+    if (isNaN(t)) return "";
+    var bj = new Date(t + 8 * 3600 * 1000); // UTC -> 北京（UTC+8），读作 UTC 各段
+    return bj.getUTCFullYear() + "-" + String(bj.getUTCMonth() + 1).padStart(2, "0") +
+      "-" + String(bj.getUTCDate()).padStart(2, "0");
+  }
+  function dayNum(ds) {
+    return Math.floor(Date.parse(ds + "T00:00:00Z") / 86400000);
+  }
   function matchesOfGame(game) {
     var all = (data && data.matches) || [];
     if (!game) return all; // 全部游戏
@@ -156,14 +166,33 @@ select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,110,209,.1)}
       renderContent();
       return;
     }
-    list.forEach(function (m) {
-      var o = document.createElement("option");
-      o.value = m.id;
-      o.textContent = (m.start_bj || "") + "  " + m.teams[0] + " vs " + m.teams[1];
-      matchSelect.appendChild(o);
+    var sorted = list.slice().sort(function (a, b) {
+      return String(a.start_time || "").localeCompare(String(b.start_time || ""));
     });
-    var stillThere = list.some(function (m) { return m.id === state.matchId; });
-    if (!stillThere) state.matchId = list[0].id;
+    var todayStr = bjDate(new Date().toISOString());
+    var todayN = dayNum(todayStr);
+    var groups = {};
+    sorted.forEach(function (m) {
+      var d = bjDate(m.start_time) || "未定";
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(m);
+    });
+    Object.keys(groups).sort().forEach(function (d) {
+      var diff = d === "未定" ? null : (dayNum(d) - todayN);
+      var rel = diff == null ? "" : (diff === 0 ? "今天" : diff === 1 ? "明天" : diff === 2 ? "后天" : (diff > 0 ? diff + " 天后" : ""));
+      var og = document.createElement("optgroup");
+      og.label = d + (rel ? " · " + rel : "");
+      groups[d].forEach(function (m) {
+        var o = document.createElement("option");
+        o.value = m.id;
+        var time = (m.start_bj || "").split(" ")[1] || "";
+        o.textContent = m.teams[0] + " vs " + m.teams[1] + (time ? " · " + time : "");
+        og.appendChild(o);
+      });
+      matchSelect.appendChild(og);
+    });
+    var stillThere = sorted.some(function (m) { return m.id === state.matchId; });
+    if (!stillThere) state.matchId = sorted[0].id;
     matchSelect.value = state.matchId;
     renderContent();
   }
