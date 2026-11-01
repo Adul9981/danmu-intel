@@ -93,9 +93,6 @@ select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,110,209,.1)}
     return bj.getUTCFullYear() + "-" + String(bj.getUTCMonth() + 1).padStart(2, "0") +
       "-" + String(bj.getUTCDate()).padStart(2, "0");
   }
-  function dayNum(ds) {
-    return Math.floor(Date.parse(ds + "T00:00:00Z") / 86400000);
-  }
   function matchesOfGame(game) {
     var all = (data && data.matches) || [];
     if (!game) return all; // 全部游戏
@@ -169,8 +166,6 @@ select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,110,209,.1)}
     var sorted = list.slice().sort(function (a, b) {
       return String(a.start_time || "").localeCompare(String(b.start_time || ""));
     });
-    var todayStr = bjDate(new Date().toISOString());
-    var todayN = dayNum(todayStr);
     var groups = {};
     sorted.forEach(function (m) {
       var d = bjDate(m.start_time) || "未定";
@@ -178,10 +173,8 @@ select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,110,209,.1)}
       groups[d].push(m);
     });
     Object.keys(groups).sort().forEach(function (d) {
-      var diff = d === "未定" ? null : (dayNum(d) - todayN);
-      var rel = diff == null ? "" : (diff === 0 ? "今天" : diff === 1 ? "明天" : diff === 2 ? "后天" : (diff > 0 ? diff + " 天后" : ""));
       var og = document.createElement("optgroup");
-      og.label = d + (rel ? " · " + rel : "");
+      og.label = d;
       groups[d].forEach(function (m) {
         var o = document.createElement("option");
         o.value = m.id;
