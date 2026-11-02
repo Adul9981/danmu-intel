@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="data-window-bj" content="2026-11-02 13:38–14:30">
+<meta name="data-window-utc" content="2026-11-02 05:38–06:30">
+<title>局中弹幕情报快照（G1）· PARIVISION vs G2 · 局末/局间</title>
+<style>
+:root{
+  --bg:#f5f5f7;
+  --card:#fff;
+  --ink:#1d1d1f;
+  --sub:#6e6e73;
+  --line:#e5e5ea;
+  --soft:#f8f8fa;
+  --accent:#0071e3;
+  --accent-soft:#eef6ff;
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.62;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:30px 20px 48px}
+.hero{
+  background:linear-gradient(180deg,#fff 0%,#fbfbfd 100%);
+  border:1px solid rgba(0,0,0,.055);
+  border-radius:26px;
+  padding:28px 30px 26px;
+  box-shadow:0 12px 34px rgba(0,0,0,.045);
+}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:5px 11px;
+  font-size:12px;
+  font-weight:700;
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+.badge.status{background:#1d1d1f;color:#fff}
+.badge.neutral{background:#f1f1f4;color:#55555b}
+h1{
+  font-size:clamp(28px,5vw,40px);
+  line-height:1.12;
+  letter-spacing:-.035em;
+  margin:0 0 8px;
+}
+.subtitle{color:var(--sub);font-size:14px;margin:0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.status-banner{
+  margin-top:18px;
+  padding:16px 17px;
+  border:1px solid #d9e9fb;
+  border-radius:16px;
+  background:linear-gradient(135deg,#f7fbff,#fff);
+  font-size:14px;
+  font-weight:720;
+  color:#17395c;
+}
+.status-banner span{
+  display:block;
+  font-size:12.5px;
+  font-weight:550;
+  color:#526477;
+  margin-top:5px;
+}
+.progress{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:13px;
+  padding-top:12px;
+  border-top:1px solid #dceafa;
+}
+.progress div{
+  font-size:11.5px;
+  color:#526477;
+  background:rgba(255,255,255,.78);
+  border-radius:10px;
+  padding:8px 9px;
+}
+.progress b{display:block;font-size:12.5px;color:#17395c}
+.meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.meta-item{
+  background:var(--soft);
+  border:1px solid #efeff2;
+  border-radius:14px;
+  padding:12px 14px;
+}
+.meta-key{font-size:10.5px;color:var(--sub);font-weight:700;letter-spacing:.06em}
+.meta-value{font-size:13px;font-weight:620;margin-top:3px}
+.section{
+  margin-top:18px;
+  background:var(--card);
+  border:1px solid rgba(0,0,0,.055);
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:0 7px 22px rgba(0,0,0,.035);
+}
+h2{
+  font-size:21px;
+  line-height:1.35;
+  letter-spacing:-.02em;
+  margin:0 0 18px;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+h2 .no{
+  flex:0 0 auto;
+  display:inline-grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  border-radius:9px;
+  background:var(--accent);
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  margin-top:1px;
+}
+h3{font-size:15px;line-height:1.4;margin:0 0 8px;letter-spacing:-.01em}
+p{margin:7px 0}
+.muted{color:var(--sub);font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card,.direction{
+  background:var(--soft);
+  border:1px solid #ededf0;
+  border-radius:16px;
+  padding:16px 17px;
+}
+.direction.primary{border-color:#cfe6ff;background:#f8fbff}
+.direction.risk{border-color:#dfe1e6;background:#fbfbfd}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:3px 8px;
+  background:#ececf0;
+  color:#55555b;
+  font-size:10.5px;
+  font-weight:720;
+  white-space:nowrap;
+}
+.tag.source{background:var(--accent-soft);color:var(--accent)}
+.tag.risk{background:#1d1d1f;color:#fff}
+.tag.model{background:#f0edfa;color:#5e469a}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.source-line{font-size:11.5px;color:var(--sub);margin-top:10px}
+.audit{
+  margin-top:13px;
+  border:1px dashed #d7d7dd;
+  border-radius:15px;
+  padding:14px 16px;
+  background:#fcfcfd;
+}
+.narrative{
+  padding:16px 17px;
+  border:1px solid #dfecfb;
+  border-radius:16px;
+  background:linear-gradient(135deg,#f8fbff,#fff);
+}
+.stat-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:11px 0 4px}
+.stat{background:#fff;border:1px solid #e7edf5;border-radius:11px;padding:9px 10px}
+.stat b{display:block;font-size:17px;line-height:1.25}
+.stat span{display:block;font-size:10.5px;color:var(--sub);margin-top:2px}
+.timeline{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:7px;
+  margin-top:12px;
+}
+.beat{background:#fff;border:1px solid #e7edf5;border-radius:10px;padding:8px}
+.beat time{display:block;color:var(--accent);font-size:11px;font-weight:750}
+.beat span{display:block;color:var(--sub);font-size:10.5px;margin-top:2px}
+.system-slot{
+  min-height:18px;
+  border:1px dashed #e1e1e6;
+  border-radius:12px;
+  background:#fcfcfd;
+}
+.table-wrap{overflow-x:auto;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid #e7e7ec}
+th{font-size:11px;color:var(--sub);font-weight:720}
+tr:last-child td{border-bottom:0}
+.risk-list{display:grid;gap:10px}
+.risk-item{
+  border:1px solid #e2e3e7;
+  border-radius:15px;
+  padding:14px 15px;
+  background:#fbfbfd;
+}
+.risk-head{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:5px}
+.risk-head strong{font-size:13.5px}
+.footer{
+  font-size:11.5px;
+  color:var(--sub);
+  text-align:center;
+  padding:22px 8px 0;
+  line-height:1.75;
+}
+@media(max-width:760px){
+  .wrap{padding:18px 12px 36px}
+  .hero{padding:23px 19px;border-radius:22px}
+  .meta-grid,.grid{grid-template-columns:1fr}
+  .section{padding:20px 17px;border-radius:18px}
+  .stat-row,.progress,.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+  h2{font-size:19px}
+}
+</style>
+<style>/* canonical-header: preserve system font and stable node heading */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="match_situation.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">比赛局势</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">PARIVISION-G2 2026-11-02 g1 end</b></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="badges">
+      <span class="badge status">局中·非终局，结果待定</span>
+      <span class="badge neutral">G1｜局末/局间 · GAME-REVIEW</span>
+      <span class="badge neutral">弹幕口径</span>
+    </div>
+    <h1>PARIVISION vs G2</h1>
+    <p class="subtitle">
+      局中弹幕情报快照（G1） · CS2 · IEM 北京 B 组 · BO3 · 2026-11-02<br>
+      slug <span class="mono">cs2-hupu-1441778164564994234</span>
+    </p>
+    <div class="status-banner">
+      进度（弹幕口径）：G1 已结束，当前处于局间；整场系列结果仍待官方核对。
+      <span>14:23 弹幕出现“图一终于完了”。虎扑赛事页在 14:28（北京；06:28 UTC）暂记系列比分 0:1，G2 取得图一；图内完整比分及最终系列结果未在本页擅自补写。</span>
+      <div class="progress" aria-label="本局弹幕进度线索">
+        <div><b>13:45</b>辅助房称 G2 5:1，后段比分线索未完整还原</div>
+        <div><b>13:54–14:05</b>G2 优势与 PV 执行批评并行</div>
+        <div><b>14:12–14:17</b>PV“翻盘/追分”讨论升温</div>
+        <div><b>14:20–14:23</b>G2 收官口径集中，随后“图一终于完了”</div>
+      </div>
+    </div>
+    <div class="meta-grid" aria-label="快照元信息">
+      <div class="meta-item">
+        <div class="meta-key">数据窗口 / 采集截止</div>
+        <div class="meta-value">
+          2026-11-02 13:38–14:30（北京；05:38–06:30 UTC）<br>
+          弹幕采集截止：14:30（北京）
+        </div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">切片总量</div>
+        <div class="meta-value">
+          6,348 条 · 2,148 名活跃用户<br>
+          平均 121.7 条/分钟 · 密度峰值 14:14（613 条/分钟）
+        </div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">本场定向样本</div>
+        <div class="meta-value">
+          567 条 · 316 名用户<br>
+          CSBOY 官方 467 条；CSBOY-Mo 100 条
+        </div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">来源与缺口</div>
+        <div class="meta-value">
+          实际：虎牙 CSBOY 官方 + CSBOY-Mo<br>
+          BLAST 官方 / KICK 为缺口；SOOP、Twitch 无可用样本
+        </div>
+      </div>
+    </div>
+  </header>
+  <section class="section" aria-labelledby="section-1">
+    <h2 id="section-1"><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>地图：炙热沙城Ⅱ / Dust2 /“沙二”</h3>
+        <p>
+          13:38 弹幕直接质疑“为啥选沙二”；13:55、13:57 和 14:25 又出现“还天天打沙二”“看到这个沙二我就来气”等图池评价。
+          这能支持本局地图讨论，但无法还原完整 veto 顺序或选图责任。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag">弹幕口径·待官方</span>
+          <span class="tag">完整 Veto 样本不足</span>
+        </div>
+        <div class="source-line">证据时间：13:38、13:55–13:57、14:25（北京）</div>
+      </article>
+      <article class="card">
+        <h3>阵容：CS2 无“英雄选择”，仅列弹幕可追溯对象</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>队伍</th><th>弹幕提及的选手 / 社区称谓</th><th>边界</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>PARIVISION</td>
+                <td>Jame、FL1T、zweih（“紫薇”）、HObbit（“霍比特”）</td>
+                <td>未据此补全第五人，完整首发待官方</td>
+              </tr>
+              <tr>
+                <td>G2</td>
+                <td>huNter-（“表哥”）、r1nkle（rinkle / 润口）、HeavyGod（“重神 / 重尬”）、NertZ、MATYS</td>
+                <td>昵称映射为模型二次判定；位置与完整首发待官方</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定</span>
+          <span class="tag">阵容·待官方</span>
+        </div>
+        <div class="source-line">证据时间：13:38–14:23（北京）· 对象仅代表弹幕提及，不代表官方名单</div>
+      </article>
+    </div>
+    <div class="audit">
+      <h3>BP 后战绩情报</h3>
+      <p>
+        <strong>无战绩情报提及。</strong>切片中没有可核验的“队伍 × 沙二”历史胜率、交手比分或明确赛期。
+        14:21“沙二皇帝”是对局末表现的夸赞，不是历史战绩，不能转换成胜率或让分判断。
+      </p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag">有效战绩提及 0</span>
+        <span class="tag">不硬造</span>
+      </div>
+    </div>
+  </section>
+  <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">PARIVISION</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:20%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">20%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">G2</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:80%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">80%</span></div><div class="note">显式胜负弹幕仅 5 条（样本较少，< 阈值 10），按实际比例展示，随弹幕更新。</div><div class="note" data-sit-ts="1793601245" style="color:#8a8f98;font-size:11px;margin-top:2px">胜率更新于 14:34:05（北京时间）</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div class="note">虎扑通用评分未提供选手归属，按评分混排：</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">MATYS</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">10.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">10人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">HeavyGod</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">9.2</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">10人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">NertZ</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">8.5</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">4人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">r1nkle</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">8.3</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">6人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Jame</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">6.9</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">7人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">huNter-</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">6.3</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">6人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">FL1T</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">6.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">2人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">zweih</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">2.8</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">5人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">HObbit</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">2.3</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">6人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">xiELO</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">2.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">3人评</span></div><div class="note">来源：虎扑通用评分（每小局独立）· 炙热沙城Ⅱ</div><div class="note" data-rat-ts="1793601252" style="color:#8a8f98;font-size:11px;margin-top:2px">评分更新于 14:34:12（北京时间）</div><!-- SITUATION:RATINGS:END --></div>
+  <section class="section" aria-labelledby="section-3">
+    <h2 id="section-3"><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="narrative">
+      <h3>叙事主线：G2 的个体火力与回合主动先建立优势，PV 慢节奏和失误遭集中批评，后段又出现一轮“翻盘”分歧</h3>
+      <p>
+        规则层 narrative 全片为正 250／负 169（净 +81），五段走势依次为 +5、+9、+21、+46、0；
+        14:15 的 359 条转折峰值附近，弹幕从场面惊讶转向对 G2 中期指挥的争论。14:19–14:30 情绪回到 28／28 的分歧状态。
+      </p>
+      <p>
+        该规则层统计混入 Liquid、Aurora、Vitality、Spirit 等邻场讨论，不能直接判给本场。按 567 条本场定向样本复核，
+        内容层更接近“G2 应拿下图一”，但过程评价仍大量质疑 huNter- 指挥、r1nkle 狙击位和 G2 进攻质量，因此方向可读、共识质量不足。
+      </p>
+      <div class="stat-row">
+        <div class="stat"><b>250 / 169</b><span>规则层正 / 负（全切片，混源）</span></div>
+        <div class="stat"><b>+81</b><span>全切片净情绪，不等于本场支持率</span></div>
+        <div class="stat"><b>567</b><span>本场定向样本（316 名用户）</span></div>
+        <div class="stat"><b>5</b><span>规则层显式胜负样本，低于阈值 10</span></div>
+      </div>
+      <div class="timeline" aria-label="规则层情绪走势（北京时间）">
+        <div class="beat"><time>13:38–13:47</time><span>45 正 / 40 负 · +5</span></div>
+        <div class="beat"><time>13:48–13:57</time><span>39 正 / 30 负 · +9</span></div>
+        <div class="beat"><time>13:58–14:07</time><span>71 正 / 50 负 · +21</span></div>
+        <div class="beat"><time>14:09–14:18</time><span>67 正 / 21 负 · +46</span></div>
+        <div class="beat"><time>14:19–14:30</time><span>28 正 / 28 负 · 分歧</span></div>
+      </div>
+      <div class="tags">
+        <span class="tag source">规则层 narrative</span>
+        <span class="tag source">本场弹幕复核</span>
+        <span class="tag">混源已审计</span>
+        <span class="tag">方向待官方</span>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <article class="direction primary">
+        <h3>正锚点 · G2 的个体火力与图内主动</h3>
+        <p>
+          <strong>对象：</strong>G2，重点为 HeavyGod（“重神 / 重尬”）。
+          13:44–13:49 连续出现“重神今年打得真不错”“重神一个人杀 3 赢了”“状态不错 / C 麻了 / 有 top 哥味道”；
+          13:45 辅助房还转述目标场次 G2 5:1。14:20–14:23 进一步出现“已经拿下了”“已经赢了”“图一终于完了”。
+        </p>
+        <p>
+          <strong>验证：</strong>虎扑赛事页暂记系列比分 0:1、G2 取得图一，方向<strong>应验</strong>；
+          但完整图内比分未还原，最终赛果仍待官方核对。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定：重神 → HeavyGod（待官方）</span>
+          <span class="tag">虎扑口径·待官方核对</span>
+        </div>
+        <div class="source-line">证据时间：13:44–13:49、14:20–14:23（北京）</div>
+      </article>
+      <article class="direction">
+        <h3>正锚点 · PV 后段追分与“翻盘”想象</h3>
+        <p>
+          <strong>对象：</strong>PV。13:59–14:00 出现“看着吧 PV 必胜”“我感觉 PV 能赢”，14:12–14:17 又出现“真要翻了，G2 打不过了”
+          “打着打着 11 比 9 了”等追分讨论。它代表后段少数派的反向预期，但比分表述互相冲突，不能作为精确赛况。
+        </p>
+        <p>
+          <strong>验证：</strong>该正向预期未实现为图一翻盘；PV 最终仍由图一败方进入系列 0:1。该判断仅依虎扑比分口径，待官方核对。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定：反扑情绪</span>
+          <span class="tag">单源待验证</span>
+        </div>
+        <div class="source-line">证据时间：13:59–14:17（北京）· 后段存在明显分歧</div>
+      </article>
+      <article class="direction risk">
+        <h3>负锚点 · PV 的进攻节奏、个人执行与残局处理</h3>
+        <p>
+          <strong>对象：</strong>PV。13:46–13:57 密集出现“Jame 真慢 / 把把 30 秒”“PV 个人能力不如 G2”“这图 PV 没了”
+          “PV 就是进攻便秘，防守赌区”；14:05–14:23 又集中批评 zweih（“紫薇”）、HObbit（“霍比特”）等执行。
+          这些都指向图内执行承压。
+        </p>
+        <p>
+          <strong>验证：</strong>与 G2 取得图一的虎扑口径方向一致，负锚<strong>应验</strong>；
+          但具体失分责任不能由昵称吐槽反推。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定</span>
+          <span class="tag">虎扑口径·待官方核对</span>
+        </div>
+        <div class="source-line">证据时间：13:46–13:57、14:05–14:23（北京）</div>
+      </article>
+      <article class="direction risk">
+        <h3>负锚点 · G2 的狙击位、首杀与中期指挥风险</h3>
+        <p>
+          <strong>对象：</strong>G2 的 r1nkle、huNter- 及整体进攻。13:38–13:49 出现“rinkle 拉坨大的 / 全空 / 难堪重任”
+          “hunter 送了几个首杀”；13:54–14:14 又持续质疑 G2 进攻和中级指挥；14:23 仍有“表哥指挥太唐了，全靠数值”。
+        </p>
+        <p>
+          <strong>验证：</strong>风险在过程中被反复提及，但未兑现为 G1 败局；结论为<strong>部分风险出现、图一负锚未应验</strong>，
+          更适合作为后续图的稳定性观察项。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定</span>
+          <span class="tag">风险存在但不改赛果</span>
+        </div>
+        <div class="source-line">证据时间：13:38–14:23（北京）</div>
+      </article>
+    </div>
+    <div class="audit">
+      <h3>群体共识与灰信号条件预测</h3>
+      <p>
+        <strong>共识：</strong>G2 拿下图一的结果指向较清楚，但“G2 过程质量差”的负评与“PV 可能翻盘”的少数派同时存在，
+        因此不是单边高质量共识。规则层显式胜负样本仅 5 条且低于阈值 10，不能换算为胜率；统一标记为弹幕口径·待官方。
+      </p>
+      <p>
+        <strong>条件预测：</strong>若 PV 的“主动保狙 / 慢进攻”继续集中，条件方向指向 PV 后续图执行风险；
+        若 G2 的“中期指挥 / 狙击位空枪”继续集中，条件方向指向 G2 后续图回撤风险。两项均无盘口联动或多源共振，不据此推导让分或胜负。
+      </p>
+      <p class="muted">
+        中性候选二次判定：40 条 <code>neutral_salvage</code> 已逐条复核，11 条形成可用情绪或风险（1 条 G2 正向、9 条 G2 过程/指挥/Sniper 负评、1 条双方“影业/企业文化”灰信号梗），
+        29 条为 Liquid、Aurora、Falcons、FURIA 等邻场、选手问答、复读或纯表情，未纳入。无明确对象的“666 / ??? / 哈哈”只计情绪回声，不升格为队伍方向。
+      </p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag model">模型二次判定</span>
+        <span class="tag">盘口缺失</span>
+        <span class="tag">推测·待验证</span>
+      </div>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="section-4">
+    <h2 id="section-4"><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <p class="muted">
+      规则层标记灰信号 9 条。来源与对象复核后，本页保留 3 个低风险、同房且对象可解释的片段；
+      邻场或队属不明条目不作为本场灰信号，整体也不升级为假赛、操盘或卡盘结论。
+    </p>
+    <div class="risk-list">
+      <article class="risk-item">
+        <div class="risk-head">
+          <strong>观众质疑，非结论｜指向：PARIVISION / Jame 的保狙选择｜风险：低</strong>
+          <span class="tag risk">风险：低</span>
+        </div>
+        <p>
+          13:49 出现“故意带包去小道，好保大狙”，13:48 同房另有“保大狙了上帝”。
+          语境很可能指向 Jame 的狙击枪处理，但“故意”是观众推断。若该行为在多回合重复且与盘口异常重合，
+          条件方向指向 PV 主动牺牲回合并放大输图风险；当前无第二路、盘口或行为证据。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定：上帝 → Jame（待官方）</span>
+          <span class="tag">推测·待验证</span>
+        </div>
+      </article>
+      <article class="risk-item">
+        <div class="risk-head">
+          <strong>观众质疑，非结论｜指向：暂停方是否借暂停让分｜风险：低、队属不明</strong>
+          <span class="tag risk">风险：低</span>
+        </div>
+        <p>
+          13:42 出现“叫暂停送分？”。该句是疑问式吐槽，切片没有明确暂停方或对应回合结果，
+          不能指向 PARIVISION 或 G2 任一方。若后续出现同一叫暂停方连续丢分并与盘口异动共振，才进入条件观察。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag">对象待核</span>
+          <span class="tag">无方向结论</span>
+        </div>
+      </article>
+      <article class="risk-item">
+        <div class="risk-head">
+          <strong>观众质疑，非结论｜指向：双方的“剧本/企业节目”调侃｜风险：低</strong>
+          <span class="tag risk">风险：低</span>
+        </div>
+        <p>
+          13:52 出现“顶级剧本顶级享受”，13:53 与 14:10–14:13 出现“PV 影业”“G2 企业文化”。
+          这些是娱乐化反讽，没有指向具体选手、回合或资金行为；不能当作故意送分证据，也不指向单边。
+        </p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag model">模型二次判定：灰信号候选</span>
+          <span class="tag">观众质疑·非结论</span>
+        </div>
+      </article>
+    </div>
+    <div class="audit">
+      <h3>来源隔离与纪律</h3>
+      <p>
+        “给液体送送分”（13:47）、“国际送分队”（13:57）以及 CSBOY-Mo 的“买了 / 队伍买了自己输随便送”（14:02）
+        处于邻场或串场语境，不写入本场灰信号；“马西西操控游戏比赛一走就拿分”（14:09）指向主播节目效果，
+        不对应队伍行为。规则层原 9 条因此不能直接转换为 9 条本场风险。
+      </p>
+      <p>
+        灰信号兑现状态为<strong>无法判定</strong>：虎扑确认的是图一归属，不足以证明或否认任何故意行为。
+        本场未取得可用于对照的盘口数字，灰信号只作风险标注，禁止写成实锤。
+      </p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag">观众质疑·非结论</span>
+        <span class="tag">盘口缺失</span>
+        <span class="tag">多源待验证</span>
+      </div>
+    </div>
+  </section>
+  <footer class="footer">
+    局中·非终局，结果待定。弹幕为低可信度聚合信号；灰信号仅作风险提示，不构成假赛、操盘或赛果结论。<br>
+    页面时间统一为北京时间（UTC+8）；括号内 UTC 仅作溯源备注。
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
