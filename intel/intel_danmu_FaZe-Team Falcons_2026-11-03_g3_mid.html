@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FaZe vs Team Falcons · G3 局中弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #d2d2d7;
+      --soft: #f0f1f3;
+      --blue: #0071e3;
+      --blue-soft: #e8f2ff;
+      --warn: #9a6700;
+      --warn-soft: #fff7e6;
+      --risk: #b42318;
+      --risk-soft: #fff1f0;
+      --radius: 18px;
+      --shadow: 0 1px 2px rgba(0,0,0,.03), 0 8px 28px rgba(0,0,0,.045);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 18px 44px; }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid rgba(210,210,215,.72);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero { padding: 28px; margin-bottom: 16px; overflow: hidden; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 4.6vw, 43px);
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--sub);
+      font-size: 14px;
+    }
+    .status {
+      margin: 20px 0 18px;
+      padding: 14px 16px;
+      border: 1px solid #f0d38b;
+      border-radius: 14px;
+      background: var(--warn-soft);
+      color: #5f4300;
+    }
+    .status strong { display: block; color: var(--warn); font-size: 16px; }
+    .status span { display: block; margin-top: 3px; font-size: 13px; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .meta {
+      min-width: 0;
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: var(--soft);
+    }
+    .meta-label {
+      display: block;
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .meta-value {
+      display: block;
+      margin-top: 2px;
+      font-size: 14px;
+      font-weight: 720;
+      overflow-wrap: anywhere;
+    }
+    .meta-value small {
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .source-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--blue);
+      border-radius: 10px;
+      background: var(--blue-soft);
+      color: #2e4056;
+      font-size: 12.5px;
+    }
+    .source-box strong { color: #163a63; }
+    .card { padding: 25px 26px; margin-top: 16px; }
+    h2 {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 15px;
+      font-size: clamp(19px, 2.6vw, 25px);
+      line-height: 1.3;
+      letter-spacing: -.018em;
+    }
+    .no {
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 780;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 20px 0 9px;
+      font-size: 14px;
+      color: #37373c;
+      letter-spacing: .01em;
+    }
+    h3:first-of-type { margin-top: 13px; }
+    p { margin: 8px 0; }
+    .lead { color: #424247; font-size: 13.5px; }
+    .note, .source-line {
+      color: var(--sub);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .source-line { margin-top: 10px; }
+    .riskbox, .consensus-note, .empty {
+      padding: 13px 15px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+    .riskbox {
+      margin-top: 13px;
+      border: 1px solid #f0c9c5;
+      background: var(--risk-soft);
+      color: #6f221a;
+    }
+    .consensus-note {
+      margin-top: 12px;
+      border: 1px solid #bed9f8;
+      background: var(--blue-soft);
+      color: #203b5a;
+    }
+    .empty { border: 1px dashed var(--line); background: #fafafa; color: var(--sub); }
+    .tag {
+      display: inline-block;
+      margin: 2px 4px 2px 0;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #eeeff1;
+      color: #505057;
+      font-size: 10.5px;
+      font-weight: 680;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    .tag.blue { background: var(--blue-soft); color: #07579f; }
+    .tag.warn { background: var(--warn-soft); color: var(--warn); }
+    .tag.risk { background: var(--risk-soft); color: var(--risk); }
+    .table-wrap {
+      margin-top: 10px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 660px; }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e7e7ea;
+      text-align: left;
+      vertical-align: top;
+      font-size: 12.5px;
+    }
+    th {
+      background: #fafafa;
+      color: #68686d;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .signal {
+      margin-top: 10px;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .signal-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .signal-title { font-size: 15px; font-weight: 760; }
+    .signal p { font-size: 12.8px; }
+    .phase {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      margin: 12px 0 4px;
+    }
+    .phase-item {
+      min-height: 88px;
+      padding: 9px;
+      border-radius: 11px;
+      background: #f7f7f8;
+      border: 1px solid #e8e8eb;
+    }
+    .phase-time {
+      display: block;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 760;
+    }
+    .phase-tone {
+      display: block;
+      margin-top: 1px;
+      font-size: 13px;
+      font-weight: 740;
+    }
+    .phase-count {
+      display: block;
+      margin-top: 5px;
+      color: var(--sub);
+      font-size: 10.5px;
+      line-height: 1.42;
+    }
+    details {
+      margin-top: 12px;
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fafafa;
+      color: #48484d;
+      font-size: 12px;
+    }
+    summary { cursor: pointer; font-weight: 680; color: #333338; }
+    details p { margin: 8px 0 0; }
+    .sample {
+      margin: 6px 0;
+      padding: 8px 10px;
+      border-radius: 9px;
+      background: #f7f7f8;
+      color: #4a4a50;
+      font-size: 12px;
+    }
+    .muted { color: var(--sub); }
+    @media (max-width: 760px) {
+      .wrap { padding: 16px 12px 32px; }
+      .hero, .card { padding: 19px 16px; border-radius: 15px; }
+      .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .phase { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .phase-item:last-child { grid-column: 1 / -1; min-height: auto; }
+      .source-box { font-size: 12px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      .hero, .card { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="match_situation.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">比赛局势</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">FaZe-Team Falcons 2026-11-03 g3 mid</b></div>
+<main class="wrap">
+  <header class="hero">
+    <p class="eyebrow">CS2 · G3 MID-GAME · 弹幕情报快照</p>
+    <h1>FaZe vs Team Falcons</h1>
+    <p class="subtitle">2026-11-03 · slug：cs2-faze-fal2-2026-11-03 · 地图 Mirage（弹幕口径·待官方）</p>
+    <div class="status" role="status">
+      <strong>G3｜局中 · 非终局，结果待定</strong>
+      <span>进度以弹幕口径为准：17:24 后围绕下半场博弈快速升温，17:35–17:45 转入多打少残局失守与收比赛能力争议；窗口内未出现一致、可核验的精确比分。</span>
+    </div>
+    <div class="meta-grid">
+      <div class="meta">
+        <span class="meta-label">弹幕采集截止</span>
+        <span class="meta-value">17:45（北京）</span>
+      </div>
+      <div class="meta">
+        <span class="meta-label">数据窗口</span>
+        <span class="meta-value">17:12–17:45<small> 北京时间</small></span>
+      </div>
+      <div class="meta">
+        <span class="meta-label">切片样本</span>
+        <span class="meta-value">6,685 条 / 2,507 人<small> 202.5 条·分</small></span>
+      </div>
+      <div class="meta">
+        <span class="meta-label">规则层情绪主线</span>
+        <span class="meta-value">正 185 / 负 162<small> 净 +23 · 正面</small></span>
+      </div>
+    </div>
+    <div class="source-box">
+      <strong>实际数据源：</strong>虎牙 CSBOY 主房 5,634 条、CSBOY-Mo 分路 1,051 条。
+      <strong>缺口：</strong>SOOP／Twitch／KICK 未出现在本切片，不能视为完整多平台样本。
+      规则层全房叙事混有其他 CS2 场次；本页只把可直指 FaZe、Team Falcons、G3 及 Mirage 的内容纳入结论。
+      <span class="tag blue">本场弹幕｜数据边界</span>
+    </div>
+  </header>
+  <section class="card" id="bp-anchor">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <p class="lead">CS2 不使用“英雄＋选手”映射。本节检查本局地图、可见选手与 BP 后战绩信息；全部为弹幕口径，不得倒推为官方首发、选边或 veto 事实。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>检查项</th>
+            <th>本场弹幕口径</th>
+            <th>时间 / 样本</th>
+            <th>来源与验证</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>G3 地图</td>
+            <td>Mirage（弹幕黑话“米垃圾”）。17:29 另有“米垃圾现在还真不是普通 CT 图，是超大 CT 图”的地图属性讨论。</td>
+            <td>17:16、17:29；3 条明确地图提及</td>
+            <td><span class="tag blue">本场弹幕</span><br>弹幕口径·待官方</td>
+          </tr>
+          <tr>
+            <td>可见阵容 / 选手</td>
+            <td>Team Falcons 语境集中出现 karrigan（“大表哥”）、NiKo（“老尼／尼科”）、m0NESY（“小孩”）；FaZe 语境集中出现 frozen（“寒王”）、Twistzz（“总监”）。Neityu（“内特雨／奈特雨”）与“龙哥／荆芥”等昵称存在，但完整五人名单及队伍归属不能由弹幕唯一确认。</td>
+            <td>寒王 264 次 / 187 人；大表哥 229 次 / 177 人；NiKo 语义组 225 次 / 158 人；完整首发 0 套</td>
+            <td><span class="tag blue">本场弹幕</span><br>样本不足 · 待官方</td>
+          </tr>
+          <tr>
+            <td>地图位置与选边</td>
+            <td>位置讨论集中在 A1、二楼、超市、中路、B 区与拱门，和 Mirage 地图点位一致；未见可唯一确认的起始阵营、完整 veto 顺序或选边过程。</td>
+            <td>17:15–17:40；点位讨论密集，阵营仍需结构源确认</td>
+            <td><span class="tag blue">本场弹幕</span><br>弹幕口径·待官方</td>
+          </tr>
+          <tr>
+            <td>BP 后战绩情报</td>
+            <td><strong>无战绩情报提及。</strong>未发现可核验的双方历史交手、Mirage 胜率、地图连胜／连败或选手地图战绩。多次重复的“图一虐、图二粘、图三送”是情绪化系列剧本，不是战绩证据。</td>
+            <td>可核验战绩情报：0 条；“图三送／回家”情绪模板：13 条</td>
+            <td><span class="tag blue">本场弹幕</span><br>样本不足</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="riskbox">
+      <strong>BP 结论边界：</strong>可确认的只有“本窗口把 G3 称为 Mirage”和若干被反复点名的选手；不能据此确认官方五人首发、具体角色位、地图 veto 或起始攻防。地图与阵容继续等待官方结构源回填。
+    </div>
+    <p class="source-line">来源分层：本节只采用本场 G3 窗口弹幕，未用历史画像、前局战绩或盘口补强。</p>
+  </section>
+  <section class="card" id="situation-card">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <h3>两队胜率（观众口径·非结论）</h3>
+    <!-- SITUATION:WIN:BEGIN -->
+    <div class="note">系统注入区。本页不自行改写胜率；规则层明确胜负弹幕仅 5 条（Falcons 4、FaZe 1），样本低于 10 条解释门槛。当前只显示“局中、非终局、结果待定”。</div>
+    <!-- SITUATION:WIN:END -->
+    <h3>队员评分（虎扑·实时）</h3>
+    <!-- SITUATION:RATINGS:BEGIN -->
+    <div class="note">系统注入区；本快照未写入或推断虎扑评分。</div>
+    <!-- SITUATION:RATINGS:END -->
+  </section>
+  <section class="card" id="direction-board">
+    <h2><span class="no">3</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <h3>正锚点 · 看好谁赢</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>对象</th>
+            <th>锚点内容与依据</th>
+            <th>出现时间 / 样本</th>
+            <th>验证状态 / 来源</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>FaZe</strong><br><span class="muted">焦点：frozen／寒王</span></td>
+            <td>17:15–17:25 观众集中刷“寒王”“FaZe up”“猎鹰回家”。寒王个人高光与 FaZe 暂时压制猎鹰被绑定到同一时段；“FaZe up”类支持 50 次、31 人，跨虎牙两房；“猎鹰回家／看衰”语义组 48 次、40 人。</td>
+            <td>17:15–17:25<br>群体支持峰集中在 17:15–17:16</td>
+            <td>待本局结果回填<br><span class="tag blue">本场弹幕</span><span class="tag">多房情绪</span></td>
+          </tr>
+          <tr>
+            <td><strong>Team Falcons</strong><br><span class="muted">焦点：NiKo 末段残局</span></td>
+            <td>17:38–17:45 出现“Niko 这残局处理”“这 Niko 来劲了”“猎鹰还是略胜一筹”等回暖评价，说明部分观众在末段重新偏向 Falcons；但同一时段也存在大量反讽与对喷。</td>
+            <td>17:38–17:45<br>明确胜负弹幕仅 4:1，总量 5 条</td>
+            <td>待本局结果回填<br><span class="tag blue">本场弹幕</span><span class="tag warn">低置信</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>负锚点 · 看衰谁输</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>对象</th>
+            <th>锚点内容与依据</th>
+            <th>出现时间 / 样本</th>
+            <th>验证状态 / 来源</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Team Falcons</strong><br><span class="muted">m0NESY／NiKo／Neityu</span></td>
+            <td>开局阶段反复质疑 m0NESY “空枪／状态差”、NiKo “中路没什么作用”；后段又集中质疑 Neityu 的残局与送分。语义从个人失误扩展到“猎鹰赢不了／回家”。</td>
+            <td>17:12–17:16；17:37–17:45<br>m0NESY 114 次 / 58 人；Neityu 38 次 / 24 人</td>
+            <td>待本局结果回填<br><span class="tag blue">本场弹幕</span><span class="tag">弹幕口径</span></td>
+          </tr>
+          <tr>
+            <td><strong>FaZe</strong><br><span class="muted">残局与收比赛能力</span></td>
+            <td>17:37 后多人集中指出 FaZe 连续输掉人数优势残局：“五打三又输了”“四打三又输了极品痱子”“Faze 残局输麻了”。该簇直接看衰 FaZe 把优势转成胜势，是末段最强反向信号。</td>
+            <td>17:37–17:45<br>多打少／人数优势语义组 49 次 / 24 人；残局 32 次 / 26 人</td>
+            <td>待本局结果回填<br><span class="tag blue">本场弹幕</span><span class="tag risk">末段集中</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>群体共识 · 分歧与样本量</h3>
+    <div class="phase" aria-label="规则层情绪时间线，时间为北京时间">
+      <div class="phase-item">
+        <span class="phase-time">17:12</span>
+        <span class="phase-tone">负面</span>
+        <span class="phase-count">1,275 条<br>正 21 / 负 32<br>净 −11</span>
+      </div>
+      <div class="phase-item">
+        <span class="phase-time">17:19</span>
+        <span class="phase-tone">正面</span>
+        <span class="phase-count">1,044 条<br>正 43 / 负 28<br>净 +15</span>
+      </div>
+      <div class="phase-item">
+        <span class="phase-time">17:25</span>
+        <span class="phase-tone">正面</span>
+        <span class="phase-count">1,383 条<br>正 56 / 负 46<br>净 +10</span>
+      </div>
+      <div class="phase-item">
+        <span class="phase-time">17:32</span>
+        <span class="phase-tone">正面</span>
+        <span class="phase-count">1,746 条<br>正 39 / 负 29<br>净 +10</span>
+      </div>
+      <div class="phase-item">
+        <span class="phase-time">17:39</span>
+        <span class="phase-tone">分歧</span>
+        <span class="phase-count">1,237 条<br>正 26 / 负 27<br>净 −1</span>
+      </div>
+    </div>
+    <div class="consensus-note">
+      <strong>群体共识：阶段性偏 FaZe，末段转为分歧。</strong>
+      规则层累计正 185／负 162，净 +23，情绪样本 347 条，占全量 6,685 条的 5.2%；只能代表可识别情绪子样本，不等于观众投票。17:19–17:38 连续正面，17:39 后净 −1、密度 1,237 条，说明 FaZe 残局失误与 Falcons 末段回暖同时出现。明确胜负声明仅 5 条、Falcons 占 4 条，低于 10 条解释门槛，不能据此改写为“Falcons 已赢”。
+    </div>
+    <details>
+      <summary>中性候选二次复核：40 组逐项判定，纳入 16 组 / 82 次，剔除 24 组 / 68 次</summary>
+      <p><strong>纳入真实情绪：</strong>FaZe 声援 5 组 / 42 次（faze up、FaZe up、faze clan、FAZE UP 等）；寒王声援 1 组 / 5 次；“Niko 要打进决赛”的催促 1 组 / 8 次；“Niko 你在干嘛／中路没作用”批评 3 组 / 11 次；Niko 历史能力夸赞 3 组 / 10 次；大表哥抢指挥／提行李 2 组 / 4 次；“这 faze 是真废” 1 组 / 2 次。</p>
+      <p><strong>剔除项：</strong>“看蒙古”“隔壁 Nuke”“绿龙”等跨场内容，纯点名“faze／Niko”，饭圈互喷，以及无法判定语气的指挥归因。剔除不等于否定比赛表现，只是不能作为 FaZe–Falcons G3 的方向证据。</p>
+      <span class="tag blue">模型二次判定</span><span class="tag">40/40 已复核</span><span class="tag">其余为噪声或跨场</span>
+    </details>
+    <h3>灰信号条件预测</h3>
+    <div class="signal">
+      <div class="signal-head">
+        <span class="signal-title">条件方向：当前不足以形成单边预测</span>
+        <span class="tag warn">推测·待验证</span>
+      </div>
+      <p>若“karrigan 故意给 FaZe 送分”的质疑后续被更多独立弹幕与盘口同步放大，则风险指向 Team Falcons 的执行可靠性；若“FaZe 不敢赢／保送 Falcons”集中扩散，则风险指向 FaZe 的收比赛能力。两条路径方向相反，彼此冲突，当前都不能兑现为“谁将获胜”。</p>
+      <p class="source-line"><span class="tag blue">本场弹幕</span>条件预测仅说明风险路径，不把灰色质疑换算成胜负概率；最终以本局结构与官方结果回填。</p>
+    </div>
+    <p class="source-line">
+      <strong>来源分层：</strong>本节核心均来自本场窗口弹幕；规则层叙事只作全房氛围主线，跨场 Spirit、FURIA、MONGOLZ、NAVI 等内容已剔除。无可用前局战绩或盘口补强；SOOP／Twitch／KICK 缺口保留。
+    </p>
+  </section>
+  <section class="card" id="gray-signals">
+    <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <p class="lead">规则层记录 6 条、6 个用户，分属虎牙两房，但每条均为单次表述，未达到多源共振。以下只作风险标注与盘口对照，不作假赛、剧本、操盘或故意输分结论。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>观众质疑，非结论</th>
+            <th>北京时间</th>
+            <th>指向对象</th>
+            <th>风险等级</th>
+            <th>条件含义</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>“卡里甘故意的”</td>
+            <td>17:19</td>
+            <td>karrigan／Team Falcons 执行</td>
+            <td><span class="tag warn">中</span></td>
+            <td>若被更多独立弹幕或盘口验证，偏 Falcons 送分风险；当前单条。</td>
+          </tr>
+          <tr>
+            <td>“卡瑞根所做的一切都是为了给 FaZe 送分”</td>
+            <td>17:20</td>
+            <td>karrigan／Team Falcons 执行</td>
+            <td><span class="tag warn">中</span></td>
+            <td>与上一条在 43 秒内相邻，形成同房短簇，但仍是观众质疑。</td>
+          </tr>
+          <tr>
+            <td>“🍤故意卖大表哥”</td>
+            <td>17:27</td>
+            <td>昵称对象不唯一，疑指 Falcons 队内配合</td>
+            <td><span class="tag">低</span></td>
+            <td>不能唯一确定发言所指选手；不作队内矛盾结论。</td>
+          </tr>
+          <tr>
+            <td>“都感觉是故意的，FaZe 不敢赢”</td>
+            <td>17:32</td>
+            <td>FaZe 收比赛能力</td>
+            <td><span class="tag warn">中</span></td>
+            <td>若后续与残局失误、盘口异动共振，风险指向 FaZe；当前为单条主观猜测。</td>
+          </tr>
+          <tr>
+            <td>“Falcons 把 Neityu 买了就让你们赢了”</td>
+            <td>17:32</td>
+            <td>Team Falcons 阵容决策／Neityu</td>
+            <td><span class="tag">低</span></td>
+            <td>更像嘲讽引援与表现，不足以认定阵容异常或故意输分。</td>
+          </tr>
+          <tr>
+            <td>“故意的”</td>
+            <td>17:38</td>
+            <td>对象不明确</td>
+            <td><span class="tag">低</span></td>
+            <td>缺少前后文，无法映射到具体队伍或回合，不计方向。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>补充公平性／现场影响质疑</h3>
+    <div class="sample">17:32“猎鹰保送复活赛”；17:39“导播收到任务保送猎鹰”；17:43“感觉保送猎鹰”；17:41–17:43 两房另有“作弊”表述。</div>
+    <p>这是一组对现场声量、导播或赛程公平性的观众质疑，风险指向 Team Falcons 是否受外部因素获利、FaZe 是否受现场影响；没有官方证据或多源结构验证，等级标为<strong>中</strong>，不得升级为操纵比赛或作弊结论。</p>
+    <div class="riskbox">
+      <strong>灰信号纪律：</strong>以上全部为“观众质疑，非结论”。当前证据形态是短时、零星、对象混合的聊天室叙事；没有同时满足“多独立用户＋两队指向一致＋盘口同向异动”的高等级信号。不得把“故意／保送／作弊”改写成事实，也不得据此单独下注。
+    </div>
+    <p class="source-line"><span class="tag blue">本场弹幕</span><span class="tag risk">风险标注·非证据</span>规则层灰信号 6 条；补充公平性质疑来自同一时间窗切片。最终验证待本局结算与盘口复核。</p>
+  </section>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
