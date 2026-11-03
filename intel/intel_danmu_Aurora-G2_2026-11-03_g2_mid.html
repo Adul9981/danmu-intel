@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Aurora vs G2 · G2 局中弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #e5e5ea;
+      --soft: #f7f7f9;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 38px 0 50px;
+    }
+    header { margin-bottom: 18px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 880px;
+      margin: 0;
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1.14;
+      letter-spacing: -.035em;
+    }
+    .subtitle {
+      margin: 12px 0 0;
+      color: var(--sub);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+    .status-banner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      margin: 22px 0 12px;
+      padding: 18px 20px;
+      border: 1px solid rgba(0, 113, 227, .24);
+      border-radius: 18px;
+      background: var(--accent-soft);
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(0, 113, 227, .12);
+    }
+    .status-banner strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.4;
+    }
+    .status-banner p {
+      margin: 4px 0 0;
+      color: #394457;
+      font-size: 13px;
+    }
+    .data-note {
+      padding: 10px 2px 2px;
+      color: var(--sub);
+      font-size: 12px;
+    }
+    .data-note strong { color: var(--text); }
+    main {
+      display: grid;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .card {
+      overflow: hidden;
+      padding: 24px;
+      border: 1px solid rgba(0, 0, 0, .045);
+      border-radius: 22px;
+      background: var(--card);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .035);
+    }
+    h2 {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 18px;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.015em;
+    }
+    .no {
+      display: inline-grid;
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 9px;
+      color: #fff;
+      background: var(--accent);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    p { margin: 7px 0; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      color: var(--sub);
+      background: #fafafa;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .chip,
+    .source {
+      display: inline-block;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 650;
+      line-height: 1.5;
+    }
+    .chip {
+      margin: 2px 3px 2px 0;
+      padding: 3px 8px;
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .source {
+      margin-top: 6px;
+      padding: 3px 8px;
+      color: var(--sub);
+      background: #f4f4f6;
+    }
+    .discipline,
+    .system-slot {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #45474b;
+      background: var(--soft);
+      font-size: 12px;
+    }
+    .system-slot {
+      border: 1px dashed #cfd1d6;
+      color: var(--sub);
+    }
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .direction-card {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .direction-card.wide { grid-column: 1 / -1; }
+    .direction-card h3 { color: var(--accent); }
+    .direction-card strong {
+      display: block;
+      margin: 5px 0 6px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .direction-card p {
+      margin: 6px 0;
+      color: #424245;
+      font-size: 13px;
+    }
+    .muted {
+      color: var(--sub);
+      font-size: 12px;
+    }
+    details {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    summary {
+      padding-top: 14px;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .audit-table {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .audit-table table { min-width: 650px; }
+    .risk {
+      padding: 16px;
+      border-radius: 14px;
+      background: #f8f9fb;
+    }
+    .risk strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+    .risk-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .risk-item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+    .risk-item strong { font-size: 14px; }
+    footer {
+      padding: 24px 4px 0;
+      color: var(--sub);
+      font-size: 11px;
+      text-align: center;
+    }
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 1080px);
+        padding-top: 24px;
+      }
+      .status-banner {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .status-dot { margin: 0; }
+      .card { padding: 18px; border-radius: 18px; }
+      h2 { align-items: flex-start; font-size: 18px; }
+      .direction-grid { grid-template-columns: 1fr; }
+      .direction-card.wide { grid-column: auto; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="match_situation.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">比赛局势</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Aurora-G2 2026-11-03 g2 mid</b></div>
+  <div class="page">
+    <header>
+      <p class="eyebrow">CS2 · IEM 北京 B 组 · G2｜MID-GAME</p>
+      <h1>Aurora vs G2<br>G2 局中弹幕情报快照</h1>
+      <p class="subtitle">
+        2026-11-03 · 数据窗口 11:17–11:33（北京；03:17–03:33 UTC）·
+        弹幕采集截止：11:33（北京）· slug: cs2-hupu-1441778164565004811
+      </p>
+      <div class="status-banner" role="status" aria-label="节点状态">
+        <i class="status-dot" aria-hidden="true"></i>
+        <div>
+          <strong>局中 · 非终局，结果待定</strong>
+          <p>
+            进度按弹幕口径：可确认第 2 小局仍在推进，窗口内出现小镇攻防与残局翻盘讨论；
+            但没有可唯一归因于本场的完整回合比分，因此不还原比分、不判断胜负。后续必须由系统或官方数据回填。
+          </p>
+        </div>
+      </div>
+      <p class="data-note">
+        <strong>数据量：</strong>1,240 条弹幕 / 594 名活跃用户 / 75.7 条每分钟。
+        <strong>实际来源：</strong>虎牙 CSBOY 官方房 921 条、CSBOY-Mo 319 条。
+        <strong>完整性：</strong>按当前 CS2 默认采集集应有 3 路，实际 2 路；BLAST 官方房缺失，计 1 路缺口。
+        综合房混有 Liquid–PARIVISION 等其他场次讨论，只有 Mo 房可作为 Aurora–G2 的主要连续语境，所有跨房“共振”须降级读取。
+      </p>
+    </header>
+    <main>
+      <section class="card" id="bp">
+        <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>检查项</th>
+                <th>当前情报</th>
+                <th>证据、来源与验证</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>当前地图 / 图池</td>
+                <td>
+                  弹幕反复出现“小镇”，主口径指向 <strong>Inferno / 小镇</strong>，但当前切片没有官方 veto 或地图确认画面。
+                  <br><span class="chip">弹幕口径·待官方</span>
+                  <span class="chip">单源待验证</span>
+                </td>
+                <td>
+                  11:19:10“k3小镇准备享受”、11:26:20“一直打b小镇纯t图行吗”来自 Mo 房；
+                  11:24:06“小镇这个地方太邪乎”来自综合房，存在混场风险。
+                  <br><span class="source">本场弹幕 · 11:19–11:26（北京）· 3 条 / 3 人 / 2 房，仅 2 条 Mo 房可作主证据</span>
+                </td>
+              </tr>
+              <tr>
+                <td>英雄与选手映射</td>
+                <td>
+                  CS2 不适用“英雄 + 选手”映射。弹幕提到 r1nkle、Niko、NertZ、K3 等称呼，
+                  但未出现可完整核验的双方五人名单与角色位置；<strong>阵容样本不足</strong>，不作首发归属推断。
+                  <br><span class="chip">样本不足</span>
+                  <span class="chip">弹幕口径·待官方</span>
+                </td>
+                <td>
+                  11:18:16 质疑 r1nkle；11:19:55 讨论 Niko 的防守指挥；11:29:23 称赞 NertZ。
+                  这些是表现与角色讨论，不足以确认完整阵容。
+                  <br><span class="source">本场弹幕 · 11:18–11:29（北京）· 核心来自 Mo 房 · 身份归属待官方</span>
+                </td>
+              </tr>
+              <tr>
+                <td>BP 后地图判断</td>
+                <td>
+                  G2 被描述为“唯一有点把握的图”，同时 Aurora 被连续评价为“这图贼菜”“根本不会这图”。
+                  方向是 <strong>G2 相对占优</strong>，但只有单房观众判断，没有地图胜率或比分支撑。
+                  <br><span class="chip">弱正锚</span>
+                  <span class="chip">单源待验证</span>
+                </td>
+                <td>
+                  11:19:35“这是 g2 唯一有点把握的图了 再输就滚吧”；
+                  11:19:44“阿罗拉这图贼菜”；11:25:32“我感觉阿罗拉根本不会这图”。
+                  <br><span class="source">本场弹幕 · 模型二次判定纳入 · 11:19–11:25（北京）· 3 条 / 3 人 / 同一 Mo 房</span>
+                </td>
+              </tr>
+              <tr>
+                <td>BP 后战绩情报</td>
+                <td>
+                  <strong>无战绩情报提及。</strong>
+                  窗口内没有出现可核验的“队伍 × 地图”历史胜负、胜率、对手强度或日期；
+                  “昨天”“Nuke”等零散说法没有形成可验证战绩。
+                  <br><span class="chip">样本不足</span>
+                </td>
+                <td>
+                  未发现满足地图战绩槽位的弹幕；不以旧阵容记忆或主播转述替代历史战绩。
+                  <br><span class="source">本场弹幕 · 11:17–11:33（北京）· 战绩词形复核</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="discipline">
+          纪律：地图、阵容与 BP 评价均保持“弹幕讨论·非确认”。弹幕提及不等于实际选人；官方地图 veto 与首发名单仍为待补缺口。
+        </div>
+      </section>
+      <section class="card" id="situation-card">
+        <h2><span class="no">2</span>比赛局势</h2>
+        <div class="system-slot">
+          本段由系统注入两队胜率与虎扑评分，AI 不在此段生成分析。
+          <span class="source">系统注入·待回填</span>
+        </div>
+      </section>
+      <section class="card" id="direction">
+        <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="direction-grid">
+          <article class="direction-card">
+            <h3>正锚点 · 看好谁赢</h3>
+            <strong>G2｜残局翻盘带来低置信正锚</strong>
+            <p>
+              G2 在窗口内被多次描述为完成翻盘，随后出现“这是 G2 吗”“今天 G2 不一样了”等正惊讶。
+              这只能说明观众对 G2 当前回合势头的评价转暖，不能证明领先或已赢下本局。
+            </p>
+            <p class="muted">对象：G2；时间：11:21–11:29（北京）；验证：待本局结果与回放回填。</p>
+            <span class="source">本场弹幕 · 4 条 / 3 人 · 单源待验证 · 3 条来自 Mo 房</span>
+          </article>
+          <article class="direction-card">
+            <h3>负锚点 · 看衰谁输</h3>
+            <strong>Aurora｜当前地图能力被看衰</strong>
+            <p>
+              三条直接评价集中指向 Aurora 不熟悉当前地图、图内表现差，方向明确看衰 Aurora；
+              但没有比分、经济、选边或官方地图数据，无法把情绪升级为赛果判断。
+            </p>
+            <p class="muted">对象：Aurora；时间：11:19、11:25、11:33（北京）；验证：待本局结果回填。</p>
+            <span class="source">本场弹幕 · 模型二次判定纳入 · 3 条 / 3 人 / Mo 房单源</span>
+          </article>
+          <article class="direction-card wide">
+            <h3>竞争性负锚 · G2 自身仍有明显批评</h3>
+            <strong>G2｜狙击与重组压力削弱正锚置信</strong>
+            <p>
+              G2 同窗口有 9 条 / 9 人的明确负评，集中在狙击手、人员调整、防守指挥与“又让人失望”的预期；
+              数量高于 G2 正向的 4 条。因而更准确的表述是“Aurora 本图偏负，G2 相对占优”，
+              而不是“G2 已形成稳定胜势”。
+            </p>
+            <span class="source">本场弹幕 · 模型二次判定纳入 · 11:18–11:31（北京）· 9 条 / 9 人 / 均来自 Mo 房</span>
+          </article>
+          <article class="direction-card wide">
+            <h3>群体共识 · 分歧与样本量</h3>
+            <strong>Aurora 偏负、G2 相对弱正；整体低置信</strong>
+            <p>
+              规则层叙事总样本为正向 33、负向 39、净 −6，整体语气“负面”；
+              分窗走势为 11:17 分歧（385 条，正 11 / 负 11）、11:23 转正（380 条，正 8 / 负 6）、
+              11:28 转负（475 条，正 14 / 负 22）。但这个总量混入 Liquid–PARIVISION 等其他场次，
+              不能直接当作本场共识。
+            </p>
+            <p>
+              二次过滤后可归入本场方向判断的样本为 <strong>16 条 / 15 人</strong>：
+              G2 正向 4 条 / 3 人、G2 负向 9 条 / 9 人、Aurora 负向 3 条 / 3 人。
+              明牌规模为 G2 21 条 / 19 人、Aurora 7 条 / 7 人，但其中多条只是历史比较或身份玩梗。
+            </p>
+            <p>
+              分歧一：11:21:15 出现“G2 被纯 e 翻”，11:21:38 又出现“G2 把对面翻了”，翻盘主语冲突，
+              不能合并成单一利好。分歧二：G2 “唯一有把握”与同窗 9 条负评并存。
+              分歧三：规则层偏正总量受其他场次污染，本场核心证据几乎集中在单一 Mo 房。
+            </p>
+            <span class="source">本场弹幕 · narrative 主线 + Aurora/G2 定向过滤 · 11:17–11:33（北京）· 无独立多房共振</span>
+          </article>
+          <article class="direction-card wide">
+            <h3>灰信号条件预测</h3>
+            <strong>今日无有效灰信号，不生成指向性条件预测</strong>
+            <p>
+              当前没有能唯一归因到 Aurora 或 G2 的假赛、剧本、故意送分或卡盘质疑；
+              因而无法写出“若兑现则指向哪边”。赛事层面的“黑幕”泛疑与孤立“故意的”见第 4 段审计，
+              均不升级为队伍方向信号。
+            </p>
+            <span class="source">本场弹幕 · 灰信号候选逐条复核 · 11:17–11:33（北京）· 观众质疑，非结论</span>
+          </article>
+        </div>
+        <details>
+          <summary>中性弹幕二次判定 · 40 条候选逐条归类</summary>
+          <div class="table-wrap audit-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>北京时间</th>
+                  <th>规则层候选</th>
+                  <th>二次判定</th>
+                  <th>处理结论</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>11:31</td><td>这液体打的跟LVG似的</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:25</td><td>液体上哪儿找来这么多糖宝的？</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:25</td><td>液体就应该和天禄掰头一下，看看谁才是干拉小子</td><td>Liquid 负评/调侃</td><td>其他场次，排除</td></tr>
+                <tr><td>11:33</td><td>niko脑子有问题</td><td>模型二次判定：G2 负向</td><td>纳入 G2 竞争性负锚；队伍归属按弹幕口径</td></tr>
+                <tr><td>11:18</td><td>g2怎么不把k1lm提主队 这r1nkle烂完了</td><td>模型二次判定：G2 负向</td><td>纳入狙击/人员负评</td></tr>
+                <tr><td>11:19</td><td>G2真是区吧</td><td>模型二次判定：G2 负向</td><td>纳入 G2 负评</td></tr>
+                <tr><td>11:19</td><td>这液体真的一点脑子不要啊</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:19</td><td>液体没了总监什么都不是</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:19</td><td>g2真的是踢人踢到了大动脉</td><td>模型二次判定：G2 负向</td><td>纳入人员/管理负评</td></tr>
+                <tr><td>11:19</td><td>这是g2唯一有点把握的图了 再输就滚吧</td><td>G2 地图能力弱正 + 压力负向</td><td>仅作 BP 语境，不单独计正锚</td></tr>
+                <tr><td>11:20</td><td>液体遇到玩脑子的队伍太难打</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:21</td><td>G2包浆还是打的不太舒服的</td><td>模型二次判定：G2 负向</td><td>纳入 G2 负评</td></tr>
+                <tr><td>11:21</td><td>G2现在真阿拉丁我</td><td>模型二次判定：G2 弱正</td><td>作为正锚次级证据，不单独升级</td></tr>
+                <tr><td>11:22</td><td>液体从哪儿找来这么多糖宝的？</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:24</td><td>上帝笑液体太蠢了</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:26</td><td>g2那个e翻太狠了。</td><td>模型二次判定：G2 正向</td><td>纳入 G2 正锚</td></tr>
+                <tr><td>11:27</td><td>液体还真打不过</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:27</td><td>液体没那么钢的刚枪队</td><td>Liquid 战术负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:33</td><td>液体就是肌肉队对枪补枪就完了别搞那么复杂</td><td>Liquid 战术批评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:17</td><td>主播主播为啥没有绿龙</td><td>场次询问</td><td>无情绪，排除</td></tr>
+                <tr><td>11:17</td><td>为什么aurora打g2不是主舞台</td><td>赛程/舞台疑问</td><td>不判方向</td></tr>
+                <tr><td>11:18</td><td>我是niko</td><td>身份玩梗</td><td>无比赛情绪，排除</td></tr>
+                <tr><td>11:18</td><td>这液体智力有问题吧</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:18</td><td>液体风水有问题</td><td>Liquid 负评/玩梗</td><td>其他场次，排除</td></tr>
+                <tr><td>11:19</td><td>液体要被上帝玩死，</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:19</td><td>g2踢到大动脉了</td><td>模型二次判定：G2 负向</td><td>纳入人员/管理负评</td></tr>
+                <tr><td>11:19</td><td>这防守niko指挥的</td><td>模型二次判定：G2 负向</td><td>纳入防守指挥负评</td></tr>
+                <tr><td>11:20</td><td>这液体昨天和今天两个队伍啊</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:20</td><td>感觉液体要被玩死了</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:20</td><td>问题来了，土耳其人是怎么被液体爆打的</td><td>历史比较，指向不清</td><td>不进入本局方向</td></tr>
+                <tr><td>11:21</td><td>g2被纯e翻了</td><td>模型二次判定：G2 负向</td><td>与 11:21:38 正向翻盘口径冲突，列为分歧</td></tr>
+                <tr><td>11:21</td><td>液体要赢啊[拥抱]</td><td>Liquid 正向</td><td>其他场次，排除</td></tr>
+                <tr><td>11:21</td><td>液体被这种不拼枪队心态搞炸了</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:21</td><td>看g2把 他们看得我好难受</td><td>模型二次判定：G2 负向</td><td>纳入 G2 负评</td></tr>
+                <tr><td>11:21</td><td>g2把对面翻了</td><td>模型二次判定：G2 正向</td><td>纳入 G2 正锚</td></tr>
+                <tr><td>11:21</td><td>液体要钢枪刷手感</td><td>Liquid 战术建议</td><td>其他场次，排除</td></tr>
+                <tr><td>11:22</td><td>液体估计打不过天禄</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:22</td><td>为什么液体你也舔啊</td><td>Liquid 负评</td><td>其他场次，排除</td></tr>
+                <tr><td>11:22</td><td>G2要找机会和天禄打一打，不然一直输啊</td><td>模型二次判定：G2 负向/讽刺</td><td>纳入 G2 负评</td></tr>
+                <tr><td>11:22</td><td>液体都是人才</td><td>Liquid 反讽负评</td><td>其他场次，排除</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+      <section class="card" id="gray">
+        <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="risk">
+          <strong>当前样本：今日无有效灰信号</strong>
+          <p>
+            没有可唯一指向 Aurora 或 G2 的假赛、剧本、故意送分或卡盘质疑，因此本场不生成方向性灰信号预测。
+            以下候选均只作风险审计，观众质疑，非结论。
+          </p>
+        </div>
+        <div class="risk-list">
+          <div class="risk-item">
+            <strong>赛事流程泛疑 · 风险低</strong>
+            <p>“这届 IEM 多少次黑幕了”指向赛事流程，未点名 Aurora、G2 或具体回合；不能映射到任一侧。</p>
+            <p class="muted">指向对象：IEM 赛事流程；风险等级：低；条件方向：无法唯一判断。观众质疑，非结论。</p>
+            <span class="source">本场弹幕 · 11:24:56（北京）· 综合房单条 · 不升级</span>
+          </div>
+          <div class="risk-item">
+            <strong>“故意的” · 指向不明</strong>
+            <p>该句附近同时出现拆包、捡枪与 K3 指挥讨论，但没有明确选手、队伍或动作，不能据此认定故意送分。</p>
+            <p class="muted">指向对象：不明确；风险等级：低；条件方向：不生成。观众质疑，非结论。</p>
+            <span class="source">本场弹幕 · 11:29:07（北京）· Mo 房单条 · 上下文证据不足</span>
+          </div>
+          <div class="risk-item">
+            <strong>“液体不如把呼吸买了” · 非本场</strong>
+            <p>该句明确指向 Liquid，属于其他场次阵容调侃，不纳入 Aurora–G2 灰信号。</p>
+            <p class="muted">指向对象：Liquid；风险等级：不适用；条件方向：不生成。观众质疑，非结论。</p>
+            <span class="source">本场切片 · 11:32:51（北京）· 综合房 · 跨场排除</span>
+          </div>
+        </div>
+        <div class="discipline">
+          风险等级口径：低为零星、无对象或无动作的泛疑；中为集中质疑且有明确对象；高为多源、时间集中且与盘口/结构信号重合。
+          当前最高仅“低”，不构成假赛、剧本或操盘证据，也不指向任一方胜负。
+        </div>
+      </section>
+    </main>
+    <footer>
+      G2 · 局中·非终局，结果待定 · 弹幕采集截止 11:33（北京）<br>
+      核心输入：runtime/vps_intel/cs2-hupu-1441778164565004811_g2_mid_intel.json ·
+      data/intel_slices/cs2-hupu-1441778164565004811_g2_mid.jsonl<br>
+      页面时间均按北京时间（UTC+8）展示；核心情报只取本场弹幕，历史比较与推测均显式降级。
+    </footer>
+  </div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
