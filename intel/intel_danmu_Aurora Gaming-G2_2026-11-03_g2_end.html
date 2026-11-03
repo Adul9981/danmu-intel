@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>局中弹幕情报快照 · Aurora Gaming vs G2 · G2｜局末/局间</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --ink:#1d1d1f;
+    --sub:#6e6e73;
+    --line:#e5e5ea;
+    --soft:#f8f8fa;
+    --accent:#0071e3;
+    --accent-soft:#eef6ff;
+    --warn:#8a5a00;
+    --warn-soft:#fff8e8;
+    --risk:#a12a2a;
+    --risk-soft:#fff1f1;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:28px 14px 48px;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+  header{
+    padding:25px 27px 22px;
+    border:1px solid rgba(0,0,0,.06);
+    border-radius:22px;
+    background:#fff;
+    box-shadow:0 8px 26px rgba(0,0,0,.04);
+  }
+  .badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 10px;
+    border:1px solid rgba(0,113,227,.15);
+    border-radius:999px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:700;
+  }
+  .badge.pending{
+    border-color:var(--line);
+    background:#fff;
+    color:var(--sub);
+  }
+  .badge.live{
+    border-color:#efdfb4;
+    background:var(--warn-soft);
+    color:var(--warn);
+  }
+  h1{
+    margin:0 0 7px;
+    font-size:clamp(23px,4vw,29px);
+    line-height:1.24;
+    font-weight:800;
+    letter-spacing:-.025em;
+  }
+  .subtitle{margin:0;color:var(--sub);font-size:13.5px}
+  .status{
+    margin-top:16px;
+    padding:13px 15px;
+    border:1px solid #efdfb4;
+    border-radius:13px;
+    background:#fffaf0;
+    font-size:14px;
+    font-weight:720;
+    color:#654500;
+  }
+  .status span{display:block;margin-top:3px;color:#7b6540;font-size:12px;font-weight:520}
+  .meta{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:9px;
+    margin-top:13px;
+  }
+  .meta div{
+    min-width:0;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:11px;
+    background:#fbfbfd;
+  }
+  .meta span{display:block;color:var(--sub);font-size:10.5px;font-weight:700}
+  .meta b{display:block;margin-top:2px;font-size:12.5px;font-weight:650;overflow-wrap:anywhere}
+  section.card{
+    margin-top:14px;
+    padding:22px 24px;
+    border:1px solid rgba(0,0,0,.055);
+    border-radius:var(--radius);
+    background:var(--card);
+    box-shadow:0 5px 18px rgba(0,0,0,.035);
+  }
+  h2{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin:0 0 16px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--line);
+    font-size:18px;
+    line-height:1.35;
+    letter-spacing:-.015em;
+  }
+  h2 .no{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 27px;
+    height:27px;
+    border-radius:8px;
+    background:var(--accent);
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+  }
+  h3{margin:0 0 7px;font-size:14px;line-height:1.4}
+  p{margin:0 0 9px;font-size:13.5px}
+  .lead{color:var(--sub);font-size:12.5px}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .box{
+    min-width:0;
+    padding:14px 15px;
+    border:1px solid #ededf0;
+    border-radius:13px;
+    background:var(--soft);
+  }
+  .box.blue{border-color:#d7e9fb;background:#f8fbff}
+  .box.warn{border-color:#f0dfb8;background:#fffbf3}
+  .box.risk{border-color:#f0d0d0;background:#fffafa}
+  .empty{
+    padding:14px;
+    margin:7px 0 10px;
+    border:1px dashed #cfcfd4;
+    border-radius:12px;
+    background:#fafafc;
+    color:var(--sub);
+    font-size:13px;
+    text-align:center;
+  }
+  .empty b{display:block;margin-bottom:3px;color:var(--ink);font-size:15px}
+  .tag{
+    display:inline-block;
+    margin:4px 5px 0 0;
+    padding:2px 8px;
+    border-radius:999px;
+    background:#efeff2;
+    color:#5c5c62;
+    font-size:10.5px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .tag.source{background:var(--accent-soft);color:var(--accent)}
+  .tag.pending{background:var(--warn-soft);color:var(--warn)}
+  .tag.risk{background:var(--risk-soft);color:var(--risk)}
+  .tag.good{background:#eef8f0;color:#2f6e3b}
+  .quote{
+    margin:7px 0;
+    padding-left:10px;
+    border-left:2px solid #cbdff4;
+    color:#3e4b5c;
+    font-size:12.5px;
+  }
+  .system-slot{
+    padding:17px;
+    border:1px solid #dce8f6;
+    border-radius:13px;
+    background:#f8fbff;
+  }
+  .system-label{
+    display:inline-block;
+    margin-bottom:10px;
+    color:var(--accent);
+    font-size:10.5px;
+    font-weight:800;
+    letter-spacing:.08em;
+  }
+  .rate{
+    display:grid;
+    grid-template-columns:82px 1fr 50px;
+    gap:10px;
+    align-items:center;
+    margin:7px 0;
+    font-size:12.5px;
+  }
+  .bar{height:16px;border-radius:8px;background:#e8edf4;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:8px}
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
+    margin:11px 0;
+  }
+  .stats div{
+    padding:9px 10px;
+    border:1px solid #e8edf4;
+    border-radius:10px;
+    background:#fff;
+  }
+  .stats b{display:block;font-size:16px;line-height:1.25}
+  .stats span{display:block;margin-top:2px;color:var(--sub);font-size:10.5px}
+  details{
+    margin-top:12px;
+    padding:11px 13px;
+    border:1px dashed #d7d7dd;
+    border-radius:12px;
+    background:#fcfcfd;
+  }
+  summary{cursor:pointer;color:#44444a;font-size:12.5px;font-weight:700}
+  table{
+    width:100%;
+    margin-top:9px;
+    border-collapse:collapse;
+    font-size:11.5px;
+  }
+  th{
+    padding:7px 8px;
+    border-bottom:1px solid var(--line);
+    background:var(--soft);
+    color:var(--sub);
+    text-align:left;
+    font-size:10.5px;
+    position:sticky;
+    top:0;
+  }
+  td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .risk-empty{
+    padding:18px 16px;
+    border:1px solid #ececf0;
+    border-radius:13px;
+    background:var(--soft);
+  }
+  .risk-level{
+    display:inline-flex;
+    padding:3px 9px;
+    border-radius:999px;
+    background:var(--warn-soft);
+    color:var(--warn);
+    font-size:11px;
+    font-weight:800;
+  }
+  .discipline{
+    margin-top:11px;
+    padding:11px 13px;
+    border-radius:11px;
+    background:#f4f4f6;
+    color:var(--sub);
+    font-size:12px;
+  }
+  footer{
+    padding:18px 8px 0;
+    color:var(--sub);
+    text-align:center;
+    font-size:11px;
+    line-height:1.75;
+  }
+  @media(max-width:700px){
+    body{padding:16px 10px 38px}
+    header{padding:20px 17px;border-radius:19px}
+    section.card{padding:18px 16px}
+    .meta,.grid,.stats{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    table{display:block;overflow-x:auto}
+    th{position:static}
+  }
+</style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="match_situation.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">比赛局势</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Aurora Gaming-G2 2026-11-03 g2 end</b></div>
+<main class="wrap">
+  <header>
+    <div class="badges">
+      <span class="badge live">局中 · 非终局，结果待定</span>
+      <span class="badge">G2｜局末/局间 · GAME-REVIEW</span>
+      <span class="badge pending">CS2 · IEM Beijing Group B · BO3</span>
+      <span class="badge pending">slug: cs2-aur1-g2-2026-11-03</span>
+    </div>
+    <h1>Aurora Gaming vs G2 · 第 2 小局弹幕情报快照</h1>
+    <p class="subtitle">聚焦 G2 本小局的 BP/地图、方向性共识与灰信号；所有竞技判断均为弹幕口径，不替代官方地图、阵容、比分与系列赛结论。</p>
+    <div class="status">
+      第 2 小局已结束；Polymarket「Game 2 Winner」市场确认 G2 获胜，官方逐图比分与完整阵容待核对。
+      <span>局中·非终局，结果待定：本页只确认小局赢家方向，不把当前节点写成整场终局。弹幕进度显示 12:09（北京）起出现“图三见”“两把 e 翻……拿下了”。</span>
+    </div>
+    <div class="meta">
+      <div><span>节点时刻</span><b>2026-11-03 12:09（北京；04:09 UTC）</b></div>
+      <div><span>G2 结论有效窗</span><b>11:17–12:11（北京；03:17–04:11 UTC）</b></div>
+      <div><span>弹幕采集截止</span><b>12:14（北京；04:14 UTC）</b></div>
+      <div><span>原始切片</span><b>6,757 条 · 2,281 人 · 119.6 条/分钟</b></div>
+      <div><span>本场对象层</span><b>324 条 · 214 人 · 2 路</b></div>
+      <div><span>实际数据源</span><b>虎牙 CSBOY 官方 4,923 条<br>虎牙 CSBOY-MO 1,834 条</b></div>
+      <div><span>覆盖缺口</span><b>SOOP / Twitch 未进入本切片</b></div>
+      <div><span>串场处理</span><b>Liquid–PARIVISION、天禄、NAVI 等讨论已剔除</b></div>
+      <div><span>规则层状态</span><b>ready · G2 小局赢家已结算</b></div>
+    </div>
+  </header>
+  <section class="card" aria-label="BP 锚点与选人情报">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <div class="grid">
+      <article class="box">
+        <h3>当前地图：Inferno / 炼狱小镇（弹幕口径·待官方）</h3>
+        <p>11:18–11:19（北京）连续出现“k3 小镇准备享受”“这是 G2 唯一有点把握的图”“阿罗拉这图贼菜”；局末 12:09（北京）又出现“炼狱小镇今天出场率这么高”“谁选的小镇”。地图指向一致，但本切片没有官方 veto 顺序、选图方或选边信息。</p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag pending">弹幕口径·待官方</span>
+          <span class="tag">地图指向：较强</span>
+        </div>
+      </article>
+      <article class="box">
+        <h3>阵容：完整五人名单样本不足（弹幕口径·待官方）</h3>
+        <p>CS2 不适用“英雄＋选手”映射。G2 侧可明确识别 r1nkle 的狙击位表现讨论；“重神/重 GOD”等称谓未在本切片完成官方 ID 映射。Aurora 侧 k3 被反复绑定到进攻与指挥，但身份/角色仍待官方名单确认。Niko 相关讨论多为身份玩梗或跨时期记忆，未补写进当前阵容。</p>
+        <div class="empty">
+          <b>完整阵容：样本不足</b>
+          本页不把昵称、旧阵容或观众询问拼成当前首发
+        </div>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag pending">阵容待官方</span>
+          <span class="tag risk">选手映射不补全</span>
+        </div>
+      </article>
+    </div>
+    <div class="box blue" style="margin-top:10px">
+      <h3>BP 后战绩情报</h3>
+      <p><strong>无战绩情报提及。</strong> 本窗没有给出“G2 或 Aurora × Inferno、日期、对手、比分、胜率”的可核验记录。“唯一有点把握的图”“阿罗拉这图贼菜”属于当前观众评价，不是历史战绩。</p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag pending">有效战绩样本 0</span>
+        <span class="tag">单源待验证</span>
+      </div>
+    </div>
+  </section>
+  <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">本局结果（官方结算·已确认）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">Aurora Gaming</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:0%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">0%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">G2</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:100%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">100%</span></div><div class="note">本局官方结算：<b>G2 胜</b>（Polymarket Game N Winner 结算确认，结果展示：胜方 100% / 负方 0%）。</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div class="note">暂未获取到虎扑选手评分（本场/本局评分尚未生成，或数据源缺失）。</div><!-- SITUATION:RATINGS:END --></div>
+  <section class="card" aria-label="方向性情报板">
+    <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+    <div class="box blue">
+      <h3>叙事主线：先在地图与狙击位上分歧，随后被两次 e 翻推向 G2，局末重新转向阵容质疑</h3>
+      <p>规则层全窗为正面 191、负面 172、净值 +19；但这是两路综合房的原始情绪，混有 Liquid–PARIVISION 等并行场次，不能直接判给 Aurora 或 G2。五段走势为：11:17 +2 → 11:28 −9 → 11:40 +26 → 11:51 −10 → 12:02 +10。事件层面，11:48（北京）密度峰值 273 条、规则层标为分歧；12:11（北京）峰值 310 条发生在 G2 小局结束后的采访/换场窗口，仅作叙事噪声锚点，不用于确认小局结果。</p>
+      <div class="stats">
+        <div><b>324 / 214</b><span>本场对象层条数 / 人数</span></div>
+        <div><b>191 / 172</b><span>规则层正 / 负</span></div>
+        <div><b>+19</b><span>规则层净情绪</span></div>
+        <div><b>2 路</b><span>实际覆盖房间</span></div>
+      </div>
+      <p class="lead">对象层用 G2/Aurora、土耳其、k3、r1nkle、Inferno/小镇等词做初筛；重复刷屏、反问、跨场句仍需降权，不能把 324 条全部当作 324 个独立判断。</p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag source">规则层 narrative</span>
+        <span class="tag pending">整房口径含串场</span>
+        <span class="tag pending">不作为终局结论</span>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:11px">
+      <article class="box">
+        <h3>正锚点 · G2 在当前地图的相对图池优势</h3>
+        <p><strong>对象：</strong>G2 × Inferno（弹幕口径·待官方）。<strong>依据：</strong>11:19:35（北京）“这是 G2 唯一有点把握的图”，11:19:44（北京）同时称 Aurora“这图贼菜”。<strong>时间：</strong>11:19（北京）。<strong>验证：</strong>Polymarket 已结算 G2 赢下 Game 2，方向应验；官方地图与逐图比分仍待核对。</p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag good">Polymarket 方向应验</span>
+          <span class="tag pending">单房弱锚</span>
+          <span class="tag pending">官方待核</span>
+        </div>
+      </article>
+      <article class="box">
+        <h3>正锚点 · 两次经济局翻盘，把“G2 不稳”转成短期胜势</h3>
+        <p><strong>对象：</strong>G2 的短时反扑与残局转换。<strong>依据：</strong>11:20:15（北京，官方房）出现“G2 把对面翻了”；11:26:47（北京，MO 房）称“那个 e 翻太狠”；12:09:45（北京）收束为“两把 e 翻太神了，拿下了”。过程声量跨两路。<strong>验证：</strong>小局结果已由 Polymarket 指为 G2，官方回合细节待回填。</p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag good">跨两路过程共振</span>
+          <span class="tag good">Polymarket 结果同向</span>
+          <span class="tag pending">官方回合待核</span>
+        </div>
+      </article>
+      <article class="box warn">
+        <h3>负锚点 · G2 狙击位与执行风险被高频看衰</h3>
+        <p><strong>对象：</strong>G2 狙击位/执行，不把情绪直接认定为选手真实水平。<strong>依据：</strong>11:18–12:09（北京）多条讨论点向 r1nkle、G2 的 AWP 空枪与“这把 4 打 5”；一次定向复核得到 45 条 / 34 人 / 两路，重复句与同义刷屏未升级为独立判断。<strong>验证：</strong>该负锚未能阻止 G2 赢下小局，属于“方向被结果反驳/过程风险仍在”，不是终局标签。</p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag risk">负向簇：45 条 / 34 人</span>
+          <span class="tag good">结果侧未兑现</span>
+          <span class="tag pending">选手数据缺口</span>
+        </div>
+      </article>
+      <article class="box warn">
+        <h3>负锚点 · Aurora 的 Inferno 适配与 k3 进攻被看衰</h3>
+        <p><strong>对象：</strong>Aurora × Inferno（弹幕口径·待官方），以及 k3 被观众绑定的进攻/指挥问题。<strong>依据：</strong>11:19–12:09（北京）出现“阿罗拉这图贼菜”“根本不会这图”“k3 这小镇玩不明白”等表述；定向复核得到 22 条 / 21 人 / 两路，主声量集中在 MO 房。<strong>验证：</strong>Polymarket 显示 G2 赢下小局，方向同向；官方地图、教练职责与回合数据仍待核对。</p>
+        <div class="tags">
+          <span class="tag source">本场弹幕</span>
+          <span class="tag risk">负向簇：22 条 / 21 人</span>
+          <span class="tag good">Polymarket 方向同向</span>
+          <span class="tag pending">身份/职责待官方</span>
+        </div>
+      </article>
+    </div>
+    <div class="box" style="margin-top:10px">
+      <h3>群体共识：弱偏 G2 的图池与残局势能，但不是干净的单边共识</h3>
+      <p><strong>样本量：</strong>本场对象层 324 条 / 214 人 / 2 路；核心可读方向簇为 G2 负向 45 条 / 34 人、Aurora 负向 22 条 / 21 人、G2 正向过程/期待 11 条 / 8 人。簇之间有重叠，不能相加成胜负票。<strong>分歧：</strong>“G2 唯一有把握的图、e 翻能拿下”对“狙击位拖累、只能 4 打 5”；Aurora 侧则同时有“这图贼菜/不会打”与少量“A 点能得分/别低估”的过程评价。</p>
+      <p><strong>综合：</strong>地图正锚、两次 e 翻的过程正锚与 Aurora 适配负锚共同指向 G2；G2 人员执行负锚仍很响。弹幕口径给出“G2 本图相对占优、但过程质量不稳定”的共识，而非“G2 碾压”。</p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag source">规则层 narrative</span>
+        <span class="tag good">G2 方向占优</span>
+        <span class="tag pending">分歧未消失</span>
+        <span class="tag pending">重复刷屏已降权</span>
+      </div>
+    </div>
+    <div class="box warn" style="margin-top:10px">
+      <h3>灰信号条件预测：若“G2 放分”质疑成立，风险指向 G2</h3>
+      <p>12:03–12:09（北京）出现“准备放分了 G2”“9 分够了马上送”“分够了就不放了”“为什么 9 分一到就不放分了”等句，构成一个低风险、单房、4 条 / 4 人的条件链。若质疑成立，方向指向 G2 的让分/公平性风险；但 G2 已被 Polymarket 结算为 Game 2 胜者，当前结果不支持“因此输掉小局”的推断。本轮只能写作观众质疑，非结论。</p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag risk">观众质疑，非结论</span>
+        <span class="tag pending">低风险 · 单房</span>
+        <span class="tag good">当前未兑现为 G2 失利</span>
+      </div>
+    </div>
+    <details>
+      <summary>中性弹幕二次判定：40 组逐条核验（展开）</summary>
+      <p class="lead">只把可归因于本场的真实情绪或判断纳入方向板；纯聊天、外貌、身份玩梗、跨场句和对象不明句不硬套情绪。原文只作溯源，不展示用户身份。</p>
+      <table>
+        <thead>
+          <tr><th>#</th><th>北京时间</th><th>候选原文</th><th>模型二次判定</th><th>处理</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>11:31</td><td>这液体打的跟LVG似的</td><td>Liquid 异场评价</td><td>剔除</td></tr>
+          <tr><td>2</td><td>12:11</td><td>几个人这么C才带得动 我说G2这把4打5没意见吧</td><td>真实负情绪：承认队友 carry，同时质疑 G2 人数效率</td><td>纳入 G2 负锚</td></tr>
+          <tr><td>3</td><td>12:07</td><td>g2狙击手 颜值真不差吧</td><td>外貌评价，无竞技方向</td><td>剔除</td></tr>
+          <tr><td>4</td><td>11:34</td><td>液体之前不是招了个高材生来当助教吗</td><td>Liquid 异场阵容</td><td>剔除</td></tr>
+          <tr><td>5</td><td>11:56</td><td>这g2狙碰到j哥都是一劫</td><td>真实负情绪：G2 狙击位对位风险</td><td>纳入 G2 负锚</td></tr>
+          <tr><td>6</td><td>11:58</td><td>这分niko指挥的</td><td>当前选手归属不明，且可能为身份玩梗</td><td>剔除</td></tr>
+          <tr><td>7</td><td>11:25</td><td>液体上哪儿找来这么多糖宝的？</td><td>Liquid 异场调侃</td><td>剔除</td></tr>
+          <tr><td>8</td><td>11:34</td><td>液体太懂现场了</td><td>Liquid 异场评价</td><td>剔除</td></tr>
+          <tr><td>9</td><td>11:40</td><td>液体拉完了</td><td>Liquid 异场负评</td><td>剔除</td></tr>
+          <tr><td>10</td><td>11:25</td><td>液体就应该和天禄掰头一下，看看谁才是干拉小子</td><td>Liquid / 天禄 异场玩梗</td><td>剔除</td></tr>
+          <tr><td>11</td><td>11:33</td><td>niko脑子有问题</td><td>当前 G2 映射不明</td><td>剔除</td></tr>
+          <tr><td>12</td><td>11:35</td><td>这个哦肯定对液体好啊</td><td>Liquid 异场判断</td><td>剔除</td></tr>
+          <tr><td>13</td><td>11:35</td><td>下半场轮到液体铁血防守了</td><td>Liquid 异场局势</td><td>剔除</td></tr>
+          <tr><td>14</td><td>11:46</td><td>看g2</td><td>纯观看行为，无方向</td><td>剔除</td></tr>
+          <tr><td>15</td><td>12:00</td><td>这个紫微我们绿龙要了</td><td>Spirit 异场阵容玩梗</td><td>剔除</td></tr>
+          <tr><td>16</td><td>12:05</td><td>一会给g2也看死了</td><td>真实负情绪：观察者效应式看衰</td><td>纳入 G2 负向背景</td></tr>
+          <tr><td>17</td><td>12:05</td><td>g2要被看死了</td><td>与 #16 同义重复</td><td>纳入但去重</td></tr>
+          <tr><td>18</td><td>12:06</td><td>G2直接被这个狙坑输的局都不知道多少把了 0.9的狙</td><td>真实负情绪：狙击位长期风险</td><td>纳入 G2 负锚</td></tr>
+          <tr><td>19</td><td>12:13</td><td>MO队，NAVI比赛是你这个流还是马总那个流？</td><td>NAVI 转场提问</td><td>剔除</td></tr>
+          <tr><td>20</td><td>11:18</td><td>g2怎么不把k1lm提主队 这r1nkle烂完了</td><td>真实负情绪：G2 狙击位/阵容</td><td>纳入 G2 负锚</td></tr>
+          <tr><td>21</td><td>11:19</td><td>G2真是区吧</td><td>真实负情绪：G2 队伍表现</td><td>纳入 G2 负向背景</td></tr>
+          <tr><td>22</td><td>11:19</td><td>这液体真的一点脑子不要啊</td><td>Liquid 异场负评</td><td>剔除</td></tr>
+          <tr><td>23</td><td>11:19</td><td>液体没了总监什么都不是</td><td>Liquid 异场阵容批评</td><td>剔除</td></tr>
+          <tr><td>24</td><td>11:19</td><td>g2真的是踢人踢到了大动脉</td><td>真实负情绪：G2 组织/阵容历史</td><td>仅作背景，不入竞技锚点</td></tr>
+          <tr><td>25</td><td>11:19</td><td>这是g2唯一有点把握的图了 再输就滚吧</td><td>混合情绪：地图正评＋队伍负压</td><td>纳入正锚与分歧</td></tr>
+          <tr><td>26</td><td>11:20</td><td>液体遇到玩脑子的队伍太难打</td><td>Liquid 异场评价</td><td>剔除</td></tr>
+          <tr><td>27</td><td>11:21</td><td>G2包浆还是打的不太舒服的</td><td>真实负情绪：G2 执行不适</td><td>纳入 G2 负向背景</td></tr>
+          <tr><td>28</td><td>11:21</td><td>G2现在真阿拉丁我</td><td>真实负情绪：社区贬义，指表现拉胯</td><td>纳入 G2 负向背景</td></tr>
+          <tr><td>29</td><td>11:22</td><td>液体从哪儿找来这么多糖宝的？</td><td>Liquid 异场调侃</td><td>剔除</td></tr>
+          <tr><td>30</td><td>11:24</td><td>上帝笑液体太蠢了</td><td>Liquid 异场玩梗</td><td>剔除</td></tr>
+          <tr><td>31</td><td>11:26</td><td>g2那个e翻太狠了。</td><td>真实正情绪：G2 残局/经济局反扑</td><td>纳入 G2 正锚</td></tr>
+          <tr><td>32</td><td>11:27</td><td>液体还真打不过</td><td>Liquid 异场判断</td><td>剔除</td></tr>
+          <tr><td>33</td><td>11:27</td><td>液体没那么钢的刚枪队</td><td>Liquid 异场风格评价</td><td>剔除</td></tr>
+          <tr><td>34</td><td>11:33</td><td>液体就是肌肉队对枪补枪就完了别搞那么复杂</td><td>Liquid 异场战术评价</td><td>剔除</td></tr>
+          <tr><td>35</td><td>11:36</td><td>不会吧，液体竟然打不过PV</td><td>Liquid–PARIVISION 异场</td><td>剔除</td></tr>
+          <tr><td>36</td><td>11:36</td><td>云真的多，这和液体有啥关系</td><td>异场争论</td><td>剔除</td></tr>
+          <tr><td>37</td><td>11:36</td><td>我眼里充满了疲惫云真的多，这和液体有啥关系</td><td>异场争论</td><td>剔除</td></tr>
+          <tr><td>38</td><td>11:38</td><td>g2已经这么牛了吗</td><td>真实正情绪：对 G2 表现惊讶/肯定</td><td>纳入 G2 正锚弱样本</td></tr>
+          <tr><td>39</td><td>11:38</td><td>以为g2已经挺拉了a怎么还要拉</td><td>真实负情绪：G2 表现低预期</td><td>纳入 G2 负向背景</td></tr>
+          <tr><td>40</td><td>11:40</td><td>液体手枪局太差了</td><td>Liquid 异场评价</td><td>剔除</td></tr>
+        </tbody>
+      </table>
+      <div class="tags">
+        <span class="tag source">规则层 neutral_salvage</span>
+        <span class="tag source">本场弹幕切片</span>
+        <span class="tag">模型二次判定</span>
+        <span class="tag pending">同义刷屏不重复计量</span>
+      </div>
+    </details>
+  </section>
+  <section class="card" aria-label="灰信号汇总">
+    <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="risk-empty">
+      <h3>观众质疑，非结论｜指向 G2｜风险等级：低 <span class="risk-level">单房 · 低风险</span></h3>
+      <p>12:03–12:09（北京）出现“准备放分了 G2”“9 分够了马上送”“分够了就不放了”“为什么 9 分一到就不放分了”。这组话把“放分/送分”与 G2 绑定，共 4 条、4 人，均来自 CSBOY-MO；没有第二路稳定共振，也没有盘口异常或官方证据。</p>
+      <p><strong>条件方向：</strong>若质疑成立，风险指向 G2 的让分/公平性；但 Polymarket 已结算 G2 赢得第 2 小局，因此当前不能把“放分”写成故意输局，也不能反推 Aurora 本应获胜。</p>
+      <div class="tags">
+        <span class="tag source">本场弹幕</span>
+        <span class="tag risk">观众质疑，非结论</span>
+        <span class="tag pending">4 条 / 4 人 / 1 路</span>
+        <span class="tag good">G2 仍获小局胜</span>
+      </div>
+    </div>
+    <div class="box" style="margin-top:10px">
+      <h3>规则层灰候选与排除项</h3>
+      <p>规则层 `gray_signals` 共 5 条，主要为“故意的”“液体不如买呼吸”“自己不丢就别买”“纯故意在送”等。它们缺少可稳定归因到 Aurora–G2 本局的对象与行为，或落在 Liquid/PV 等串场语境，未升级为本场灰信号。</p>
+      <p>“G2 狙击手菜”“G2 要回家”“4 打 5”属于表现批评或失望情绪，不构成故意送分；“e 翻”“残局失手”“k3 进攻”同样只是过程评价。盘口讨论 0 条，因此没有“灰信号 × 价格/让分”交叉验证。</p>
+      <div class="tags">
+        <span class="tag source">规则层 gray_signals</span>
+        <span class="tag source">本场弹幕</span>
+        <span class="tag pending">串场候选已剔除</span>
+        <span class="tag pending">盘口样本 0</span>
+      </div>
+    </div>
+    <div class="discipline">纪律：灰信号只作风险标注与盘口对照，不构成假赛、剧本、故意送分或操盘证据。当前只覆盖虎牙两房，不能据此推断 SOOP / Twitch 或全平台不存在同类讨论。</div>
+  </section>
+  <footer>
+    Aurora Gaming vs G2 · 第 2 小局局末/局间弹幕情报快照 · 弹幕采集截止 12:14（北京；04:14 UTC）<br>
+    局中·非终局，结果待定 · 本场对象层仅使用 11:17–12:11（北京；03:17–04:11 UTC）可归因样本<br>
+    来源：规则层 JSON、指定 JSONL 弹幕切片、Polymarket Game 2 Winner 结算字段；地图、阵容、选手归属与逐图比分待官方核对。
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
