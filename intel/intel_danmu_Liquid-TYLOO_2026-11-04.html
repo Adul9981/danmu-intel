@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liquid vs TYLOO · FINAL 系列复盘 · 弹幕情报</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #e5e5e7;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+      --warn: #b25000;
+      --warn-soft: #fff4e8;
+      --risk: #b42318;
+      --risk-soft: #fff0ee;
+      --pos: #147a3d;
+      --pos-soft: #edf8f1;
+      --neg: #b42318;
+      --neg-soft: #fff0ee;
+      --radius: 20px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 10px 28px rgba(0, 0, 0, .045);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: 34px auto 56px; }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid rgba(0, 0, 0, .045);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero { padding: 30px; overflow: hidden; position: relative; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      right: -120px;
+      top: -150px;
+      background: radial-gradient(circle, rgba(0, 113, 227, .12), rgba(0, 113, 227, 0) 70%);
+      pointer-events: none;
+    }
+    h1 {
+      margin: 14px 0 6px;
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    h1 .vs { color: #98989d; font-weight: 500; }
+    .subtitle { margin: 0; color: var(--sub); font-size: 14px; }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .93em;
+    }
+    .eyebrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .badge, .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      white-space: nowrap;
+      font-weight: 650;
+    }
+    .badge { padding: 5px 10px; font-size: 12px; border: 1px solid var(--line); }
+    .badge.final { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .badge.pending { color: var(--warn); background: var(--warn-soft); border-color: #ffd8ad; }
+    .badge.muted { color: var(--sub); background: #f8f8fa; }
+    .status {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #f7fbff, #eef6ff);
+      border: 1px solid #dceeff;
+      font-size: 14px;
+    }
+    .status strong { color: var(--accent); }
+    .status small { display: block; margin-top: 5px; color: var(--sub); font-size: 12.5px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: #fafafc;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 13px;
+    }
+    .metric .k { color: var(--sub); font-size: 11.5px; font-weight: 650; }
+    .metric .v { margin-top: 3px; font-size: 15px; font-weight: 750; line-height: 1.35; }
+    .metric .s { margin-top: 2px; color: var(--sub); font-size: 11.5px; }
+    .integrity {
+      margin-top: 12px;
+      color: var(--sub);
+      font-size: 12.5px;
+      padding: 0 2px;
+    }
+    .card { padding: 25px; margin-top: 18px; }
+    h2 {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 18px;
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: -.015em;
+    }
+    h2 .no {
+      display: inline-grid;
+      place-items: center;
+      width: 31px;
+      height: 31px;
+      flex: 0 0 31px;
+      border-radius: 10px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    h3 { margin: 16px 0 7px; font-size: 15px; line-height: 1.4; }
+    p { margin: 7px 0; }
+    .lead { margin: -4px 0 14px; color: var(--sub); font-size: 13.5px; }
+    .grid-2, .grid-3 { display: grid; gap: 12px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fff;
+    }
+    .panel.blue { background: #f8fbff; border-color: #dcecff; }
+    .panel.warn { background: var(--warn-soft); border-color: #ffd8ad; }
+    .panel.risk { background: var(--risk-soft); border-color: #ffd0ca; }
+    .panel.pos { background: var(--pos-soft); border-color: #ccebd6; }
+    .panel.neg { background: var(--neg-soft); border-color: #ffd0ca; }
+    .panel .label {
+      color: var(--sub);
+      font-size: 11.5px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .panel .headline {
+      display: block;
+      margin: 4px 0 6px;
+      font-size: 14.5px;
+      font-weight: 750;
+      line-height: 1.42;
+    }
+    .panel p { font-size: 13px; }
+    .source { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .tag {
+      padding: 3px 7px;
+      font-size: 10.5px;
+      color: var(--sub);
+      background: #f2f2f4;
+      border: 1px solid #e8e8eb;
+    }
+    .tag.local { color: #005fbd; background: #edf5ff; border-color: #d3e8ff; }
+    .tag.rule { color: #5a4a8f; background: #f3f0ff; border-color: #e2dcff; }
+    .tag.market { color: #095c8f; background: #eef8ff; border-color: #d5edfb; }
+    .tag.pending { color: var(--warn); background: var(--warn-soft); border-color: #ffd8ad; }
+    .tag.risk { color: var(--risk); background: var(--risk-soft); border-color: #ffd0ca; }
+    .tag.pos { color: var(--pos); background: var(--pos-soft); border-color: #ccebd6; }
+    .tag.neg { color: var(--neg); background: var(--neg-soft); border-color: #ffd0ca; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: 12.5px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #fafafc;
+      color: var(--sub);
+      font-size: 11.5px;
+      font-weight: 750;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { white-space: nowrap; color: var(--sub); font-weight: 650; }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 12px;
+    }
+    .bucket {
+      padding: 10px;
+      border-radius: 12px;
+      background: #f8f8fa;
+      border: 1px solid var(--line);
+      font-size: 11.5px;
+      color: var(--sub);
+    }
+    .bucket b { display: block; color: var(--ink); font-size: 12.5px; }
+    details {
+      margin-top: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fafafc;
+      overflow: hidden;
+    }
+    summary {
+      cursor: pointer;
+      padding: 12px 15px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    details .inside { padding: 0 12px 12px; }
+    details table { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .note {
+      color: var(--sub);
+      font-size: 12px;
+      padding: 10px 12px;
+      background: #f8f8fa;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+    .empty-slot { min-height: 4px; }
+    .discipline {
+      margin-top: 12px;
+      padding: 13px 15px;
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      background: #f7fbff;
+      font-size: 12.5px;
+    }
+    .muted { color: var(--sub); }
+    .nowrap { white-space: nowrap; }
+    .num { font-variant-numeric: tabular-nums; }
+    @media (max-width: 820px) {
+      .metrics, .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 20px, 1120px); margin: 16px auto 36px; }
+      .hero, .card { padding: 18px; border-radius: 16px; }
+      .metrics, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+      h2 { font-size: 17px; }
+      table { min-width: 700px; }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="match_situation.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">比赛局势</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Liquid-TYLOO 2026-11-04</b></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">
+      <span class="badge final">FINAL｜系列复盘</span>
+      <span class="badge pending">Liquid 胜 · Polymarket/系统推断，官方逐图赛果待核</span>
+      <span class="badge muted">SERIES-REVIEW</span>
+    </div>
+    <h1>Liquid <span class="vs">vs</span> TYLOO</h1>
+    <p class="subtitle">
+      CS2 · IEM 北京 B 组 · BO3 · 2026-11-04 ·
+      slug <span class="mono">cs2-tl1-tyloo-2026-11-03</span>
+    </p>
+    <div class="status">
+      <strong>系列状态：</strong>比赛已结束，多信号指向 <b>Liquid 以 2–0 赢下系列赛</b>。
+      G1 市场已 closed 且结算 Liquid；G2 虽未 closed，但 Liquid 一端价格已到 99.55c、winner 已置位。
+      结构化比赛库也记为“Liquid 胜（Polymarket 结算）”。
+      <small>
+        这不是官方逐图比分确认：虎扑比分快照仍停在 Liquid 1–0 / inProgress，
+        故本页保留“官方待核”，不把市场结算冒充赛事官方终局。
+      </small>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="k">弹幕采集截止</div>
+        <div class="v">11:36（北京）</div>
+        <div class="s">数据窗口 10:00–11:36（北京；UTC 02:00–03:36）</div>
+      </div>
+      <div class="metric">
+        <div class="k">全窗样本</div>
+        <div class="v">18,176 条</div>
+        <div class="s">5,216 名活跃用户 · 188.9 条/分钟</div>
+      </div>
+      <div class="metric">
+        <div class="k">规则层情绪</div>
+        <div class="v">正 700 / 负 517</div>
+        <div class="s">净 +183，但全窗走势多次翻转</div>
+      </div>
+      <div class="metric">
+        <div class="k">地图主线</div>
+        <div class="v">Mirage → Anubis</div>
+        <div class="s">弹幕口径·待官方 veto / 比分</div>
+      </div>
+    </div>
+    <div class="integrity">
+      <b>来源完整性：</b>实际 2 路虎牙，CSBOY 官方房 15,367 条、CSBOY-Mo 房 2,809 条。
+      预期来源还包括 BLAST 官方与 KICK；两者均未入样，记为
+      <span class="tag pending">跨平台 / 房间缺口</span>。
+      “两房共振”只表示同一平台内交叉，不等同完整多源确认。
+    </div>
+  </header>
+  <section class="card">
+    <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <p class="lead">
+      CS2 没有英雄选人，本段以“地图 × 选手名单 × 阵营讨论”替代 LoL 的英雄阵容。
+      完整 veto、选图方、首发与阵营均继续标为
+      <span class="tag pending">弹幕口径·待官方</span>。
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>项目</th><th>系列记录</th><th>口径与验证</th><th>证据来源</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>地图序列</td>
+            <td>
+              <b>G1：Mirage（荒漠迷城）</b>，10:18–10:52 多次出现“米垃圾”及地图评价；
+              <b>G2：Anubis（阿努比斯）</b>，11:06–11:36 多路围绕“阿鲁比斯 / 阿努比斯”展开。
+            </td>
+            <td>
+              系列实际只产生 G1、G2 两个节点；地图名称有本场重复讨论直接支持，
+              但完整 veto 顺序、选图方和官方地图结果未进入切片。
+              <span class="tag pending">待官方</span>
+            </td>
+            <td>
+              <span class="tag local">本场弹幕</span>
+              <span class="tag rule">规则层叙事</span>
+              <span class="tag pending">无官方 veto</span>
+            </td>
+          </tr>
+          <tr>
+            <td>G1 阵容</td>
+            <td>
+              <b>Mirage · Liquid（TL）：</b>malbsMd、JT、EliGE、NAF、Jorko。<br>
+              <b>Mirage · TYLOO：</b>Jee、Zero、JamYoung、Mercury、Moseyuh。
+            </td>
+            <td>
+              选手名单由同场阵容元数据补足，并可与本场 ID / 昵称讨论交叉；
+              CS2 无英雄选择。官方首发、位置与临场换人仍待核。
+              <span class="tag pending">弹幕口径·待官方</span>
+            </td>
+            <td>
+              <span class="tag local">本场弹幕</span>
+              <span class="tag">同场阵容元数据</span>
+            </td>
+          </tr>
+          <tr>
+            <td>G2 阵容</td>
+            <td>
+              <b>Anubis · Liquid（TL）：</b>EliGE（“一粒鸡 / 鸡哥”）、NAF、malbsMd、JT、Jorko。<br>
+              <b>Anubis · TYLOO：</b>Jee、JamYoung（“小菊 / 小鞠”）、Moseyuh（“莫思雨”）、Zero、Mercury。
+            </td>
+            <td>
+              “鸡哥 / 一粒鸡”在本场语境稳定指向 Liquid 侧，但页面仍保留英文 ID；
+              “小菊 / 小鞠”“莫思雨”属于观众昵称。名单
+              <span class="tag pending">弹幕口径·待官方</span>。
+            </td>
+            <td>
+              <span class="tag local">本场弹幕</span>
+              <span class="tag rule">模型二次判定</span>
+              <span class="tag pending">昵称映射待核</span>
+            </td>
+          </tr>
+          <tr>
+            <td>阵营讨论</td>
+            <td>
+              G2 11:06–11:10 出现“又是 T 开”“跟液体打选 CT 开才是优势”“这个图是 Liquid 选的”等；
+              可读为讨论 <b>TYLOO T / Liquid CT</b>，但语境不完整。
+            </td>
+            <td>
+              没有开局系统面板；不把观众对选边的建议当已确认事实。
+              G1 阵营也未锁定。<span class="tag pending">待官方</span>
+            </td>
+            <td>
+              <span class="tag local">本场弹幕</span>
+              <span class="tag rule">条件式战术建议</span>
+            </td>
+          </tr>
+          <tr>
+            <td>BP 评价</td>
+            <td>
+              <b>G1 Mirage：观点分歧。</b>10:25 出现“BP 就输了，为什么不先选小镇”，
+              同一时段又有“小镇也是 Liquid 首 pick”“这甚至还是 TYLOO 的选图”等冲突表达。
+              <b>G2 Anubis：TYLOO 侧明显偏负。</b>11:00–11:11 出现“天禄阿努比斯不会玩”
+              “这图怎么打液体”“为什么不 ban”。
+            </td>
+            <td>
+              这是观众对地图熟练度与选图方向的评价，不是官方 BP 判胜。
+              G1 为 <span class="tag pending">分歧信号</span>；
+              G2 为 <span class="tag neg">TYLOO 负向两房叙事</span>。
+            </td>
+            <td>
+              <span class="tag local">本场弹幕</span>
+              <span class="tag rule">两房</span>
+              <span class="tag neg">G1 分歧 / G2 负向</span>
+            </td>
+          </tr>
+          <tr>
+            <td>BP 后战绩情报</td>
+            <td>
+              <b>Mirage：无战绩情报提及。</b><br>
+              <b>Anubis：无战绩情报提及。</b><br>
+              仅出现“天禄好像从来没有赢过液体”“好久不赢液体”等历史印象，但没有日期、比分或可核验胜率。
+            </td>
+            <td>
+              无日期 / 无比分的历史印象不升级为“队伍 × 地图”战绩；
+              本段未调用历史画像填补缺口。
+              <span class="tag pending">样本不足</span>
+            </td>
+            <td>
+              <span class="tag local">本场弹幕</span>
+              <span class="tag pending">无可核验战绩链</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <b>证据边界：</b>本段所有地图、选手昵称、阵营和 BP 评价都来自本场弹幕；
+      选手名单由同场元数据补足。观众问句、“该 ban 哪张图”和赢法建议均不写成已确认 BP 或官方首发。
+      <span class="tag local">本场弹幕</span>
+      <span class="tag pending">官方待核</span>
+    </div>
+  </section>
+  <section class="card" id="situation-card">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <div class="empty-slot" aria-label="系统注入区域，本段由系统规则层填充"></div>
+    <!-- AI 不写本段；由系统注入两队胜率与虎扑队员评分。 -->
+  </section>
+  <section class="card">
+    <h2><span class="no">3</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <p class="lead">
+      主叙事来自规则层 <b>narrative</b>：G1 早段先捧 TYLOO、随后争议与负面上升，
+      中后段转向 Liquid 手感与控制；G2 则快速进入“TYLOO 弱图 / 低分 / Liquid 压制”主线。
+      所有方向结论均以本场弹幕为核心，盘口只作事后方向核验。
+    </p>
+    <h3>正锚点 · 看好谁赢</h3>
+    <div class="grid-3">
+      <div class="panel pos">
+        <div class="label">正锚点 1 · 主方向</div>
+        <span class="headline">Liquid（TL）：G1 中后段手感、控中与赛点叙事接管比赛</span>
+        <p>
+          <b>对象：</b>Liquid。<b>依据：</b>10:23“液体手感出来”，10:28“液体中路压得这么狠”，
+          10:50“液体的赛点”；同期 TYLOO 侧出现“又僵住”“进入液体节奏”。
+          <b>时间：</b>10:23–10:51（北京）。<b>验证：</b>Polymarket G1 已 closed 并结算 Liquid，
+          方向应验；官方精确回合分仍待核。
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">规则层叙事</span>
+          <span class="tag market">盘口</span>
+          <span class="tag pos">已应验方向</span>
+        </div>
+      </div>
+      <div class="panel pos">
+        <div class="label">正锚点 2 · 系列主方向</div>
+        <span class="headline">Liquid（TL）/ EliGE / NAF：G2 对枪与多点接管持续占优</span>
+        <p>
+          <b>对象：</b>Liquid，重点为 EliGE（“一粒鸡 / 鸡哥”）与 NAF。
+          <b>依据：</b>11:07–11:29 共 118 条正向 / 敬畏表达、87 名用户、两房；
+          代表句为“液体队魂一粒鸡”“液体不当人了”“NAF 都能乱杀”。
+          <b>时间：</b>11:08–11:29（北京）。
+          <b>验证：</b>G2 winner 已置 Liquid、一端价格 99.55c，系统记录系列 Liquid 胜；
+          官方逐图比分待核。
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">模型二次判定</span>
+          <span class="tag market">盘口结算先验支持</span>
+          <span class="tag pos">已应验方向</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="label">正锚点 3 · 已失效</div>
+        <span class="headline">TYLOO / JEE：G1 早段高光只形成短时正锚</span>
+        <p>
+          <b>对象：</b>TYLOO / JEE。<b>依据：</b>10:10–10:12 “陌生”“J 神”等连续夸赞；
+          10:11 单分钟 736 条，正 15 / 负 2。<b>时间：</b>10:10–10:12（北京）。
+          <b>验证：</b>TYLOO 早段一度领先，随后叙事转向 Liquid；该正锚未延续，不能覆盖系列方向。
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">密度峰值</span>
+          <span class="tag pending">后续失效</span>
+        </div>
+      </div>
+    </div>
+    <h3>负锚点 · 看衰谁输</h3>
+    <div class="grid-3">
+      <div class="panel neg">
+        <div class="label">负锚点 1 · 系列主方向</div>
+        <span class="headline">TYLOO：G1 控图、指挥、狙击与追分后的稳定性被集中否定</span>
+        <p>
+          <b>对象：</b>TYLOO 中期执行。<b>依据：</b>10:16–10:36 连续出现
+          “天禄又僵住”“慢控进入液体节奏”“指挥太死板”“JEE 拿狙不架点”等；
+          10:34 后“我还真以为天禄能赢液体”进一步确认看衰。
+          <b>时间：</b>10:16–10:36（北京）。<b>验证：</b>G1 方向与 Liquid 结算同向，应验。
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">模型二次判定</span>
+          <span class="tag market">盘口</span>
+          <span class="tag neg">已应验方向</span>
+        </div>
+      </div>
+      <div class="panel neg">
+        <div class="label">负锚点 2 · 系列主方向</div>
+        <span class="headline">TYLOO / Anubis、JEE、Moseyuh：弱图与低分叙事贯穿 G2</span>
+        <p>
+          <b>对象：</b>TYLOO 的 Anubis 图池与执行，重点为 JEE、Moseyuh。
+          <b>依据：</b>11:07–11:30 出现“这图天禄怎么打液体”“最多 30%”
+          “这图被纯虐”；JEE 负向相关 37 条 / 34 人，Moseyuh 负向相关 26 条 / 10 人。
+          与“一分 / 零封 / 低分”相关表达 191 条 / 133 人 / 两房。
+          <b>时间：</b>11:07–11:30（北京）。<b>验证：</b>G2 与系列系统方向均指向 Liquid，
+          负锚应验方向；精确比分待官方。
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">两房</span>
+          <span class="tag market">盘口结算先验支持</span>
+          <span class="tag neg">已应验方向</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="label">负锚点 3 · 已反转</div>
+        <span class="headline">Liquid（TL）：G1 早段狙击与进攻曾被集中看衰</span>
+        <p>
+          <b>对象：</b>Liquid 早段执行。<b>依据：</b>10:11–10:16 出现
+          “液体烂完了”“液体的狙更烂”“液体不会进攻”。
+          <b>时间：</b>10:11–10:16（北京）。
+          <b>验证：</b>10:23 后 Liquid 手感与控制叙事转强，早段负锚未延续；
+          保留为走势反转证据，不能事后改写为“全程弱”。
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">模型二次判定</span>
+          <span class="tag pending">未延续</span>
+        </div>
+      </div>
+    </div>
+    <h3>群体共识 · 分歧 · 样本量</h3>
+    <div class="panel blue">
+      <div class="label">系列共识</div>
+      <span class="headline">阶段性共识倾向 Liquid，但全窗情绪高度波动，不能仅凭正负比宣布高置信胜率</span>
+      <p>
+        <b>样本量：</b>18,176 条 / 5,216 人 / 2 路虎牙 / 96 分钟。
+        规则层正面 700、负面 517、净 +183，总体轻微偏正。
+        <b>叙事主线：</b>G1 先出现 TYLOO / JEE 早段高光，随后 Liquid 控制中后段；
+        G2 快速转向 TYLOO 弱图与 Liquid 压制，最后落在低分与“只拿 1 分”的反讽叙事。
+      </p>
+      <p>
+        <b>分歧：</b>Liquid G1 早段被称“烂完 / 狙更烂”；G2 后段仍有
+        “液体真不强”“液体终于给机会了”等少数反证。
+        规则层显式胜负表达合计仅 5 条且均指 Liquid，低于 10 条阈值，
+        因此“Liquid 获胜”来自多节点方向与市场结算的组合，而不是单一“显式胜负弹幕”共识。
+      </p>
+      <div class="timeline" aria-label="全窗规则层情绪时间线，均为北京时间">
+        <div class="bucket"><b>10:00 起</b>3,340 条<br>正 81 / 负 30<br>净 +51</div>
+        <div class="bucket"><b>10:19 起</b>2,674 条<br>正 63 / 负 111<br>净 −48</div>
+        <div class="bucket"><b>10:38 起</b>3,435 条<br>正 218 / 负 69<br>净 +149</div>
+        <div class="bucket"><b>10:57 起</b>3,017 条<br>正 212 / 负 95<br>净 +117</div>
+        <div class="bucket"><b>11:16 起</b>5,710 条<br>正 126 / 负 212<br>净 −86</div>
+      </div>
+      <p class="muted">
+        密度拐点：10:11 为 736 条/分（正 15 / 负 2，早段 TYLOO 高光）；
+        10:50 为 497 条/分（正 5 / 负 2，Liquid 赛点与“亚洲剧情”混流）；
+        11:29 为 409 条/分（正 15 / 负 11，Liquid 压制与 TYLOO 低分反讽）。
+        峰值只作叙事锚，不等于胜率。
+      </p>
+      <div class="source">
+        <span class="tag local">本场弹幕</span>
+        <span class="tag rule">规则层 narrative</span>
+        <span class="tag market">盘口</span>
+        <span class="tag pending">显式胜负样本 5 · 不足</span>
+      </div>
+    </div>
+    <h3>灰信号条件预测</h3>
+    <div class="grid-2">
+      <div class="panel warn">
+        <div class="label">条件方向 A</div>
+        <span class="headline">若 TYLOO 的“送分 / 故意留空 / 亚洲剧本”质疑被独立证据兑现</span>
+        <p>
+          影响首先落在 TYLOO 对应失分回合与终局稳定性，方向上利 Liquid。
+          当前只有观众质疑与社区梗；无选手、资金、设备、录像或盘口异常交叉证据。
+          <b>推测·待验证。</b>
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag risk">观众质疑·非结论</span>
+          <span class="tag rule">推测·待验证</span>
+        </div>
+      </div>
+      <div class="panel warn">
+        <div class="label">条件方向 B</div>
+        <span class="headline">若 Liquid 的“人情世故 / 故意送 1 分”质疑被独立证据兑现</span>
+        <p>
+          影响只限 Liquid 对应让分回合的可信度，方向上相对利 TYLOO 追分；
+          不等于 TYLOO 应赢，也不改变已发生的系列市场方向。
+          <b>推测·待验证。</b>
+        </p>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag risk">观众质疑·非结论</span>
+          <span class="tag rule">推测·待验证</span>
+        </div>
+      </div>
+    </div>
+    <details>
+      <summary>neutral_salvage · 40 条候选逐条二次判定（点击展开）</summary>
+      <div class="inside">
+        <p class="muted">
+          规则层判中性的 40 条候选已逐条复核：25 条包含真实情绪或战术方向，
+          4 条“人情世故”类并入灰信号，11 条属于旁场闲聊、历史玩梗、残句或无法唯一归属，统一剔除。
+          时间均为北京时间。
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>北京时间</th><th>候选（次数）</th><th>模型二次判定</th><th>处理</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>11:17</td><td>不会被 0 封吧？液体这么不给东道主面子？（5）</td><td>真实负向，指向 TYLOO 当前失分</td><td>纳入 TYLOO 负锚补证 · 本场弹幕</td></tr>
+              <tr><td>11:13</td><td>黑豹那几个哥们年纪比天禄大多了（5）</td><td>FURIA 旁场年龄闲聊</td><td>剔除</td></tr>
+              <tr><td>11:26</td><td>液体！（5）</td><td>真实正向，支持 Liquid</td><td>纳入 Liquid 正锚 · 本场弹幕</td></tr>
+              <tr><td>10:59</td><td>相当于 FAZE 布达佩斯（4）</td><td>跨队历史类比，本场机制不完整</td><td>剔除</td></tr>
+              <tr><td>11:17</td><td>JEE 很强、比肩 ZywOo（3）</td><td>结合 JEE 同期低迷，判为反讽式负向</td><td>纳入 JEE 负锚补证 · 模型二次判定</td></tr>
+              <tr><td>10:01</td><td>支持液体，支持液体（3）</td><td>真实站队支持，但缺少技术依据</td><td>纳入 Liquid 弱正锚 · 本场弹幕</td></tr>
+              <tr><td>10:34</td><td>液体和天禄一比，液体都是天才了（3）</td><td>正向 Liquid、负向 TYLOO 的对比表达</td><td>纳入正 / 负锚 · 模型二次判定</td></tr>
+              <tr><td>10:50</td><td>液体的赛点（3）</td><td>明确支持 Liquid 后段走势</td><td>纳入 Liquid 正锚 · 本场弹幕</td></tr>
+              <tr><td>11:08</td><td>液体队魂一粒鸡！！（3）</td><td>真实正向，支持 Liquid / EliGE</td><td>纳入 Liquid 正锚 · 本场弹幕</td></tr>
+              <tr><td>11:16</td><td>打天禄，对面看着都像 donk（3）</td><td>夸张式正向 Liquid、负向 TYLOO</td><td>纳入正 / 负锚 · 模型二次判定</td></tr>
+              <tr><td>11:33</td><td>主场观众众筹钱给液体拯救一下（3）</td><td>玩梗式反讽，无法形成稳定方向依据</td><td>剔除</td></tr>
+              <tr><td>11:04</td><td>MO 当年 IEM 悉尼惜败 FaZe（2）</td><td>历史旁聊，不指本场</td><td>剔除</td></tr>
+              <tr><td>10:06</td><td>前两把的流畅度堪比小蜜蜂（2）</td><td>跨队比较，本场对象与机制不明确</td><td>剔除</td></tr>
+              <tr><td>10:22</td><td>天禄又僵住了，想想蒙古会怎么打（2）</td><td>真实看衰 TYLOO 当前执行</td><td>纳入 TYLOO 负锚 · 本场弹幕</td></tr>
+              <tr><td>10:26</td><td>天禄先架、中期摸，液体第二时间清（2）</td><td>看衰 TYLOO 节奏，正向 Liquid 时间差</td><td>纳入负 / 正锚 · 模型二次判定</td></tr>
+              <tr><td>10:34</td><td>这液体也没什么战术吧，就是枪对不过（2）</td><td>真实负向 Liquid 早段，但后被走势削弱</td><td>保留为 Liquid 早段负锚</td></tr>
+              <tr><td>10:40</td><td>现场观众能不能给液体报点（2）</td><td>现场玩笑，无胜负机制</td><td>剔除</td></tr>
+              <tr><td>10:48</td><td>绿龙还（2）</td><td>残句，指向 Spirit 旁场</td><td>剔除</td></tr>
+              <tr><td>10:49</td><td>借一万分，绿龙还（2）</td><td>Spirit 旁场玩梗</td><td>剔除</td></tr>
+              <tr><td>10:49</td><td>液体是懂人情世故的（2）</td><td>可读出 Liquid 让分质疑</td><td>并入灰信号簇 · 本场弹幕</td></tr>
+              <tr><td>11:10</td><td>之前输 MOUZ，现在再输是否双败（2）</td><td>赛制讨论，不是本局回合方向</td><td>剔除</td></tr>
+              <tr><td>11:12</td><td>先是 donk 毁了天禄，这又轮到鸡哥（2）</td><td>夸张式正向 Liquid、负向 TYLOO</td><td>纳入正 / 负锚 · 模型二次判定</td></tr>
+              <tr><td>11:21</td><td>液体终于给机会了（2）</td><td>指向 Liquid 让出回合，属 Liquid 侧反证</td><td>保留为分歧 · 本场弹幕</td></tr>
+              <tr><td>11:24</td><td>液体不当人了（2）</td><td>语境为称赞 Liquid 压制力</td><td>纳入 Liquid 正锚 · 模型二次判定</td></tr>
+              <tr><td>10:11</td><td>液体烂完了（1）</td><td>真实看衰 Liquid 早段</td><td>纳入 Liquid 早段负锚</td></tr>
+              <tr><td>10:22</td><td>给液体懂完了（1）</td><td>语义依赖上下文，无法唯一判定褒贬</td><td>剔除</td></tr>
+              <tr><td>10:23</td><td>这会液体手感出来，不能这么打（1）</td><td>真实判断 Liquid 手感上行</td><td>纳入 Liquid 正锚</td></tr>
+              <tr><td>10:28</td><td>液体中路压得狠，一个道具骗不了（1）</td><td>正向 Liquid 控图与对枪压迫</td><td>纳入 Liquid 正锚</td></tr>
+              <tr><td>10:31</td><td>没了，竟然打液体这么难（1）</td><td>真实看衰 TYLOO 当前难度</td><td>纳入 TYLOO 负锚</td></tr>
+              <tr><td>10:34</td><td>我还真以为天禄能赢液体呢（1）</td><td>真实看衰 TYLOO</td><td>纳入 TYLOO 负锚</td></tr>
+              <tr><td>10:35</td><td>能赢 9w，居然被液体暴打（1）</td><td>看衰 TYLOO、正向 Liquid 当前表现</td><td>纳入正 / 负锚 · 本场弹幕</td></tr>
+              <tr><td>10:36</td><td>液体真没啥好吹的，也是脑死亡队伍（1）</td><td>真实负向 Liquid，保留为少数派</td><td>保留为分歧 · 本场弹幕</td></tr>
+              <tr><td>10:38</td><td>液体放几分，不会以为 JEE 真行吧（1）</td><td>同时质疑 Liquid 让分与 JEE 表现</td><td>保留为分歧 / 灰信号邻近</td></tr>
+              <tr><td>10:41</td><td>还有 ZywOo 什么事，闹麻了（1）</td><td>跨选手玩梗</td><td>剔除</td></tr>
+              <tr><td>10:47</td><td>警家诱饵弹吸引力太大，把液体人都吸住了（1）</td><td>真实战术负向，针对 Liquid 局部执行</td><td>纳入 Liquid 早段负锚</td></tr>
+              <tr><td>10:47</td><td>液体这么拉？（1）</td><td>真实看衰 Liquid</td><td>保留为分歧 / 早段负锚</td></tr>
+              <tr><td>10:49</td><td>液体的这个战术也看不懂真的（1）</td><td>真实战术负向，针对 Liquid</td><td>保留为分歧 / 早段负锚</td></tr>
+              <tr><td>10:50</td><td>液体太懂人情世故的（1）</td><td>可读出 Liquid 让分质疑</td><td>并入灰信号簇 · 本场弹幕</td></tr>
+              <tr><td>10:50</td><td>液体太懂人情世故了（1）</td><td>同上，近义重复</td><td>并入灰信号簇 · 模型二次判定</td></tr>
+              <tr><td>10:51</td><td>液体太懂亚洲的人情世故了（1）</td><td>同上，追加地域化调侃</td><td>并入灰信号簇 · 本场弹幕</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="source">
+          <span class="tag local">本场弹幕</span>
+          <span class="tag rule">模型二次判定</span>
+          <span class="tag pending">40 条逐条复核 · 11 条剔除</span>
+        </div>
+      </div>
+    </details>
+  </section>
+  <section class="card">
+    <h2><span class="no">4</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <p class="lead">
+      全窗规则层共命中 <b>20 条</b>灰信号相关弹幕；合并近义重复后形成 6 个风险簇。
+      所有条目只作风险标注与盘口对照素材，禁止写成假赛、收买、放水或故意输赛结论。
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>北京时间</th><th>风险簇</th><th>指向对象</th><th>风险等级</th><th>条件方向 / 纪律</th><th>来源</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10:12</td>
+            <td>“收钱了是不是”——1 条，对象未点名</td>
+            <td>无法唯一归属 Liquid / TYLOO / 选手</td>
+            <td><span class="tag risk">观众质疑，非结论 · 低</span></td>
+            <td>无法形成条件方向；不迁入任一队。</td>
+            <td><span class="tag local">本场弹幕</span></td>
+          </tr>
+          <tr>
+            <td>10:11–10:17</td>
+            <td>“送分战术”“故意留空让二楼去打”——2 条</td>
+            <td>TYLOO 回合布置</td>
+            <td><span class="tag risk">观众质疑，非结论 · 低</span></td>
+            <td>若被独立证据兑现，指向 TYLOO 该回合异常，方向上利 Liquid。</td>
+            <td><span class="tag local">本场弹幕</span><br>两房</td>
+          </tr>
+          <tr>
+            <td>10:38–10:51</td>
+            <td>“亚洲剧本 / 顶级白忙活 / 亚洲剧情”——规则层 6 条</td>
+            <td>TYLOO 追分后稳定性</td>
+            <td><span class="tag risk">观众质疑，非结论 · 中</span></td>
+            <td>若相关回合确有异常，方向上利 Liquid；当前主要是社区惯用嘲讽，不是操纵证据。</td>
+            <td><span class="tag local">本场弹幕</span><br>官方房集中</td>
+          </tr>
+          <tr>
+            <td>10:42–10:51</td>
+            <td>“送分了 / 买了 / 人情世故”——规则层 3 条</td>
+            <td>Liquid 后段让分与领先回合</td>
+            <td><span class="tag risk">观众质疑，非结论 · 低</span></td>
+            <td>若被独立证据兑现，折扣 Liquid 对应回合可信度，方向上利 TYLOO 追分，不等于 TYLOO 应赢。</td>
+            <td><span class="tag local">本场弹幕</span><br>官方房</td>
+          </tr>
+          <tr>
+            <td>11:17–11:19</td>
+            <td>“送分队 / 子弹收钱 / 买了自己输”——4 条</td>
+            <td>TYLOO 连续失分回合，未点名具体选手</td>
+            <td><span class="tag risk">观众质疑，非结论 · 中</span></td>
+            <td>若被独立证据兑现，指向 TYLOO 失分异常，方向上利 Liquid；无资金或盘口异常交叉，不能升级。</td>
+            <td><span class="tag local">本场弹幕</span><br>官方房 + Mo 房</td>
+          </tr>
+          <tr>
+            <td>11:21–11:30</td>
+            <td>“父爱 1 分 / 故意的 / 真故意送 1 分”——4 条</td>
+            <td>Liquid 让出 TYLOO 唯一可见分</td>
+            <td><span class="tag risk">观众质疑，非结论 · 低</span></td>
+            <td>若被独立证据兑现，只折扣 Liquid 该失分回合，不改变系列方向，也不等于 TYLOO 翻盘。</td>
+            <td><span class="tag local">本场弹幕</span><br>两房</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel blue" style="margin-top:12px">
+      <div class="label">盘口对照</div>
+      <span class="headline">盘口方向与 Liquid 胜同向，但不能反向证明灰信号为真</span>
+      <p>
+        G1 已结算 Liquid；G2 winner 已置 Liquid，价格为 99.55c / 0.45c。
+        这只能说明市场与系统方向没有背离最终记录，不能验证“收钱 / 故意送 / 剧本”等意图。
+        灰信号兑现仍须录像、具体操作者与盘口异常等独立证据。
+      </p>
+      <div class="source">
+        <span class="tag market">盘口</span>
+        <span class="tag risk">观众质疑·非结论</span>
+        <span class="tag pending">无独立证据</span>
+      </div>
+    </div>
+    <div class="discipline">
+      <b>风险纪律：</b>本场灰信号综合风险为低至中，未达高风险门槛。
+      BLAST 官方房与 KICK 未入样，现有“两房”仅是同平台交叉；
+      “亚洲剧情”属于社区叙事，不等于操纵；“人情世故”属于玩梗式质疑，不等于让赛。
+      <div class="source">
+        <span class="tag local">本场弹幕</span>
+        <span class="tag risk">观众质疑·非结论</span>
+        <span class="tag pending">来源缺口</span>
+        <span class="tag rule">只作风险标注</span>
+      </div>
+    </div>
+  </section>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body></html>
