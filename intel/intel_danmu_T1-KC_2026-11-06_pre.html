@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赛前弹幕情报 · T1 vs KC</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #e5e5ea;
+      --soft: #f9f9fb;
+      --accent: #0071e3;
+      --accent-soft: #eef6ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      padding: 24px 14px 48px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+        "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page { width: min(980px, 100%); margin: 0 auto; }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.045);
+    }
+    .hero { padding: 30px 32px 26px; border-radius: 24px; }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+    }
+    .status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    h1 {
+      margin-top: 14px;
+      font-size: clamp(25px, 4.8vw, 36px);
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+    .subtitle { margin-top: 7px; color: var(--sub); font-size: 14px; }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--line);
+    }
+    .meta-item { padding: 14px 16px; background: var(--soft); }
+    .meta-key {
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .meta-value { margin-top: 3px; font-size: 14px; font-weight: 650; }
+    .data-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--line);
+    }
+    .data-item { padding: 12px; background: var(--soft); }
+    .data-value { font-size: 18px; font-weight: 780; line-height: 1.25; }
+    .data-label { margin-top: 3px; color: var(--sub); font-size: 11.5px; }
+    .guard {
+      margin-top: 12px;
+      padding: 13px 15px;
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      background: var(--soft);
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .section { margin-top: 24px; }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px;
+      font-size: 21px;
+      letter-spacing: -0.02em;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      border-radius: 9px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .card { padding: 20px 22px; border-radius: 18px; }
+    .card + .card, .grid + .card, .card + .grid, .grid + .grid { margin-top: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    h3 { margin-bottom: 9px; font-size: 16px; letter-spacing: -0.01em; }
+    p + p { margin-top: 8px; }
+    .empty {
+      margin-bottom: 7px;
+      font-size: 18px;
+      font-weight: 740;
+      letter-spacing: -0.015em;
+    }
+    .muted { color: var(--sub); font-size: 13px; }
+    .source {
+      display: block;
+      margin-top: 10px;
+      color: var(--sub);
+      font-size: 11.5px;
+    }
+    .tag {
+      display: inline-block;
+      margin: 0 6px 6px 0;
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--sub);
+      font-size: 11.5px;
+    }
+    .tag-blue {
+      border-color: #c7dff7;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .callout {
+      margin-top: 12px;
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 13px;
+    }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 11px;
+    }
+    .timeline-item {
+      padding: 9px 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+      text-align: center;
+    }
+    .timeline-time { color: var(--sub); font-size: 11.5px; }
+    .timeline-value { margin-top: 1px; font-size: 14px; font-weight: 720; }
+    .table-wrap { margin-top: 12px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--sub); background: var(--soft); font-size: 11.5px; }
+    tr:last-child td { border-bottom: 0; }
+    .time { color: var(--accent); font-weight: 680; white-space: nowrap; }
+    .system-slot { min-height: 44px; }
+    footer {
+      margin-top: 22px;
+      padding: 15px 4px 0;
+      border-top: 1px solid var(--line);
+      color: var(--sub);
+      font-size: 11.5px;
+      word-break: break-all;
+    }
+    footer p + p { margin-top: 4px; }
+    @media (max-width: 680px) {
+      body { padding: 12px 8px 32px; }
+      .hero { padding: 23px 20px 20px; border-radius: 20px; }
+      .meta, .grid, .data-strip { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card { padding: 17px; }
+      h2 { font-size: 19px; }
+      th, td { min-width: 118px; }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.92);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #e5e5ea;padding:10px 16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;max-width:1020px;margin:0 auto 18px;box-sizing:border-box"><a href="../index.html" style="color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px">DI</span>弹幕情报库</a><a href="../index.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">首页</a><a href="today.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">今日情报</a><a href="match_situation.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">比赛局势</a><a href="history.html" style="color:#0071e3;font-weight:700;font-size:13px;text-decoration:none">历史情报库</a><a href="pattern_decision_workspace.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">形态决策台</a><a href="../subscribe.html" style="color:#6e6e73;font-weight:500;font-size:13px;text-decoration:none">订阅</a></nav><div style="max-width:1020px;margin:-10px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">T1-KC 2026-11-06 pre</b></div>
+<main class="page">
+  <header class="hero">
+    <div class="status">赛前 · 未开赛 · PRE-MATCH</div>
+    <h1>T1 <span class="muted">vs</span> Karmine Corp（KC）</h1>
+    <div class="subtitle">2026-11-06 赛程日 · LoL · 全球总决赛淘汰赛 · 节点 S0｜赛前｜PRE-MATCH</div>
+    <div class="meta" aria-label="赛程与采集时间">
+      <div class="meta-item">
+        <div class="meta-key">比赛状态</div>
+        <div class="meta-value">赛前·未开赛；无 BP、无比分、无赛果</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">节点标识</div>
+        <div class="meta-value">lol-hupu-1693669411635200 · S0</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">计划开赛</div>
+        <div class="meta-value">2026-11-07 06:00（北京）<br><span class="muted">（UTC 2026-11-06 22:00）</span></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">弹幕采集窗口 / 截止</div>
+        <div class="meta-value">2026-11-07 04:30–04:59（北京）<br><span class="muted">截止 04:59；UTC 20:30–20:59</span></div>
+      </div>
+    </div>
+    <div class="data-strip" aria-label="弹幕样本概览">
+      <div class="data-item">
+        <div class="data-value">47</div>
+        <div class="data-label">弹幕记录</div>
+      </div>
+      <div class="data-item">
+        <div class="data-value">26</div>
+        <div class="data-label">活跃用户</div>
+      </div>
+      <div class="data-item">
+        <div class="data-value">1.6 / 分</div>
+        <div class="data-label">窗口平均密度</div>
+      </div>
+      <div class="data-item">
+        <div class="data-value">1 路</div>
+        <div class="data-label">本次切片实际来源</div>
+      </div>
+    </div>
+    <div class="guard">
+      <strong>样本边界：</strong>本切片仅含虎牙 LoL 官方直播间（room 660000）一路；其他平台或官方解说源未进入本切片，构成显式来源缺口。窗口内 T1 直接提及 1 条、KC 直接提及 0 条，房间情绪主要来自 IG、BLG、JDG 等串场话题；不据此给出胜率、比分或系列赛走向结论。
+    </div>
+  </header>
+  <section class="section" aria-labelledby="section-1">
+    <h2 id="section-1"><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>阵容与选人</h3>
+        <p class="empty">暂无可核验 BP / 阵容</p>
+        <p class="muted">比赛尚未开始，官方 BP 尚未产生。当前窗口没有出现可同时绑定“英雄 + 选手 + T1/KC 本场用途”的选人链，不能把零散英雄讨论或跨队玩梗视作实际选角。</p>
+        <span class="source">证据来源：本场弹幕 · 弹幕口径·待官方 · 有效选人链 0</span>
+      </div>
+      <div class="card">
+        <h3>BP 后战绩情报</h3>
+        <p class="empty">无战绩情报提及</p>
+        <p class="muted">未出现“本场选手 × 候选英雄 × 历史胜率”或“本场阵容体系 × 过往战绩”的可验证记录；赛前也没有可回填的 BP 或局内表现。</p>
+        <span class="source">证据来源：本场弹幕 · 战绩提及 0 · 官方阵容待定</span>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>边界：</strong>本段只记录观众讨论。官方 BP 或权威阵容出现前，不将任何英雄归派给 T1 或 KC，也不生成“阵容优劣”判断。
+    </div>
+  </section>
+  <section class="section" aria-labelledby="section-2">
+    <h2 id="section-2"><span class="no">2</span>比赛局势</h2>
+    <div class="card system-slot">
+      <h3>两队胜率（观众口径·非结论）</h3>
+      <!-- SITUATION:WIN:BEGIN -->
+      <p class="muted">系统注入位；本段由规则层写入，本页不参与生成。</p>
+      <!-- SITUATION:WIN:END -->
+      <h3 style="margin-top:14px;">队员评分（虎扑·实时）</h3>
+      <!-- SITUATION:RATINGS:BEGIN -->
+      <p class="muted">系统注入位；赛前暂无评分时由系统显示。</p>
+      <!-- SITUATION:RATINGS:END -->
+    </div>
+  </section>
+  <section class="section" aria-labelledby="section-3">
+    <h2 id="section-3"><span class="no">3</span>方向性情报板</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>正锚点 · 看好谁赢</h3>
+        <p><span class="tag tag-blue">T1</span><span class="tag">弱正锚</span></p>
+        <p class="muted"><span class="time">04:59:12</span>，一名观众在开赛前约一分钟发出“拿下 T1 就能夺冠”。该表达把 T1 当作夺冠门槛，属于对 T1 强度的声望性肯定；它不是对 T1 vs KC 的明确胜负选择。</p>
+        <p><strong>对象：</strong>T1。<strong>依据：</strong>本场赛前弹幕的夺冠门槛联想。<strong>验证：</strong>待 BP、赛果与 Polymarket 结算回填，目前待定。</p>
+        <span class="source">证据来源：本场弹幕 · 模型二次判定 · 1 条 / 1 用户 · 单源待验证</span>
+      </div>
+      <div class="card">
+        <h3>负锚点 · 看衰谁输</h3>
+        <p><span class="tag tag-blue">T1 上路 · Doran</span><span class="tag">弱负锚</span></p>
+        <p class="muted"><span class="time">04:48:14</span>，一名观众以条件式玩梗质疑“多兰发力，直接被送走会怎么样”。这带有对 Doran / T1 上路的负面预期，但对象仍是假设情境，不足以升级为 T1 必败判断。</p>
+        <p><strong>对象：</strong>T1 上路（Doran）。<strong>依据：</strong>本场赛前负面玩梗。<strong>验证：</strong>待官方阵容与比赛表现回填，目前待定。</p>
+        <span class="source">证据来源：本场弹幕 · 模型二次判定 · 1 条 / 1 用户 · 单源待验证</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>群体共识</h3>
+      <p><span class="tag tag-blue">共识不足</span>规则层对房间叙事给出正面 3 / 负面 0、净 +3，但其中没有形成对 T1 或 KC 的本场胜负共识：KC 直接提及为 0，T1 仅 1 条弱声望表达，且窗口主话题是 IG、BLG、JDG 与选手玩梗。</p>
+      <p><strong>分歧：</strong>一条 T1 声望正信号与一条 Doran 条件性负信号方向相抵；两者都只有 1 条 / 1 用户，不足以构成有效分歧，更不足以构成方向确认。</p>
+      <div class="timeline" aria-label="规则层房间情绪走势，时间为北京时间">
+        <div class="timeline-item"><div class="timeline-time">04:30</div><div class="timeline-value">+1</div><div class="muted">15 条</div></div>
+        <div class="timeline-item"><div class="timeline-time">04:36</div><div class="timeline-value">0</div><div class="muted">4 条</div></div>
+        <div class="timeline-item"><div class="timeline-time">04:42</div><div class="timeline-value">0</div><div class="muted">5 条</div></div>
+        <div class="timeline-item"><div class="timeline-time">04:48</div><div class="timeline-value">+1</div><div class="muted">14 条</div></div>
+        <div class="timeline-item"><div class="timeline-time">04:54</div><div class="timeline-value">+1</div><div class="muted">9 条</div></div>
+      </div>
+      <p class="muted" style="margin-top:10px;">以上是共用直播间整体叙事，不代表 T1–KC 群体方向；规则层转折点为 0，峰值 04:33 为 6 条 / 分且判中性。</p>
+      <span class="source">证据来源：本场弹幕 · 规则层 narrative + 人工语境复核 · 47 条 / 26 用户 · 单一来源</span>
+    </div>
+    <div class="card">
+      <h3>队伍状态、历史对阵与盘口讨论</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>可呈现信息</th>
+              <th>来源与置信</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>T1 近期状态</td>
+              <td>本地结构化库已知 10-23 至 10-29 四个系列结果为 3 胜 1 负：胜 LOS、CFO、MKOI，负 DK；仅系列胜负，不含本场适配判断。</td>
+              <td>历史画像 · 更新至 2026-11-06 · 仅背景</td>
+            </tr>
+            <tr>
+              <td>KC 近期状态</td>
+              <td>本地结构化库已知 10-23 至 10-31 五个系列结果为 3 胜 2 负：胜 AL、CFO、MKOI，负 LYON、BLG；仅系列胜负，不含本场适配判断。</td>
+              <td>历史画像 · 更新至 2026-11-06 · 仅背景</td>
+            </tr>
+            <tr>
+              <td>历史直接对阵</td>
+              <td>本地 matches 库未录入 T1 × KC 的直接交锋记录，无法给出 H2H 日期、比分或系列趋势。</td>
+              <td>历史画像 · H2H 记录 0 · 数据缺口</td>
+            </tr>
+            <tr>
+              <td>盘口讨论</td>
+              <td>规则层 <code>odds_discussion.count=0</code>；窗口内没有独赢、让分、大小盘、价格或系列比分的数字讨论。</td>
+              <td>本场弹幕 · 盘口 0 · 数据缺口</td>
+            </tr>
+            <tr>
+              <td>本场预期</td>
+              <td>未出现 2-0、2-1、爆冷等针对 T1–KC 的明确比分预期；仅有 T1 声望性正面表达与 Doran 条件性负面玩梗。</td>
+              <td>本场弹幕 · 明确预期 0 · 样本不足</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin-top:10px;">近期战绩只描述已结算的系列结果，不用于推导本场胜率；盘口缺失时不以历史画像代替盘口证据。</p>
+    </div>
+    <div class="card">
+      <h3>灰信号条件预测</h3>
+      <p class="empty">今日无灰信号</p>
+      <p class="muted">规则层 <code>gray_signals.count=0</code>，关键词复核也未见“假赛、剧本、收钱、故意送、卡盘”等有效风险链；本窗口不建立条件方向。</p>
+      <span class="source">证据来源：本场弹幕 · 灰信号 0 · 不触发方向</span>
+    </div>
+    <div class="card">
+      <h3>中性弹幕二次判定</h3>
+      <p><span class="tag tag-blue">37 个文本簇 / 44 条</span>已逐条复核：2 个带本场方向语义的簇纳入上方弱锚点；5 个实体簇指向 IG、BLG、Chovy 等跨场话题，移出本场；其余 30 个簇为数字、表情、广告、VIP 闲聊或无数值对象的口语，不硬套情绪。</p>
+      <p class="muted">其中“6 / 666 / 1–5”等没有明确对象，未计入夸赞；“超威同意了吗”讨论对象不是本场队伍；“还有一个小时开赛”只作为赛前时间语境，不作为方向信号。</p>
+      <span class="source">证据来源：本场弹幕 · neutral_salvage 逐条语境复核 · 模型二次判定</span>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="section-4">
+    <h2 id="section-4"><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+    <div class="card">
+      <p class="empty">今日无灰信号</p>
+      <p class="muted">当前窗口未出现同时具备对象、质疑语义与比赛语境的灰信号；因此没有可直接对照盘口的风险方向。任何历史上的卡时间或比赛真实性质疑均不纳入本场统计。</p>
+      <span class="source">证据来源：本场弹幕 · 规则层 gray_signals 0 · 当前窗口范围</span>
+    </div>
+  </section>
+  <footer>
+    <p>原始数据：data/intel_slices/lol-hupu-1693669411635200_pre.jsonl（47 条，实际来源 huya_lol_official / room 660000）；规则层：runtime/vps_intel/lol-hupu-1693669411635200_pre_intel.json。</p>
+    <p>历史状态：docs/data/intel/matches.json（更新至 2026-11-06）；队伍命名：docs/data/intel/team_names.json（T1 / KC）。</p>
+    <p>弹幕采集截止：2026-11-07 04:59（北京）；页面生成：2026-11-07 05:01（北京，UTC 2026-11-06 21:01）。本页所有时间均为北京时间，UTC 仅作括注。</p>
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script>(function(){var v=null;try{v=localStorage.getItem("di_v")}catch(e){}if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("v"+Date.now()+"-"+Math.random().toString(36).slice(2));try{localStorage.setItem("di_v",v)}catch(e){}}fetch("https://danmu-intel-api.vercel.app/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({page:location.pathname,visitor:v})}).catch(function(){})})();</script></body>
+</html>
