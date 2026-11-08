@@ -83,7 +83,8 @@
       language: navigator.language || "",
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
     });
-    if (navigator.sendBeacon) {
+    const crossOrigin = Boolean(apiOrigin) && new URL(endpoint).origin !== window.location.origin;
+    if (!crossOrigin && navigator.sendBeacon) {
       navigator.sendBeacon(endpoint, new Blob([payload], { type: "application/json" }));
       return;
     }
@@ -92,6 +93,7 @@
       headers: { "Content-Type": "application/json" },
       body: payload,
       credentials: "omit",
+      mode: "cors",
       keepalive: true
     }).catch(() => {});
   };
