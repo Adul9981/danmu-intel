@@ -31,7 +31,6 @@ const outboundName = (id) => ({
 
 let rangeDays = 1;
 let allPages = [];
-const apiOrigin = String(window.DANMU_ANALYTICS_API || "").replace(/\/$/, "");
 
 function renderChart(rows) {
   if (!rows.length) {
@@ -89,6 +88,7 @@ async function load(days = rangeDays) {
     button.classList.toggle("active", Number(button.dataset.days) === days);
   });
   try {
+    const apiOrigin = String(window.DANMU_ANALYTICS_API || "").replace(/\/$/, "");
     const response = await fetch(`${apiOrigin}/intel/api/stats?days=${days}`, { cache: "no-store" });
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     render(await response.json());
@@ -97,9 +97,14 @@ async function load(days = rangeDays) {
   }
 }
 
-document.querySelectorAll("[data-days]").forEach((button) => {
-  button.addEventListener("click", () => load(Number(button.dataset.days)));
-});
-$("pageSearch").addEventListener("input", renderPages);
-load(1);
-setInterval(() => load(rangeDays), 60_000);
+function boot() {
+  document.querySelectorAll("[data-days]").forEach((button) => {
+    button.addEventListener("click", () => load(Number(button.dataset.days)));
+  });
+  $("pageSearch").addEventListener("input", renderPages);
+  load(1);
+  setInterval(() => load(rangeDays), 60_000);
+}
+
+if (document.readyState === "complete") boot();
+else window.addEventListener("load", boot, { once: true });
