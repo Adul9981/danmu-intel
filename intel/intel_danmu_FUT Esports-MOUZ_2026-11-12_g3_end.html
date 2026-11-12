@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>FUT Esports vs MOUZ · G3 局末弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --sub: #6e6e73;
+      --muted: #8a8f98;
+      --line: #e5e7eb;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+      --warn: #b45309;
+      --warn-soft: #fff6e8;
+      --danger: #b42318;
+      --danger-soft: #fff0ee;
+      --positive: #0b6b3a;
+      --positive-soft: #edf8f1;
+      --radius: 18px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .035), 0 10px 28px rgba(0, 0, 0, .045);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.68;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { width: min(1040px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 44px; }
+    .hero {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      right: -120px;
+      top: -160px;
+      background: radial-gradient(circle, rgba(0, 113, 227, .12), rgba(0, 113, 227, 0));
+      pointer-events: none;
+    }
+    .kicker, .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 8px 0 6px;
+      font-size: clamp(30px, 5.4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+    .versus { color: var(--muted); font-weight: 500; font-size: .58em; margin: 0 8px; }
+    .subtitle { margin: 0; color: var(--sub); font-size: 15px; }
+    .status {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid #cfe2fa;
+      background: linear-gradient(135deg, #f7fbff, #edf6ff);
+    }
+    .status strong {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 17px;
+      color: #075ca8;
+    }
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(0, 113, 227, .1);
+      flex: 0 0 auto;
+    }
+    .status p { margin: 8px 0 0; color: #36536c; }
+    .meta-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .meta-item {
+      min-height: 112px;
+      padding: 15px;
+      border-radius: 14px;
+      background: #f8f9fb;
+      border: 1px solid #eef0f3;
+    }
+    .meta-item .label { display: block; color: var(--muted); font-size: 11px; font-weight: 650; }
+    .meta-item strong { display: block; margin-top: 7px; font-size: 14px; line-height: 1.35; }
+    .meta-item small { display: block; margin-top: 5px; color: var(--sub); font-size: 11px; line-height: 1.45; }
+    main { display: grid; gap: 34px; margin-top: 34px; }
+    section { min-width: 0; }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 0 0 14px;
+      font-size: 21px;
+      line-height: 1.3;
+      letter-spacing: -.015em;
+    }
+    h2 .no {
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: #fff;
+      background: var(--accent);
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+    h3 { margin: 4px 0 8px; font-size: 16px; line-height: 1.42; }
+    p { margin: 8px 0; }
+    .lede { color: var(--sub); margin: 0 0 14px 45px; }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .signal { border-top: 4px solid var(--accent); }
+    .signal.positive { border-top-color: var(--positive); }
+    .signal.negative { border-top-color: var(--danger); }
+    .signal.neutral { border-top-color: #8a8f98; }
+    .signal-kicker {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f0f1f4;
+      color: #4f535a;
+      font-size: 10.5px;
+      line-height: 1.4;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .tag.source { color: #075ca8; background: var(--accent-soft); }
+    .tag.warn { color: #8a4b00; background: var(--warn-soft); }
+    .tag.danger { color: var(--danger); background: var(--danger-soft); }
+    .tag.ok { color: var(--positive); background: var(--positive-soft); }
+    .table-wrap { overflow-x: auto; margin-top: 12px; border-radius: 12px; border: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; background: #fff; }
+    th, td { padding: 10px 11px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { color: var(--sub); background: #fafbfc; font-size: 11px; white-space: nowrap; }
+    td { font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
+    .stat { padding: 12px; border-radius: 12px; background: #f6f8fa; }
+    .stat b { display: block; font-size: 19px; color: var(--accent); }
+    .stat span { display: block; color: var(--sub); font-size: 10.5px; line-height: 1.4; margin-top: 2px; }
+    .win-row { display: flex; align-items: center; gap: 10px; margin: 9px 0; }
+    .win-name { flex: 0 0 96px; font-size: 12.5px; font-weight: 700; }
+    .bar { flex: 1; height: 12px; border-radius: 999px; overflow: hidden; background: #eceef2; }
+    .bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+    .win-pct { flex: 0 0 42px; text-align: right; font-weight: 750; color: var(--accent); font-size: 13px; }
+    .ratings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .rating-group { padding: 13px; border-radius: 13px; background: #f8f9fb; }
+    .rating-group h4 { margin: 0 0 8px; font-size: 12px; color: var(--accent); }
+    .rating-line { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dashed #e3e5e8; font-size: 12px; }
+    .rating-line:last-child { border-bottom: 0; }
+    .note { color: var(--sub); font-size: 11.5px; }
+    .consensus-band {
+      background: linear-gradient(145deg, #0a3156, #123f6e);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 22px;
+      margin: 12px 0;
+      box-shadow: var(--shadow);
+    }
+    .consensus-band .eyebrow { color: #9fcbff; }
+    .consensus-band .stat { background: rgba(255, 255, 255, .1); }
+    .consensus-band .stat b { color: #fff; }
+    .consensus-band .stat span, .consensus-band .note { color: #d6e7f8; }
+    .consensus-band p { color: #f2f7fb; }
+    .discipline { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: #f7f8fa; color: var(--sub); font-size: 12px; }
+    details { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+    summary { cursor: pointer; font-weight: 700; color: var(--accent); }
+    details table { margin-top: 10px; min-width: 760px; }
+    .source-note { color: var(--muted); font-size: 11px; }
+    footer {
+      margin-top: 28px;
+      padding: 14px 18px;
+      color: var(--sub);
+      background: rgba(255,255,255,.66);
+      border: 1px solid #eaebee;
+      border-radius: 14px;
+      font-size: 11.5px;
+    }
+    @media (max-width: 760px) {
+      .wrap { width: calc(100% - 18px); padding-top: 10px; }
+      .hero { padding: 22px 17px; border-radius: 18px; }
+      .meta-strip, .grid, .ratings { grid-template-columns: 1fr; }
+      .meta-item { min-height: 0; }
+      .lede { margin-left: 0; }
+      h2 { align-items: flex-start; font-size: 18px; }
+      h2 .no { flex-basis: 30px; width: 30px; height: 30px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .win-name { flex-basis: 78px; }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">FUT Esports-MOUZ 2026-11-12 g3 end</b></div>
+  <div class="wrap">
+    <header class="hero">
+      <div class="kicker">弹幕情报 · CS2 · G3 GAME-REVIEW</div>
+      <h1>FUT Esports <span class="versus">vs</span> MOUZ</h1>
+      <p class="subtitle">2026-11-12 · 第 3 小局 · Nuke（核子危机） · 局末/局间快照</p>
+      <div class="status" role="status">
+        <strong><span class="status-dot" aria-hidden="true"></span>局中·非终局，结果待定</strong>
+        <p>按本场弹幕口径，MOUZ 在 Nuke 建立明显赛点优势并出现收图反应；FUT 仅见零星追分与环境噪声。局末时间窗已过，但精确比分、地图与赛果仍待官方核对。</p>
+      </div>
+      <div class="meta-strip" aria-label="快照元信息">
+        <div class="meta-item">
+          <span class="label">G3 有效窗口</span>
+          <strong>17:48–18:30（北京）</strong>
+          <small>窗口后同房切场内容已剔除</small>
+        </div>
+        <div class="meta-item">
+          <span class="label">弹幕采集截止</span>
+          <strong>18:30（北京）</strong>
+          <small>仅代表该节点；后续同 URL 可更新</small>
+        </div>
+        <div class="meta-item">
+          <span class="label">有效样本</span>
+          <strong>4,471 条 · 1,964 个账号</strong>
+          <small>FUT 126 · MOUZ 156 · Nuke 64 次词面</small>
+        </div>
+        <div class="meta-item">
+          <span class="label">来源完整度</span>
+          <strong>虎牙两房 · 部分缺口</strong>
+          <small>BLAST、KICK、SOOP、Twitch 未入切片</small>
+        </div>
+      </div>
+    </header>
+    <main>
+      <section id="bp">
+        <h2><span class="no">1</span>BP 锚点与选人情报（弹幕讨论·非确认）</h2>
+        <p class="lede">CS2 的 BP 对应地图池、禁选与选边，不使用英雄阵容；以下均为弹幕口径，不视作官方确认。</p>
+        <div class="card">
+          <div class="eyebrow">地图与选边</div>
+          <h3>G3 为 Nuke；FUT 先 CT，MOUZ 先 T</h3>
+          <p>17:50–17:56（北京），两房围绕“图三／Nuke／核子／谁 CT”连续讨论；17:55 出现“FUT CT 开”“Futct”。地图层有多条提及，但本节点没有官方地图页完成校验。</p>
+          <div class="tag-row">
+            <span class="tag source">本场弹幕</span>
+            <span class="tag source">两房讨论</span>
+            <span class="tag">地图：弹幕口径·待官方</span>
+            <span class="tag">选边：单源待验证</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">选手名单</div>
+          <h3>五人名单不完整；仅列弹幕可交叉的名字</h3>
+          <div class="table-wrap">
+            <table aria-label="G3 地图与选手名单">
+              <thead>
+                <tr>
+                  <th>队伍</th>
+                  <th>地图 / 英雄位</th>
+                  <th>选手口径</th>
+                  <th>证据与边界</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>FUT Esports</strong></td>
+                  <td>Nuke；CS2 无英雄位</td>
+                  <td>dziugss、SunPayus、dem0n、xfl0ud；第五席未唯一确认</td>
+                  <td>
+                    本场出现“带个教练／教练站关键位置”等讨论；前局记录有 coolio 临时代打线索，但不能直接补成 G3 官方名单。
+                    <span class="tag source">本场弹幕</span>
+                    <span class="tag source">前局弹幕</span>
+                    <span class="tag">弹幕口径·待官方</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>MOUZ</strong></td>
+                  <td>Nuke；CS2 无英雄位</td>
+                  <td>torzsi、xelex、xertioN、Spinx、PR</td>
+                  <td>
+                    结构化名单与当前节点讨论交叉；“托哥／小美人”等昵称不强行补位置或改变名单。
+                    <span class="tag source">本场弹幕</span>
+                    <span class="tag">弹幕口径·待官方</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">BP 后战绩核查</div>
+          <h3>无战绩情报提及</h3>
+          <p>窗口内出现“FUT 昨天零封绿龙这图”“老鼠核子绝活”等评价，但没有形成同时包含日期、比分与地图的完整可复核战绩链，因此不升级为 BP 后战绩锚点。</p>
+          <p class="note">历史画像（2026-08-24）中 FUT 的 Nuke 旧数据只作背景，不替代本场事实；“绿龙”相关比较属于跨队参照。</p>
+          <div class="tag-row">
+            <span class="tag source">本场弹幕</span>
+            <span class="tag source">历史画像 · 2026-08-24</span>
+            <span class="tag">无战绩情报提及</span>
+          </div>
+        </div>
+      </section>
+      <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">FUT Esports</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:10%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">10%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">MOUZ</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:90%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">90%</span></div><div class="note">整场胜负弹幕 10 条（近 5 分钟样本不足，回退累积），两队相加恒为 100%。</div><div class="note" data-sit-ts="1794484763" style="color:#8a8f98;font-size:11px;margin-top:2px">胜率更新于 19:59:23（北京时间）</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div style="display:flex;gap:20px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#0071e3">FUT</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">dem0n</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">3.7</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">26人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">xfl0ud</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">3.7</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">15人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">SunPayus</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">2.5</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">15人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">dziugss</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">2.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">9人评</span></div></div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#ff3b30">MOUZ</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">torzsi</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">10.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">42人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">PR</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">9.6</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">15人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">xelex</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">9.5</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">24人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">xertioN</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">9.5</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">16人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Spinx</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">9.3</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">17人评</span></div></div></div><div style="margin-top:10px"><div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#8a8f98">未归属</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">coolio</span><span style="font-weight:750;color:#8a8f98;min-width:34px;text-align:right">4.3</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">16人评</span></div></div><div class="note">来源：虎扑通用评分（每小局独立）· 核子危机</div><div class="note" data-rat-ts="1794484793" style="color:#8a8f98;font-size:11px;margin-top:2px">评分更新于 19:59:53（北京时间）</div><!-- SITUATION:RATINGS:END --></div>
+      <section id="direction">
+        <h2><span class="no">3</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+        <p class="lede">只汇总本局有对象、有时间且可验证的弹幕信号；领先、赛点与“gg”均不等于官方终局。</p>
+        <div class="grid">
+          <article class="card signal positive">
+            <div class="signal-kicker">
+              <span>正锚点 · 01</span>
+              <span class="tag source">本场弹幕</span>
+            </div>
+            <h3>MOUZ × Nuke：强图叙事与 T 方拿分同向</h3>
+            <p><strong>对象：</strong>MOUZ 在 G3 Nuke 的收图条件。</p>
+            <p><strong>依据：</strong>17:56–18:21（北京）两房持续出现“老鼠无敌强图／世界第一 Nuke／老鼠绝活核子／学院派打核子厉害”；同时多条讨论 MOUZ 进攻端拿到 11 分。</p>
+            <p><strong>时间：</strong>17:56–18:21，18:09 后强图评价由单点转为连续复现。</p>
+            <p><strong>验证：</strong>弹幕口径出现赛点与收图反应，方向阶段性吻合；官方比分仍待核对。</p>
+            <div class="tag-row">
+              <span class="tag ok">正向</span>
+              <span class="tag source">本场弹幕</span>
+              <span class="tag source">两房共振</span>
+              <span class="tag">待官方结果</span>
+            </div>
+          </article>
+          <article class="card signal positive">
+            <div class="signal-kicker">
+              <span>正锚点 · 02 · 模型二次判定</span>
+              <span class="tag source">本场弹幕</span>
+            </div>
+            <h3>MOUZ 单回合操作获得集中夸赞</h3>
+            <p><strong>对象：</strong>MOUZ 的枪法与回合执行，不扩展到赛果确认。</p>
+            <p><strong>依据：</strong>18:10:34–18:10:49（北京）多账号连续出现“666”“神了”“托哥无敌”“小美人真厉害”；18:29 再次出现“666／牛批”峰值。</p>
+            <p><strong>时间：</strong>18:10 与 18:29 两段。</p>
+            <p><strong>验证：</strong>真实正向情绪，但多数句内未绑定具体回合；只纳入过程方向，不作独立胜负锚。</p>
+            <div class="tag-row">
+              <span class="tag ok">模型二次判定</span>
+              <span class="tag">对象部分不明</span>
+              <span class="tag source">本场弹幕</span>
+            </div>
+          </article>
+          <article class="card signal negative">
+            <div class="signal-kicker">
+              <span>负锚点 · 01</span>
+              <span class="tag source">本场弹幕</span>
+            </div>
+            <h3>FUT × Nuke CT：地图理解与防守执行被持续看衰</h3>
+            <p><strong>对象：</strong>FUT 在 Nuke 的 CT 开局、B 区防守与中期调整。</p>
+            <p><strong>依据：</strong>18:01–18:21（北京）两房出现“CT 图被打穿／FUT 不会核子／进 B 跟回家一样／一点信息不拿”等表达，并反复提到 FUT 防守只拿 1 分。</p>
+            <p><strong>时间：</strong>18:01–18:21，18:08 后从“地图强弱”转向执行与后劲质疑。</p>
+            <p><strong>验证：</strong>与弹幕口径的比分走势同向；不据弹幕判 FUT 已输。</p>
+            <div class="tag-row">
+              <span class="tag danger">负向</span>
+              <span class="tag source">本场弹幕</span>
+              <span class="tag source">两房共振</span>
+              <span class="tag">待官方结果</span>
+            </div>
+          </article>
+          <article class="card signal negative">
+            <div class="signal-kicker">
+              <span>负锚点 · 02 · 外推</span>
+              <span class="tag source">前局弹幕</span>
+            </div>
+            <h3>上一局赛点失守被视为 FUT 的心态风险</h3>
+            <p><strong>对象：</strong>FUT 在 G3 的追分稳定性。</p>
+            <p><strong>依据：</strong>18:02–18:23（北京）出现“上一把那么大优势被翻，没心态了”“图二六个赛点拿不下”“被大翻盘后容易崩”等观察。</p>
+            <p><strong>时间：</strong>18:02–18:23。</p>
+            <p><strong>验证：</strong>仅代表观众对前局延续的推测，不是本局事实；与当前落后方向部分同向。</p>
+            <div class="tag-row">
+              <span class="tag danger">负向</span>
+              <span class="tag source">前局弹幕</span>
+              <span class="tag">推测·待验证</span>
+            </div>
+          </article>
+          <article class="card signal neutral">
+            <div class="signal-kicker">
+              <span>早期反向锚 · 已弱化</span>
+              <span class="tag source">本场弹幕</span>
+            </div>
+            <h3>“MOUZ 要没了”被随后拿分叙事反转</h3>
+            <p><strong>对象：</strong>G3 开局对 MOUZ 的负向判断。</p>
+            <p><strong>依据：</strong>17:55–18:07 出现“老鼠没了／老鼠不行了／MOUZ 这图这么菜都打不过”等零星表达；18:08 后强图与 T 方得分叙事占优。</p>
+            <p><strong>验证：</strong>早期反向锚已失效，仅留作情绪反转样本，不重复计入当前负向票。</p>
+            <div class="tag-row">
+              <span class="tag">早期反向</span>
+              <span class="tag source">本场弹幕</span>
+              <span class="tag">已弱化</span>
+            </div>
+          </article>
+        </div>
+        <div class="consensus-band">
+          <div class="eyebrow">群体共识 × 分歧 × 样本量</div>
+          <h3>过程方向明确偏 MOUZ；官方赛果仍未闭合</h3>
+          <p>规则层叙事主线显示，开局仍有人看衰 MOUZ，随后被“Nuke 强图＋进攻端连续拿分”覆盖。局末核心共识是“MOUZ 的 Nuke 更强、FUT 的 CT 与调整不足”，而不是已取得官方赛果。</p>
+          <div class="stats">
+            <div class="stat"><b>4,471</b><span>有效弹幕</span></div>
+            <div class="stat"><b>+17</b><span>17:48 档 · 2,218 条 · 正 71 / 负 54</span></div>
+            <div class="stat"><b>+47</b><span>规则层 18:14 档 · 正 118 / 负 71 · 跨至 18:38</span></div>
+            <div class="stat"><b>347/分</b><span>18:20 密度峰值</span></div>
+          </div>
+          <p><strong>共识：</strong>“MOUZ 的 Nuke 强、FUT 当前防守与战术执行差”是主要过程共识。 <span class="tag source">本场弹幕</span></p>
+          <p><strong>分歧：</strong>少量“FUT 后段追分／史诗翻盘”与“MOUZ 已近收图”并存；前者在 18:25 后快速衰减。 <span class="tag source">本场弹幕</span></p>
+          <p class="note">置信校准：18:14 档的后 8 分钟已可能混入切场噪声，只保留走势参考；规则层 `win_signal` 为 MOUZ 9／FUT 1，但样本含重复刷屏与“要零封老鼠了吗”等语义冲突。结论保留为“过程方向明显偏 MOUZ，胜负共识仍待官方”。 <span class="tag source">本场弹幕</span></p>
+        </div>
+        <div class="card">
+          <div class="eyebrow">中性弹幕二次判定</div>
+          <h3>40 条候选中，只有少量接近真实情绪；其余为外队、纯称呼、战术提问或窗口外噪声</h3>
+          <p>可纳入方向的候选主要集中在三类：18:04“老鼠如果打 FUT 光头……”是重复刷屏的条件性看衰 FUT；18:20“你看看人家老鼠”是对 MOUZ 的弱正向比较；18:03 的 MOUZ 提 A 是纯战术提问，无情绪。</p>
+          <p>18:10 的“666／神了／托哥无敌”被补判为真实正向情绪，但缺乏稳定对象；18:26 的“老鼠开吃”被补判为对 MOUZ 回合执行的可疑/负向情绪，归入灰信号条件项。</p>
+          <details>
+            <summary>展开：neutral_salvage 40 条逐项判定</summary>
+            <div class="table-wrap">
+              <table aria-label="中性弹幕候选逐项判定">
+                <thead>
+                  <tr><th>#</th><th>北京时间</th><th>候选</th><th>次数</th><th>二次判定</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>18:09</td><td>绿龙</td><td>85</td><td>外队实体，无独立情绪；不纳入</td></tr>
+                  <tr><td>2</td><td>19:39</td><td>ropz</td><td>29</td><td>窗口外且为外队选手；不纳入</td></tr>
+                  <tr><td>3</td><td>18:45</td><td>donk</td><td>13</td><td>窗口外且为外队选手；不纳入</td></tr>
+                  <tr><td>4</td><td>19:17</td><td>又是 G2</td><td>11</td><td>窗口外、邻场实体；不纳入</td></tr>
+                  <tr><td>5</td><td>18:07</td><td>绿龙不打吗？</td><td>6</td><td>邻场询问，无本局情绪；不纳入</td></tr>
+                  <tr><td>6</td><td>18:09</td><td>绿龙的进攻你就享受吧</td><td>6</td><td>对 Spirit 的讽刺，不映射 FUT/MOUZ</td></tr>
+                  <tr><td>7</td><td>19:37</td><td>看看西若</td><td>6</td><td>窗口外、外队选手；不纳入</td></tr>
+                  <tr><td>8</td><td>19:39</td><td>看看 Niko</td><td>6</td><td>窗口外、对象不在本场；不纳入</td></tr>
+                  <tr><td>9</td><td>19:41</td><td>都被 donk 特完了当然上不了 1rt</td><td>5</td><td>窗口外、外队评价；不纳入</td></tr>
+                  <tr><td>10</td><td>17:52</td><td>绿龙几点开，你耳聋吗</td><td>5</td><td>邻场催问，无本局方向；不纳入</td></tr>
+                  <tr><td>11</td><td>18:03</td><td>刚来，什么时候 MOUZ 提 A</td><td>5</td><td>纯战术提问，无情绪；不纳入</td></tr>
+                  <tr><td>12</td><td>18:08</td><td>G2</td><td>5</td><td>外队纯实体；不纳入</td></tr>
+                  <tr><td>13</td><td>18:21</td><td>你以为他们是绿龙吗？</td><td>5</td><td>跨队反问，指向不唯一；不纳入</td></tr>
+                  <tr><td>14</td><td>18:23</td><td>绿龙几点开？？</td><td>5</td><td>邻场催问；不纳入</td></tr>
+                  <tr><td>15</td><td>19:02</td><td>来个不叫 niko 蝶的儿子</td><td>5</td><td>窗口外、外队玩梗；不纳入</td></tr>
+                  <tr><td>16</td><td>19:07</td><td>接下来欣赏绿龙的便秘进攻</td><td>5</td><td>窗口外、外队负评；不纳入</td></tr>
+                  <tr><td>17</td><td>19:31</td><td>donk 老了，长胡子了</td><td>5</td><td>窗口外、外队人物话题；不纳入</td></tr>
+                  <tr><td>18</td><td>19:36</td><td>donk 全是无效人头，把把开局送</td><td>5</td><td>窗口外、外队负评；不纳入</td></tr>
+                  <tr><td>19</td><td>19:37</td><td>看看载物</td><td>5</td><td>窗口外、外队选手；不纳入</td></tr>
+                  <tr><td>20</td><td>19:45</td><td>看看 donk</td><td>5</td><td>窗口外、外队选手；不纳入</td></tr>
+                  <tr><td>21</td><td>19:45</td><td>看看 faze 鸡伯恩</td><td>5</td><td>窗口外、外队选手；不纳入</td></tr>
+                  <tr><td>22</td><td>19:47</td><td>看看 faze 内特与</td><td>5</td><td>窗口外、外队选手；不纳入</td></tr>
+                  <tr><td>23</td><td>17:48</td><td>看看教练之前打绿龙的战绩</td><td>4</td><td>历史提问但无日期/比分链；不升级为锚点</td></tr>
+                  <tr><td>24</td><td>18:13</td><td>FUT 怎么守的绿龙 12 分</td><td>4</td><td>跨队历史对照，无本局情绪；不纳入</td></tr>
+                  <tr><td>25</td><td>18:20</td><td>donk 和载物：你看看人家老鼠</td><td>4</td><td>对 MOUZ 的弱正向比较；单源待验证</td></tr>
+                  <tr><td>26</td><td>18:21</td><td>绿龙被踢光头了</td><td>4</td><td>外队赛果玩梗；不映射本局</td></tr>
+                  <tr><td>27</td><td>18:59</td><td>donk 软了不应该是 aonk 吗</td><td>4</td><td>窗口外、外队玩梗；不纳入</td></tr>
+                  <tr><td>28</td><td>19:07</td><td>绿龙进攻有说法吗？</td><td>4</td><td>窗口外、外队战术；不纳入</td></tr>
+                  <tr><td>29</td><td>19:08</td><td>绿龙进攻你就享受吧</td><td>4</td><td>窗口外、外队讽刺；不纳入</td></tr>
+                  <tr><td>30</td><td>19:18</td><td>以后 G2 走这里都有阴影了</td><td>4</td><td>窗口外、外队玩梗；不纳入</td></tr>
+                  <tr><td>31</td><td>19:23</td><td>能被 donk 杀 19 个的队不多了</td><td>4</td><td>窗口外、外队数据；不纳入</td></tr>
+                  <tr><td>32</td><td>19:33</td><td>donk 是现象级选手，没什么好吹的</td><td>4</td><td>窗口外、外队评价；不纳入</td></tr>
+                  <tr><td>33</td><td>19:40</td><td>看看 ropz</td><td>4</td><td>窗口外、外队选手；不纳入</td></tr>
+                  <tr><td>34</td><td>19:43</td><td>Niko</td><td>4</td><td>窗口外、外队实体；不纳入</td></tr>
+                  <tr><td>35</td><td>19:45</td><td>Ropz</td><td>4</td><td>窗口外、外队实体；不纳入</td></tr>
+                  <tr><td>36</td><td>18:04</td><td>老鼠如果打 FUT 光头，FUT 打绿龙光头……</td><td>3</td><td>条件性看衰 FUT 的玩梗；重复刷屏，不升级为共识</td></tr>
+                  <tr><td>37</td><td>19:26</td><td>看了半年绿龙进攻太享受了！</td><td>3</td><td>窗口外、外队讽刺；不纳入</td></tr>
+                  <tr><td>38</td><td>19:41</td><td>都被你 donk 特完了当然上不了 1</td><td>3</td><td>窗口外、外队评价；不纳入</td></tr>
+                  <tr><td>39</td><td>17:50</td><td>绿龙开了</td><td>3</td><td>邻场时间信息，无情绪；不纳入</td></tr>
+                  <tr><td>40</td><td>18:21</td><td>niko 夺冠改变了时间线</td><td>3</td><td>外队历史玩梗；不纳入</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+          <div class="tag-row">
+            <span class="tag source">本场弹幕</span>
+            <span class="tag">模型二次判定</span>
+            <span class="tag">窗口边界已校准</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">灰信号条件预测</div>
+          <h3>若质疑兑现，方向如何变化</h3>
+          <div class="table-wrap">
+            <table aria-label="G3 灰信号条件预测">
+              <thead>
+                <tr><th>条件叙事</th><th>若兑现指向</th><th>当前验证</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>“让一追二剧本”</td>
+                  <td>指向 MOUZ 从系列 0–1 落后完成逆转；不证明故意。</td>
+                  <td>弹幕路径靠近兑现；正式赛果待官方。</td>
+                </tr>
+                <tr>
+                  <td>“买了／控盘”</td>
+                  <td>无法唯一指向队伍；只能标记盘口叙事失真候选。</td>
+                  <td>18:26 两房短时集中，对象不足。</td>
+                </tr>
+                <tr>
+                  <td>“FUT 图二收钱”</td>
+                  <td>风险指向 FUT 上一局执行稳定性，不延伸到假赛结论。</td>
+                  <td>单房单条，未获支持。</td>
+                </tr>
+                <tr>
+                  <td>“老鼠开吃了”</td>
+                  <td>若质疑兑现，指向 MOUZ 局末回合执行异常，反而有利 FUT 延迟收图。</td>
+                  <td>18:26 两房短时出现；无回放/盘口闭环。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tag-row">
+            <span class="tag warn">观众质疑·非结论</span>
+            <span class="tag source">本场弹幕</span>
+            <span class="tag">推测·待验证</span>
+            <span class="tag">盘口对照</span>
+          </div>
+        </div>
+      </section>
+      <section id="gray-signals">
+        <h2><span class="no">4</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+        <p class="lede">本局有效窗口筛得 3 组风险簇，另有 1 条指向上一局的回指；均为观众质疑，不能写成实锤。</p>
+        <div class="card">
+          <article class="signal negative">
+            <div class="signal-kicker">
+              <span>指向系列路径 · “让一追二剧本”</span>
+              <span class="tag warn">低–中风险</span>
+            </div>
+            <h3>观众质疑，非结论</h3>
+            <p>18:03:45（北京）出现“好一个让一追二的剧本啊”，18:17:11 再出现“剧本赛玩的明白吗你们”；两处均来自 CSBOY 官方房，未形成两房同步。</p>
+            <p><strong>指向对象：</strong>MOUZ 完成系列逆转的假设，而非某位选手故意送分。</p>
+            <p><strong>风险对照：</strong>若系列结果、回放或价格序列同时支持该路径，才可回填；当前仅记为“待验证”。 <span class="tag source">本场弹幕</span><span class="tag warn">观众质疑·非结论</span></p>
+          </article>
+          <article class="signal negative" style="margin-top:16px">
+            <div class="signal-kicker">
+              <span>指向不明 · “买了／控盘”</span>
+              <span class="tag warn">中风险 · 对象不足</span>
+            </div>
+            <h3>观众质疑，非结论</h3>
+            <p>18:26:12（北京）CSBOY-Mo 出现“唯一的解释是他们买了”；18:26:42 与 18:26:51 CSBOY 官方房连续出现“仔控盘”“还在控盘”，39 秒内形成两房集中。</p>
+            <p><strong>指向对象：</strong>未唯一指向 FUT、MOUZ、选手或具体回合。</p>
+            <p><strong>风险对照：</strong>若兑现，只能标记“执行或盘口叙事失真候选”；无对象、无盘口序列时不转成任何一方的胜负结论。 <span class="tag source">本场弹幕</span><span class="tag source">两房复现</span><span class="tag warn">观众质疑·非结论</span></p>
+          </article>
+          <article class="signal negative" style="margin-top:16px">
+            <div class="signal-kicker">
+              <span>指向 MOUZ 局末执行 · “开吃了”</span>
+              <span class="tag warn">中风险 · 短时簇</span>
+            </div>
+            <h3>观众质疑，非结论</h3>
+            <p>18:26:29–18:26:57（北京）出现“老鼠在干嘛／死老鼠又开始了／老鼠开吃了666／666老鼠开吃了／老鼠开吃了”等表达，覆盖两房，时间集中约 28 秒。</p>
+            <p><strong>指向对象：</strong>MOUZ 赛点阶段的回合执行与收尾稳定性；不是“故意输”的事实认定。</p>
+            <p><strong>风险对照：</strong>若兑现，只说明 MOUZ 收尾节奏出现异常、FUT 获得延迟比赛窗口；需结合回放与价格序列复核。 <span class="tag source">本场弹幕</span><span class="tag source">两房复现</span><span class="tag warn">观众质疑·非结论</span></p>
+          </article>
+          <article class="signal negative" style="margin-top:16px">
+            <div class="signal-kicker">
+              <span>指向 FUT 前局 · “图二收钱”</span>
+              <span class="tag warn">低风险 · 单条</span>
+            </div>
+            <h3>观众质疑，非结论</h3>
+            <p>17:58:10（北京）出现“图二 FUT 俱乐部起码收了十几万美刀”，仅 1 条、来自官方房，且主要解释上一局结果。</p>
+            <p><strong>指向对象：</strong>FUT 的队伍执行稳定性与上一局结果解释。</p>
+            <p><strong>风险对照：</strong>若后续出现同对象连续表达、可回放的具体异常或盘口同步失真，再升级复核；当前“未获支持”。 <span class="tag source">本场弹幕</span><span class="tag source">前局语境</span><span class="tag warn">观众质疑·非结论</span></p>
+          </article>
+          <div class="discipline">
+            风险纪律：以上均为观众质疑，只作风险标注与盘口对照，不构成假赛、剧本、操盘或选手故意送分的证据。灰信号与结果方向分开记录，禁止反向包装为实锤。
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      数据边界：G3 有效窗口 17:48–18:30（北京）；源文件采集延伸至 19:56（北京），18:30 后同房已切至其他比赛，未计入本页。实际来源仅虎牙 CSBOY 官方房与 CSBOY-Mo，BLAST 官方、KICK、SOOP、Twitch 为缺口。核心结论来自本场弹幕；地图、选边、阵容、比分与赛果均待官方校准。页面为局中快照，不构成终局或结算结论。
+    </footer>
+  </div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script></body>
+</html>
