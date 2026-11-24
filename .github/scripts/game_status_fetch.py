@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import datetime
+import gzip
 import json
 import random
 import re
@@ -28,7 +29,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-UA = {"User-Agent": "Mozilla/5.0 danmu-intel"}
+UA = {"User-Agent": "Mozilla/5.0 danmu-intel", "Accept-Encoding": "gzip"}
 
 
 RETRY_CODES = {429, 500, 502, 503, 504}
@@ -46,7 +47,10 @@ def get(url: str, attempts: int = 5):
         try:
             req = urllib.request.Request(url, headers=UA)
             with urllib.request.urlopen(req, timeout=25) as resp:
-                return json.loads(resp.read())
+                data = resp.read()
+                if resp.headers.get("Content-Encoding") == "gzip":
+                    data = gzip.decompress(data)
+                return json.loads(data)
         except urllib.error.HTTPError as e:
             last = e
             if e.code not in RETRY_CODES:
