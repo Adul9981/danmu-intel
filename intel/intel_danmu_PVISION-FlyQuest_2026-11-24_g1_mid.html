@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PVISION vs FlyQuest · G1 局中弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #e8e8ed;
+      --soft: #f9f9fb;
+      --accent: #0071e3;
+      --accent-soft: #eaf4ff;
+      --warn-soft: #f1f1f3;
+      --warn-text: #4b4b50;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      padding: 24px 16px 44px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .badge, .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 29px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge { background: var(--accent); color: #fff; }
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      color: var(--muted);
+    }
+    h1 {
+      margin: 0 0 7px;
+      font-size: clamp(28px, 6vw, 40px);
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    .subtitle {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 18px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .status span::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      vertical-align: 2px;
+    }
+    .notice {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border: 1px solid rgba(0,113,227,.16);
+      border-radius: 15px;
+      background: var(--accent-soft);
+      color: #294a67;
+      font-size: 13px;
+    }
+    .notice p { margin: 0 0 7px; }
+    .notice p:last-child { margin-bottom: 0; }
+    .card {
+      margin-bottom: 18px;
+      padding: 21px 22px 23px;
+      border: 1px solid rgba(0,0,0,.025);
+      border-radius: 20px;
+      background: var(--card);
+      box-shadow: 0 4px 16px rgba(0,0,0,.035);
+    }
+    h2 {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin: 0 0 17px;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.02em;
+    }
+    .no {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 29px;
+      height: 29px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .source {
+      display: inline-block;
+      margin-right: 5px;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: #0865bb;
+      font-size: 11px;
+      font-weight: 700;
+      vertical-align: 1px;
+      white-space: nowrap;
+    }
+    .source.muted { background: #f0f0f2; color: #55555a; }
+    .source.warn { background: var(--warn-soft); color: var(--warn-text); }
+    .evidence {
+      margin: 11px 0;
+      padding: 13px 15px;
+      border-left: 3px solid var(--accent);
+      border-radius: 5px 13px 13px 5px;
+      background: var(--soft);
+      font-size: 14px;
+    }
+    .evidence p { margin: 0 0 7px; }
+    .evidence p:last-child { margin-bottom: 0; }
+    .quote {
+      display: block;
+      margin-top: 6px;
+      color: #4b4b50;
+      font-size: 12.5px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .meta {
+      min-width: 0;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .meta-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .meta-value { display: block; font-size: 14px; font-weight: 650; }
+    .small { color: var(--muted); font-size: 12px; }
+    .system-placeholder {
+      min-height: 96px;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border: 1px dashed #d2d2d7;
+      border-radius: 14px;
+      background: var(--soft);
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+    .narrative {
+      margin-bottom: 14px;
+      padding: 14px 15px;
+      border-radius: 14px;
+      background: var(--soft);
+      font-size: 13.5px;
+    }
+    .narrative strong { color: var(--text); }
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+    .direction {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      font-size: 13.5px;
+    }
+    .direction.full { grid-column: 1 / -1; }
+    .direction-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .confidence {
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #f0f0f2;
+      color: #55555a;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .direction p { margin: 0 0 7px; }
+    .direction p:last-child { margin-bottom: 0; }
+    ul.clean {
+      margin: 7px 0 0;
+      padding-left: 18px;
+    }
+    ul.clean li { margin: 4px 0; }
+    .consensus-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin: 11px 0;
+    }
+    .stat {
+      padding: 10px 8px;
+      border-radius: 11px;
+      background: #fff;
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+    .stat b {
+      display: block;
+      color: var(--accent);
+      font-size: 17px;
+      line-height: 1.25;
+    }
+    .stat span { color: var(--muted); font-size: 10px; }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 9px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--soft);
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    .risk {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: var(--warn-soft);
+      color: var(--warn-text);
+      font-size: 11px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .discipline {
+      margin-top: 13px;
+      padding: 12px 14px;
+      border-radius: 13px;
+      background: var(--soft);
+      color: #4b4b50;
+      font-size: 12.5px;
+    }
+    footer {
+      padding: 2px 3px;
+      color: var(--muted);
+      font-size: 11.5px;
+      text-align: center;
+    }
+    @media (max-width: 680px) {
+      body { padding: 20px 12px 36px; }
+      .card { padding: 18px 16px 20px; border-radius: 17px; }
+      .grid, .direction-grid { grid-template-columns: 1fr; }
+      .direction.full { grid-column: auto; }
+      .consensus-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      th, td { min-width: 118px; }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">PVISION-FlyQuest 2026-11-24 g1 mid</b></div>
+  <main class="container">
+    <header>
+      <div class="eyebrow">
+        <span class="badge">局中·非终局，结果待定</span>
+        <span class="chip">G1｜MID-GAME</span>
+        <span class="chip">CS2 · BO1</span>
+      </div>
+      <h1>PVISION vs FlyQuest</h1>
+      <p class="subtitle">PGL Major Singapore Stage 1 · G1 局中弹幕情报快照 · 2026-11-24</p>
+      <div class="status">
+        <span>弹幕采集截止 19:47（北京）</span>
+        <span>数据窗口 19:08–19:47（北京）</span>
+        <span>进度：局中追分窗口，具体比分与终局待定</span>
+      </div>
+      <div class="notice">
+        <p><strong>本页只做局中快照。</strong> 规则层文件覆盖到更晚时段并混入其他 CS2 场次；本页已按目标队与 G1 截止时间过滤。20:08 起转入其他场次的内容不纳入本场判断。</p>
+        <p><strong>样本与完整性：</strong> 5,901 条弹幕、2,075 名活跃用户、2 个实际源。实际源为虎牙 CSBOY 官方房与 CSBOY-Mo；BLAST 官方及 KICK 默认采集源未接入，属于本节点覆盖缺口。</p>
+      </div>
+    </header>
+    <section class="card" id="bp">
+      <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+      <div class="evidence">
+        <p><span class="source">本场弹幕</span><strong>本局地图线索：阿努比斯，弹幕口径·待官方。</strong> 19:12 有一条弹幕直接提到“阿努比斯变 CT 了”；目前只有单房单条线索，且没有禁选顺序或官方图池确认，不能升级为已确认地图。</p>
+        <span class="quote">19:12 · CSBOY-Mo 房：“阿努比斯变 CT 了”</span>
+      </div>
+      <div class="grid">
+        <div class="meta">
+          <span class="meta-label">禁选顺序 / 本局图名</span>
+          <span class="meta-value">样本不足</span>
+          <span class="small">未出现完整 ban-pick 顺序；阿努比斯仅为核心线索，待官方。</span>
+        </div>
+        <div class="meta">
+          <span class="meta-label">FlyQuest × Dust2</span>
+          <span class="meta-value">观众评价偏强 · 弹幕口径·待官方</span>
+          <span class="small">19:21、19:23 提到其上一张赢图与“沙二胜率最高”，未给统计区间，且不能证明是当前地图。</span>
+        </div>
+        <div class="meta">
+          <span class="meta-label">JKS × 阿努比斯</span>
+          <span class="meta-value">历史 13-0 印象</span>
+          <span class="small">19:11 提到曾把“钢盔”打出 13-0；无日期、赛事和完整对手名，属历史画像引用。</span>
+        </div>
+        <div class="meta">
+          <span class="meta-label">BP 后战绩情报</span>
+          <span class="meta-value">无战绩情报提及</span>
+          <span class="small">未出现可核验的球队×地图近期胜率、样本区间或连续战绩。</span>
+        </div>
+      </div>
+    </section>
+    <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">PVISION</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:50%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">50%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">FlyQuest</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:50%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">50%</span></div><div class="note">暂无显式胜负弹幕样本，暂按 50:50 展示（观众口径·非结论），随弹幕更新。</div><div class="note" data-sit-ts="1795528050" style="color:#8a8f98;font-size:11px;margin-top:2px">胜率更新于 21:47:30（北京时间）</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div class="note">暂未获取到虎扑选手评分（本场/本局评分尚未生成，或数据源缺失）。</div><!-- SITUATION:RATINGS:END --></div><script>
+(function () {
+  if (window.__sitPoll) return;
+  window.__sitPoll = true;
+  function tsOf(el) {
+    if (!el) return null;
+    var w = el.querySelector("[data-sit-ts]");
+    var r = el.querySelector("[data-rat-ts]");
+    var tw = w ? (+w.getAttribute("data-sit-ts") || 0) : 0;
+    var tr = r ? (+r.getAttribute("data-rat-ts") || 0) : 0;
+    var t = Math.max(tw, tr);
+    return t > 0 ? t : null;
+  }
+  function swap() {
+    fetch(window.location.href.split("#")[0], { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (html) {
+        if (!html) return;
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var fresh = doc.getElementById("situation-card");
+        var cur = document.getElementById("situation-card");
+        if (!fresh || !cur) return;
+        var tNew = tsOf(fresh), tCur = tsOf(cur);
+        // 单调守卫：当前已有时间戳时，新卡缺失或更旧则跳过（防 CDN 多节点回跳）
+        if (tCur != null && (tNew == null || tNew <= tCur)) return;
+        cur.outerHTML = fresh.outerHTML;
+      })
+      .catch(function () {});
+  }
+  setInterval(swap, 60000);
+})();
+</script>
+    <section class="card" id="direction">
+      <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+      <div class="narrative">
+        <p><span class="source">本场弹幕</span><strong>规则层叙事主线：</strong>截止窗口内，19:08 与 19:31 两段规则层情绪均为净正（+58 → +23）。这代表讨论热度中的泛情绪，不等于两队胜率；转换为本场方向时，需降级为“轻偏 FlyQuest、分歧明显”。</p>
+        <p><span class="source muted">模型二次判定</span>5 个 5 分钟段中只采用截至 19:47 的前两段；后段 19:55–20:43 已接近换场或进入其他比赛，不纳入本页。19:22–19:23、19:29、19:34 的密集表述构成本页主要转折：FlyQuest 强度 → PVISION/Jame 批评 → JKS 起势。</p>
+      </div>
+      <div class="direction-grid">
+        <article class="direction">
+          <div class="direction-title"><span>正锚点 · FlyQuest</span><span class="confidence">轻偏 / 待验证</span></div>
+          <p><span class="source">本场弹幕</span><strong>看好对象：FlyQuest。</strong> 依据是第一阶段与 BO1 强度被多次重复：19:19“Bo1 之王”、19:20“第一阶段很猛”、19:24“major 的 BO1 很猛”。两个房间出现同向表述，但 CSBOY 官方房占绝大多数。</p>
+          <p class="small">验证：待本小局结束回填；当前结果为待定，不能写成胜方结论。</p>
+        </article>
+        <article class="direction">
+          <div class="direction-title"><span>正锚点 · JKS</span><span class="confidence">单房起势 / 待验证</span></div>
+          <p><span class="source">本场弹幕</span><strong>看好对象：FlyQuest 的 JKS。</strong> 19:34–19:35 连续出现“JKS 今天这么猛”“JKS 起来了”“JKS 真牛逼”等即时评价；同窗口共识别 13 条积极提及。</p>
+          <p class="small">验证：待后续回合与结算回填；集中来自一个房间，暂不升级为多源确认。</p>
+        </article>
+        <article class="direction">
+          <div class="direction-title"><span>负锚点 · PVISION/Jame</span><span class="confidence">集中批评 / 待验证</span></div>
+          <p><span class="source">本场弹幕</span><strong>看衰对象：PVISION 的主动性与 Jame 的保枪选择。</strong> 19:09–19:47 出现“保枪次数比暂停多”“掉一个就触发保枪”“没有回防”等集中批评；窗口内 49 条含负面语义的 Jame 提及，PVISION 负面语义提及 46 条。</p>
+          <p class="small">验证：待定。负面情绪只解释观众观感，不等于 PVISION 已输或必定输。</p>
+        </article>
+        <article class="direction">
+          <div class="direction-title"><span>反向锚点 · PVISION</span><span class="confidence">低置信 / 分歧</span></div>
+          <p><span class="source">本场弹幕</span><strong>相反线索：PVISION 仍被部分观众视为“能粘”。</strong> 19:29 出现“PV 牛逼”，19:37 出现“PV 一直都这样，遇强越强”；多次“PV 的比赛没那么简单”也表明部分观众预期追分或拖入加时。</p>
+          <p class="small">验证：待定。该线索与主流批评方向背离，不能单独推向 PVISION 胜。</p>
+        </article>
+        <article class="direction full">
+          <div class="direction-title"><span>负锚点 · FlyQuest 历史波动</span><span class="confidence">历史画像 / 分歧</span></div>
+          <p><span class="source">本场弹幕</span><strong>看衰对象：FlyQuest 的后续转化能力。</strong> 19:22–19:40 有 38 条讨论其“先 2-0、后 2-3”的历史叙事，用来质疑能否把第一阶段优势延续到后续 BO3。</p>
+          <p><span class="source muted">历史画像</span>该线索针对系列赛/阶段赛的后续兑现，不是本 BO1 小局的实时胜负依据；因此只作为 FlyQuest 正锚的分歧项。</p>
+        </article>
+      </div>
+      <div class="narrative" style="margin-top:12px;margin-bottom:0">
+        <p><span class="source">本场弹幕</span><strong>群体共识：轻偏 FlyQuest，但共识不足。</strong> 粗粒度关键词聚合：FlyQuest 正面强度类 68 条、历史崩盘类 38 条；PVISION 负面语义 46 条；Jame 负面语义 49 条。以上类别存在重叠，仅用于展示讨论倾斜，不是投票或胜率。</p>
+        <div class="consensus-stats">
+          <div class="stat"><b>5,901</b><span>窗口弹幕</span></div>
+          <div class="stat"><b>2,075</b><span>活跃用户</span></div>
+          <div class="stat"><b>68 / 38</b><span>Fly 正 / 疑</span></div>
+          <div class="stat"><b>0</b><span>有效显式胜负样本</span></div>
+        </div>
+        <p><span class="source muted">中性候选复核</span>规则层 40 条 <code>neutral_salvage</code> 已逐条复核：39 条属于其他比赛实体、纯聊天、表情或作业组合；1 个候选簇“放了液体和绿叶”重复 5 次，可判为对 FlyQuest 晋级方向的竞猜偏好，纳入正向票，但置信仍为单源待验证。其余无指向的“666/表情”不硬套给任何队。</p>
+        <p><span class="source warn">灰信号条件预测</span>若“PVISION 故意不打/按回合结算”质疑为真，条件方向指向 PVISION 不利、FlyQuest 有利；若“绿叶故意的”为真，则反向指向 FlyQuest 风险。两类均未获盘口或官方证据确认，不能直接用于定胜负。</p>
+      </div>
+    </section>
+    <section class="card" id="gray">
+      <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>风险簇</th>
+              <th>指向对象</th>
+              <th>样本与时间</th>
+              <th>风险等级</th>
+              <th>条件方向</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="source warn">观众质疑，非结论</span><br>“有人压 3-0，所以故意输”“按回合数发工资”“Jame 买了吧”</td>
+              <td>PVISION / Jame</td>
+              <td>7 条明确意图或工资梗；19:18–19:47；虎牙两房，其中 1 条来自 CSBOY-Mo，其余来自 CSBOY 官方房。</td>
+              <td><span class="risk">中</span></td>
+              <td>若兑现，指向 PVISION 不利、FlyQuest 有利；当前待定。</td>
+            </tr>
+            <tr>
+              <td><span class="source warn">观众质疑，非结论</span><br>“绿叶故意的”</td>
+              <td>FlyQuest</td>
+              <td>1 条；19:33；CSBOY 官方房。</td>
+              <td><span class="risk">低</span></td>
+              <td>若兑现，反向指向 FlyQuest 风险、PVISION 有利；当前待定。</td>
+            </tr>
+            <tr>
+              <td><span class="source warn">观众质疑，非结论</span><br>“真的没人买了吗”“上半场这样放，下半场不可能不放水”</td>
+              <td>指向未明</td>
+              <td>2 条；19:15、19:27；两个实际房间均有分布。</td>
+              <td><span class="risk">低</span></td>
+              <td>缺少队名、回合对象和盘口对照，暂不映射方向。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="discipline">
+        <span class="source">纪律声明</span>灰信号只作风险标注与后续盘口对照，不作假赛、放水或操纵结论。本窗口没有可核验的本场盘口价格与结算数据，因此不上调为“高”风险；所有指向均为待验证。
+      </div>
+    </section>
+    <footer>
+      数据层：rules JSON + 本场弹幕切片 · 实际采集 2 房 · 缺口：BLAST 官方、KICK · 页面仅覆盖 G1 局中截止窗口
+    </footer>
+  </main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
