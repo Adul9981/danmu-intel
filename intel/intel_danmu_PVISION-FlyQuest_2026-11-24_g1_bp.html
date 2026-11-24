@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>局中弹幕情报快照 · PVISION vs FlyQuest · G1</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #e8e8ed;
+      --soft: #f9f9fb;
+      --accent: #0071e3;
+      --accent-soft: #e8f4ff;
+      --warning-soft: #f0f0f2;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.58;
+      padding: 24px 16px 42px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 840px; margin: 0 auto; }
+    .eyebrow-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .supplement {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(27px, 6vw, 38px);
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    .subhead {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .status-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-bottom: 20px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .status-line span::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      vertical-align: 2px;
+    }
+    .notice {
+      padding: 13px 15px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0,113,227,.16);
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: #244766;
+      font-size: 13px;
+    }
+    .card {
+      margin-bottom: 18px;
+      padding: 21px 22px 23px;
+      border: 1px solid rgba(0,0,0,.025);
+      border-radius: 20px;
+      background: var(--card);
+      box-shadow: 0 4px 16px rgba(0,0,0,.035);
+    }
+    h2 {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin: 0 0 17px;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.025em;
+    }
+    .no {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 29px;
+      height: 29px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .meta {
+      min-width: 0;
+      padding: 12px 13px;
+      border-radius: 13px;
+      background: var(--soft);
+    }
+    .meta-label {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .035em;
+    }
+    .meta-value { display: block; font-size: 14px; font-weight: 650; }
+    .evidence {
+      margin: 12px 0;
+      padding: 13px 15px;
+      border-left: 3px solid var(--accent);
+      border-radius: 5px 13px 13px 5px;
+      background: var(--soft);
+      font-size: 14px;
+    }
+    .evidence p { margin: 0 0 7px; }
+    .evidence p:last-child { margin-bottom: 0; }
+    .quote {
+      display: block;
+      margin: 7px 0 0;
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .source {
+      display: inline-block;
+      margin-right: 5px;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: #0865bb;
+      font-size: 11px;
+      font-weight: 700;
+      vertical-align: 1px;
+      white-space: nowrap;
+    }
+    .source.neutral { background: #f0f0f2; color: #55555a; }
+    .source.warn { background: var(--warning-soft); color: #515154; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      padding: 2px 8px;
+      margin: 0 6px 7px 0;
+      border-radius: 7px;
+      background: #f0f0f2;
+      color: #515154;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .tag.blue { background: var(--accent-soft); color: #0865bb; }
+    .tag.emphasis { background: var(--text); color: #fff; }
+    .tag.warn { background: var(--warning-soft); color: #515154; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .92em;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+    .divider { height: 1px; margin: 16px 0; background: var(--line); }
+    .system-placeholder {
+      min-height: 104px;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border: 1px dashed #d2d2d7;
+      border-radius: 14px;
+      background: var(--soft);
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+    .narrative {
+      margin-bottom: 16px;
+      padding: 15px 16px;
+      border-radius: 14px;
+      background: var(--soft);
+      font-size: 14px;
+    }
+    .narrative strong { font-size: 15px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin: 13px 0 0;
+    }
+    .stat {
+      padding: 10px;
+      border-radius: 11px;
+      background: #fff;
+      text-align: center;
+    }
+    .stat b { display: block; color: var(--accent); font-size: 18px; line-height: 1.2; }
+    .stat span { color: var(--muted); font-size: 10px; }
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .direction-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      font-size: 14px;
+    }
+    .direction-card.full { grid-column: 1 / -1; }
+    .direction-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 9px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .direction-card p { margin: 6px 0; }
+    .kv {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 5px 8px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; }
+    .consensus-verdict {
+      display: inline-flex;
+      padding: 4px 10px;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      background: #f0f0f2;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .salvage {
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      background: #f0f0f2;
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .gray-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 13px;
+    }
+    .risk-pill {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--text);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .gray-item {
+      margin: 12px 0;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--soft);
+      font-size: 14px;
+    }
+    .gray-title {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-weight: 750;
+    }
+    .discipline {
+      margin-top: 15px;
+      padding: 13px 14px;
+      border-radius: 13px;
+      background: #f0f0f2;
+      color: #3a3a3c;
+      font-size: 12px;
+    }
+    .footer-note {
+      padding: 2px 5px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+    }
+    @media (max-width: 640px) {
+      body { padding: 17px 10px 32px; }
+      .card { padding: 17px 15px 19px; border-radius: 17px; }
+      h2 { font-size: 18px; gap: 9px; }
+      .no { width: 27px; height: 27px; border-radius: 9px; }
+      .meta-grid, .direction-grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .direction-card.full { grid-column: auto; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">PVISION-FlyQuest 2026-11-24 g1 bp</b></div>
+  <main class="container">
+    <div class="eyebrow-row">
+      <span class="badge">局中 · 非终局 · 结果待定</span>
+      <span class="supplement">补发节点</span>
+    </div>
+    <h1>PVISION vs FlyQuest</h1>
+    <p class="subhead">CS2 · 2026-11-24 · G1｜BP 后/开局（EARLY-GAME）· 局中弹幕情报快照</p>
+    <div class="status-line">
+      <span>进度以弹幕口径为准</span>
+      <span>弹幕窗口 19:00–19:27（北京）</span>
+      <span>采集截止 19:27（北京）</span>
+    </div>
+    <div class="notice">
+      <strong>补发说明：</strong>本页因流水线延迟在节点窗口后生成；切片已限定为 G1 BP/开局时段，
+      内容以 19:00–19:27（北京；UTC 11:00–11:27）弹幕为准。仅见虎牙
+      <code>csboy_official</code> 与 <code>csboy_mo</code> 两房，未见 SOOP / Twitch / KICK 同场源，
+      属数据源缺口，不能视为跨平台多源确认。
+    </div>
+    <section class="card">
+      <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+      <div class="meta-grid">
+        <div class="meta">
+          <span class="meta-label">地图线索</span>
+          <span class="meta-value">Dust2 / 沙二 · 弹幕口径·待官方</span>
+        </div>
+        <div class="meta">
+          <span class="meta-label">BP 完整性</span>
+          <span class="meta-value">实际禁选顺序：样本不足</span>
+        </div>
+        <div class="meta">
+          <span class="meta-label">地图提及量</span>
+          <span class="meta-value">7 条 · 2 个直播房</span>
+        </div>
+        <div class="meta">
+          <span class="meta-label">官方校验</span>
+          <span class="meta-value">未提供，待官方回填</span>
+        </div>
+      </div>
+      <div class="evidence">
+        <p>
+          <span class="source">本场弹幕</span>
+          19:03–19:21 的跨房讨论反复指向沙二，但页面不把讨论当作已确认选图。
+        </p>
+        <span class="quote">19:03 · <code>csboy_official</code>：“Pv的沙2”</span>
+        <span class="quote">19:21 · <code>csboy_mo</code>：“绿叶刚才赢的图就是沙二 有东西的”</span>
+      </div>
+      <div class="divider"></div>
+      <span class="tag blue">BP 后战绩情报</span>
+      <p>
+        <span class="source">本场弹幕</span>
+        观众给出了明显对 FlyQuest 有利的图池判断，但均无统计区间、官方数据出处或可核验胜率来源：
+      </p>
+      <div class="evidence">
+        <span class="quote">19:04 · <code>csboy_official</code>：“pv这个图打不了一点 20胜率打90胜率怎么玩”</span>
+        <span class="quote">19:23 · <code>csboy_official</code>：“绿叶沙2胜率最高，pv怎么想的”</span>
+        <p class="small muted">判定：弹幕口径·待官方；“20 胜率 / 90 胜率”不是本页确认的事实。</p>
+      </div>
+      <p>
+        <span class="source neutral">本场弹幕</span>
+        切片还出现“紫薇”及其 Dust2 位置评价，但没有官方选手 ID、所属队伍或当前阵容映射；
+        为避免错误配对，本段不把昵称写入正式阵容。选手×地图阵容归属：样本不足。
+      </p>
+    </section>
+    <section class="card">
+      <h2><span class="no">2</span>比赛局势（系统注入，本段不写）</h2>
+      <div class="system-placeholder">
+        本段由系统注入两队胜率与虎扑评分；Codex 不写、不补造，也不据此判定终局。
+      </div>
+    </section>
+    <section class="card">
+      <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+      <div class="narrative">
+        <strong>叙事主线：热度很高，但队伍胜负归因不足。</strong>
+        <span class="source">本场弹幕 · 规则层 narrative</span>
+        <p>
+          19:11、19:16、19:22 三个聚合时段分别记录 1,015、827、1,020 条弹幕；
+          19:23 单分钟峰值 348 条。规则层总体情绪为正面 117、负面 44、净 +73，
+          但其中夹杂竞猜作业、跨场闲聊、反讽和重复刷屏，不能直接解释成“观众看好某一队”。
+        </p>
+        <div class="stats">
+          <div class="stat"><b>3,969</b><span>全部弹幕</span></div>
+          <div class="stat"><b>309</b><span>本场相关</span></div>
+          <div class="stat"><b>270</b><span>去重文本</span></div>
+          <div class="stat"><b>2</b><span>虎牙直播房</span></div>
+        </div>
+      </div>
+      <div class="direction-grid">
+        <article class="direction-card">
+          <div class="direction-title">
+            <span>正锚点</span>
+            <span class="tag blue">FlyQuest</span>
+          </div>
+          <p><strong>FlyQuest 在沙二/BO1 被观众评价偏强。</strong></p>
+          <span class="source">本场弹幕</span>
+          <span class="quote">19:21 · <code>csboy_mo</code>：“绿叶刚才赢的图就是沙二 有东西的”</span>
+          <span class="quote">19:23 · <code>csboy_official</code>：“fly5个人的rating超级高 很厉害的”</span>
+          <dl class="kv">
+            <dt>时间</dt><dd>19:21–19:23（北京）</dd>
+            <dt>依据</dt><dd>地图印象、第一阶段与 BO1 评价</dd>
+            <dt>验证</dt><dd>待 G1 结束；推测·待验证</dd>
+          </dl>
+        </article>
+        <article class="direction-card">
+          <div class="direction-title">
+            <span>负锚点</span>
+            <span class="tag">PVISION</span>
+          </div>
+          <p><strong>PVISION 的沙二与抗速推能力被看衰。</strong></p>
+          <span class="source">本场弹幕</span>
+          <span class="quote">19:04 · <code>csboy_official</code>：“pv这个图打不了一点 20胜率打90胜率怎么玩”</span>
+          <span class="quote">19:25 · <code>csboy_official</code>：“Pv就怕枪硬的队伍打速推”</span>
+          <dl class="kv">
+            <dt>时间</dt><dd>19:04–19:25（北京）</dd>
+            <dt>依据</dt><dd>弹幕声称的图池胜率差与打法克制</dd>
+            <dt>验证</dt><dd>待 G1 结束；推测·待验证</dd>
+          </dl>
+        </article>
+        <article class="direction-card full">
+          <div class="direction-title">
+            <span>群体共识</span>
+            <span class="consensus-verdict">PV vs FlyQuest 胜负共识不足</span>
+          </div>
+          <p>
+            <span class="source">本场弹幕</span>
+            明确提及 PV 的 197 条、FlyQuest/绿叶的 118 条，合并本场相关 309 条；
+            两房贡献极不均衡，且大量内容围绕竞猜作业。局部评价确实轻偏 FlyQuest：
+            其沙二、第一阶段与 BO1 被反复称赞；PV 则因地图、进攻和经济/保枪方式被集中批评。
+          </p>
+          <p>
+            <span class="source neutral">本场弹幕 · 分歧</span>
+            反向声音同时存在：有人称 PV 比赛“没那么简单”、期待后段追分；
+            也有人批评 FlyQuest 历史上“先 2-0、后 2-3”。因此只能记录为
+            <strong>轻偏 FlyQuest、分歧明显、单源偏重</strong>，不能升级为胜方共识。
+          </p>
+        </article>
+        <article class="direction-card full">
+          <div class="direction-title">
+            <span>灰信号条件预测</span>
+            <span class="tag warn">观众质疑·非结论</span>
+          </div>
+          <p>
+            <span class="source">本场弹幕</span>
+            若 19:27 关于 PV“放水/故意输”的质疑随后被可核验事实支持，
+            条件方向将主要指向 <strong>PVISION 处于不利/异常风险</strong>。
+          </p>
+          <p>
+            <span class="source neutral">盘口</span>
+            本切片没有可用的具体价格、让分或成交锚点（规则层仅 1 条“无效人头”候选），
+            因而无法完成盘口偏离对照。上述方向只作条件式风险，不构成交易建议。
+          </p>
+        </article>
+      </div>
+      <div class="salvage">
+        <strong>中性弹幕二次判定：</strong>
+        <span class="source">本场弹幕 · 模型二次判定</span>
+        已复查 40 条 `neutral_salvage` 候选（39 条带实体）。
+        其中竞猜作业、跨场队伍、主播身份与重复局面播报不纳入方向板；
+        “保了”出现 172 次，属于保枪动作播报而非稳定情绪，未硬套为看衰信号。
+        本轮没有从该候选集新增可靠正/负锚点。
+      </div>
+    </section>
+    <section class="card">
+      <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <div class="gray-head">
+        <span class="source">本场弹幕</span>
+        <span class="risk-pill">PVISION 风险：中</span>
+        <span class="tag warn">观众质疑，非结论</span>
+        <span class="tag">无有效盘口对照</span>
+      </div>
+      <article class="gray-item">
+        <div class="gray-title">
+          <span>质疑指向：PVISION · “就是吃”</span>
+          <span>风险等级：低</span>
+        </div>
+        <p>
+          <span class="source">本场弹幕</span>
+          19:23 · <code>csboy_official</code>：“Pv懂的都懂 就是吃”
+        </p>
+        <p class="small muted">
+          <span class="source neutral">本场弹幕·二次判定</span>
+          单房、单条、表述隐晦，没有对象、回合或资金流证据。观众质疑，非结论。
+        </p>
+      </article>
+      <article class="gray-item">
+        <div class="gray-title">
+          <span>质疑指向：PVISION · “放水 / 故意输”</span>
+          <span>风险等级：中</span>
+        </div>
+        <p>
+          <span class="source">本场弹幕</span>
+          19:27:34 · <code>csboy_mo</code>：“上半场这样放 下半场不可能不放水的”
+        </p>
+        <p>
+          <span class="source">本场弹幕</span>
+          19:27:43 · <code>csboy_official</code>：“pv知道有人压他们3-0吧 。故意输的”
+        </p>
+        <p class="small muted">
+          <span class="source neutral">本场弹幕·二次判定</span>
+          两个直播房在约 9 秒内出现相近质疑，故列为中风险；但没有官方调查、赛果、
+          盘口或成交数据支持，不能升级为假赛/剧本判断。观众质疑，非结论。
+        </p>
+      </article>
+      <div class="discipline">
+        <strong>纪律：</strong>灰信号只作风险标注与后续盘口对照素材，
+        不证明比赛异常，也不反向指导交易。规则层命中的主播身份、狙击枪购买与经济闲聊已剔除。
+        本页为局中·非终局快照，最终结果待官方结算。
+      </div>
+    </section>
+    <div class="footer-note">
+      数据窗口 19:00–19:27（北京；UTC 11:00–11:27）· 补发页 · 结果待定
+    </div>
+  </main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
