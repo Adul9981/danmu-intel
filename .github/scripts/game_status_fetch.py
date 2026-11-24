@@ -79,7 +79,13 @@ def tracked(t: str) -> bool:
             )
         )
     if "Counter-Strike" in t:
-        return any(k in t for k in ("IEM", "BLAST", "Esports World Cup", "EWC"))
+        return any(
+            k in t for k in (
+                "IEM", "BLAST", "Esports World Cup", "EWC",
+                # 2026-11-24 补登记（规则 4 一级，此前漏加导致 PGL Major 被过滤）：
+                "PGL", "Thunderpick", "ESL Pro League",
+            )
+        )
     if "Dota" in t:
         return any(k in t for k in ("The International", "ESL One"))
     return False
