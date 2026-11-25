@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imperial vs FlyQuest · G1 局中弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #e5e5ea;
+      --soft: #f5f5f7;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+      --risk: #b42318;
+      --risk-soft: #fff2f0;
+      --warn: #8a5300;
+      --warn-soft: #fff8e8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      line-height: 1.62;
+      padding: 24px 14px 48px;
+    }
+    .wrap { width: min(940px, 100%); margin: 0 auto; }
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 14px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    }
+    .hero { padding: 26px 24px; }
+    h1 {
+      font-size: clamp(23px, 4.8vw, 32px);
+      line-height: 1.25;
+      letter-spacing: -.025em;
+    }
+    .meta { margin-top: 7px; color: var(--sub); font-size: 12.5px; }
+    .status {
+      margin-top: 16px;
+      padding: 13px 15px;
+      border: 1px solid #ffd1ca;
+      border-left: 4px solid var(--risk);
+      border-radius: 12px;
+      background: var(--risk-soft);
+      color: var(--risk);
+      font-weight: 750;
+      font-size: 15px;
+    }
+    .status small {
+      display: block;
+      margin-top: 3px;
+      color: #6e3933;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #ededf0;
+      color: #424245;
+      font-size: 11.5px;
+      font-weight: 650;
+    }
+    .chip.accent { background: var(--accent-soft); color: var(--accent); }
+    .chip.warn { background: var(--warn-soft); color: var(--warn); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .stat { padding: 11px 12px; border-radius: 12px; background: var(--soft); }
+    .stat b { display: block; font-size: 18px; line-height: 1.25; }
+    .stat span { color: var(--sub); font-size: 11px; }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 25px;
+      height: 25px;
+      flex: 0 0 25px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    h3 { margin: 0 0 7px; font-size: 13px; }
+    .empty {
+      padding: 14px 15px;
+      margin-bottom: 12px;
+      border: 1px solid #e0e0e5;
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 13px;
+    }
+    .empty strong { color: var(--warn); }
+    .rows { display: grid; }
+    .row {
+      display: grid;
+      grid-template-columns: 145px minmax(0, 1fr);
+      gap: 14px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row dt { color: var(--sub); font-size: 12px; font-weight: 650; }
+    .row dd { font-size: 13.5px; }
+    .src {
+      display: inline-block;
+      margin: 4px 3px 0 0;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: #eef4fc;
+      color: #285a96;
+      font-size: 10.5px;
+      font-weight: 650;
+      vertical-align: 1px;
+    }
+    .direction-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .panel {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+    .panel.full { grid-column: 1 / -1; }
+    .panel p { font-size: 13px; }
+    .panel p + p { margin-top: 7px; }
+    .label {
+      display: inline-flex;
+      margin-bottom: 7px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .label.negative { background: var(--risk-soft); color: var(--risk); }
+    .label.warn { background: var(--warn-soft); color: var(--warn); }
+    .anchor {
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+    .anchor:first-of-type { padding-top: 2px; border-top: 0; }
+    .anchor:last-child { padding-bottom: 0; }
+    .anchor b { font-size: 13px; }
+    .anchor .time {
+      color: var(--accent);
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .tone-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .tone {
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: var(--soft);
+    }
+    .tone b { display: block; font-size: 15px; }
+    .tone span { color: var(--sub); font-size: 10.5px; }
+    .conditional {
+      padding: 11px 13px;
+      border-left: 3px solid var(--warn);
+      border-radius: 0 10px 10px 0;
+      background: var(--warn-soft);
+    }
+    .salvage {
+      grid-column: 1 / -1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 12.5px;
+    }
+    .gray-item {
+      padding: 14px;
+      border-left: 4px solid var(--warn);
+      border-radius: 0 12px 12px 0;
+      background: var(--warn-soft);
+    }
+    .gray-item strong { color: var(--warn); }
+    .gray-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 8px 0;
+    }
+    .risk {
+      display: inline-flex;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--warn);
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .discipline {
+      margin-top: 12px;
+      color: var(--sub);
+      font-size: 12px;
+    }
+    .system-slot { min-height: 1px; }
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #ededf0;
+      font-size: .92em;
+      overflow-wrap: anywhere;
+    }
+    .footer {
+      padding: 12px 0 0;
+      color: var(--sub);
+      font-size: 11.5px;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 680px) {
+      body { padding: 14px 9px 36px; }
+      .card, .hero { padding: 18px 16px; border-radius: 15px; }
+      .stats, .tone-grid { grid-template-columns: 1fr 1fr; }
+      .row, .direction-grid { grid-template-columns: 1fr; }
+      .panel.full, .salvage { grid-column: auto; }
+      .row { gap: 4px; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Imperial-FlyQuest 2026-11-25 g1 bp</b></div>
+<main class="wrap">
+  <header class="card hero">
+    <h1>Imperial vs FlyQuest · G1 局中弹幕情报快照</h1>
+    <p class="meta">2026-11-25 · 第 1 小局 · G1｜BP 后/开局（EARLY-GAME）· CS2 · Polymarket slug：cs2-imp11-fly-2026-11-25</p>
+    <div class="status">
+      局中·非终局，结果待定
+      <small>节点进度按弹幕口径：G1｜BP 后/开局；本窗口没有可核验的本场比分、地图或回合数，不能据此推断胜负。</small>
+    </div>
+    <div class="chips" aria-label="节点与数据窗口">
+      <span class="chip accent">局中快照</span>
+      <span class="chip warn">弹幕口径·待官方</span>
+      <span class="chip">数据窗口：16:30–16:42（北京；08:30–08:42 UTC）</span>
+      <span class="chip">采集截止：16:42（北京；08:42 UTC）</span>
+      <span class="chip">时间统一为 UTC+8</span>
+    </div>
+    <div class="stats" aria-label="本节点弹幕样本概况">
+      <div class="stat"><b>1,223</b><span>窗口弹幕</span></div>
+      <div class="stat"><b>679</b><span>活跃用户</span></div>
+      <div class="stat"><b>101.4</b><span>条 / 分钟</span></div>
+      <div class="stat"><b>2 路</b><span>实际数据源</span></div>
+    </div>
+  </header>
+  <section class="card" id="bp-anchors">
+    <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+    <div class="empty">
+      <strong>样本集中于“想看本场”，而非本场 BP。</strong>
+      全窗 1,223 条中，FlyQuest/Fly/FQ/“绿叶”别名命中 33 条、Imperial/“帝国”命中 1 条；
+      未出现能同时绑定 Imperial vs FlyQuest 的已选地图、禁图顺序或完整阵容。
+    </div>
+    <dl class="rows">
+      <div class="row">
+        <dt>地图禁选 / 选图</dt>
+        <dd>
+          弹幕口径·待官方：16:31:56、16:32:17 仅有观众要求“看看绿叶选图”，没有报出具体地图或禁选结果。
+          <span class="src">本场弹幕｜单源待验证</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>队伍 × 地图</dt>
+        <dd>
+          无。窗口里的“炼狱小镇”“这张图”等片段来自当前直播画面语境，无法唯一绑定到 Imperial 或 FlyQuest，不纳入本场选图。
+          <span class="src">本场弹幕｜关联不足</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>BP / 阵容</dt>
+        <dd>
+          样本不足：没有可核验的双方五人或位置配置；不能把观众“想看选图”的需求当成本场已选图。
+          <span class="src">本场弹幕｜0 条有效 BP 事实</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>BP 后战绩情报</dt>
+        <dd>
+          无战绩情报提及。
+          <span class="src">本场弹幕｜已检查</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>历史片段</dt>
+        <dd>
+          16:33:14“绿叶再来一次 2-3”与 16:39:52“当年 LVG 在 RMR 暴打绿叶”属于系列愿望/历史回忆，不能当作本局地图战绩或当前比分。
+          <span class="src">本场弹幕｜单源待验证</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>采集缺口</dt>
+        <dd>
+          实际仅见虎牙 CSBOY 官方（1,086 条）与 CSBOY-Mo（137 条）；登记采集集里的 BLAST 官方及 KICK 多路未在本切片出现，关键 BP 与方向结论都不能视为多源确认。
+          <span class="src">本场弹幕｜采集缺口</span>
+        </dd>
+      </div>
+    </dl>
+  </section>
+  <section class="card" id="match-situation">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <!-- SITUATION:INJECT:BEGIN -->
+    <div class="system-slot" data-system-section="match-situation" aria-label="比赛局势由规则层系统注入"></div>
+    <!-- SITUATION:INJECT:END -->
+  </section>
+  <section class="card" id="directional-intel">
+    <h2><span class="no">3</span>方向性情报板（正锚 × 负锚 × 共识 × 灰信号条件预测）</h2>
+    <div class="direction-grid">
+      <article class="panel">
+        <h3>正锚点：看好谁赢</h3>
+        <span class="label">FlyQuest｜弱正锚·单源待验证</span>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest（“绿叶”）</p>
+          <p><b>依据：</b>“绿叶，这边太虐了没悬念”，显示观众认为本场一侧压制明显，但未报比分、地图或对手细节。</p>
+          <p><b>时间：</b><span class="time">16:32</span></p>
+          <p><b>验证：</b>待定；需比分、地图及后续回合确认。</p>
+          <span class="src">本场弹幕｜单源待验证</span>
+        </div>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest（间接）</p>
+          <p><b>依据：</b>“打绿叶也打不过啊”，表达与 FlyQuest 对阵的一方难胜；原句主语省略，只能视为弱正向旁证。</p>
+          <p><b>时间：</b><span class="time">16:33</span></p>
+          <p><b>验证：</b>待定；主语与具体地图未确认。</p>
+          <span class="src">本场弹幕｜单源待验证</span>
+        </div>
+      </article>
+      <article class="panel">
+        <h3>负锚点：看衰谁输</h3>
+        <span class="label negative">FlyQuest｜单源待验证</span>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest</p>
+          <p><b>依据：</b>“flquest 换指挥了，打不过的”，观众把换指挥视为本场不利变量。</p>
+          <p><b>时间：</b><span class="time">16:31</span></p>
+          <p><b>验证：</b>待定；没有第二条独立弹幕复述换指挥或给出具体原因。</p>
+          <span class="src">本场弹幕｜单源待验证</span>
+        </div>
+      </article>
+      <article class="panel full">
+        <h3>群体共识：偏正但不足以定方向</h3>
+        <p>
+          规则层 narrative 共标记 37 条正面、21 条负面，净情绪 +16，占全窗 1,223 条的约 4.7%；
+          分时净值为 16:30 的 +2、16:34 的 -4、16:38 的 +18，走势为“轻微回落后再转正”。
+          <span class="src">本场弹幕｜narrative｜规则层模型</span>
+        </p>
+        <div class="tone-grid" aria-label="叙事模型情绪分布">
+          <div class="tone"><b>37</b><span>正面标记</span></div>
+          <div class="tone"><b>21</b><span>负面标记</span></div>
+          <div class="tone"><b>+16</b><span>净情绪</span></div>
+        </div>
+        <p>
+          <b>分歧：</b>直接映射到 FlyQuest 的方向性表达只有 3 条，其中 2 条为弱正向候选、1 条明确负向；
+          另有“绿叶再来一次 2-3”方向不明。整体情绪偏正与“换指挥打不过”相互冲突，不能升级为 FlyQuest 胜率共识。
+          <span class="src">本场弹幕｜模型二次判定｜样本 3 条</span>
+        </p>
+      </article>
+      <article class="panel full">
+        <h3>灰信号条件预测</h3>
+        <div class="conditional">
+          <b>规则层灰信号 1 条，对象不明，暂不指向任一边。</b>
+          16:39:42 出现“送分”；若后续多源将其唯一绑定到 Imperial，则风险指向 Imperial 的失分侧；若绑定到 FlyQuest，则风险转向 FlyQuest。当前只是观众质疑，非结论，不能据此预测赢家。
+          <span class="src">本场弹幕｜观众质疑，非结论</span>
+        </div>
+      </article>
+      <div class="salvage">
+        <b>中性弹幕二次判定：</b>
+        共检查 <code>neutral_salvage</code> 候选 40 条（实体候选 16 条、低信息候选 24 条）。
+        本场唯一直接相关项是“绿叶”重复 6 次，只表达换台/观看需求，没有胜负情绪；
+        FaZe、MongolZ、9z、LVG 等内容属于其他场次讨论，不纳入本局方向板。
+        模型二次判定后新增方向信号 0 条，未把纯聊天硬套成情绪。
+        <span class="src">本场弹幕｜模型二次判定</span>
+      </div>
+    </div>
+  </section>
+  <section class="card" id="gray-signals">
+    <h2><span class="no">4</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <div class="gray-item">
+      <strong>灰信号 1 条：观众质疑，非结论</strong>
+      <div class="gray-meta">
+        <span class="risk">风险等级：低</span>
+        <span class="risk">单源</span>
+        <span class="risk">对象未明</span>
+      </div>
+      <p><b>样本：</b>“送分”</p>
+      <p><b>时间：</b>16:39:42</p>
+      <p><b>指向对象：</b>未点名，无法唯一对应 Imperial 或 FlyQuest。</p>
+      <p><b>盘口对照：</b>未取得可核验盘口数字，只保留为风险标注，不作价格失真结论。</p>
+      <span class="src">本场弹幕｜虎牙 CSBOY 官方｜观众质疑，非结论</span>
+    </div>
+    <p class="discipline">
+      纪律：灰信号只用于风险提示与盘口对照，观众质疑不是假赛证据，也不能据此判定本局结果。
+      16:31:51 的“上帝在操纵比赛，一般队伍玩不过”没有具体队伍、选手或对手，未计入本场灰信号。
+    </p>
+  </section>
+  <footer class="footer">
+    局中·非终局，结果待定 · 数据截止：2026-11-25 16:42（北京；08:42 UTC）<br>
+    源：<code>runtime/vps_intel/cs2-imp11-fly-2026-11-25_g1_bp_intel.json</code> +
+    <code>data/intel_slices/cs2-imp11-fly-2026-11-25_g1_bp.jsonl</code>
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
