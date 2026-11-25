@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eternal Fire vs 100 Thieves｜整场弹幕情报页</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #dedee3;
+      --soft: #f1f1f4;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+      --risk: #9a5b00;
+      --risk-soft: #fff6e8;
+      --radius: 18px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 10px 30px rgba(0, 0, 0, .055);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      background: var(--bg);
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    .page {
+      width: min(1080px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 48px;
+    }
+    .hero,
+    .section {
+      border: 1px solid rgba(222, 222, 227, .88);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .hero-main {
+      padding: 27px 30px 23px;
+    }
+    .eyebrow,
+    .label-row,
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+    }
+    .eyebrow {
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .07em;
+    }
+    .eyebrow span,
+    .tag,
+    .source {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 24px;
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    .eyebrow span:first-child,
+    .tag.accent,
+    .source.accent {
+      border-color: #b9d7f8;
+      background: var(--accent-soft);
+      color: #034f9b;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 5vw, 44px);
+      line-height: 1.1;
+      letter-spacing: -.035em;
+    }
+    h1 .vs {
+      margin: 0 .16em;
+      color: var(--muted);
+      font-size: .55em;
+      font-weight: 550;
+      letter-spacing: 0;
+      vertical-align: .13em;
+    }
+    .slug {
+      margin: 9px 0 18px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 13px;
+      padding: 12px 14px;
+      border: 1px solid #b9d7f8;
+      border-radius: 13px;
+      background: var(--accent-soft);
+      color: #034f9b;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .status strong {
+      font-size: 15px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 15px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--line);
+    }
+    .hero-grid div {
+      min-height: 76px;
+      padding: 12px 14px;
+      background: var(--card);
+    }
+    .hero-grid small,
+    .metric small {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: .04em;
+    }
+    .hero-grid strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .hero-grid em {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-style: normal;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      background: #fbfbfd;
+    }
+    .meta div {
+      padding: 13px 17px;
+      border-right: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+    .meta div:last-child {
+      border-right: 0;
+    }
+    .meta b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .section {
+      margin-top: 18px;
+      padding: 27px 30px 30px;
+    }
+    h2 {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 0 0 18px;
+      font-size: 22px;
+      line-height: 1.35;
+      letter-spacing: -.02em;
+    }
+    h2 .no {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      margin-top: 1px;
+      border-radius: 9px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 0 0 7px;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    p {
+      margin: 0 0 9px;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+    .section-note {
+      margin: -3px 0 17px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .section-note .source {
+      margin-left: 4px;
+      vertical-align: 1px;
+    }
+    .bp-list,
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .bp-item,
+    .direction-card,
+    .soft-card,
+    .system-lock {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+    .bp-item,
+    .direction-card {
+      padding: 16px;
+    }
+    .bp-item.featured,
+    .direction-card.primary {
+      border-color: #b9d7f8;
+      background: linear-gradient(180deg, #f7fbff 0%, #fff 38%);
+    }
+    .bp-item .tag {
+      margin-bottom: 8px;
+    }
+    .evidence {
+      margin-top: 11px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .evidence .source {
+      margin-left: 4px;
+      vertical-align: 1px;
+    }
+    .quote {
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .bp-item .soft-card {
+      margin-top: 12px;
+      padding: 12px 13px;
+      background: #fbfbfd;
+    }
+    .system-lock {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 16px;
+      background: #fbfbfd;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .system-lock strong {
+      flex: 0 0 auto;
+      color: var(--ink);
+      font-size: 12px;
+    }
+    .direction-grid {
+      align-items: stretch;
+    }
+    .direction-card .label-row {
+      margin-bottom: 10px;
+    }
+    .label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .label.accent {
+      background: var(--accent);
+      color: #fff;
+    }
+    .metric {
+      margin: 10px 0;
+      padding: 10px 11px;
+      border-radius: 11px;
+      background: var(--soft);
+      color: #3a3a3c;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .direction-card.wide {
+      grid-column: 1 / -1;
+    }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      margin: 11px 0;
+    }
+    .timeline span {
+      padding: 8px 7px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfbfd;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+    .timeline b {
+      display: block;
+      color: var(--ink);
+      font-size: 12px;
+    }
+    .rescue-note {
+      margin-top: 13px;
+      padding: 14px 16px;
+      border: 1px solid #b9d7f8;
+      border-radius: 15px;
+      background: var(--accent-soft);
+      color: #1d466f;
+      font-size: 12px;
+    }
+    .rescue-note strong {
+      color: #034f9b;
+    }
+    .salvage-table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+      font-size: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .salvage-table th,
+    .salvage-table td {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .salvage-table th {
+      background: #f7f7f9;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .empty {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 12px;
+    }
+    .empty-main {
+      padding: 17px;
+      border: 1px solid #eed5ad;
+      border-radius: 15px;
+      background: var(--risk-soft);
+    }
+    .empty-main .tag {
+      margin-bottom: 9px;
+      border-color: #eed5ad;
+      background: #fff;
+      color: var(--risk);
+    }
+    .empty-main strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #6e4100;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+    .empty-main p {
+      color: #76501a;
+      font-size: 13px;
+    }
+    .empty-main .source {
+      margin-top: 10px;
+    }
+    .soft-card {
+      padding: 15px 17px;
+      background: #fbfbfd;
+    }
+    .audit-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .audit-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      color: #3a3a3c;
+      font-size: 12px;
+    }
+    .audit-list li:first-child {
+      padding-top: 0;
+    }
+    .audit-list li:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+    .audit-list b {
+      color: var(--ink);
+    }
+    @media (max-width: 820px) {
+      .meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .meta div:nth-child(2) {
+        border-right: 0;
+      }
+      .meta div:nth-child(-n+2) {
+        border-bottom: 1px solid var(--line);
+      }
+      .hero-grid,
+      .bp-list,
+      .direction-grid,
+      .empty {
+        grid-template-columns: 1fr;
+      }
+      .direction-card.wide {
+        grid-column: auto;
+      }
+    }
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 20px, 1080px);
+        padding-top: 14px;
+      }
+      .hero-main,
+      .section {
+        padding: 21px 18px 22px;
+      }
+      h2 {
+        gap: 9px;
+        font-size: 18px;
+      }
+      h2 .no {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .salvage-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Eternal Fire-100 Thieves 2026-11-25</b></div>
+  <main class="page">
+    <header class="hero">
+      <div class="hero-main">
+        <div class="eyebrow" aria-label="页面分类">
+          <span>CS2</span>
+          <span>FINAL</span>
+          <span>SERIES-REVIEW</span>
+        </div>
+        <h1>Eternal Fire <span class="vs">vs</span> 100 Thieves</h1>
+        <p class="slug">2026-11-25 · cs2-ef1-100t-2026-11-25 · 整场复盘</p>
+        <div class="status" role="status" aria-label="页面状态">
+          <span class="dot" aria-hidden="true"></span>
+          <strong>系列已结束</strong>
+          <span>弹幕多信号确认 · 官方结果待核对</span>
+          <span>节点：FINAL｜系列复盘</span>
+        </div>
+        <div class="hero-grid">
+          <div>
+            <small>弹幕终局口径</small>
+            <strong>EF 13–6 100T</strong>
+            <em>多信号弹幕 · 非官方结算</em>
+          </div>
+          <div>
+            <small>主要地图讨论</small>
+            <strong>Mirage（米拉吉 / 米垃圾）</strong>
+            <em>地图口径 · 待官方</em>
+          </div>
+          <div>
+            <small>规则层方向信号</small>
+            <strong>未生成胜负信号</strong>
+            <em>方向由叙事与原始弹幕交叉核对</em>
+          </div>
+        </div>
+      </div>
+      <div class="meta" aria-label="数据范围与来源">
+        <div>
+          <b>数据窗口</b>
+          2026-11-25 14:00–14:43（北京）
+        </div>
+        <div>
+          <b>弹幕采集截止</b>
+          14:43（北京）
+        </div>
+        <div>
+          <b>样本量</b>
+          4,510 条 · 1,689 活跃用户 · 104.3 条/分钟
+        </div>
+        <div>
+          <b>来源与缺口</b>
+          实际 2 房；本场直接主源为 CSBOY 官方。CSBOY Mo 后段切至邻台，相关样本已排除。
+        </div>
+      </div>
+    </header>
+    <section class="section" id="section-1">
+      <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+      <p class="section-note">
+        本段只记录弹幕讨论，不把观众说法写成实际选图。完整 veto 顺序缺失；Mirage 为主要可识别讨论地图，最终仍以官方地图数据为准。
+        <span class="source accent">弹幕口径·待官方</span>
+      </p>
+      <div class="bp-list">
+        <article class="bp-item featured">
+          <span class="tag accent">地图 · 待官方</span>
+          <h3>Mirage：唯一形成跨房重复讨论的地图</h3>
+          <p>14:01–14:40 至少有 5 条消息在 2 个房间提及“米垃圾 / 米拉吉 / 荒漠迷城”，包含对图池选择的质疑与终盘“就这敢选米拉吉”的复盘式评价。没有完整 veto 记录，不能据此替代官方选图。</p>
+          <div class="evidence">
+            证据：<span class="quote">14:01</span>“100t米垃圾”；<span class="quote">14:09</span>“100t这帮老头打什么米垃圾”；<span class="quote">14:40</span>“就这敢选米拉吉”。<br>
+            <span class="source">本场弹幕 · 两房讨论 · 待官方</span>
+          </div>
+        </article>
+        <article class="bp-item">
+          <span class="tag">队伍 × 地图 · 历史转述</span>
+          <h3>100 Thieves × Mirage：历史强图正锚</h3>
+          <p>同一用户在 14:02 与 14:03 连续转述 100 Thieves 曾在 Mirage 零封 Liquid。该说法指向“100T 在 Mirage 有图池说法”，但属于本场弹幕对历史战绩的复述，尚无第二用户或独立历史数据源共振。</p>
+          <div class="evidence">
+            证据：<span class="quote">14:02</span>“100t荒漠迷城有点说法，零封过液体”；<span class="quote">14:03</span>“100t这图之前零封过液体的”。<br>
+            <span class="source">本场弹幕 · 历史转述 · 单源待验证</span>
+          </div>
+        </article>
+        <article class="bp-item">
+          <span class="tag">图池 · 观众观感</span>
+          <h3>100 Thieves 被集中描述为“只会沙二”</h3>
+          <p>14:19–14:40 多次出现“除了沙二其他图不会玩”“只会沙二”“ban 了沙二原地解散”等判断，共约 11 条同向复述。这里记录的是观众对图池的负面观感，不是官方 ban/pick，也不是胜率数据。</p>
+          <div class="evidence">
+            证据：<span class="quote">14:19</span>“除了沙二其他图不会玩？？？”；<span class="quote">14:38</span>“ban了沙二原地解散”；<span class="quote">14:40</span>“100T只会沙二”。<br>
+            <span class="source">本场弹幕 · 单房集中 · 待验证</span>
+          </div>
+        </article>
+        <article class="bp-item">
+          <div class="soft-card">
+            <span class="tag">BP 后战绩情报</span>
+            <h3>100T×Mirage 有一条历史转述；EF×地图无战绩提及</h3>
+            <p>100 Thieves 的“Mirage 零封过 Liquid”被重复转述 2 次，但同属一个用户；Eternal Fire 侧没有出现可核验的队伍×地图胜率、近期战绩或强图依据。</p>
+            <div class="evidence">
+              赛后方向回填：该历史强图正锚未兑现，100 Thieves 最终被弹幕持续看衰，终局口径为 13–6 落败。<br>
+              <span class="source">本场弹幕 · 待官方核对</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="section" id="section-2">
+      <h2><span class="no">2</span>比赛局势</h2>
+      <div class="system-lock">
+        <strong>系统注入 · 规则层</strong>
+        <span>本段由规则层注入，本次整场复盘生成不填充本段内容。</span>
+      </div>
+    </section>
+    <section class="section" id="section-3">
+      <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+      <p class="section-note">
+        方向以本场实体弹幕为核心。规则层聚合含邻台噪声，因此胜率式结论不采用；比分、锚点与共识分别保留来源层级。
+      </p>
+      <div class="direction-grid">
+        <article class="direction-card primary">
+          <div class="label-row">
+            <span class="label accent">正锚点</span>
+            <span class="source">本场弹幕</span>
+            <span class="source">多信号 · 待官方</span>
+          </div>
+          <h3>Eternal Fire：从 10–2 领先到 13–6 终局</h3>
+          <p>14:10 弹幕给出“10–2”；14:33 出现“10比6，100t没了”；14:34 起连续出现“13-6”“六个赛点”与多轮 GG。多个独立表述共同指向 EF 赢下本图。</p>
+          <div class="metric">
+            <small>对象 / 依据 / 时间</small>
+            EF 胜出 · 比分推进与终局 GG 多信号 · 14:10–14:40<br>
+            验证：<b>应验（弹幕口径 · 官方待核对）</b>
+          </div>
+          <div class="evidence">
+            样本：<span class="quote">14:10</span>“10-2”；<span class="quote">14:33</span>“10比6，100t没了”；<span class="quote">14:34</span>“13-6”；<span class="quote">14:40</span>“六个赛点，追吧”。
+          </div>
+        </article>
+        <article class="direction-card">
+          <div class="label-row">
+            <span class="label accent">正锚点</span>
+            <span class="source">本场弹幕</span>
+            <span class="source">历史转述 · 待验证</span>
+          </div>
+          <h3>100 Thieves × Mirage：历史强图正锚未兑现</h3>
+          <p>赛前中段最明确的支持 100 Thieves 论据，是“Mirage 曾零封 Liquid”；但后续弹幕把问题集中在长枪局、B 区防守与图池依赖 Dust2，正锚没有转化为本图优势。</p>
+          <div class="metric">
+            <small>对象 / 依据 / 时间</small>
+            100T 的 Mirage 图池 · 历史零封 Liquid 转述 · 14:02–14:03<br>
+            验证：<b>未应验（弹幕口径 · 官方待核对）</b>
+          </div>
+          <div class="evidence">
+            反向证据：<span class="quote">14:37</span>“长枪局一分拿不了”；<span class="quote">14:37</span>“B区纸糊的”；<span class="quote">14:40</span>“100T只会沙二”。
+          </div>
+        </article>
+        <article class="direction-card">
+          <div class="label-row">
+            <span class="label">负锚点</span>
+            <span class="source">本场弹幕</span>
+            <span class="source">单房集中</span>
+          </div>
+          <h3>100 Thieves：进攻、图池与长枪局持续被看衰</h3>
+          <p>负面锚点不是单次情绪，而是从“进攻拿不到 5 分”发展到“老头队破绽太多”“长枪一分没赢”“守不住”的连续判断，并在终局被 GG 与 6 分复盘再次强化。</p>
+          <div class="metric">
+            <small>对象 / 依据 / 时间</small>
+            100T 输图 · 进攻效率、图池与残局失误 · 14:15–14:40<br>
+            验证：<b>应验（弹幕口径 · 官方待核对）</b>
+          </div>
+          <div class="evidence">
+            样本：<span class="quote">14:15</span>“100t进攻没5分走掉了”；<span class="quote">14:32</span>“100t老头队破绽太多”；<span class="quote">14:37</span>“长枪一分没赢”；<span class="quote">14:42</span>“两个手枪拿6分”。
+          </div>
+        </article>
+        <article class="direction-card">
+          <div class="label-row">
+            <span class="label">负锚点</span>
+            <span class="source">本场弹幕</span>
+            <span class="source">分歧信号</span>
+          </div>
+          <h3>Eternal Fire 的防守质疑：局部负锚，未改变结果</h3>
+          <p>14:24 有观众直接称“EF 这个防守特别垃圾”，说明 EF 并非被全体无条件看好；但随后 EF 仍拿到六个赛点并完成终局。该负锚只能视为过程波动，不能覆盖更强的比分与结果信号。</p>
+          <div class="metric">
+            <small>对象 / 依据 / 时间</small>
+            EF 防守质量 · 单条集中批评 · 14:24<br>
+            验证：<b>未应验 / 影响有限（官方待核对）</b>
+          </div>
+          <div class="evidence">
+            对照：<span class="quote">14:26</span>“4分挺吃力的 ef进攻可以的”；<span class="quote">14:31</span>“这分就抬走100t了”。
+          </div>
+        </article>
+        <article class="direction-card wide">
+          <div class="label-row">
+            <span class="label">群体共识</span>
+            <span class="source">本场弹幕</span>
+            <span class="source">规则层叙事</span>
+          </div>
+          <h3>情绪先热后冷；末段明确转向看衰 100 Thieves</h3>
+          <p>规则层全窗口情绪为正面 332、负面 182、净 +150，但 14:34 窗口净值转为 -48，14:40 与 14:42 两个密度峰值均为负面。对本场实体样本进一步过滤后，14:34 前直接提及 100 Thieves 的明确负面表述为 21 条、18 位用户，方向比全窗总净值更一致。</p>
+          <div class="timeline" aria-label="规则层情绪时间线，时间为北京时间">
+            <span><b>14:00</b>净值 +13</span>
+            <span><b>14:08</b>净值 +182</span>
+            <span><b>14:17</b>净值 -1</span>
+            <span><b>14:25</b>净值 +4</span>
+            <span><b>14:34</b>净值 -48</span>
+          </div>
+          <div class="metric">
+            <small>样本量</small>
+            4,510 条总切片 / 1,689 活跃用户；CSBOY 官方房直接提及 EF 或 100T 的样本 161 条 / 108 位用户。规则层全窗聚合含邻台噪声，只用于描述情绪走势，不等同于本场胜率。
+          </div>
+          <p><b>分歧：</b>早期存在 100T×Mirage 历史强图正锚，以及“100T 以后会成长成一线强队”的长期正向评价；中段也有对 EF 防守的批评。最终本场结果方向由比分、GG 与 100T 长枪局负向共识共同收敛。</p>
+          <div class="label-row">
+            <span class="source">本场弹幕 · 多源方向一致</span>
+            <span class="source">规则层情绪节奏</span>
+            <span class="source">分歧已保留</span>
+          </div>
+        </article>
+        <article class="direction-card wide">
+          <div class="label-row">
+            <span class="label">灰信号条件预测</span>
+            <span class="source">本场弹幕 · 复核结果</span>
+          </div>
+          <h3>今日无灰信号，因此无兑现方向</h3>
+          <p>规则层命中 9 条灰信号候选，复核后均未同时满足“本场对象 + 故意/买输指向 + 可验证条件”。盘口讨论样本为 0，也无法形成“灰信号 × 盘口失真”的交叉条件，故不构造指向 EF 或 100T 的条件预测。</p>
+          <div class="metric">
+            <small>条件方向</small>
+            无 · 无有效灰信号对象 · 无盘口对照样本<br>
+            纪律：观众质疑，非结论；普通失误批评不升级为假赛、剧本或卡盘判断。
+          </div>
+        </article>
+      </div>
+      <div class="rescue-note">
+        <strong>中性弹幕二次判定：</strong>40 条 <code>neutral_salvage</code> 记录已逐条复核，3 条记录（合计 4 次提及）纳入方向板；其余 37 条因指向其他比赛、纯提问、阵容闲聊或缺少明确情绪对象而不写。所有纳入项均标“模型二次判定”。
+        <table class="salvage-table">
+          <thead>
+            <tr>
+              <th>候选</th>
+              <th>模型二次判定</th>
+              <th>页面落点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>“100t 荒漠迷城有点说法，零封过液体”</td>
+              <td>真实正向图池评价；单条历史转述</td>
+              <td>§1 / §3 的 100T×Mirage 正锚</td>
+            </tr>
+            <tr>
+              <td>“100t 这图之前零封过液体的”</td>
+              <td>同一用户复述，补强图池观点但非独立来源</td>
+              <td>§1 / §3，标注单源待验证</td>
+            </tr>
+            <tr>
+              <td>“永恒之火赚麻了，卖了一队又培养了一队新的”</td>
+              <td>真实正向俱乐部运营评价；A 与 C 两处上下文均表达夸赞，非本图战术判断</td>
+              <td>保留为 EF 长期组织正锚，不改变本图方向</td>
+            </tr>
+          </tbody>
+        </table>
+        <span class="source">本场弹幕 · 模型二次判定 · 14:02–14:43</span>
+      </div>
+    </section>
+    <section class="section" id="section-4">
+      <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <div class="empty">
+        <div class="empty-main">
+          <span class="tag">风险等级：无</span>
+          <strong>今日无灰信号</strong>
+          <p>没有形成可归属本场的假赛、剧本、卡盘或故意送分质疑，因此不给出指向 EF 或 100 Thieves 的风险方向。</p>
+          <span class="source">本场弹幕 · 复核结果 · 观众质疑，非结论</span>
+        </div>
+        <div class="soft-card">
+          <ul class="audit-list">
+            <li><b>规则层候选 9 条：</b>包含股票、NBA、人员 “买入”、音乐盒及普通投注俚语，不构成比赛异常信号。</li>
+            <li><b>“故意漏影子”“买了自己输？”：</b>上下文落在 CSBOY Mo 房讨论的 X 队 / M80 邻台，已排除，禁止归因给 100 Thieves。<span class="source">跨场排除</span></li>
+            <li><b>“B小这个买了”“买了吧疯狂保”：</b>发生在本场官方房，但对象与语义不足，更接近回合失误吐槽和保枪调侃；未达到灰信号门槛。<span class="source">本场弹幕 · 样本不足</span></li>
+            <li><b>“送首杀 / 摸着送 / 长枪不赢”：</b>属于比赛层失误与战术批评，只能作为风险语境，不能写成假赛或故意送分。<span class="source">观众质疑，非结论</span></li>
+            <li><b>盘口对照：</b>规则层盘口讨论为 0，无法验证“风险质疑 × 盘口失真”的条件，后续不生成反手方向。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body></html>
