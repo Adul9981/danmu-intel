@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imperial vs FlyQuest · G1 局末/局间弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --sub: #6e6e73;
+      --line: #e5e5ea;
+      --soft: #f3f4f6;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+      --risk: #a33a2b;
+      --risk-soft: #fff4f1;
+      --warn: #7a5310;
+      --warn-soft: #fff8e8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Microsoft YaHei", sans-serif;
+      line-height: 1.62;
+      padding: 22px 14px 46px;
+    }
+    .wrap { width: min(940px, 100%); margin: 0 auto; }
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 14px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    }
+    .hero { padding: 26px 24px; }
+    h1 {
+      font-size: clamp(23px, 4.8vw, 31px);
+      line-height: 1.25;
+      letter-spacing: -.025em;
+    }
+    .meta { margin-top: 7px; color: var(--sub); font-size: 12.5px; }
+    .status {
+      margin-top: 16px;
+      padding: 13px 15px;
+      border: 1px solid #f0c9c1;
+      border-left: 4px solid var(--risk);
+      border-radius: 12px;
+      background: var(--risk-soft);
+      color: var(--risk);
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .status small {
+      display: block;
+      margin-top: 3px;
+      color: #6e443d;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #ededf0;
+      color: #424245;
+      font-size: 11.5px;
+      font-weight: 650;
+    }
+    .chip.accent { background: var(--accent-soft); color: var(--accent); }
+    .chip.warn { background: var(--warn-soft); color: var(--warn); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .stat { padding: 11px 12px; border-radius: 12px; background: var(--soft); }
+    .stat b { display: block; font-size: 18px; line-height: 1.25; }
+    .stat span { color: var(--sub); font-size: 11px; }
+    .source-strip {
+      margin-top: 11px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      background: var(--soft);
+      color: #4a4a4f;
+      font-size: 12px;
+    }
+    .source-strip strong { color: var(--ink); }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 25px;
+      height: 25px;
+      flex: 0 0 25px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    h3 { margin: 0 0 7px; font-size: 13px; }
+    p, li { font-size: 13px; }
+    .empty {
+      padding: 14px 15px;
+      margin-bottom: 12px;
+      border: 1px solid #e0e0e5;
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 13px;
+    }
+    .empty strong { color: var(--warn); }
+    .rows { display: grid; }
+    .row {
+      display: grid;
+      grid-template-columns: 148px minmax(0, 1fr);
+      gap: 14px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row dt { color: var(--sub); font-size: 12px; font-weight: 650; }
+    .row dd { font-size: 13.5px; }
+    .src {
+      display: inline-block;
+      margin: 4px 3px 0 0;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: #eef4fc;
+      color: #285a96;
+      font-size: 10.5px;
+      font-weight: 650;
+      vertical-align: 1px;
+    }
+    .system-slot {
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px dashed #c9c9ce;
+      border-radius: 11px;
+      background: var(--soft);
+      color: var(--sub);
+      font-size: 12px;
+    }
+    .direction-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .panel {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+    .panel.full { grid-column: 1 / -1; }
+    .panel p + p { margin-top: 6px; }
+    .label {
+      display: inline-flex;
+      margin-bottom: 7px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .label.negative { background: var(--risk-soft); color: var(--risk); }
+    .label.warn { background: var(--warn-soft); color: var(--warn); }
+    .anchor {
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+    .anchor:first-of-type { padding-top: 2px; border-top: 0; }
+    .anchor:last-child { padding-bottom: 0; }
+    .anchor b { font-size: 13px; }
+    .anchor .time {
+      color: var(--accent);
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .tone-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .tone {
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: var(--soft);
+    }
+    .tone b { display: block; font-size: 15px; }
+    .tone span { color: var(--sub); font-size: 10.5px; }
+    .conditional {
+      padding: 11px 13px;
+      border-left: 3px solid var(--warn);
+      border-radius: 0 10px 10px 0;
+      background: var(--warn-soft);
+    }
+    .salvage {
+      grid-column: 1 / -1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: 12.5px;
+    }
+    details {
+      margin-top: 9px;
+      border-top: 1px solid var(--line);
+      padding-top: 9px;
+    }
+    summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .salvage-list {
+      margin: 9px 0 0 18px;
+      color: #4a4a4f;
+      font-size: 11.5px;
+      line-height: 1.65;
+    }
+    .gray-item {
+      padding: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--warn);
+      border-radius: 0 12px 12px 0;
+      background: var(--warn-soft);
+    }
+    .gray-item strong { color: var(--warn); }
+    .gray-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 8px 0;
+    }
+    .risk {
+      display: inline-flex;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--warn);
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .discipline {
+      margin-top: 12px;
+      color: var(--sub);
+      font-size: 12px;
+    }
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #ededf0;
+      font-size: .92em;
+      overflow-wrap: anywhere;
+    }
+    .footer {
+      padding: 12px 0 0;
+      color: var(--sub);
+      font-size: 11.5px;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 680px) {
+      body { padding: 14px 9px 36px; }
+      .card, .hero { padding: 18px 16px; border-radius: 15px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .row, .direction-grid { grid-template-columns: 1fr; }
+      .panel.full, .salvage { grid-column: auto; }
+      .row { gap: 4px; }
+      .tone-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Imperial-FlyQuest 2026-11-25 g1 end</b></div>
+<main class="wrap">
+  <header class="card hero">
+    <h1>Imperial vs FlyQuest · G1 局末/局间弹幕情报快照</h1>
+    <p class="meta">2026-11-25 · 第 1 小局 · G1｜局末/局间（GAME-REVIEW）· CS2 · PGL Major Singapore Stage 1 · Polymarket slug：cs2-imp11-fly-2026-11-25</p>
+    <div class="status">
+      局中·非终局，结果待定
+      <small>第 1 小局已结束：Polymarket Game 1 Winner 市场定价 FlyQuest 99.95¢、Imperial 0.05¢；官方比分与赛果仍待核对。整场为 BO3，本页不是整场终局。</small>
+    </div>
+    <div class="chips" aria-label="节点与数据窗口">
+      <span class="chip accent">G1｜GAME-REVIEW</span>
+      <span class="chip warn">弹幕口径·待官方</span>
+      <span class="chip">数据窗口：16:38–17:32（北京；08:38–09:32 UTC）</span>
+      <span class="chip">弹幕采集截止：17:32（北京）</span>
+      <span class="chip">所有页面时间统一为北京时间</span>
+    </div>
+    <div class="stats" aria-label="本节点弹幕样本概况">
+      <div class="stat"><b>5,529</b><span>窗口弹幕</span></div>
+      <div class="stat"><b>2,142</b><span>活跃用户</span></div>
+      <div class="stat"><b>102.3</b><span>条 / 分钟</span></div>
+      <div class="stat"><b>205</b><span>双方直接提及行 / 138 人</span></div>
+    </div>
+    <div class="source-strip">
+      <strong>数据源完备性：</strong>实际 2 路（CSBOY 官方 4,056 条；CSBOY-Mo 1,473 条）；
+      预期 3 路（CSBOY 官方、CSBOY-Mo、BLAST 官方）；缺口为 BLAST 官方未出现在本切片。
+      进度以弹幕过程为线索，胜负只作为市场结算待官方核对项。
+    </div>
+  </header>
+  <section class="card" id="bp-anchors">
+    <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+    <div class="empty">
+      <strong>样本不足：没有可核验的完整地图禁选顺序，也没有双方完整五人阵容确认。</strong>
+      本页将地图与队伍×地图信息统一标为“弹幕口径·待官方”，不把观众讨论当作实际选图。
+    </div>
+    <dl class="rows">
+      <div class="row">
+        <dt>本局地图</dt>
+        <dd>
+          系统赛况标签显示为“炙热沙城Ⅱ（Dust 2）”。本场弹幕在 17:16–17:18 出现
+          “绿叶最近沙漠打得可以”“这图绿叶真的玩得好”“绿叶这图还是挺多细节”，与沙二语境相符；
+          但禁选顺序未在弹幕中明确出现。
+          <span class="src">本场弹幕｜系统赛况标签｜弹幕口径·待官方</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>冲突性图名</dt>
+        <dd>
+          16:43 曾出现“打的图我记得是阿努比斯”，但没有绑定 Imperial/FlyQuest，也和系统赛况标签冲突，
+          更像跨场或记忆性讨论，未纳入本局实际选图。
+          <span class="src">本场弹幕｜单源待验证｜已剔除</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>队伍 × 地图</dt>
+        <dd>
+          17:25:49 出现“帝国叉车强图”。该发言发生在市场完成 G1 定价之后，只能视为对后续图池的
+          弹幕口径·待官方判断，不能回填成 G1 沙二强图证据。
+          <span class="src">本场弹幕｜单源待验证｜后续图池讨论</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>BP 后战绩情报</dt>
+        <dd>
+          无能绑定本局地图的队伍×地图战绩情报提及。17:26 的“3 周前 DDL 3-0 赢了帝国”
+          是未绑定地图的历史赛果记忆，未纳入本局 BP 后战绩。
+          <span class="src">本场弹幕｜历史信息提及｜非地图战绩</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>阵容 / 选手</dt>
+        <dd>
+          本窗口没有形成双方完整五人名单确认；16:47 的 jks 个人评价只用于第 3 段情绪二次判定，
+          不作为官方阵容或选图证据。
+          <span class="src">本场弹幕｜样本不足｜弹幕口径·待官方</span>
+        </dd>
+      </div>
+      <div class="row">
+        <dt>采集缺口</dt>
+        <dd>
+          预期 3 路，实得 2 路；BLAST 官方源缺失。因此地图、阵容与盘口交叉确认均为单源或两路局部共振，
+          不升级为多源确认。
+          <span class="src">本场弹幕｜2 / 3 路｜缺源</span>
+        </dd>
+      </div>
+    </dl>
+  </section>
+  <section class="card" id="situation-card" data-system-inject="true">
+    <h2><span class="no">2</span>比赛局势</h2>
+    <div class="system-slot">系统注入占位：由规则层回填本局两队胜率与虎扑队员评分，本段不作人工判断。</div>
+  </section>
+  <section class="card" id="directional-intel">
+    <h2><span class="no">3</span>方向性情报板</h2>
+    <div class="direction-grid">
+      <article class="panel">
+        <h3>正锚点：看好谁赢</h3>
+        <span class="label">FlyQuest｜地图细节与回潮锚·两路局部共振</span>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest（“绿叶 / FQ / Fly”）。</p>
+          <p><b>依据：</b>17:16–17:18 连续出现“最近沙漠打得可以”“这图玩得好”“这张图细节多”；同期官方直播间给出 17:15 的 10:9、17:17 的 10:10，显示 FlyQuest 正在追平。</p>
+          <p><b>时间：</b><span class="time">17:15–17:18</span></p>
+          <p><b>验证：</b>Polymarket G1 Winner 已定价 FlyQuest；官方待核。该方向得到赛末市场与弹幕过程同向支持，但缺 BLAST 官方源，不能升级为官方多源确认。</p>
+          <span class="src">本场弹幕｜盘口结算待核｜两路局部共振</span>
+        </div>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest 的赛事履历叙事。</p>
+          <p><b>依据：</b>16:42–16:44 两路出现“第一阶段屠夫”“每次 Major 就来劲”“放绿叶 3-0”等看法；这些是观众对本场开局的先验，不是当前回合事实。</p>
+          <p><b>时间：</b><span class="time">16:42–16:44</span></p>
+          <p><b>验证：</b>方向与赛末市场一致，官方待核；因来自历史履历转述，只列为次级正锚。</p>
+          <span class="src">本场弹幕｜历史信息提及｜单源待验证</span>
+        </div>
+        <div class="anchor">
+          <p><b>对象：</b>Imperial 的中段反扑。</p>
+          <p><b>依据：</b>16:54 出现“上半场很抽象居然能反超”，17:05–17:10 进一步出现“帝国这么强吗”“帝国随便赢”“帝国肯定能赢”。</p>
+          <p><b>时间：</b><span class="time">16:54–17:10</span></p>
+          <p><b>验证：</b>主要正向断言由少数用户重复，后半段未延续；市场最终指向 FlyQuest，故该正锚未获市场方向支持，官方仍待核。</p>
+          <span class="src">本场弹幕｜单用户重复｜单源待验证</span>
+        </div>
+      </article>
+      <article class="panel">
+        <h3>负锚点：看衰谁输</h3>
+        <span class="label negative">Imperial｜末段执行负锚·集中出现</span>
+        <div class="anchor">
+          <p><b>对象：</b>Imperial。</p>
+          <p><b>依据：</b>17:14–17:26 集中出现“被纯 E 翻两把”“断不住、大狙直架也架不住”“大狙打中过人吗”等执行质疑，另有大量直接看衰表达。</p>
+          <p><b>时间：</b><span class="time">17:14–17:26</span></p>
+          <p><b>验证：</b>与赛末市场指向一致，官方待核；但讨论高度集中在 CSBOY-Mo，且包含情绪化辱骂，不把数量直接等同于事实结论。</p>
+          <span class="src">本场弹幕｜单房集中｜弹幕口径·待官方</span>
+        </div>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest 的即时执行。</p>
+          <p><b>依据：</b>16:50–17:01 与 17:24 出现“乱玩 / 乱打”“没战术”“一到 BO3 就不会”“大狙没用”等即时负评；17:15 后形势反转，这些负锚未持续兑现。</p>
+          <p><b>时间：</b><span class="time">16:50–17:24</span></p>
+          <p><b>验证：</b>市场方向不支持其在 G1 延续，官方待核；属于有效分歧锚。</p>
+          <span class="src">本场弹幕｜两路出现｜分歧信号</span>
+        </div>
+        <div class="anchor">
+          <p><b>对象：</b>FlyQuest 的阶段性“2-0 后崩盘”旧叙事。</p>
+          <p><b>依据：</b>16:56–17:02 官方直播间短时密集出现“每次 2-0 到 2-3”之类历史担忧，约二十条近似复述。</p>
+          <p><b>时间：</b><span class="time">16:56–17:02</span></p>
+          <p><b>验证：</b>G1 市场方向未支持该负锚，官方待核；由于是历史画像复述，不能当作本局失败预测。</p>
+          <span class="src">本场弹幕｜历史画像转述｜未应验待官方</span>
+        </div>
+      </article>
+      <article class="panel full">
+        <h3>群体共识：两次转向，赛前偏 FlyQuest、局中一度偏 Imperial，末段回潮</h3>
+        <div class="tone-grid" aria-label="规则层叙事情绪">
+          <div class="tone"><b>236 / 130</b><span>全窗正 / 负情绪</span></div>
+          <div class="tone"><b>+106</b><span>规则层净情绪</span></div>
+          <div class="tone"><b>205 行 / 138 人</b><span>双方直接提及去噪后样本</span></div>
+        </div>
+        <p>
+          <b>narrative 主线的两次转向：</b>16:38 起净情绪 +46，早段集中在 FlyQuest 的赛事履历与
+          “3-0”预期；16:59 转为 −18，对应 FlyQuest 乱打与 Imperial 反超讨论；17:10 回升至 +53，
+          17:15–17:18 弹幕比分 10:9 → 10:10，FlyQuest 回潮；17:21 再次形成 229 条/分钟密度峰值。
+          <span class="src">本场弹幕｜narrative｜规则层模型</span>
+        </p>
+        <p>
+          <b>为什么仍写“共识不足”：</b>全窗 +106 是聊天室总情绪，包含大量 FaZe、NAVI、Spirit、
+          MongolZ、Liquid、donk 等跨场内容，不能直接归给两队。只保留本场直接提及后，17:05–17:13
+          一度偏 Imperial，17:15 后才转向 FlyQuest，说明赛前到局内的方向并不稳定。
+          <span class="src">本场弹幕｜人工去噪｜强分歧</span>
+        </p>
+        <p>
+          <b>弹幕进度：</b>17:15 为 10:9，17:17 为 10:10；17:25 与 17:30 两路出现“绿叶赢了”。
+          这些是过程口径，最终仍以官方核对为准。
+          <span class="src">本场弹幕｜盘口结算待核｜弹幕口径·待官方</span>
+        </p>
+      </article>
+      <article class="panel full">
+        <h3>灰信号条件预测</h3>
+        <div class="conditional">
+          <p><b>若 FlyQuest“开送 / 乱打”被后续回放或官方数据证实为可归因失分：</b>指向 Imperial 获得回合优势；当前不成立为事实。</p>
+          <p><b>若 Imperial“自锁 / 不想赢 / 故意”被后续证据证实为可归因失误或异常：</b>指向 FlyQuest 获得回合与比赛优势；当前仅为观众质疑，市场方向同向也不能反推质疑成立。</p>
+          <p><b>赛事完整性质疑：</b>没有绑定任一方，不能生成队伍方向；若后续出现可核验盘口异动并唯一绑定一方，才可更新条件判断。</p>
+          <span class="src">本场弹幕｜观众质疑，非结论｜盘口待核</span>
+        </div>
+      </article>
+      <div class="salvage">
+        <b>中性弹幕二次判定：</b>
+        <code>neutral_salvage</code> 共 40 条去重候选，均含实体线索，合计对应 84 条原始弹幕。
+        真实情绪主要落在 jks：16:47 的“jks 打这么油”“jks 不亏是 G2 我最喜欢的人”等 3 条构成
+        FlyQuest 选手个人状态的弱正向观察，标“模型二次判定”；但它们没有直接断言 FlyQuest 将赢，
+        故不升级为主胜负锚。其余候选绝大多数是跨场讨论、转会传言、选手身份辨认、玩梗或纯聊天。
+        <details>
+          <summary>展开 40 条候选逐条判定</summary>
+          <ol class="salvage-list">
+            <li>16:52 解说无激情、转聊 donk（12 条）— 跨场闲聊，不纳入。</li>
+            <li>17:22 “液体”（8 条）— 他队指向，不纳入。</li>
+            <li>17:01 BC 输 FaZe 后还要打 100T（5 条）— 跨场赛程，不纳入。</li>
+            <li>17:18 donk 加入天禄（5 条）— 转会传言，不纳入。</li>
+            <li>17:13 为何直播间没有 Falcons / Spirit（4 条）— 跨场抱怨，不纳入。</li>
+            <li>16:42 PV 与 FaZe 谁赢（3 条）— 跨场，不纳入。</li>
+            <li>16:54 带脏话串 donk（3 条）— 玩梗，不纳入。</li>
+            <li>16:59 五名蒙古选手强于两名蒙古选手（3 条）— 跨场玩梗，不纳入。</li>
+            <li>17:01 买蒙古选手还是“小菊”（3 条）— 转会讨论，不纳入。</li>
+            <li>16:47 “jks 是 G2 我最喜欢的人”（2 条）— jks 个人正向，模型二次判定，弱观察。</li>
+            <li>16:54 chelo 与 FURIA“电话”旧事（2 条）— 跨队身份识别，不纳入。</li>
+            <li>16:56 再次确认 chelo 是否前 FURIA 选手（2 条）— 身份询问，不纳入。</li>
+            <li>17:09 donk 被买的小道消息（2 条）— 转会传言，不纳入。</li>
+            <li>17:19 天禄官宣 donk 的传言（2 条）— 转会传言，不纳入。</li>
+            <li>17:21 donk 来天禄（2 条）— 转会传言，不纳入。</li>
+            <li>17:29 Donk 与 m0NESY 互换传言（2 条）— 转会传言，不纳入。</li>
+            <li>16:41 蒙古队靠赛事沉淀成长（1 条）— 跨场评价，不纳入。</li>
+            <li>16:47 “jks 与 NiKo 和小孩同队可随便夺冠”（1 条）— jks 个人夸赞，模型二次判定，弱观察。</li>
+            <li>16:59 BC 对蒙古难说（1 条）— 跨场预测，不纳入。</li>
+            <li>16:38 蒙古队应从自身找原因（1 条）— 跨场评论，不纳入。</li>
+            <li>16:38 Falcons 与 NAVI 谁排名高（1 条）— 排名询问，不纳入。</li>
+            <li>16:38 蒙古队积分相关评价（1 条）— 跨场，不纳入。</li>
+            <li>16:39 蒙古 RMR（1 条）— 跨场赛程，不纳入。</li>
+            <li>16:40 亚洲不弱、蒙古表现（1 条）— 跨场评价，不纳入。</li>
+            <li>16:42 Spirit 夺冠（1 条）— 他队预测，不纳入。</li>
+            <li>16:43 想看 PV 与 Liquid（1 条）— 跨场偏好，不纳入。</li>
+            <li>16:44 因遇到 FaZe（1 条）— 跨场因果，不纳入。</li>
+            <li>16:44 FaZe 进入“地狱模式”（1 条）— 跨场玩梗，不纳入。</li>
+            <li>16:45 想起 ZywOo（1 条）— 他队选手联想，不纳入。</li>
+            <li>16:47 不愧是 NiKo 的队友（1 条）— 主体不明，不纳入。</li>
+            <li>16:47 Spirit 想要某名选手（1 条）— 转会臆测，不纳入。</li>
+            <li>16:51 想看 NIP 与 Liquid（1 条）— 跨场偏好，不纳入。</li>
+            <li>16:52 Spirit 行为争议（1 条）— 他队负评，不纳入。</li>
+            <li>16:53 chelo 在 FURIA 时赢过（1 条）— 跨场回忆，不纳入。</li>
+            <li>16:53 donk 来会全杀（1 条）— 跨场夸张玩梗，不纳入。</li>
+            <li>16:53 重复的“解说无激情”长句（1 条）— 与第 1 项同类，不纳入。</li>
+            <li>16:54 哪边是 Spirit（1 条）— 身份询问，不纳入。</li>
+            <li>16:56 期待 Magixx / Mo 与 donk 的互动（1 条）— 跨场闲聊，不纳入。</li>
+            <li>16:56 Spirit 0-12 能否翻盘（1 条）— 他队追问，不纳入。</li>
+            <li>16:57 Spirit / Vitality 被 0-13（1 条）— 他队赛况，不纳入。</li>
+          </ol>
+        </details>
+      </div>
+    </div>
+  </section>
+  <section class="card" id="gray-signals">
+    <h2><span class="no">4</span>灰信号汇总（风险 · 观众质疑非结论）</h2>
+    <div class="gray-item">
+      <strong>灰信号 1：观众质疑，非结论</strong>
+      <div class="gray-meta">
+        <span class="risk">风险等级：中</span>
+        <span class="risk">两路局部出现</span>
+        <span class="risk">指向 FlyQuest</span>
+      </div>
+      <p><b>样本：</b>16:50–17:15 出现“乱玩 / 乱打 / 马上开送”等约 5 条，双直播间在同一分钟有局部共振。</p>
+      <p><b>指向对象：</b>FlyQuest。</p>
+      <p><b>盘口对照：</b>本窗口没有与该质疑对应的可核验盘口异动切片。若后续证据证明这些回合可归责为主动失分，方向才指向 Imperial；当前不成立。</p>
+      <span class="src">本场弹幕｜观众质疑，非结论｜盘口待核</span>
+    </div>
+    <div class="gray-item">
+      <strong>灰信号 2：观众质疑，非结论</strong>
+      <div class="gray-meta">
+        <span class="risk">风险等级：中</span>
+        <span class="risk">单房集中、末段两路出现</span>
+        <span class="risk">指向 Imperial</span>
+      </div>
+      <p><b>样本：</b>17:18–17:27 集中出现“自锁 / 不想赢 / 故意的”等说法；包含一条“因为我买了帝国”的自嘲式下注语境。</p>
+      <p><b>指向对象：</b>Imperial 的回合执行与比赛态度质疑。</p>
+      <p><b>盘口对照：</b>市场最终定价偏向 FlyQuest，与质疑的“Imperial 失分”方向相同，但同向不等于证据；未发现可证明异常的资金或盘口切片。</p>
+      <span class="src">本场弹幕｜观众质疑，非结论｜不得写成实锤</span>
+    </div>
+    <div class="gray-item">
+      <strong>灰信号 3：赛事完整性传闻，非结论</strong>
+      <div class="gray-meta">
+        <span class="risk">风险等级：低</span>
+        <span class="risk">单一用户重复 4 次</span>
+        <span class="risk">无队伍指向</span>
+      </div>
+      <p><b>样本：</b>16:51–16:56 同一用户重复“最终比分由第三方决定，现在装模作样”等近似表述。</p>
+      <p><b>指向对象：</b>未指向 Imperial、FlyQuest、具体选手或具体回合。</p>
+      <p><b>盘口对照：</b>没有可绑定的盘口异动或多源证据，不能生成胜负方向，也不能据此推断比赛被操纵。</p>
+      <span class="src">本场弹幕｜单用户重复｜观众质疑，非结论</span>
+    </div>
+    <p class="discipline">
+      纪律：规则层列出 22 条灰信号候选，人工去噪后保留以上 3 组。其余“买了 / 股票 / 转会 / 选手身份”等
+      内容属跨场或消费语境，不纳入灰信号。所有记录只作风险提示与后续盘口对照素材，不是假赛证据，
+      也不能据此判定小局或整场结果。
+    </p>
+  </section>
+  <footer class="footer">
+    局中·非终局，结果待定 · 弹幕采集截止：2026-11-25 17:32（北京）<br>
+    源：<code>runtime/vps_intel/cs2-imp11-fly-2026-11-25_g1_end_intel.json</code> +
+    <code>data/intel_slices/cs2-imp11-fly-2026-11-25_g1_end.jsonl</code>
+  </footer>
+</main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
