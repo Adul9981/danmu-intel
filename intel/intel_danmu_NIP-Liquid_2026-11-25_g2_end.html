@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NIP vs Liquid · G2 局末/局间弹幕情报快照</title>
+  <meta name="description" content="NIP vs Liquid G2 局末/局间弹幕情报快照；局中·非终局，结果待定；全部时间按北京时间展示。">
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --sub: #6e6e73;
+      --faint: #8e8e93;
+      --line: #e5e5ea;
+      --soft: #f7f8fa;
+      --accent: #0071e3;
+      --accent-soft: #eaf3ff;
+      --radius: 18px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .03), 0 8px 28px rgba(0, 0, 0, .035);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    .page {
+      width: min(100% - 28px, 960px);
+      margin: 0 auto;
+      padding: 34px 0 48px;
+    }
+    .hero {
+      padding: 14px 2px 22px;
+    }
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--sub);
+      font-size: 14px;
+    }
+    .alert {
+      margin-top: 20px;
+      padding: 18px 19px;
+      border: 1px solid #cfe5ff;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+    }
+    .alert-head {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: .02em;
+      white-space: nowrap;
+    }
+    .alert strong {
+      font-size: 16px;
+      line-height: 1.45;
+    }
+    .alert p {
+      margin: 9px 0 0;
+      color: #3a3a3c;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .meta {
+      min-width: 0;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .7);
+    }
+    .meta .k {
+      display: block;
+      color: var(--faint);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+    .meta .v {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+    .meta.wide { grid-column: span 2; }
+    .meta.full { grid-column: 1 / -1; }
+    .source-note {
+      margin: 13px 2px 0;
+      color: var(--sub);
+      font-size: 12.5px;
+    }
+    main {
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      padding: clamp(18px, 3vw, 28px);
+      border: 1px solid rgba(229, 229, 234, .9);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    h2 {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin: 0 0 17px;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.02em;
+    }
+    h2 .no {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 27px;
+      width: 27px;
+      height: 27px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h3 {
+      margin: 23px 0 9px;
+      font-size: 15px;
+      line-height: 1.4;
+      letter-spacing: -.01em;
+    }
+    p { margin: 8px 0 0; }
+    .callout,
+    .lead,
+    .empty,
+    .gray,
+    .discipline,
+    .system {
+      padding: 14px 15px;
+      border-radius: 13px;
+      background: var(--soft);
+    }
+    .callout {
+      border-left: 3px solid var(--accent);
+    }
+    .lead {
+      border: 1px solid #d9eaff;
+      background: var(--accent-soft);
+    }
+    .lead strong,
+    .callout strong,
+    .gray strong,
+    .system strong {
+      font-weight: 760;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      margin: 7px 5px 0 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef0f3;
+      color: #4b4b50;
+      font-size: 10.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .tag.src {
+      background: var(--accent-soft);
+      color: #0062c7;
+    }
+    .tag.pending {
+      background: #f0f0f2;
+      color: #55555a;
+    }
+    .table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 660px;
+      font-size: 13px;
+    }
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #fafafa;
+      color: var(--sub);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .025em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td strong { font-weight: 720; }
+    .map-name {
+      color: var(--accent);
+      font-weight: 720;
+      white-space: nowrap;
+    }
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .signal {
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .signal-title {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 760;
+      line-height: 1.4;
+    }
+    .signal p {
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .metric {
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: var(--soft);
+    }
+    .metric b {
+      display: block;
+      font-size: 20px;
+      line-height: 1.2;
+      color: var(--accent);
+    }
+    .metric span {
+      display: block;
+      margin-top: 3px;
+      color: var(--sub);
+      font-size: 11px;
+    }
+    .narrative {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .trend {
+      display: grid;
+      grid-template-columns: 104px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 11px;
+      border-radius: 11px;
+      background: var(--soft);
+      font-size: 12.5px;
+    }
+    .trend .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e8eaee;
+      overflow: hidden;
+    }
+    .trend .bar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+    .trend .net {
+      color: var(--sub);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    details {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .review-list {
+      margin: 9px 0 0;
+      padding-left: 20px;
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .review-list li { margin-top: 7px; }
+    .gray-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .gray {
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+    }
+    .gray .risk {
+      float: right;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: #eceef1;
+      color: #515156;
+      font-size: 10.5px;
+      font-weight: 740;
+    }
+    .discipline {
+      margin-top: 12px;
+      color: #3a3a3c;
+      font-size: 13px;
+    }
+    .system {
+      padding: 0;
+      background: transparent;
+    }
+    .win-row {
+      display: grid;
+      grid-template-columns: 76px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .win-track {
+      height: 16px;
+      overflow: hidden;
+      border-radius: 7px;
+      background: #eceef1;
+    }
+    .win-track i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+    .win-row .pct {
+      color: var(--accent);
+      font-weight: 780;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .ratings {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+    }
+    .rating-row {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 12.5px;
+    }
+    .rating-row:last-child { border-bottom: 0; }
+    .note {
+      margin-top: 7px;
+      color: var(--faint);
+      font-size: 11.5px;
+    }
+    footer {
+      padding: 20px 3px 0;
+      color: var(--sub);
+      font-size: 11.5px;
+    }
+    footer code {
+      color: #4a4a4f;
+      word-break: break-all;
+    }
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 20px, 960px);
+        padding-top: 22px;
+      }
+      .meta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .meta.wide { grid-column: span 2; }
+      .signal-grid,
+      .gray-grid,
+      .ratings {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+      .trend {
+        grid-template-columns: 88px 1fr;
+      }
+      .trend .net {
+        grid-column: 1 / -1;
+        justify-self: end;
+      }
+      h2 {
+        align-items: flex-start;
+        font-size: 17.5px;
+      }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">NIP-Liquid 2026-11-25 g2 end</b></div>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">GAME-REVIEW · G2 · CS2 DANMAKU INTELLIGENCE</div>
+      <h1>NIP vs Liquid · G2 局末/局间弹幕情报快照</h1>
+      <p class="subtitle">PGL Major Singapore Stage 1 · BO3 · slug cs2-nip-tl1-2026-11-25</p>
+      <div class="alert">
+        <div class="alert-head">
+          <span class="status">局中·非终局，结果待定</span>
+          <strong>G2 已进入局末/局间；Polymarket Game 2 Winner 结算指向 NIP，官方比分仍待核对。</strong>
+        </div>
+        <p>弹幕在中段显示 NIP 大幅领先，20:14 后声音转向 Liquid 连续追分与 NIP 可能被翻；页面只总结本小局弹幕，不把市场结算写成系列赛终局。</p>
+        <span class="tag src">本场弹幕</span>
+        <span class="tag pending">盘口｜G2 结果待官方</span>
+        <span class="tag pending">弹幕口径·非结论</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta">
+          <span class="k">数据窗口</span>
+          <span class="v">19:49–20:46（北京）</span>
+        </div>
+        <div class="meta">
+          <span class="k">弹幕采集截止</span>
+          <span class="v">20:46（北京）</span>
+        </div>
+        <div class="meta">
+          <span class="k">原始样本</span>
+          <span class="v">7,676 条 / 2,669 账号</span>
+        </div>
+        <div class="meta">
+          <span class="k">整窗密度</span>
+          <span class="v">136.1 条/分钟</span>
+        </div>
+        <div class="meta wide">
+          <span class="k">实际数据源</span>
+          <span class="v">虎牙 CSBOY 官方房 4,969 条；CSBOY-Mo 房 2,707 条</span>
+        </div>
+        <div class="meta wide">
+          <span class="k">本场对象命中</span>
+          <span class="v">NIP / Liquid / 选手称呼共 555 条，333 账号，覆盖 2 房</span>
+        </div>
+        <div class="meta full">
+          <span class="k">来源完整性</span>
+          <span class="v">PGL / BLAST 专用官方直播源未进入本节点切片，属多源覆盖缺口。窗口混有 BCG–CW、GOSH–CW 等同时段比赛讨论；跨场内容已从本场 BP、方向与灰信号中剔除。</span>
+        </div>
+      </div>
+      <p class="source-note"><strong>时间口径：</strong>本页所有时间均为北京时间。规则层 <code>narrative</code> 按整窗聚合，保留为情绪主线；本页再以 NIP/Liquid 对象命中二次筛选，避免把旁场共识直接迁移到本场。</p>
+    </header>
+    <main>
+      <section class="card">
+        <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+        <div class="callout">
+          <strong>G2 地图强候选：Ancient（遗迹）· 弹幕口径·待官方</strong>
+          <p>19:59:59“液体有遗迹本地人能赢的”，20:03:21 进一步点名“马儿不斯遗迹本地人”；20:10:35 与 20:10:44 两房又出现“遗迹的神 / 遗迹本地人”。这些线索共振到 Ancient 与 Liquid 的地图专项，但仍没有完整 Veto 链，不能写成实际选图。</p>
+          <span class="tag src">本场弹幕</span>
+          <span class="tag src">两房共振</span>
+          <span class="tag pending">地图待官方 Veto</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>情报项</th>
+                <th>可见结论</th>
+                <th>证据与时间（北京）</th>
+                <th>来源 / 验证</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="map-name">Ancient（遗迹）</td>
+                <td>G2 地图强候选；不是官方确认。</td>
+                <td>19:59:59、20:03:21、20:10:35、20:10:44 连续出现“遗迹本地人 / 遗迹的神”。</td>
+                <td><span class="tag src">本场弹幕</span><span class="tag pending">待官方</span></td>
+              </tr>
+              <tr>
+                <td class="map-name">Liquid × Ancient</td>
+                <td>观众把 malbsMd（“马儿不斯”）与 Ancient 专项能力绑定，视为 Liquid 的潜在强点。</td>
+                <td>20:03:21“马儿不斯遗迹本地人不发挥一下吗？”；20:10:44“马儿不是遗迹本地人吗”。</td>
+                <td><span class="tag src">本场弹幕</span><span class="tag pending">单点能力待战绩验证</span></td>
+              </tr>
+              <tr>
+                <td class="map-name">选图归属</td>
+                <td>20:01:21“自己选图都被打烂了”暗示 Liquid 自选图承压，但缺少选图方标签，不补写 Pick / Ban 顺序。</td>
+                <td>20:01:21；上下文与 Liquid 连续失分相邻，属于条件归因。</td>
+                <td><span class="tag src">本场弹幕</span><span class="tag pending">待官方禁选表</span></td>
+              </tr>
+              <tr>
+                <td class="map-name">NIP × 地图</td>
+                <td>只有泛化“NIP强图”，没有具体地图名，不能升级成 NIP × Ancient 结论。</td>
+                <td>19:57:25“NIP强图”。</td>
+                <td><span class="tag src">本场弹幕</span><span class="tag pending">样本不足</span></td>
+              </tr>
+              <tr>
+                <td class="map-name">BP 后战绩情报</td>
+                <td><strong>无战绩情报提及。</strong></td>
+                <td>窗口多次出现“看战绩”“看看战绩”，但未见可核验的 NIP/Liquid × 地图历史胜率、次数或近期交手记录。</td>
+                <td><span class="tag pending">样本不足</span></td>
+              </tr>
+              <tr>
+                <td class="map-name">双方阵容</td>
+                <td>弹幕可识别 Liquid 侧 malbsMd、NAF、Jorko、JT 与“鸡哥”称呼；完整双方名单仍待官方，不据昵称硬配位置。</td>
+                <td>20:03–20:30 多名选手被点名；NIP 五人完整名单未在弹幕中形成事实层。</td>
+                <td><span class="tag src">本场弹幕</span><span class="tag pending">完整名单待官方</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="discipline">
+          <strong>排除说明：</strong>“图三 NUKE”“BC 的核子”“沙二”“迷城”等句子主要来自同时段其他 CS2 对局，不并入本场 Veto。Ancient 只保留为强候选，不把观众讨论写成实际选图。
+          <span class="tag src">本场弹幕清洗</span>
+        </div>
+      </section>
+      <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">本局结果（官方结算·已确认）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">NIP</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:100%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">100%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">Liquid</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:0%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">0%</span></div><div class="note">本局官方结算：<b>NIP 胜</b>（Polymarket Game N Winner 结算确认，结果展示：胜方 100% / 负方 0%）。</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div style="display:flex;gap:20px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#0071e3">NIP</div><div class="note">暂无评分</div></div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#ff3b30">Liquid</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Jorko</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">4.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">5人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">EliGE</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">3.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">8人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">JT</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">2.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">3人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">NAF</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">2.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">2人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">malbsMd</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">2.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">1人评</span></div></div></div><div style="margin-top:10px"><div style="font-weight:700;font-size:12px;margin-bottom:4px;color:#8a8f98">未归属</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Krimbo</span><span style="font-weight:750;color:#8a8f98;min-width:34px;text-align:right">6.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">6人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">xKacpersky</span><span style="font-weight:750;color:#8a8f98;min-width:34px;text-align:right">5.2</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">5人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">sjuush</span><span style="font-weight:750;color:#8a8f98;min-width:34px;text-align:right">4.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">1人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">adamb</span><span style="font-weight:750;color:#8a8f98;min-width:34px;text-align:right">3.5</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">4人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">stavn</span><span style="font-weight:750;color:#8a8f98;min-width:34px;text-align:right">3.1</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">13人评</span></div></div><div class="note">来源：虎扑通用评分（每小局独立）· 远古遗迹</div><div class="note" data-rat-ts="1795611008" style="color:#8a8f98;font-size:11px;margin-top:2px">评分更新于 20:50:08（北京时间）</div><!-- SITUATION:RATINGS:END --></div>
+      <section class="card">
+        <h2><span class="no">3</span>方向性情报板（正锚×负锚×共识×灰信号条件预测）</h2>
+        <div class="lead">
+          <strong>方向主线：NIP 偏强共识，但并非一致；G2 中段存在 Liquid 追分分歧。</strong>
+          <p>早期大量弹幕把优势归于 NIP 的枪法、团队性与 Liquid 的执行崩坏；20:14–20:23 又出现“NIP 会被翻”“液体好像翻了”的反向声音。最终方向只以 Polymarket G2 结算为候选，不等同官方终局。</p>
+          <span class="tag src">本场弹幕</span>
+          <span class="tag src">规则层 narrative</span>
+          <span class="tag pending">单源待验证 / 分歧已标注</span>
+        </div>
+        <h3>正锚点 · 看好谁赢</h3>
+        <div class="signal-grid">
+          <article class="signal">
+            <div class="signal-title">
+              <span>NIP · 枪法与团队执行</span>
+              <span class="tag src">本场弹幕</span>
+            </div>
+            <p><strong>对象：</strong>NIP。19:57:13“nip枪太硬了”、20:04:40“指挥挺好，NIP打得更像一个整体”，两房对枪法与协作给出同向正评价。</p>
+            <p><strong>时间 / 共振：</strong>19:57–20:04（北京），2 房。<strong>验证：</strong>G2 结算候选指向 NIP，尚未完成官方核对。</p>
+            <span class="tag src">本场弹幕</span>
+            <span class="tag pending">盘口候选应验·官方待核对</span>
+          </article>
+          <article class="signal">
+            <div class="signal-title">
+              <span>Liquid · 追分与翻盘窗口</span>
+              <span class="tag src">反向正锚</span>
+            </div>
+            <p><strong>对象：</strong>Liquid。20:18:19“拿下手枪局还有得打”与 20:22:43“液体好像翻了”形成条件式看好，20:23:00“鸡哥要拿下了”继续放大追分预期。</p>
+            <p><strong>时间 / 共振：</strong>20:18–20:23，单房主叙事。<strong>验证：</strong>G2 Winner 结算候选指向 NIP，该翻盘锚点暂记“未应验”，官方待核对。</p>
+            <span class="tag src">本场弹幕</span>
+            <span class="tag pending">单源待验证</span>
+          </article>
+        </div>
+        <h3>负锚点 · 看衰谁输</h3>
+        <div class="signal-grid">
+          <article class="signal">
+            <div class="signal-title">
+              <span>Liquid · 进攻、残局与指挥失序</span>
+              <span class="tag src">本场弹幕</span>
+            </div>
+            <p><strong>对象：</strong>Liquid。20:18:05“液体进攻一坨”，20:22:21 点名 Jorko“犯病”，20:22:56 点名 NAF“黑屋白给”，20:30:47 延展到“教练的问题”。</p>
+            <p><strong>时间 / 共振：</strong>20:18–20:30，2 房均有具体失误或指挥批评。<strong>验证：</strong>负锚与 G2 结算候选同向，官方待核对。</p>
+            <span class="tag src">本场弹幕</span>
+            <span class="tag pending">盘口候选应验·官方待核对</span>
+          </article>
+          <article class="signal">
+            <div class="signal-title">
+              <span>NIP · 历史式被翻风险</span>
+              <span class="tag src">反向负锚</span>
+            </div>
+            <p><strong>对象：</strong>NIP。20:10:07“NIP是最擅长被翻的队伍”，20:15:31“Nip最擅长的就是被翻了”，20:22:31“这nip是真的没有人类”在追分段集中出现。</p>
+            <p><strong>时间 / 共振：</strong>20:10–20:22，单房为主。<strong>验证：</strong>G2 结算候选仍指向 NIP，该负锚暂记“未应验”，不代表系列赛终局。</p>
+            <span class="tag src">本场弹幕</span>
+            <span class="tag pending">单源待验证</span>
+          </article>
+        </div>
+        <h3>群体共识 · 方向、分歧与样本量</h3>
+        <div class="metrics">
+          <div class="metric"><b>555</b><span>NIP/Liquid/选手对象命中（333 账号）</span></div>
+          <div class="metric"><b>71%</b><span>规则层胜负方向提及：NIP 25 / Liquid 10</span></div>
+          <div class="metric"><b>+17</b><span>整窗 narrative：正 271 / 负 254</span></div>
+        </div>
+        <p><strong>共识：</strong>早期与末段都能观察到 NIP 正面、Liquid 负面主叙事；<strong>分歧：</strong>20:14 后出现 Liquid 追分、NIP 被翻与“NIP 在放分”的少数派声音。因切片混有其他比赛，555 条对象命中和 35 条胜负方向只作本场聚合参考，不作官方比分。</p>
+        <div class="narrative" aria-label="规则层情绪时间线">
+          <div class="trend">
+            <b>19:49–20:01</b>
+            <span class="bar"><i style="width:57%"></i></span>
+            <span class="net">1,465 条 · 正61 / 负46 · +15</span>
+          </div>
+          <div class="trend">
+            <b>20:01–20:12</b>
+            <span class="bar"><i style="width:59%"></i></span>
+            <span class="net">1,213 条 · 正49 / 负34 · +15</span>
+          </div>
+          <div class="trend">
+            <b>20:12–20:23</b>
+            <span class="bar"><i style="width:53%"></i></span>
+            <span class="net">1,013 条 · 正29 / 负26 · +3</span>
+          </div>
+          <div class="trend">
+            <b>20:23–20:34</b>
+            <span class="bar"><i style="width:46%"></i></span>
+            <span class="net">2,051 条 · 正59 / 负70 · -11</span>
+          </div>
+          <div class="trend">
+            <b>20:34–20:46</b>
+            <span class="bar"><i style="width:48%"></i></span>
+            <span class="net">1,934 条 · 正73 / 负78 · -5</span>
+          </div>
+        </div>
+        <span class="tag src">本场弹幕</span>
+        <span class="tag pending">规则层全窗聚合·含旁场噪声</span>
+        <h3>灰信号条件预测</h3>
+        <div class="signal">
+          <div class="signal-title">
+            <span>若“NIP 放分”被后续结构源证实</span>
+            <span class="tag pending">条件式·待验证</span>
+          </div>
+          <p>20:14:58 出现单条“我感觉像是nip再放分”。若该质疑成立，方向指向 Liquid 获得追分窗口；但当前只有单房单条，不能升级为胜负预测或诚信结论。</p>
+          <span class="tag src">本场弹幕</span>
+          <span class="tag pending">低风险·观众质疑非结论</span>
+        </div>
+        <details>
+          <summary>中性弹幕二次判定：40 条候选逐条复核</summary>
+          <p>保留 22 条、38 次可归属本场的真实褒贬：Liquid 负向 20 条 / 34 次，Liquid 正向 1 条 / 2 次，NIP 正向 1 条 / 2 次。其余 18 条为其他队、纯玩梗、提问或无法唯一归属本场，不硬套情绪。</p>
+          <ul class="review-list">
+            <li><strong>19:56（本场弹幕·模型二次判定）：</strong>“液体求你了拿下好吗 3-0”×2，判为 Liquid 正向愿望，但不构成本局表现依据；属于与主流相反的分歧样本。</li>
+            <li><strong>19:56–20:04（本场弹幕·模型二次判定）：</strong>“液体烂完了”“液体诗人？”“再见了液体”“液体蛆完了”“液体真不如LVG”“液体被光头”等，归并为 Liquid 负向失望/嘲讽。</li>
+            <li><strong>20:01（本场弹幕·模型二次判定）：</strong>“我NIP填的三零、液体填了3-1，NIP加油”×2，判为 NIP 正向支持，兼有作业倾向，不当作比赛事实。</li>
+            <li><strong>20:03–20:07（本场弹幕·模型二次判定）：</strong>“给液体写信踢掉鸡哥”“当初液体就该买断krimbo”“谁去液体都没用，北美CS不听指挥”“液体拉完了”“液体太莱了，枪法根本打不过”，归并为 Liquid 阵容/指挥/火力负向。</li>
+            <li><strong>20:04（本场弹幕·模型二次判定）：</strong>“液体今天输了后一蹶不振，然后2-3淘汰”×6，判为 Liquid 负向延续预测；该说法远超本页可验证范围，只保留情绪、不采信系列赛结论。</li>
+          </ul>
+        </details>
+      </section>
+      <section class="card">
+        <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <div class="gray-grid">
+          <article class="gray">
+            <span class="risk">低风险</span>
+            <strong>NIP · 放分质疑</strong>
+            <p><strong>观众质疑，非结论。</strong>20:14:58 有观众称“我感觉像是nip再放分”，触发点与 Liquid 连续追分相邻。</p>
+            <p><strong>指向：</strong>NIP；<strong>条件方向：</strong>若属实，NIP 的领先可信度下降，利好 Liquid 追分。当前仅单房单条，无价格、回合数据或第三源佐证。</p>
+            <span class="tag src">本场弹幕</span>
+            <span class="tag pending">单源待验证</span>
+          </article>
+          <article class="gray">
+            <span class="risk">低风险</span>
+            <strong>Liquid · 无谓送分质疑</strong>
+            <p><strong>观众质疑，非结论。</strong>20:30:28 出现“TL不是在送分啊”，指向 Liquid 在关键回合持续失去优势；语义也可能只是普通失误批评。</p>
+            <p><strong>指向：</strong>Liquid；<strong>条件方向：</strong>若属实，Liquid 回合执行风险升高，指向 NIP 保持领先。当前只有单条，不升级为故意输赛判断。</p>
+            <span class="tag src">本场弹幕</span>
+            <span class="tag pending">单源待验证</span>
+          </article>
+        </div>
+        <div class="discipline">
+          <strong>纪律与市场对照：</strong>规则层灰词共 42 次，但多数来自 BCG/CW 等旁场的“买了 / 放水 / 剧本 / 老板买了”刷屏，已隔离；本场仅保留上述 2 条低风险候选。Polymarket Game 2 Winner 指向 NIP 属于结果层仲裁候选，不能反向证明任何观众质疑成立。灰信号只作风险标注与盘口对照，禁止写成实锤。
+          <span class="tag src">本场弹幕</span>
+          <span class="tag pending">观众质疑非结论</span>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div>数据：<code>runtime/vps_intel/cs2-nip-tl1-2026-11-25_g2_end_intel.json</code>；<code>data/intel_slices/cs2-nip-tl1-2026-11-25_g2_end.jsonl</code>。</div>
+      <div>市场：Polymarket <code>cs2-nip-tl1-2026-11-25</code> · G2 Winner 结算候选 NIP · 官方待核对。</div>
+      <div>时间：本页全部按北京时间（UTC+8）展示；未直接展示原始时间。</div>
+    </footer>
+  </div>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
