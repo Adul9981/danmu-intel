@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Imperial vs Liquid｜G1 局中弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #e8e8ed;
+      --soft: #f9f9fb;
+      --accent: #087f6a;
+      --accent-soft: #e9f6f2;
+      --blue: #0b66c3;
+      --blue-soft: #edf5ff;
+      --warn: #985900;
+      --warn-soft: #fff7e8;
+      --risk: #a62c24;
+      --risk-soft: #fff0ee;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .045);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); }
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 64px;
+    }
+    .hero { padding: 8px 6px 24px; }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .brand {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .node-pill,
+    .status-pill,
+    .tag,
+    .confidence,
+    .source-layer {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .node-pill {
+      padding: 7px 11px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(36px, 7vw, 66px);
+      line-height: 1.03;
+      letter-spacing: -.055em;
+      font-weight: 760;
+    }
+    h1 .versus {
+      color: #a1a1a6;
+      font-size: .56em;
+      font-weight: 600;
+      padding: 0 .14em;
+      letter-spacing: -.02em;
+    }
+    .subtitle {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: clamp(15px, 2.2vw, 19px);
+    }
+    .status-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .status-pill {
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .status-pill.primary {
+      background: var(--warn);
+      color: #fff;
+    }
+    .status-pill.secondary {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+    .meta-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--line);
+      box-shadow: var(--shadow);
+    }
+    .meta-item {
+      min-height: 94px;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, .97);
+    }
+    .meta-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .meta-item strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .card {
+      margin-top: 22px;
+      padding: clamp(22px, 4vw, 38px);
+      background: var(--card);
+      border: 1px solid rgba(0, 0, 0, .045);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(22px, 4vw, 31px);
+      line-height: 1.25;
+      letter-spacing: -.03em;
+      font-weight: 730;
+    }
+    h2 .no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      margin-top: 1px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      line-height: 1.4;
+      letter-spacing: -.012em;
+    }
+    p { margin: 9px 0; }
+    .lead {
+      max-width: 880px;
+      color: #424245;
+      font-size: 15px;
+    }
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .tag,
+    .confidence,
+    .source-layer {
+      margin: 6px 6px 0 0;
+      padding: 4px 8px;
+      font-size: 10.5px;
+      font-weight: 750;
+      background: #f0f1f3;
+      color: #55555a;
+    }
+    .tag.source {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+    .tag.pending,
+    .confidence.low {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+    .tag.risk {
+      background: var(--risk-soft);
+      color: var(--risk);
+    }
+    .tag.secondary {
+      background: #f2eefe;
+      color: #6544a8;
+    }
+    .tag.excluded {
+      background: #f1f1f3;
+      color: #77777d;
+    }
+    .summary-bar {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .summary-cell {
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--soft);
+    }
+    .summary-cell.wide {
+      background: var(--accent-soft);
+      border-color: #d7eee8;
+    }
+    .summary-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .06em;
+    }
+    .summary-cell strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+    .summary-cell em {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-style: normal;
+    }
+    .kv {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13.5px;
+    }
+    .kv th,
+    .kv td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .kv th {
+      width: 22%;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .kv tr:last-child th,
+    .kv tr:last-child td { border-bottom: 0; }
+    .lineup-grid,
+    .anchor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .lineup,
+    .anchor-card,
+    .consensus,
+    .conditional,
+    .empty-state,
+    .system-slot,
+    .candidate-panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--soft);
+    }
+    .lineup,
+    .anchor-card {
+      padding: 19px;
+    }
+    .lineup.imperial { border-top: 3px solid var(--warn); }
+    .lineup.liquid { border-top: 3px solid var(--accent); }
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .roster {
+      color: #424245;
+      font-size: 13.5px;
+      line-height: 1.9;
+    }
+    .system-slot {
+      min-height: 105px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .system-slot strong {
+      font-size: 15px;
+    }
+    .system-slot span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .anchor-card.positive { border-left: 4px solid var(--accent); }
+    .anchor-card.negative { border-left: 4px solid var(--warn); }
+    .anchor-card p {
+      color: #424245;
+      font-size: 14px;
+    }
+    .anchor-meta {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 4px 10px;
+      margin: 14px 0 0;
+      font-size: 12.5px;
+    }
+    .anchor-meta dt {
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .anchor-meta dd {
+      margin: 0;
+    }
+    .consensus,
+    .conditional,
+    .candidate-panel {
+      margin-top: 16px;
+      padding: 19px;
+    }
+    .consensus-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .evidence-list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .evidence-list li {
+      position: relative;
+      margin: 9px 0;
+      padding-left: 17px;
+      color: #424245;
+      font-size: 13.5px;
+    }
+    .evidence-list li::before {
+      content: "";
+      position: absolute;
+      top: .72em;
+      left: 1px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #b9b9bf;
+    }
+    details {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .conditional {
+      background: var(--warn-soft);
+      border-color: #f2dfbb;
+    }
+    .empty-state {
+      padding: 22px;
+      background: #fbfbfc;
+    }
+    .risk-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--line);
+    }
+    .risk-cell {
+      padding: 16px;
+      background: #fff;
+    }
+    .risk-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .risk-cell strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    footer {
+      margin-top: 26px;
+      padding: 20px 8px 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+    footer strong { color: var(--ink); }
+    @media (max-width: 820px) {
+      .meta-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .summary-bar { grid-template-columns: 1fr; }
+      .lineup-grid,
+      .anchor-grid { grid-template-columns: 1fr; }
+      .risk-summary { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .page { width: min(100% - 20px, 1080px); padding-top: 26px; }
+      .topline,
+      .section-head,
+      .consensus-head { flex-direction: column; }
+      .meta-strip { grid-template-columns: 1fr; }
+      .card { border-radius: 20px; }
+      h1 { font-size: 36px; }
+      .kv th { width: 31%; }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="../index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">首页</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 11px;border-radius:999px;background:#1d1d1f;color:#fff;font-weight:650;font-size:13px;text-decoration:none;white-space:nowrap" aria-current="page">历史情报库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">问答 FAQ</a><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_profiles_index.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">四维画像</a><a href="intel_map_records.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">地图战绩</a><a href="intel_gray_verification_stats.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">验证闭环</a><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史情报库</a> › <b style="color:#1d1d1f">Imperial-Liquid 2026-11-26 g1 bp</b></div>
+  <main class="page">
+    <header class="hero">
+      <div class="topline">
+        <div class="brand">Danmu Intel · CS2 · Live Snapshot</div>
+        <div class="node-pill">G1 · BP 后／开局</div>
+      </div>
+      <h1>Imperial <span class="versus">vs</span> Liquid</h1>
+      <p class="subtitle">局中弹幕情报快照（G1）· 聚焦地图禁选、方向性共识与可归因灰信号</p>
+      <div class="status-line">
+        <span class="status-pill primary">局中 · 非终局，结果待定</span>
+        <span class="status-pill secondary">进度：EARLY-GAME（弹幕口径·官方待回填）</span>
+        <span class="status-pill secondary">2026-11-26 · 北京时间</span>
+      </div>
+      <div class="meta-strip">
+        <div class="meta-item">
+          <span>弹幕数据窗口</span>
+          <strong>19:20–19:32（北京）<br>采集截止 19:32</strong>
+        </div>
+        <div class="meta-item">
+          <span>样本量</span>
+          <strong>799 条 · 416 个活跃账号<br>密度 66.4 条／分钟</strong>
+        </div>
+        <div class="meta-item">
+          <span>实际数据源</span>
+          <strong>虎牙 CSBOY official<br>虎牙 CSBOY MO</strong>
+        </div>
+        <div class="meta-item">
+          <span>完整性状态</span>
+          <strong>无跨平台补源；地图／比分／终局<br>均待官方面板回填</strong>
+        </div>
+      </div>
+    </header>
+    <section class="card" id="bp">
+      <div class="section-head">
+        <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+        <span class="tag pending">弹幕口径·待官方</span>
+      </div>
+      <p class="lead">
+        本窗口的地图讨论集中指向 <strong>Anubis（阿努比斯）</strong>，
+        但未拿到本场官方选图文件，因此不能把观众讨论当成已经确认的 G1 选图。
+        <span class="tag source">本场弹幕</span>
+        <span class="tag pending">待官方</span>
+      </p>
+      <div class="summary-bar">
+        <div class="summary-cell wide">
+          <span>地图指向</span>
+          <strong>Anubis（阿努比斯）</strong>
+          <em>弹幕出现“放出来了”，并讨论其近期偏 CT 侧；官方选图未回填。</em>
+        </div>
+        <div class="summary-cell">
+          <span>队伍×地图</span>
+          <strong>Liquid／Jorko 单点强图口径</strong>
+          <em>只有一条明确“强图”表述，单源待验证。</em>
+        </div>
+        <div class="summary-cell">
+          <span>BP 后战绩</span>
+          <strong>无战绩情报提及</strong>
+          <em>未见 Imperial／Liquid 在黑板上此图的战绩或胜率引用。</em>
+        </div>
+      </div>
+      <table class="kv" aria-label="G1 地图与 BP 锚点">
+        <tbody>
+          <tr>
+            <th>地图禁选</th>
+            <td>
+              19:21:03（北京）出现“阿努比斯放出来了”；19:23:23–19:23:57
+              继续讨论“阿努比斯是不是 CT 图”“最近偏 CT 图”。
+              对象与当前 CS2 场次一致，但未直接绑定“G1 官方选图”字段。
+              <span class="tag source">本场弹幕</span>
+              <span class="tag pending">弹幕口径·待官方</span>
+            </td>
+          </tr>
+          <tr>
+            <th>Liquid × Anubis</th>
+            <td>
+              19:21:27（北京）出现“鸡哥的阿努比斯是强图”；“鸡哥”在本窗口与
+              Jorko 的选手讨论相邻出现。该结论仅有 1 条明确强图表述，不能升级为
+              多源确认。 <span class="tag source">本场弹幕</span>
+              <span class="confidence low">单源待验证</span>
+            </td>
+          </tr>
+          <tr>
+            <th>Imperial × Anubis</th>
+            <td>
+              未发现 Imperial 选手与该地图的强图、弱图或历史胜率绑定。
+              本项写“样本不足”，不从对手强弱反推。 <span class="tag source">本场弹幕</span>
+              <span class="tag pending">样本不足</span>
+            </td>
+          </tr>
+          <tr>
+            <th>BP 后战绩</th>
+            <td>
+              本窗口无“队伍／选手 × 地图”的战绩、胜率或“没输过”类提及。
+              按规范记作“无战绩情报提及”。 <span class="tag source">本场弹幕</span>
+            </td>
+          </tr>
+          <tr>
+            <th>阵容核验</th>
+            <td>
+              本场官方阵容文件为 Imperial：saadzin、VINI、noway、decenty、chelo；
+              Liquid：Jorko、JT、EliGE、NAF、malbsMd。弹幕直接点名到
+              Jorko、“鸡哥”、chelo、noway 与 NAF；队名归属另由阵容文件校验。
+              <span class="tag source">本场弹幕</span>
+              <span class="tag">官方阵容文件</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="lineup-grid">
+        <article class="lineup imperial">
+          <div class="eyebrow">Imperial · 官方阵容文件</div>
+          <div class="roster">saadzin · VINI · noway · decenty · chelo</div>
+          <p class="small">
+            BP 讨论侧重点：chelo 出现状态质疑；noway 仅见行为讨论，未见地图历史战绩。
+            <span class="tag source">本场弹幕</span>
+          </p>
+        </article>
+        <article class="lineup liquid">
+          <div class="eyebrow">Liquid · 官方阵容文件</div>
+          <div class="roster">Jorko · JT · EliGE · NAF · malbsMd</div>
+          <p class="small">
+            BP 讨论侧重点：Jorko 被绑定到 Anubis 强图与开局发挥；NAF 被提及偏稳健。
+            <span class="tag source">本场弹幕</span>
+          </p>
+        </article>
+      </div>
+    </section>
+    <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">Imperial</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:33%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">33%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">Liquid</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:67%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">67%</span></div><div class="note">整场胜负弹幕 3 条（近 5 分钟样本不足，回退累积），两队相加恒为 100%。</div><div class="note" data-sit-ts="1795692901" style="color:#8a8f98;font-size:11px;margin-top:2px">胜率更新于 19:35:01（北京时间）</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div style="display:flex;gap:20px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#0071e3">Imperial</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">saadzin</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">VINI</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">noway</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">decenty</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">chelo</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div></div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#ff3b30">Liquid</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Jorko</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">JT</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">EliGE</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">NAF</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">malbsMd</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">0.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">0人评</span></div></div></div><div class="note">来源：虎扑通用评分（每小局独立）· 阿努比斯</div><div class="note" data-rat-ts="1795692901" style="color:#8a8f98;font-size:11px;margin-top:2px">评分更新于 19:35:01（北京时间）</div><!-- SITUATION:RATINGS:END --></div><script>
+(function () {
+  if (window.__sitPoll) return;
+  window.__sitPoll = true;
+  function tsOf(el) {
+    if (!el) return null;
+    var w = el.querySelector("[data-sit-ts]");
+    var r = el.querySelector("[data-rat-ts]");
+    var tw = w ? (+w.getAttribute("data-sit-ts") || 0) : 0;
+    var tr = r ? (+r.getAttribute("data-rat-ts") || 0) : 0;
+    var t = Math.max(tw, tr);
+    return t > 0 ? t : null;
+  }
+  function swap() {
+    fetch(window.location.href.split("#")[0], { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (html) {
+        if (!html) return;
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var fresh = doc.getElementById("situation-card");
+        var cur = document.getElementById("situation-card");
+        if (!fresh || !cur) return;
+        var tNew = tsOf(fresh), tCur = tsOf(cur);
+        // 单调守卫：当前已有时间戳时，新卡缺失或更旧则跳过（防 CDN 多节点回跳）
+        if (tCur != null && (tNew == null || tNew <= tCur)) return;
+        cur.outerHTML = fresh.outerHTML;
+      })
+      .catch(function () {});
+  }
+  setInterval(swap, 60000);
+})();
+</script>
+    <section class="card" id="direction">
+      <div class="section-head">
+        <h2><span class="no">3</span>方向性情报板</h2>
+        <span class="tag pending">局中分歧 · 结果待定</span>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-cell wide">
+          <span>局部方向</span>
+          <strong>偏向 Liquid／Jorko，但不足以定胜负</strong>
+          <em>强图、开局发挥与“晋级”叙事同向；同时存在 Jorko 近点防守质疑与 Liquid 阶段强度担忧。</em>
+        </div>
+        <div class="summary-cell">
+          <span>直接对象样本</span>
+          <strong>76 条记录</strong>
+          <em>来自 56 个账号；74 条 official 房、2 条 MO 房。</em>
+        </div>
+        <div class="summary-cell">
+          <span>全窗口情绪</span>
+          <strong>+43 / −21 · 净 +22</strong>
+          <em>规则层判正面，但混有并行赛事，不能直接等同于本场共识。</em>
+        </div>
+      </div>
+      <div class="anchor-grid">
+        <article class="anchor-card positive">
+          <div class="eyebrow">正锚点 · 看好谁赢</div>
+          <h3>对象：Liquid／Jorko</h3>
+          <p>
+            19:21–19:30（北京）形成“Jorko 的 Anubis 是强图”“开局包猛”
+            “鸡哥乱杀，液体就赢了”的连续正向簇；另有“检测到波哈，液体直接超进化了”
+            与“根本打不过鸡哥”等对手侧退让表达。
+          </p>
+          <dl class="anchor-meta">
+            <dt>依据</dt>
+            <dd>单点地图强图口径、手枪局／开局发挥、carry 预期，以及对手侧“打不过”表达。</dd>
+            <dt>时间</dt>
+            <dd>19:21:27–19:30:44（北京）</dd>
+            <dt>样本</dt>
+            <dd>以 official 房为主；MO 房只有零星附和，不构成跨平台确认。</dd>
+            <dt>验证</dt>
+            <dd>G1 结果待官方回填；当前只验证为“观众方向”成立。</dd>
+          </dl>
+          <span class="tag source">本场弹幕</span>
+          <span class="tag secondary">模型二次判定</span>
+          <span class="confidence low">单主源待验证</span>
+        </article>
+        <article class="anchor-card positive">
+          <div class="eyebrow">正锚点 · 队伍叙事</div>
+          <h3>对象：Liquid</h3>
+          <p>
+            19:22:07、19:22:55、19:23:08（北京）连续出现“赢了就晋级”
+            “豪门、选手数值有下限”“北美最锋利的剑、波哈严父”等队伍强弱表述。
+          </p>
+          <dl class="anchor-meta">
+            <dt>依据</dt>
+            <dd>阵容名望、选手下限与对阵巴西队伍的历史叙事；不是本局回合经济或比分。</dd>
+            <dt>时间</dt>
+            <dd>19:22:07–19:23:08（北京）</dd>
+            <dt>分歧</dt>
+            <dd>后续出现“第二阶段要被抽陀螺”，但该句指向未来阶段，不能覆盖当前 G1。</dd>
+            <dt>验证</dt>
+            <dd>结果待定；方向可入赛后共识验证。</dd>
+          </dl>
+          <span class="tag source">本场弹幕</span>
+          <span class="tag secondary">模型二次判定</span>
+          <span class="confidence low">叙事锚·低置信</span>
+        </article>
+        <article class="anchor-card negative">
+          <div class="eyebrow">负锚点 · 看衰谁输</div>
+          <h3>对象：Imperial／chelo</h3>
+          <p>
+            19:22:17–19:25:29（北京）出现“chelo 这 fw 还有战队要啊”
+            “还有工作是真的牛”“这把有股要研发的味道”等个体状态质疑。
+          </p>
+          <dl class="anchor-meta">
+            <dt>依据</dt>
+            <dd>对 chelo 个人状态与发挥的情绪化质疑，没有回合数据、经济或赛后统计支撑。</dd>
+            <dt>时间</dt>
+            <dd>19:22:17–19:25:29（北京）</dd>
+            <dt>边界</dt>
+            <dd>只能作为 Imperial 个体负锚，禁止外推为“Imperial 必输”。</dd>
+            <dt>验证</dt>
+            <dd>待观察 chelo 的后续数据；G1 结果未确认。</dd>
+          </dl>
+          <span class="tag source">本场弹幕</span>
+          <span class="tag secondary">模型二次判定</span>
+          <span class="confidence low">个体锚·不外推</span>
+        </article>
+        <article class="anchor-card negative">
+          <div class="eyebrow">反向证据 · 对 Liquid 的保留</div>
+          <h3>对象：Jorko 近点防守</h3>
+          <p>
+            19:24:40（北京）出现“Jorko 真的会玩吗，完全不防近点”。
+            这是对单个防守回合的直接质疑，与后续“carry／乱杀”正向簇冲突。
+          </p>
+          <dl class="anchor-meta">
+            <dt>依据</dt>
+            <dd>单个位置判断，样本仅 1 条；缺少回合编号、站位图和回放。</dd>
+            <dt>时间</dt>
+            <dd>19:24:40（北京）</dd>
+            <dt>分歧</dt>
+            <dd>保留为 Liquid 内部分歧，不抵销此前 Anubis 强图正锚。</dd>
+            <dt>验证</dt>
+            <dd>待后续回合表现与官方数据回填。</dd>
+          </dl>
+          <span class="tag source">本场弹幕</span>
+          <span class="tag pending">单条反向证据</span>
+        </article>
+      </div>
+      <div class="consensus">
+        <div class="consensus-head">
+          <div>
+            <h3>群体共识：局部支持 Liquid／Jorko，但“共识不足”</h3>
+            <p class="small">
+              直接对象记录 76 条、56 个账号；情绪集中在 Jorko 的地图与开局表现，
+              而不是稳定的“Imperial 必败”判断。MO 房只有 2 条相关表达，不能声称双房共振。
+            </p>
+          </div>
+          <span class="tag source">本场弹幕</span>
+        </div>
+        <ul class="evidence-list">
+          <li>
+            正向簇：强图、开局乱杀、carry、豪门下限与“对手打不过”表达同向，
+            形成 Liquid 局部正共识。
+            <span class="tag source">本场弹幕</span>
+            <span class="tag secondary">模型二次判定</span>
+          </li>
+          <li>
+            分歧点：19:24:40 质疑 Jorko 近点防守；19:26:27 出现“如果液体输了呢”；
+            19:28:33 看衰 Liquid 第二阶段。负向样本较弱，但足以阻止升级为高置信共识。
+            <span class="tag source">本场弹幕</span>
+            <span class="tag pending">分歧信号</span>
+          </li>
+          <li>
+            19:26–19:28 的“又想把我液体看死是不是”共出现 6 次，属于反唱衰／护队表达；
+            反映观众意识到有看衰叙事，但不能等价为本局胜率证据。
+            <span class="tag source">本场弹幕</span>
+            <span class="tag secondary">模型二次判定</span>
+          </li>
+          <li>
+            全窗口 narrative 为 43 正／21 负，但包含 100T–9z、LVG–PV 等并行比赛，
+            因此本页只把“直接命中 Imperial／Liquid 或其选手”的 76 条记录用于方向判断。
+            <span class="tag source">本场弹幕</span>
+            <span class="tag pending">混流降级</span>
+          </li>
+        </ul>
+        <details>
+          <summary>中性弹幕二次判定（模型复核 · 40 条候选）</summary>
+          <div class="candidate-panel">
+            <ul class="evidence-list">
+              <li>
+                “又想把我液体看死是不是”（6 次）、“液体太吓人了”、
+                “打液体那是直接没了”：判为支持 Liquid 强度，纳入正锚。
+                <span class="tag secondary">模型二次判定</span>
+              </li>
+              <li>
+                “液体赢了就晋级了”“液体再怎么说也是豪门”
+                “北美最锋利的剑”“检测到波哈，液体直接超进化了”：
+                判为正向队伍叙事；其中两项带未来或地域对抗语境，低置信处理。
+                <span class="tag secondary">模型二次判定</span>
+              </li>
+              <li>
+                “鸡哥乱杀液体就赢了”：从“选手发挥”直接映射到“Liquid 赢”，
+                纳入正锚。
+                <span class="tag secondary">模型二次判定</span>
+              </li>
+              <li>
+                “如果液体输了呢”：判为条件式担忧，不写成看衰实锤；
+                “液体第二阶段要被抽陀螺”：判为未来阶段负向预期，不覆盖 G1 当前方向。
+                <span class="tag secondary">模型二次判定</span>
+              </li>
+              <li>
+                “Jorko 是老鼠青训”：仅事实背景，无情绪或胜负方向，不纳入方向板。
+                <span class="tag excluded">无方向情绪</span>
+              </li>
+              <li>
+                LVG 对 Liquid 的强弱比较属于其他比赛语境，不并入本场；
+                绿龙、FaZe、NAVI、MOUZ、100T、9z 等闲聊同样排除。
+                <span class="tag excluded">跨场背景·排除</span>
+              </li>
+              <li>
+                纯表情、纯问号、主播闲聊及其他无情绪候选不写入方向板；
+                这是“不硬套情绪”，不是样本缺失。
+                <span class="tag excluded">纯聊天·舍弃</span>
+              </li>
+            </ul>
+          </div>
+        </details>
+      </div>
+      <div class="conditional">
+        <strong>灰信号条件预测</strong>
+        <p class="small">
+          本场无可归因灰信号，因此当前没有“若灰信号兑现则指向哪边”的可用条件。
+          规则层 2 条候选均落在 MO 房并行比赛语境，不能移植到 Imperial／Liquid。
+          <span class="tag source">本场弹幕</span>
+          <span class="tag pending">今日无灰信号</span>
+        </p>
+      </div>
+    </section>
+    <section class="card" id="gray-signals">
+      <div class="section-head">
+        <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+        <span class="tag risk">风险标注</span>
+      </div>
+      <div class="empty-state">
+        <h3>今日无灰信号</h3>
+        <p class="small">
+          按“Imperial／Liquid × G1 × 当前时间窗”过滤后，没有可确认归属的
+          假赛、剧本、故意放分或卡盘质疑。不得把并行比赛弹幕当成本场灰信号。
+          <span class="tag source">本场弹幕</span>
+          <span class="tag pending">样本不足</span>
+        </p>
+      </div>
+      <div class="risk-summary">
+        <div class="risk-cell">
+          <span>本场可归因灰信号</span>
+          <strong>0 条</strong>
+        </div>
+        <div class="risk-cell">
+          <span>风险等级</span>
+          <strong>不升级 · 无可用样本</strong>
+        </div>
+        <div class="risk-cell">
+          <span>市场用法</span>
+          <strong>仅风险观察，不作交易依据</strong>
+        </div>
+      </div>
+      <details open>
+        <summary>规则层候选为何未纳入本场</summary>
+        <ul class="evidence-list">
+          <li>
+            “故意放分”，19:28:47（北京），MO 房。上下文紧邻 9z 回合讨论，
+            未出现 Imperial、Liquid 或本场选手对象。观众质疑，非结论；
+            指向对象：未绑定／并行比赛语境；风险等级：排除。
+            <span class="tag risk">观众质疑非结论</span>
+            <span class="tag excluded">跨场混源·排除</span>
+          </li>
+          <li>
+            “这帮 B 就是故意的”，19:30:14（北京），MO 房。上下文同时讨论 LVG、
+            9z 与 X 队，无本场明确指向。观众质疑，非结论；
+            指向对象：未绑定；风险等级：排除。
+            <span class="tag risk">观众质疑非结论</span>
+            <span class="tag excluded">跨场混源·排除</span>
+          </li>
+          <li>
+            纪律：灰信号只作风险标注与盘口对照，不能写成实锤，也不能单独生成
+            买卖方向；本页不把观众情绪升级为假赛判断。
+            <span class="tag risk">风险纪律</span>
+          </li>
+        </ul>
+      </details>
+    </section>
+    <footer>
+      <strong>局中 · 非终局，结果待定。</strong>
+      本页基于截至 19:32（北京时间）的弹幕切片；G1 地图、比分和胜负仍待官方或系统规则层回填。
+    </footer>
+  </main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
