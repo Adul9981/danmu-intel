@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nemiga vs NIP｜G1 局末弹幕情报快照</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #e5e5ea;
+      --blue: #0071e3;
+      --blue-soft: #eaf3ff;
+      --amber: #9a6700;
+      --amber-soft: #fff7e6;
+      --red-soft: #fff2f1;
+      --red: #b42318;
+      --green-soft: #eef8f1;
+      --green: #1f7a45;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.58;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      width: min(1040px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+    .hero,
+    .section {
+      background: var(--card);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      border-radius: 20px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.045);
+    }
+    .hero {
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .hero-top {
+      padding: 28px 30px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 5vw, 42px);
+      line-height: 1.18;
+      letter-spacing: -0.035em;
+    }
+    .subtitle {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .notice {
+      margin: 20px 0 0;
+      padding: 14px 16px;
+      border-radius: 13px;
+      background: var(--amber-soft);
+      color: #6b4700;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+    }
+    .meta-item {
+      padding: 16px 20px;
+      background: #fbfbfc;
+    }
+    .meta-label {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .meta-value {
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .source-note {
+      padding: 17px 22px;
+      background: var(--card);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .source-note strong { color: var(--text); }
+    .section {
+      padding: 26px 28px 28px;
+      margin-top: 16px;
+    }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 0 0 20px;
+      font-size: clamp(21px, 3vw, 27px);
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+    .no {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .section-intro {
+      margin: -9px 0 18px 45px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .panel {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+    .panel-wide { grid-column: 1 / -1; }
+    .panel-soft { background: #fbfbfd; }
+    .panel-title {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    p { margin: 8px 0; }
+    .tag {
+      display: inline-block;
+      margin-right: 5px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: #0057ad;
+      font-size: 11px;
+      font-weight: 750;
+      vertical-align: 1px;
+    }
+    .tag-warn {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .tag-risk {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+    .tag-ok {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .quote {
+      margin: 9px 0;
+      padding-left: 12px;
+      border-left: 3px solid #d2d2d7;
+      color: #4f4f54;
+      font-size: 13px;
+    }
+    .time {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .empty {
+      padding: 15px 17px;
+      border-radius: 13px;
+      background: #f7f7f9;
+      color: var(--muted);
+    }
+    .system-slot {
+      display: grid;
+      place-items: center;
+      min-height: 108px;
+      padding: 22px;
+      border: 1px dashed #c7c7cc;
+      border-radius: 15px;
+      background: #fafafa;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+    .anchor {
+      padding: 17px 18px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+    }
+    .anchor-positive {
+      background: var(--green-soft);
+      border-color: #d7ebde;
+    }
+    .anchor-negative {
+      background: var(--red-soft);
+      border-color: #f0d7d4;
+    }
+    .anchor-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .anchor-name {
+      font-size: 17px;
+      font-weight: 780;
+    }
+    .facts {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 7px 10px;
+      margin: 10px 0 0;
+      font-size: 14px;
+    }
+    .facts dt {
+      color: var(--muted);
+      font-weight: 650;
+    }
+    .facts dd { margin: 0; }
+    .consensus {
+      padding: 17px 18px;
+      border-radius: 15px;
+      background: var(--blue-soft);
+      border: 1px solid #d6e8ff;
+    }
+    .metric-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 11px 0;
+    }
+    .metric {
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      color: #27557d;
+    }
+    .risk {
+      padding: 15px 16px;
+      border: 1px solid #f0d7d4;
+      border-radius: 13px;
+      background: #fffafa;
+    }
+    .risk + .risk { margin-top: 10px; }
+    .risk-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+    .risk-level {
+      flex: 0 0 auto;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .footnote {
+      margin-top: 18px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    @media (max-width: 720px) {
+      .wrap { width: min(100% - 20px, 1040px); padding-top: 14px; }
+      .hero-top { padding: 23px 20px 20px; }
+      .section { padding: 22px 18px 24px; }
+      .meta, .grid { grid-template-columns: 1fr; }
+      .panel-wide { grid-column: auto; }
+      .meta-item { padding: 13px 17px; }
+      .section-intro { margin-left: 0; }
+      .facts { grid-template-columns: 1fr; gap: 2px; }
+      .facts dd { margin-bottom: 6px; }
+    }
+  </style>
+<style>/* canonical-header (pipeline-pinned 2026-11-01): stop per-node Codex CSS drift */body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;}h1{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif !important;font-size:24px !important;line-height:1.25 !important;font-weight:800 !important;letter-spacing:-.02em !important;}</style></head>
+<body style="padding-top:0;font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;line-height:1.6;color:#1d1d1f">
+<nav aria-label="弹幕情报库主导航" style="position:sticky;top:0;z-index:20;background:rgba(245,245,247,.94);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(0,0,0,.08);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;box-sizing:border-box"><div style="max-width:1280px;margin:0 auto;padding:9px 16px;display:flex;gap:5px;align-items:center;flex-wrap:wrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch"><a href="../index.html" style="display:inline-flex;align-items:center;color:#1d1d1f;text-decoration:none;font-weight:800;font-size:14px;margin-right:auto;white-space:nowrap"><span style="display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(135deg,#0071e3,#5ac8fa);color:#fff;font-size:11px;font-weight:800;margin-right:7px;box-shadow:0 4px 10px rgba(0,113,227,.18)">DI</span>弹幕情报库</a><a href="today.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">今日情报</a><a href="match_situation.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">比赛局势</a><a href="history.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">历史库</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="intel_prematch.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">赛前情报</a><a href="intel_help.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">FAQ</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="pattern_decision_workspace.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态决策台</a><a href="pattern_atlas.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">形态图谱</a><span aria-hidden="true" style="width:1px;height:16px;background:#d8d8dd;margin:0 3px;flex:none"></span><a href="analytics.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">访问统计</a><a href="search.html" style="display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.055);color:#515154;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap">搜索</a></div></nav><div style="max-width:1280px;margin:4px auto 14px;padding:0 16px;font-size:12px;color:#6e6e73;font-family:-apple-system,'PingFang SC',sans-serif"><a href="../index.html" style="color:#6e6e73;text-decoration:none">首页</a> › <a href="history.html" style="color:#6e6e73;text-decoration:none">历史库</a> › <b style="color:#1d1d1f">Nemiga-NIP 2026-11-28 g1 end</b></div>
+  <main class="wrap">
+    <header class="hero">
+      <div class="hero-top">
+        <p class="eyebrow">CS2 · 第 1 小局 · 弹幕情报快照</p>
+        <h1>Nemiga vs NIP</h1>
+        <p class="subtitle">G1｜局末 / 局间（GAME-REVIEW） · 弹幕口径待官方校准</p>
+        <div class="notice">局中·非终局，结果待定</div>
+      </div>
+      <div class="meta">
+        <div class="meta-item">
+          <span class="meta-label">数据窗口（北京时间）</span>
+          <span class="meta-value">13:18–14:14（UTC 05:18–06:14，仅括号备注）</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">弹幕采集截止</span>
+          <span class="meta-value">14:14（北京）</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">弹幕样本</span>
+          <span class="meta-value">6,368 条 · 2,109 名活跃用户 · 平均 113.4 条/分钟</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">进度口径</span>
+          <span class="meta-value">后段弹幕出现 7–12、7–13 与“结束/GG”；非官方终局</span>
+        </div>
+      </div>
+      <div class="source-note">
+        <strong>来源边界：</strong>采集总量来自两路直播间，但本窗口内
+        <code>huya_csboy_mo</code> 的 1,354 条与 Nemiga–NIP 明确对应；
+        <code>huya_csboy_official</code> 同时段多数内容在讨论另一场比赛。因此前者作为本场核心证据，
+        后者不作独立“多源确认”。官方地图禁选、比分与终局：<strong>待官方核对</strong>。
+      </div>
+    </header>
+    <section class="section">
+      <h2><span class="no">1</span>BP 锚点与地图禁选情报（弹幕讨论·非确认）</h2>
+      <p class="section-intro">只记录观众讨论与可验证缺口，不把提及写成实际选图。</p>
+      <div class="grid">
+        <div class="panel">
+          <p class="panel-title">当前地图与禁选状态</p>
+          <p><span class="tag tag-warn">弹幕口径·待官方</span>
+            切片中没有完整 veto / pick 序列；13:57 仅出现一次“小镇”提及，
+            已接近可能的局末/赛后语境，不能唯一绑定到 G1 实际地图。</p>
+          <p class="quote"><span class="time">13:57（北京）</span> “小镇怎么还被 t 追分了”</p>
+          <p class="empty">G1 当前地图官方确认：样本不足。“小镇 / Inferno”仅作待核候选，不作事实。</p>
+        </div>
+        <div class="panel">
+          <p class="panel-title">NIP 的队伍 × 地图观点</p>
+          <p><span class="tag">本场弹幕·分歧</span>
+            “这图最强”“Nuke 最强”“Ancient 最强”三种口径并存，无法收敛为单一强图结论。</p>
+          <p class="quote"><span class="time">13:22（北京）</span> “nip 这图最强图，小蜜蜂来都拿不到 9 分”</p>
+          <p class="quote"><span class="time">13:23（北京）</span> “nip 强图是核子，这图真 nemiga 更强”</p>
+          <p class="quote"><span class="time">13:24（北京）</span> “现在 nip 最强应该是遗迹吧”</p>
+          <p><span class="tag tag-warn">单源待验证</span>以上均为观众口径，且彼此分歧。</p>
+        </div>
+        <div class="panel">
+          <p class="panel-title">地图攻守倾向</p>
+          <p><span class="tag">本场弹幕·模型二次判定</span>
+            规则层判为中性的“小蜜蜂就是在这张图上 T 开被零封的”被二次判为
+            <strong>地图历史讨论</strong>，不是纯聊天；它支持“该图偏 CT / T 侧更难”的观众认知。</p>
+          <p class="quote"><span class="time">13:44（北京）</span> “小蜜蜂就是在这张图上 T 开被零封的”（出现 2 次）</p>
+          <p><span class="tag tag-warn">待官方</span>未取得实际攻守方与地图结构源，不能据此确认地图属性。</p>
+        </div>
+        <div class="panel">
+          <p class="panel-title">BP 后战绩情报</p>
+          <p><span class="tag">本场弹幕·历史回顾</span>
+            有两条可沉淀的队伍 × 地图战绩口径，但均是观众回忆，非本局统计：</p>
+          <p class="quote"><span class="time">13:23（北京）</span> “黑豹这图都打不过 nmg”</p>
+          <p class="quote"><span class="time">13:44–13:45（北京）</span>
+            “小蜜蜂就是在这张图上 T 开被零封” / “蜜蜂被这个队直接进攻方 0 分”</p>
+          <p><span class="tag tag-warn">单源待验证</span>无 BP 后官方地图胜率或本场图池数据，不写为已确认战绩。</p>
+        </div>
+      </div>
+    </section>
+    <div class="card" id="situation-card"><h2><span class="no">2</span>比赛局势</h2><h3 style="font-size:14px;margin:2px 0 8px">两队胜率（观众口径·非结论）</h3><!-- SITUATION:WIN:BEGIN --><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#0071e3;font-size:13px">Nemiga</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:18%;background:#0071e3;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#0071e3;font-size:14px">18%</span></div><div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="flex:0 0 96px;font-weight:650;color:#ff3b30;font-size:13px">NIP</span><div style="flex:1;background:#eef0f3;border-radius:8px;height:18px;overflow:hidden"><div style="height:100%;width:82%;background:#ff3b30;border-radius:8px"></div></div><span style="flex:0 0 56px;text-align:right;font-weight:750;color:#ff3b30;font-size:14px">82%</span></div><div class="note">整场胜负弹幕 22 条（近 5 分钟样本不足，回退累积），两队相加恒为 100%。</div><div class="note" data-sit-ts="1795846578" style="color:#8a8f98;font-size:11px;margin-top:2px">胜率更新于 14:16:18（北京时间）</div><!-- SITUATION:WIN:END --><h3 style="font-size:14px;margin:14px 0 8px">队员评分（虎扑·实时）</h3><!-- SITUATION:RATINGS:BEGIN --><div style="display:flex;gap:20px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#0071e3">Nemiga</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">robo</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">5.2</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">10人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">khaN</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">5.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">12人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">syph0</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">3.7</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">6人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Xant3r</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">3.3</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">6人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">KaiR0N-</span><span style="font-weight:750;color:#0071e3;min-width:34px;text-align:right">3.1</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">7人评</span></div></div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;margin-bottom:4px;color:#ff3b30">NIP</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Krimbo</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">10.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">4人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">adamb</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">10.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">2人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">xKacpersky</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">8.5</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">4人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">sjuush</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">8.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">3人评</span></div><div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:12.5px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">stavn</span><span style="font-weight:750;color:#ff3b30;min-width:34px;text-align:right">5.0</span><span style="color:var(--sub);font-size:11px;min-width:44px;text-align:right">8人评</span></div></div></div><div class="note">来源：虎扑通用评分（每小局独立）· 第1局</div><div class="note" data-rat-ts="1795846621" style="color:#8a8f98;font-size:11px;margin-top:2px">评分更新于 14:17:01（北京时间）</div><!-- SITUATION:RATINGS:END --></div>
+    <section class="section">
+      <h2><span class="no">3</span>方向性情报板</h2>
+      <p class="section-intro">正锚 × 负锚 × 群体共识 × 灰信号条件预测；所有方向均待官方终局回填。</p>
+      <div class="grid">
+        <div class="anchor anchor-positive">
+          <div class="anchor-head">
+            <span class="anchor-name">正锚点｜NIP</span>
+            <span class="tag tag-ok">看强·弹幕口径</span>
+          </div>
+          <dl class="facts">
+            <dt>对象</dt><dd>NIP</dd>
+            <dt>依据</dt><dd>stavn / “蛇狙”发挥被反复称强；卡巴斯基与“虎哥”被指为枪法支点；中后段转向“NIP 打得更整体”。</dd>
+            <dt>时间</dt><dd>13:19–13:53（北京）</dd>
+            <dt>样本</dt><dd>正向 NIP 语义弹幕 39 条（原始条目，未做用户级去重；含重复文本）</dd>
+            <dt>验证</dt><dd>待官方终局</dd>
+          </dl>
+          <p class="quote"><span class="time">13:19–13:20（北京）</span>
+            “nip 怎么输，stavn 这狙太猛了”（3 次；来自 2 名用户）</p>
+          <p class="quote"><span class="time">13:47–13:53（北京）</span>
+            “卡巴斯基真吓人吧” / “nip 打的更整体，明显就能看出来”</p>
+          <p><span class="tag">本场弹幕·单源待验证</span>只在当前可归属直播源内成立，非多源确认。</p>
+        </div>
+        <div class="anchor anchor-negative">
+          <div class="anchor-head">
+            <span class="anchor-name">负锚点｜Nemiga</span>
+            <span class="tag tag-risk">看衰·弹幕口径</span>
+          </div>
+          <dl class="facts">
+            <dt>对象</dt><dd>Nemiga / “左边”队</dd>
+            <dt>依据</dt><dd>不下包、残局处理与补枪被集中批评；robo 被指“把把第一个送”；后段对枪与防守被称“四处漏风”。</dd>
+            <dt>时间</dt><dd>13:20–13:51（北京）</dd>
+            <dt>样本</dt><dd>负向语义弹幕 48 条（原始条目；包含围绕执行力与选手状态的批评）</dd>
+            <dt>验证</dt><dd>待官方终局</dd>
+          </dl>
+          <p class="quote"><span class="time">13:34（北京）</span> “nmg 真的就是这个狙菜”</p>
+          <p class="quote"><span class="time">13:41–13:49（北京）</span>
+            “3 打 1 能输了” / “robo 把把第一个送”</p>
+          <p><span class="tag">本场弹幕·单源待验证</span>这是观众执行力判断，不等同官方结果或选手结论。</p>
+        </div>
+        <div class="consensus panel-wide">
+          <p class="panel-title">群体共识｜方向偏 NIP，但不是稳态一致</p>
+          <div class="metric-row">
+            <span class="metric">规则层全窗叙事：正 246 / 负 234 / 净 +12</span>
+            <span class="metric">叙事样本：6,368 条（含跨场噪声）</span>
+            <span class="metric">Nemiga–NIP 方向词样本：22 条</span>
+            <span class="metric">NIP 18 / Nemiga 4（NIP 82%）</span>
+          </div>
+          <p><span class="tag">本场弹幕·方向共识</span>
+            22 条明确胜负方向词中，NIP 占 18 条；后半段尤其在 13:39–13:55（北京）
+            形成“NIP 强、Nemiga 顶不住”的集中口径。</p>
+          <p><span class="tag tag-warn">全窗叙事·需降噪</span>
+            规则层 5 分钟情绪轨迹为 +19 → −4 → −17 → 0 → +14，
+            说明过程波动明显；全窗净正向仅 +12，不能写成压倒性情绪共识。</p>
+          <p><span class="tag">分歧</span>
+            一部分观众认可 Nemiga 曾赢 Vitality、与 FURIA 打满五图的历史；另一部分坚持其只是“昙花一现”。
+            对地图是 CT 图还是 T 图、NIP 是一线还是二线顶也持续争论。</p>
+        </div>
+        <div class="panel panel-wide">
+          <p class="panel-title">中性弹幕二次判定｜只纳入有真实情绪或地图信息的条目</p>
+          <p><span class="tag">模型二次判定·分歧</span>
+            <span class="time">13:21（北京）</span>
+            “去看看 nip 3-0 都些什么队伍再来说话吧，唯一含金量赢液体”
+            → 对 NIP 胜绩含金量的质疑，纳入“强度分歧”，不纳入单纯看衰。</p>
+          <p><span class="tag">模型二次判定·正锚</span>
+            <span class="time">13:26（北京）</span>
+            “之前跟黑豹打了五张图呢 真不弱的”
+            → 对 Nemiga 历史韧性的正面评价，削弱单边看衰。</p>
+          <p><span class="tag">模型二次判定·地图信息</span>
+            <span class="time">13:23（北京）</span>
+            “黑豹这图都打不过 nmg”
+            → 作为 Nemiga 队伍 × 地图历史口径；因无法核验日期与官方记录，保持单源待验证。</p>
+          <p><span class="tag tag-warn">未纳入</span>
+            其余候选主要是其他比赛、转会传闻、选手排名争论、表情或纯闲聊；不作情绪硬套。</p>
+        </div>
+        <div class="panel panel-wide panel-soft">
+          <p class="panel-title">灰信号条件预测</p>
+          <p><span class="tag tag-risk">观众质疑·非结论</span>
+            当前可归属本场的灰信号仅 2 条，均为低风险、同一路直播源，无盘口或价格异常佐证。</p>
+          <p><strong>条件方向：</strong>若“故意输 / 故意进点”质疑后续被独立证据兑现，
+            才会指向 Nemiga 侧执行异常增强、NIP 受益；当前不得写成假赛、放水或既定胜负。</p>
+          <p><span class="tag">推测·待验证</span>
+            若后续回合继续出现无道具进点、关键残局反常放弃且与盘口异动重合，
+            才将风险从“低”上调；单凭这两条弹幕不升级。</p>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <h2><span class="no">4</span>灰信号汇总（风险·观众质疑非结论）</h2>
+      <p class="section-intro">只作风险标注与盘口对照素材，不作比赛操纵、假赛或选手动机结论。</p>
+      <div class="risk">
+        <div class="risk-head">
+          <strong>1. “故意输罢了，急什么”</strong>
+          <span class="risk-level">风险：低 · 单源</span>
+        </div>
+        <p><span class="tag tag-risk">观众质疑，非结论</span>
+          指向对象：Nemiga 侧 / 当前小局。时间：13:35（北京）。</p>
+        <p>仅 1 条孤立评论，没有同用户连续刷屏、另一路独立共振或盘口对照；属于情绪化质疑。</p>
+      </div>
+      <div class="risk">
+        <div class="risk-head">
+          <strong>2. “他故意往里面跑”</strong>
+          <span class="risk-level">风险：低 · 单源</span>
+        </div>
+        <p><span class="tag tag-risk">观众质疑，非结论</span>
+          指向对象：Nemiga 侧执行 / 具体选手未确认。时间：13:35（北京）。</p>
+        <p>描述的是单次进点选择，缺少身份、回合上下文与独立复核；不能升级为操纵判断。</p>
+      </div>
+      <div class="panel panel-wide panel-soft" style="margin-top:14px;">
+        <p class="panel-title">规则层 4 条候选的来源清洗</p>
+        <p><span class="tag">归入本场</span>上述 2 条来自 <code>huya_csboy_mo</code>，语气与比赛内容相邻。</p>
+        <p><span class="tag tag-warn">排除·语义不符</span>
+          13:45（北京）的“贴纸都没人买了，还搁这一辆车呢”是消费/玩梗语境，
+          没有明确指向故意输，未计为灰信号。</p>
+        <p><span class="tag tag-warn">排除·跨场噪声</span>
+          13:52（北京）的“这是买了自己输吗”来自同时段另一场比赛直播间，
+          不应归到 Nemiga–NIP。</p>
+      </div>
+      <p class="footnote">
+        风险状态：低。盘口佐证：切片中无 Nemiga–NIP 定向让分、独赢或异常价格序列，样本不足。
+        官方比分、地图与终局均待核对；后续若官方结果或新证据冲突，以官方/结算源修正本页。
+      </p>
+    </section>
+  </main>
+<script>if(location.search.indexOf("embed=1")>-1){document.querySelectorAll("nav").forEach(function(n){n.style.display="none"});document.querySelectorAll("div[style*='max-width:1020px']").forEach(function(n){n.style.display="none"});}</script><script src="analytics-config.js?v=20261109c" defer></script><script src="analytics.js?v=20261109c" defer></script><link rel="stylesheet" href="assistant.css?v=20261124a"><script src="assistant.js?v=20261124a" defer></script></body>
+</html>
